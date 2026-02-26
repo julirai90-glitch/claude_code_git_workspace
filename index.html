@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datenstory Graubünden</title>
+  <meta name="description" content="Eine Datengeschichte pro Tag, basierend auf offenen Statistikdaten des Kantons Graubünden." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo">
+          <div class="logo-mark">GR</div>
+          <div class="logo-text">Datenstory</div>
+        </div>
+        <div class="header-date" id="header-date"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main>
+
+    <!-- Hero / Intro -->
+    <section class="story-hero">
+      <div class="container">
+        <div class="story-eyebrow">
+          <span class="story-tag" id="story-category"></span>
+          <span class="story-label" id="story-counter"></span>
+        </div>
+        <h1 class="story-title" id="story-title">Wird geladen…</h1>
+        <p class="story-lead" id="story-lead"></p>
+        <div class="data-badge" id="data-badge">
+          <span class="badge-dot"></span>
+          <span class="badge-text" id="badge-text"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chart -->
+    <section class="chart-section">
+      <div class="container">
+        <div class="chart-card">
+          <div class="chart-meta">
+            <h2 class="chart-title" id="chart-title"></h2>
+            <p class="chart-subtitle" id="chart-subtitle"></p>
+          </div>
+          <div class="chart-area">
+            <canvas id="mainChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Facts -->
+    <section class="facts-section">
+      <div class="container">
+        <div class="facts-grid" id="facts-grid"></div>
+      </div>
+    </section>
+
+    <!-- Analysis -->
+    <section class="analysis-section">
+      <div class="container">
+        <div class="analysis-body" id="analysis-body"></div>
+      </div>
+    </section>
+
+    <!-- Navigation -->
+    <section class="story-nav">
+      <div class="container">
+        <div class="nav-layout">
+          <button class="nav-btn nav-prev" id="prev-btn">
+            <span class="nav-arrow">←</span>
+            <span class="nav-label">Vorherige</span>
+          </button>
+          <div class="nav-dots" id="nav-dots"></div>
+          <button class="nav-btn nav-next" id="next-btn">
+            <span class="nav-label">Nächste</span>
+            <span class="nav-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <p>Daten: <a href="https://data.gr.ch" target="_blank" rel="noopener">Statistik Graubünden · data.gr.ch</a></p>
+        <p>Eine datengestützte Geschichte pro Tag aus dem Kanton Graubünden</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
