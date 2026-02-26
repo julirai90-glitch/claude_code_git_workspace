@@ -82,6 +82,52 @@ Den Agenten wöchentlich automatisch ausführen (z.B. mit cron oder GitHub Actio
 0 7 * * 1  cd /path/to/agent && python agent.py --max-datasets 100 > bericht.md
 ```
 
+## Integration mit der Datenstory-Website
+
+In diesem Repository existiert auch eine **Datenstory-Website** (`index.html` / `app.js` / `style.css`) mit 7 kuratierten Bündner Datengeschichten. Die Website hat `apiDatasetId: null` in allen Stories – der Agent kann diese Lücken füllen.
+
+### Dataset-IDs für die Website finden
+
+```bash
+# Sucht die passenden dataset_ids für alle 7 Website-Geschichten
+python agent.py --discover-stories
+
+# Als JSON (direkt in app.js verwendbar)
+python agent.py --discover-stories --output json
+```
+
+Ausgabe (Beispiel):
+```js
+// ── Vorschlag: Diese apiDatasetId-Werte in app.js eintragen ──
+  // sprachen           apiDatasetId: 'dvs_awt_regi_20250211',
+  // tourismus          apiDatasetId: 'dvs_awt_econ_20250702',
+  // bevoelkerung       apiDatasetId: null,  // kein Match gefunden
+  ...
+```
+
+### Agent-Findings als Website-Stories exportieren
+
+```bash
+# Findings direkt als STORIES[]-kompatible JSON-Objekte
+python agent.py --scenario trend --export-stories
+
+# Ergebnis in app.js einfügen:
+# const STORIES = [ ...bisherige Stories..., ...agentFindings ]
+```
+
+Jeder exportierte Story-Eintrag enthält bereits `apiDatasetId`, `title`, `lead` und `chartType` – Journalistinnen ergänzen `keyFacts` und `analysis`.
+
+### Zusammenspiel der beiden Projekte
+
+```
+agent.py                          index.html / app.js
+─────────────────                 ──────────────────────────────
+Scannt data.gr.ch  ──findings──▶  Zeigt Datenstory-Format
+Findet Ausreisser  ──stories──▶   Pro Tag eine Geschichte
+Findet Trends      ──dataset IDs▶ fetchLiveData() lädt Live-Daten
+Gemeinde-Rankings  ──JSON──────▶  Chart.js visualisiert
+```
+
 ## Architektur
 
 ```

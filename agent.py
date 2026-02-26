@@ -459,6 +459,148 @@ def format_finding(f: dict) -> str:
 
 
 # ─────────────────────────────────────────────
+# Website Bridge: Integration mit Datenstory-Website
+# ─────────────────────────────────────────────
+# Die Datenstory-Website (index.html / app.js) zeigt 7 kuratierte Geschichten
+# mit apiDatasetId: null – der Agent kann diese Lücken füllen und neue
+# Findings als website-kompatible Story-Objekte exportieren.
+
+# Mapping: Story-ID → Suchbegriffe für data.gr.ch Datensätze
+STORY_DATASET_HINTS: dict[str, list[str]] = {
+    "sprachen":       ["sprache", "langue", "language", "mehrsprachig"],
+    "tourismus":      ["tourismus", "logiernaechte", "logiernacht", "beherbergung", "hotel"],
+    "bevoelkerung":   ["bevoelkerung", "einwohner", "population", "demographie", "wohnbev"],
+    "wirtschaft":     ["wirtschaft", "beschaeftigung", "betriebe", "arbeit", "branche"],
+    "klima":          ["klima", "temperatur", "wetter", "niederschlag", "gletscher"],
+    "mobilitaet":     ["mobilitaet", "verkehr", "pendler", "oev", "strassennetz"],
+    "landwirtschaft": ["landwirtschaft", "agrar", "landwirt", "tiere", "vieh"],
+}
+
+
+def discover_datasets_for_stories(client: DataGRClient, limit: int = 200) -> dict[str, Optional[str]]:
+    """
+    For each Datenstory-Website story, find the best matching dataset on data.gr.ch.
+    Returns {story_id: dataset_id | None}.
+    """
+    print("Suche passende dataset_ids für die 7 Datenstory-Website-Geschichten …\n")
+    datasets = client.list_datasets(limit=limit)
+
+    # Build a searchable index from title + keywords + description
+    index: list[tuple[str, str]] = []
+    for ds in datasets:
+        ds_id = ds.get("dataset_id", "")
+        meta = ds.get("metas", {}).get("default", {}) or {}
+        title = meta.get("title", "") or ""
+        kws = " ".join(meta.get("keyword", []) or [])
+        desc = meta.get("description", "") or ""
+        searchable = f"{title} {kws} {desc}".lower()
+        index.append((ds_id, searchable))
+
+    results: dict[str, Optional[str]] = {}
+    for story_id, hints in STORY_DATASET_HINTS.items():
+        match = None
+        for hint in hints:
+            matches = [ds_id for ds_id, text in index if hint in text]
+            if matches:
+                match = matches[0]
+                break
+        results[story_id] = match
+        status = f"✓  {match}" if match else "–  kein Match"
+        print(f"  {story_id:<18} {status}")
+
+    return results
+
+
+def format_story_patch(story_datasets: dict[str, Optional[str]]) -> str:
+    """Format discovered dataset IDs as a JS patch suggestion for app.js."""
+    lines = [
+        "// ── Vorschlag: Diese apiDatasetId-Werte in app.js eintragen ──",
+        "// Ersetze null durch die Dataset-ID in der jeweiligen Story-Definition:\n",
+    ]
+    for story_id, ds_id in story_datasets.items():
+        if ds_id:
+            lines.append(f"  // {story_id:<18} apiDatasetId: '{ds_id}',")
+        else:
+            lines.append(f"  // {story_id:<18} apiDatasetId: null,  // kein Match gefunden")
+    lines += [
+        "",
+        "// Tipp: Werte mit --discover-stories --output json ausgeben,",
+        "//       um die Daten direkt in app.js zu übernehmen.",
+    ]
+    return "\n".join(lines)
+
+
+def finding_to_story(f: dict) -> dict:
+    """
+    Convert an agent finding into a minimal story-compatible dict
+    matching the Datenstory-Website's STORIES array structure.
+    Journalists fill in analysis/keyFacts; the rest is auto-generated.
+    """
+    import hashlib
+    story_id = f"agent-{f['type']}-{hashlib.md5(f['dataset'].encode()).hexdigest()[:6]}"
+
+    if f["type"] == "outlier":
+        muni = f" in {f['municipality']}" if "municipality" in f else ""
+        year = f" ({f['year']})" if "year" in f else ""
+        title = f"Ausreisser: «{f['field']}»{muni}{year}"
+        lead = (
+            f"Ein statistischer Ausreisser: «{f['field']}» liegt bei {f['value']:.1f} – "
+            f"{abs(f['z_score']):.1f} Standardabweichungen vom Kantonsschnitt ({f['mean']:.1f})."
+            + (f" Pct: {f['pct_from_mean']:+.0f}%." if f.get("pct_from_mean") else "")
+            + " Was steckt dahinter?"
+        )
+        category, chart_type = "Statistik", "bar"
+
+    elif f["type"] == "trend":
+        dir_de = "gestiegen" if f["direction"] == "steigend" else "gesunken"
+        title = f"Trend: «{f['field']}» ist {abs(f['pct_change']):.0f}% {dir_de} ({f['year_start']}–{f['year_end']})"
+        lead = (
+            f"Über {f['n_years']} Jahre hat sich «{f['field']}» um {f['pct_change']:+.0f}% verändert "
+            f"(Ø {f['slope_per_year']:+.1f} pro Jahr)."
+            + (
+                f" Gegen den Trend läuft: {f['exceptions'][0]['municipality']} ({f['exceptions'][0]['pct_change']:+.0f}%)."
+                if f["exceptions"] else ""
+            )
+        )
+        category, chart_type = "Entwicklung", "line"
+
+    elif f["type"] == "ranking":
+        title = f"Gemeinde-Ranking: «{f['field']}»"
+        top = f["top"][0]
+        bot = f["bottom"][0]
+        lead = (
+            f"Unter {f['n_municipalities']} Graubündner Gemeinden führt {top['municipality']} "
+            f"mit {top['value']:.0f} – {bot['municipality']} liegt mit {bot['value']:.0f} am Ende."
+            + (f" Faktor {f['spread_ratio']:.1f}× zwischen Spitze und Schluss." if f.get("spread_ratio") else "")
+        )
+        category, chart_type = "Gemeinden", "bar"
+
+    else:
+        return {}
+
+    return {
+        "id": story_id,
+        "category": category,
+        "title": title,
+        "lead": lead,
+        "chartTitle": f['field'],
+        "chartSubtitle": f"Datensatz: {f['dataset']} · data.gr.ch",
+        "chartType": chart_type,
+        "apiDatasetId": f["dataset"],
+        "fallbackData": {
+            "labels": [],
+            "values": [],
+            "unit": "",
+            "year": f.get("year") or f.get("year_end"),
+        },
+        "keyFacts": [],
+        "analysis": [format_finding(f)],
+        "source": f"data.gr.ch – {f['dataset']}",
+        "_agent_finding": f,
+    }
+
+
+# ─────────────────────────────────────────────
 # Main Agent
 # ─────────────────────────────────────────────
 
@@ -570,6 +712,16 @@ def main():
         help="Nur Datensätze auflisten, keine Analyse",
     )
     parser.add_argument(
+        "--discover-stories",
+        action="store_true",
+        help="Dataset-IDs für die 7 Datenstory-Website-Geschichten suchen",
+    )
+    parser.add_argument(
+        "--export-stories",
+        action="store_true",
+        help="Findings als website-kompatible STORIES-JSON-Objekte ausgeben",
+    )
+    parser.add_argument(
         "--output",
         choices=["markdown", "json"],
         default="markdown",
@@ -578,6 +730,15 @@ def main():
     args = parser.parse_args()
 
     client = DataGRClient()
+
+    if args.discover_stories:
+        story_datasets = discover_datasets_for_stories(client)
+        print()
+        if args.output == "json":
+            print(json.dumps(story_datasets, ensure_ascii=False, indent=2))
+        else:
+            print(format_story_patch(story_datasets))
+        return
 
     if args.list_datasets:
         datasets = client.list_datasets(limit=200)
@@ -606,6 +767,12 @@ def main():
     findings = agent.run()
 
     print("\n" + "=" * 60 + "\n")
+
+    if args.export_stories:
+        stories = [finding_to_story(f) for f in findings if finding_to_story(f)]
+        print(json.dumps(stories, ensure_ascii=False, indent=2, default=str))
+        print(f"\n// {len(stories)} Story-Objekte – direkt in STORIES[] von app.js einfügbar")
+        return
 
     if args.output == "json":
         print(json.dumps(findings, ensure_ascii=False, indent=2, default=str))
