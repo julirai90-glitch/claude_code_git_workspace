@@ -441,23 +441,26 @@ const STORIES = [
     category: 'Wirtschaft',
     title: 'Was Graubünden exportiert: die wichtigsten Waren',
     lead: 'Graubünden ist kein klassischer Industriekanton — und dennoch exportiert der Bergkanton für mehrere Milliarden Franken im Jahr. Pharmaprodukte, Spezialmaschinen und Lebensmittel führen das Ranking an. Eine überraschende Exportstruktur.',
-    chartTitle: 'Exporte Graubünden nach Warengruppe 2023',
-    chartSubtitle: 'Exportwert in Mio. CHF nach Produktgruppen · Statistik Graubünden (dvs_awt_econ_20250702)',
-    chartType: 'bar',
-    apiDatasetId: 'dvs_awt_econ_20250702',
-    apiQuery: {
-      select: 'cpa_section,SUM(tot1_chf) as total',
-      group_by: 'cpa_section',
-      order_by: 'total DESC',
-      limit: '10',
-      refine: 'knt:GR'
+    chartTitle: 'Exporte Graubünden nach Warengruppe 2024',
+    chartSubtitle: 'Top-10-Produktgruppen, Exportwert in Mio. CHF · BFS/EZV 2024',
+    chartType: 'hbar',
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
+    staticData: {
+      labels: ['Chemische Erzeugnisse','Maschinen','EDV & Elektronik','Diverses','Elektrogeräte','Pharmazeutika','Kunststoff & Gummi','Metallerzeugnisse','Papier & Pappe','Nahrungsmittel'],
+      values: [764, 587, 190, 188, 113, 111, 95, 71, 67, 58],
+      unit: 'Mio. CHF'
     },
-    parseData: 'parseExports',
-    keyFacts: [],
+    keyFacts: [
+      { number: '4\'945', label: 'Mio. CHF Exporte 2024', context: 'Gesamte Warenexporte Kanton Graubünden 2024' },
+      { number: '764', label: 'Mio. CHF Chemie', context: 'Grösste Einzelkategorie, vor Maschinen (587 Mio.) und EDV/Elektronik (190 Mio.)' },
+      { number: '98 %', label: 'Hergestellte Waren', context: '98 Prozent der GR-Exporte entfallen auf Sektion C (Verarbeitendes Gewerbe)' }
+    ],
     analysis: [
-      'Der Pharmasektor macht über 40 Prozent aller kantonalen Warenexporte aus, beschäftigt dabei aber nur wenige hundert Personen direkt im Kanton. Wenige grosse Industrieunternehmen aus den Bereichen Pharma und Maschinenbau generieren den grössten Teil der Exporterlöse.',
-      'Die Nahrungsmittelexporte bilden eine weitere Exportkategorie. Bündnerfleisch, Bündner Bergkäse und Weine aus der Bündner Herrschaft (Maienfeld, Malans) werden in der Deutschschweiz und im angrenzenden Ausland abgesetzt. Die Nahrungsmittelexporte machen einen zweistelligen Prozentanteil der kantonalen Gesamtexporte aus.',
-      'Die Exportstruktur Graubündens teilt sich auf in hochpreisige Nischenprodukte mit internationaler Reichweite (Pharma, Maschinen) und regionale Qualitätserzeugnisse für den inländischen und grenznahen Markt (Lebensmittel, Wein). Der gesamte Exportwert des Kantons beträgt rund 4,5 Milliarden Franken pro Jahr.'
+      'Die Grafik zeigt die zehn grössten Exportkategorien des Kantons Graubünden im Jahr 2024 (Warenexporte gemäss Aussenhandelsstatistik EZV). Chemische Erzeugnisse führen mit 764 Mio. CHF, gefolgt von Maschinen (587 Mio.) und EDV/Elektronikgeräten (190 Mio.).',
+      'Pharmazeutische Erzeugnisse (CPA 21) kommen mit 111 Mio. CHF auf Rang 6. Zusammen mit Chemie (CPA 20) erreichen die beiden Branchen rund 875 Mio. CHF, was 18 Prozent der Gesamtexporte entspricht. Nahrungsmittel belegen mit 58 Mio. CHF Rang 10.',
+      'Insgesamt exportierte der Kanton Graubünden 2024 Waren im Wert von rund 4,95 Milliarden Franken. 98 Prozent davon entfallen auf die Sektion «Hergestellte Waren» (CPA C). Die Daten stammen aus der Aussenhandelsstatistik der Eidgenössischen Zollverwaltung.'
     ],
     source: 'Eidgenössische Zollverwaltung, Exportstatistik; Statistik Graubünden 2023',
     linkedinPost: 'Graubünden exportiert für 4,5 Milliarden Franken pro Jahr.\n\nÜberrascht? Viele sind es.\n\nDas Bergkanton-Image täuscht: Einige wenige Industrie- und Pharmafirmen exportieren für den ganzen Kanton.\n\nDie Top-Kategorien:\n→ Pharma & Chemie: 1,84 Mrd. CHF (41 %)\n→ Maschinen & Anlagen: 920 Mio. CHF\n→ Nahrungsmittel (inkl. Bündnerfleisch): 680 Mio. CHF\n\nBesonders interessant: Die Nahrungsmittelexporte sind nicht nur Handelsvolumen. Bündnerfleisch und Bergkäse sind Markenbotschafter — sie stärken das Tourismusimage des Kantons.\n\nDie Lektion: Auch ein Bergkanton ohne grossen Industriegürtel kann relevante Exportvolumen aufbauen — mit Spezialisierung und Qualität.\n\nStory 12, Woche 3 «Wirtschaft» der Serie «Graubünden in Zahlen». #Graubünden #Datenjournalismus #Wirtschaft',
@@ -1088,6 +1091,32 @@ function buildChart(story, data) {
             ticks: { font: baseFont, color: MUTED },
             beginAtZero: true
           }
+        }
+      }
+    });
+    return;
+  }
+
+  // ---- HORIZONTAL BAR ----
+  if (type === 'hbar') {
+    const barColors = (d.labels || []).map((_, i) => {
+      const opacity = Math.max(0.35, 1 - i * 0.07);
+      return 'rgba(181,0,30,' + opacity + ')';
+    });
+    activeChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: d.labels,
+        datasets: [{ label: d.unit, data: d.values, backgroundColor: barColors, borderRadius: 3, borderSkipped: false }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: tooltipCfg },
+        scales: {
+          x: { grid: { color: GRID }, ticks: { font: baseFont, color: MUTED }, beginAtZero: true },
+          y: { grid: { display: false }, ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 12 }, color: '#161616' } }
         }
       }
     });
