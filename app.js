@@ -52,34 +52,59 @@ const STORIES = [
   // ── WOCHE 1: BEVÖLKERUNG ─────────────────────────────────
 
   {
-    id: 'gemeinden-top10',
+    id: 'chur-60-gemeinden',
     week: 1,
     day: 1,
     publishDate: fmtDate(workdayDate(1, 1)),
     category: 'Bevölkerung',
-    title: 'Wer wohnt wo? Die 10 grössten Gemeinden Graubündens',
-    lead: 'Chur dominiert als einzige grössere Stadt, doch das Bild dahinter überrascht: Von Davos bis Domat/Ems reihen sich sehr unterschiedliche Gemeinden. Die Bevölkerungsverteilung spiegelt Graubündens topografische Eigenheiten – Täler, Pässe und Höhenstufen prägen, wer wo lebt.',
-    chartTitle: 'Bevölkerung der 10 grössten Gemeinden',
-    chartSubtitle: 'Einwohnerinnen und Einwohner, Stand 2023 · Statistik Graubünden (dvs_awt_soci_202502111)',
-    chartType: 'bar',
-    apiDatasetId: 'dvs_awt_soci_202502111',
-    apiQuery: {
-      select: 'gemeinde,SUM(anzahl_personen) as total',
-      group_by: 'gemeinde',
-      order_by: 'total DESC',
-      limit: '10',
-      refine: 'jahr:2023'
+    title: 'Eine Stadt, 60 Gemeinden — Churs verborgene Dimension',
+    lead: 'Für Schweizer Verhältnisse ist Chur eine mittelgrosse Stadt — im Vergleich der 26 Kantonshauptorte liegt sie eher im oberen Mittelfeld. Aber verglichen mit dem Rest Graubündens ist sie ein Koloss: Mit 39\'177 Einwohnerinnen und Einwohnern ist die Kantonshauptstadt bevölkerungsmässig so gross wie die 60 kleinsten Bündner Gemeinden zusammen.',
+    chartTitle: 'Chur vs. die 60 kleinsten Bündner Gemeinden',
+    chartSubtitle: 'Bevölkerung 2024 · Statistik Graubünden (dvs_awt_soci_20250507) · Hover für Gemeindenamen',
+    chartType: 'stacked',
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
+    staticData: {
+      chur: 39177,
+      total: 39125,
+      gap: 52,
+      segments: [
+        {name:'Rongellen',pop:59},{name:'Ferrera',pop:76},{name:'Buseno',pop:91},
+        {name:'Santa Maria in Calanca',pop:113},{name:'Tschappina',pop:146},{name:'Sufers',pop:147},
+        {name:'Urmein',pop:163},{name:'Rossa',pop:168},{name:'Avers',pop:169},
+        {name:'Madulain',pop:196},{name:'Furna',pop:203},{name:'Calanca',pop:204},
+        {name:'Schmitten (GR)',pop:205},{name:'Conters im Prättigau',pop:224},{name:'Castaneda',pop:254},
+        {name:'Flerden',pop:255},{name:'Rothenbrunnen',pop:304},{name:'Tschiertschen-Praden',pop:309},
+        {name:'Soazza',pop:324},{name:'Medel (Lucmagn)',pop:328},{name:'Fürstenau',pop:353},
+        {name:'Muntogna da Schons',pop:368},{name:'Zillis-Reischen',pop:426},{name:'Lantsch/Lenz',pop:518},
+        {name:'Masein',pop:531},{name:'Rheinwald',pop:570},{name:'Schluein',pop:616},
+        {name:'Bever',pop:618},{name:'Fideris',pop:626},{name:'Falera',pop:635},
+        {name:'Sils im Engadin/Segl',pop:708},{name:'S-chanf',pop:713},{name:'Cama',pop:720},
+        {name:'Samnaun',pop:750},{name:'La Punt Chamues-ch',pop:750},{name:'Sagogn',pop:769},
+        {name:'Valsot',pop:801},{name:'Scharans',pop:836},{name:'Lostallo',pop:866},
+        {name:'Fläsch',pop:879},{name:'Bergün Filisur',pop:898},{name:'Küblis',pop:910},
+        {name:'Andeer',pop:923},{name:'Vals',pop:958},{name:'San Vittore',pop:961},
+        {name:'Jenins',pop:964},{name:'Safiental',pop:964},{name:'Sils im Domleschg',pop:976},
+        {name:'Sumvitg',pop:1063},{name:'Brusio',pop:1099},{name:'Silvaplana',pop:1124},
+        {name:'Trun',pop:1141},{name:'Obersaxen Mundaun',pop:1160},{name:'Jenaz',pop:1164},
+        {name:'Tujetsch',pop:1199},{name:'Tamins',pop:1223},{name:'Zuoz',pop:1224},
+        {name:'Albula/Alvra',pop:1354},{name:'Mesocco',pop:1414},{name:'Celerina/Schlarigna',pop:1415}
+      ]
     },
-    parseData: 'parseTopMunicipalities',
-    keyFacts: [],
-    analysis: [
-      'Chur ist mit über 40\'000 Einwohnerinnen und Einwohnern die grösste Gemeinde Graubündens. Damit lebt rund jeder fünfte Bündner in der Kantonshauptstadt — in einem Kanton mit einer Gesamtfläche von rund 7\'105 km². Chur liegt am Schnittpunkt mehrerer grosser Täler im Churer Rheintal.',
-      'Hinter Chur folgt Davos mit rund 11\'700 Einwohnern als zweitgrösste Gemeinde. Der Abstand zwischen Chur und Davos beträgt damit fast 30\'000 Einwohner. Davos verfügt über eine ausgeprägte Hotelinfrastruktur sowie internationale Kongress- und Klinikeinrichtungen. Die übrigen Top-10-Gemeinden liegen zwischen rund 6\'000 und 10\'000 Einwohnern.',
-      'Die Zahl der Gemeinden in Graubünden hat sich durch Fusionen stark verändert: Von über 200 im Jahr 2000 auf rund 100 heute. Die 10 grössten Gemeinden des Kantons vereinen zusammen etwa die Hälfte der gesamten Kantonsbevölkerung.'
+    keyFacts: [
+      { number: "39'177", label: 'Einwohner Chur',  context: 'Bevölkerung 2024, alle Nationalitäten' },
+      { number: '60',     label: 'Gemeinden',        context: 'kleinste Bündner Gemeinden zusammen' },
+      { number: '52',     label: 'Personen Lücke',   context: 'Differenz zwischen Chur und den 60 Gemeinden' }
     ],
-    source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023',
-    linkedinPost: 'Chur, Davos, Landquart — wissen Sie, wer danach kommt?\n\nGraubünden ist flächenmässig der grösste Kanton der Schweiz: 7\'105 km². Aber er hat gerade mal 200\'000 Einwohnerinnen und Einwohner.\n\nDas ist weniger als der Kanton Schaffhausen — in 13-facher Fläche.\n\nUnsere neue Datenstory zeigt: Die 10 grössten Gemeinden illustrieren, wie der Kanton tickt. Chur allein beherbergt jeden 5. Bündner. Dahinter folgen Tourismusorte wie Davos und Domat/Ems als Industriegemeinde.\n\n3 Fakten, die überraschen:\n→ 20 % der Kantonsbevölkerung wohnt in Chur\n→ Seit 2000 sank die Zahl der Gemeinden von 212 auf rund 100 (Fusionen)\n→ Dichte: nur 28 Einwohner pro km² — niedrigstes in der Schweiz\n\nDas ist Ausgangspunkt unserer Datenstory-Serie «Graubünden in Zahlen». 20 Geschichten, 4 Wochen, 1 Kanton.\n\n#Graubünden #Datenjournalismus #Bevölkerung',
-    wordpressHtml: '<h2>Wer wohnt wo? Die 10 grössten Gemeinden Graubündens</h2><p class="intro">Chur dominiert als einzige grössere Stadt, doch das Bild dahinter überrascht: Von Davos bis Domat/Ems reihen sich sehr unterschiedliche Gemeinden. Die Bevölkerungsverteilung spiegelt Graubündens topografische Eigenheiten – Täler, Pässe und Höhenstufen prägen, wer wo lebt.</p><p>Chur ist das unbestrittene Zentrum Graubündens. Mit über 40\'000 Einwohnerinnen und Einwohnern lebt dort jeder fünfte Bündner — in einem Kanton, der flächenmässig so gross ist wie Mallorca. Die Konzentrierung in der Kantonshauptstadt ist kein Zufall: Chur liegt am Schnittpunkt der wichtigsten Täler und ist seit der Römerzeit Verwaltungs- und Handelszentrum.</p><p>Hinter Chur klafft eine grosse Lücke. Davos als zweitgrösste Gemeinde hat nur rund 11\'700 Einwohner — und verdankt seine Grösse vor allem dem Tourismus. Ohne Hotels, Kliniken und internationale Kongresse wäre Davos deutlich kleiner. Ähnliches gilt für viele Bündner Gemeinden: Tourismus ist der eigentliche Bevölkerungsmotor.</p><p>Die Kleinheit der meisten Gemeinden hat politische Konsequenzen. Graubünden hatte noch 2016 über 200 Gemeinden — heute sind es nach zahlreichen Fusionen noch rund 100. Der Trend hält an: Kleine Gemeinden können Schule, Wasserversorgung und Verwaltung kaum mehr allein finanzieren. Die Gemeindefusionen sind weniger Wunsch als Notwendigkeit.</p><p><em>Quelle: Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023</em></p>'
+    analysis: [
+      'Chur ist mit 39\'177 Einwohnerinnen und Einwohnern (Stand 2024) die grösste Gemeinde Graubündens — und gleichzeitig die einzige Stadt des Kantons. Der Abstand zur zweitgrössten Gemeinde Davos beträgt fast 28\'000 Personen. Im Vergleich der 26 Schweizer Hauptorte liegt Chur im oberen Mittelfeld — gemessen an Graubünden selbst aber ist sie ein Ausnahmefall.',
+      'Die 60 kleinsten Gemeinden des Kantons — von Rongellen mit 59 Personen bis Celerina/Schlarigna mit 1\'415 — summieren sich auf 39\'125 Einwohnerinnen und Einwohner. Die Lücke zu Chur beträgt gerade einmal 52 Personen. Darunter sind bekannte Namen wie Sils im Engadin, Silvaplana, Samnaun oder Vals — Orte mit touristischer Bekanntheit, die bevölkerungsmässig verschwindend klein sind.',
+      'Das hat strukturelle Folgen: Chur konzentriert Bildung, Gesundheitsversorgung, Verwaltung und Kulturangebote des Kantons. Viele Dienste, die anderswo auf mehrere Städte verteilt sind, sind in Graubünden ausschliesslich in Chur anzutreffen. Der halbe Kanton — bevölkerungsmässig — passt in eine einzige Stadt.'
+    ],
+    source: 'Kanton Graubünden, DVS/AWT: Permanente Bevölkerung nach Gemeinde und Nationalität (dvs_awt_soci_20250507), Stand 2024',
+    linkedinPost: '',
+    wordpressHtml: ''
   },
 
   {
@@ -991,6 +1016,86 @@ function buildChart(story, data) {
     return;
   }
 
+  // ---- STACKED (Chur vs. 60 Gemeinden) ----
+  if (type === 'stacked') {
+    // Gradient color function: blue → teal → green → orange → red
+    function stackColor(i, n) {
+      const stops = [
+        [37,99,235],[6,182,212],[16,185,129],[234,179,8],[249,115,22],[220,38,38]
+      ];
+      const t = i / Math.max(n - 1, 1);
+      const seg = t * (stops.length - 1);
+      const si = Math.floor(seg), f = seg - si;
+      const a = stops[Math.min(si, stops.length-1)];
+      const b = stops[Math.min(si+1, stops.length-1)];
+      return 'rgb(' + Math.round(a[0]+(b[0]-a[0])*f) + ',' +
+                      Math.round(a[1]+(b[1]-a[1])*f) + ',' +
+                      Math.round(a[2]+(b[2]-a[2])*f) + ')';
+    }
+
+    const segs = d.segments || [];
+    const datasets = [{
+      label: 'Chur',
+      data: [d.chur, null],
+      backgroundColor: '#1E3A5F',
+      borderRadius: 3,
+      borderSkipped: false
+    }];
+    segs.forEach(function(seg, i) {
+      datasets.push({
+        label: seg.name,
+        data: [null, seg.pop],
+        backgroundColor: stackColor(i, segs.length),
+        borderWidth: 0,
+        borderSkipped: false
+      });
+    });
+
+    activeChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Chur', '60 Gemeinden (kumuliert)'],
+        datasets: datasets
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#161616',
+            titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+            bodyFont:  { family: "'Inter', system-ui, sans-serif", size: 12 },
+            padding: 12,
+            callbacks: {
+              label: function(ctx) {
+                const v = ctx.parsed.x;
+                if (v == null) return null;
+                return '  ' + ctx.dataset.label + ': ' + v.toLocaleString('de-CH') + ' Einw.';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            grid: { color: GRID },
+            ticks: { font: baseFont, color: MUTED, callback: function(v) { return (v/1000).toFixed(0) + 'k'; } },
+            beginAtZero: true,
+            max: Math.ceil(d.chur * 1.05 / 1000) * 1000
+          },
+          y: {
+            stacked: true,
+            grid: { display: false },
+            ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' }, color: '#161616' }
+          }
+        }
+      }
+    });
+    return;
+  }
+
   // ---- LINE ----
   if (type === 'line') {
     activeChart = new Chart(ctx, {
@@ -1104,7 +1209,7 @@ function renderCalendar() {
     html += '</div></div>';
   }
 
-  strip.innerHTML = html;
+  strip.innerHTML = '<div class="calendar-inner">' + html + '</div>';
 
   // Attach click handlers
   strip.querySelectorAll('.cal-day').forEach(function(btn) {
@@ -1209,11 +1314,15 @@ function renderStory(index) {
   // Source line
   setEl('story-source', 'Quelle: ' + s.source);
 
-  // 2. Build chart (shows loading state until live data arrives)
-  buildChart(s, null);
-
-  // 3. Set badge to loading initially
-  setDataBadge('loading', s.apiDatasetId ? 'Lade Daten von data.gr.ch…' : 'Keine Live-Daten verfügbar');
+  // 2. Build chart — static data or live fetch
+  if (s.staticData) {
+    buildChart(s, s.staticData);
+    setDataBadge('live', 'Daten: Statistik Graubünden 2024');
+  } else {
+    buildChart(s, null);
+    // 3. Set badge to loading initially
+    setDataBadge('loading', s.apiDatasetId ? 'Lade Daten von data.gr.ch…' : 'Keine Live-Daten verfügbar');
+  }
 
   // 4. Fill export panel
   const liEl = document.getElementById('linkedin-output');
