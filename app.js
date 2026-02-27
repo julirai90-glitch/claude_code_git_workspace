@@ -769,12 +769,18 @@ function parseAgeStructure(records) {
 
 function parseBirths(records) {
   if (!records || !records.length) return null;
+  // Extract 4-digit year from ISO datetime strings like "1981-01-01T00:00:00+00:00"
+  const toYear = function(v) {
+    const s = String(v);
+    const m = s.match(/^(\d{4})/);
+    return m ? m[1] : s;
+  };
   const sorted = [...records].sort((a, b) => {
     const ya = detectValue(a, ['jahr', 'onn', 'year']);
     const yb = detectValue(b, ['jahr', 'onn', 'year']);
-    return String(ya).localeCompare(String(yb));
+    return toYear(ya).localeCompare(toYear(yb));
   });
-  const labels = sorted.map(r => String(detectLabel(r, ['jahr', 'onn', 'year'])));
+  const labels = sorted.map(r => toYear(detectLabel(r, ['jahr', 'onn', 'year'])));
   const values = sorted.map(r => detectValue(r, ['total', 'lebendgeburt', 'naschientschas_vivas', 'geburten']));
   if (labels.some(l => !l) || values.some(v => v === null)) return null;
   return { labels, values, unit: 'Geburten', year: new Date().getFullYear() };
@@ -782,12 +788,13 @@ function parseBirths(records) {
 
 function parseDemographicBalance(records) {
   if (!records || !records.length) return null;
+  const toYear = function(v) { const m = String(v).match(/^(\d{4})/); return m ? m[1] : String(v); };
   const sorted = [...records].sort((a, b) => {
     const ya = detectLabel(a, ['jahr', 'onn', 'year']);
     const yb = detectLabel(b, ['jahr', 'onn', 'year']);
-    return String(ya).localeCompare(String(yb));
+    return toYear(ya).localeCompare(toYear(yb));
   });
-  const labels = sorted.map(r => String(detectLabel(r, ['jahr', 'onn', 'year'])));
+  const labels = sorted.map(r => toYear(detectLabel(r, ['jahr', 'onn', 'year'])));
   const births = sorted.map(r => detectValue(r, ['births', 'lebendgeburt', 'naschientschas_vivas']) || 0);
   const deaths = sorted.map(r => detectValue(r, ['deaths', 'todesfall', 'mortoris']) || 0);
   const values = births.map((b, i) => b - deaths[i]);
@@ -810,12 +817,13 @@ function parseScenarios(records) {
 
 function parseTourismAnnual(records) {
   if (!records || !records.length) return null;
+  const toYear = function(v) { const m = String(v).match(/^(\d{4})/); return m ? m[1] : String(v); };
   const sorted = [...records].sort((a, b) => {
     const ya = detectLabel(a, ['jahr', 'onn', 'year']);
     const yb = detectLabel(b, ['jahr', 'onn', 'year']);
-    return String(ya).localeCompare(String(yb));
+    return toYear(ya).localeCompare(toYear(yb));
   });
-  const labels = sorted.map(r => String(detectLabel(r, ['jahr', 'onn', 'year'])));
+  const labels = sorted.map(r => toYear(detectLabel(r, ['jahr', 'onn', 'year'])));
   const values = sorted.map(r => {
     const v = detectValue(r, ['total', 'logiernachte', 'pernottaziuns', 'overnight_stays']);
     return v !== null ? +(v / 1e6).toFixed(2) : null;
@@ -1257,6 +1265,8 @@ function buildChart(story, data) {
             ticks: { font: baseFont, color: MUTED, maxRotation: 45 }
           },
           y: {
+            beginAtZero: false,
+            suggestedMin: Math.floor(Math.min(...d.values) * 0.92 / 100) * 100,
             grid: {
               color: function(gridCtx) {
                 return gridCtx.tick.value === 0 ? '#888' : GRID;
