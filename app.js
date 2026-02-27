@@ -98,9 +98,9 @@ const STORIES = [
       { number: '52',     label: 'Personen Lücke',   context: 'Differenz zwischen Chur und den 60 Gemeinden' }
     ],
     analysis: [
-      'Chur ist mit 39\'177 Einwohnerinnen und Einwohnern (Stand 2024) die grösste Gemeinde Graubündens — und gleichzeitig die einzige Stadt des Kantons. Der Abstand zur zweitgrössten Gemeinde Davos beträgt fast 28\'000 Personen. Im Vergleich der 26 Schweizer Hauptorte liegt Chur im oberen Mittelfeld — gemessen an Graubünden selbst aber ist sie ein Ausnahmefall.',
-      'Die 60 kleinsten Gemeinden des Kantons — von Rongellen mit 59 Personen bis Celerina/Schlarigna mit 1\'415 — summieren sich auf 39\'125 Einwohnerinnen und Einwohner. Die Lücke zu Chur beträgt gerade einmal 52 Personen. Darunter sind bekannte Namen wie Sils im Engadin, Silvaplana, Samnaun oder Vals — Orte mit touristischer Bekanntheit, die bevölkerungsmässig verschwindend klein sind.',
-      'Das hat strukturelle Folgen: Chur konzentriert Bildung, Gesundheitsversorgung, Verwaltung und Kulturangebote des Kantons. Viele Dienste, die anderswo auf mehrere Städte verteilt sind, sind in Graubünden ausschliesslich in Chur anzutreffen. Der halbe Kanton — bevölkerungsmässig — passt in eine einzige Stadt.'
+      'Chur zählt 2024 genau 39\'177 Einwohnerinnen und Einwohner — mehr als doppelt so viele wie Davos, die zweitgrösste Gemeinde mit rund 11\'800 Personen. Unter den 26 Schweizer Kantonshauptorten liegt Chur damit im oberen Mittelfeld; innerhalb Graubündens aber ist der Abstand zur nächstgrösseren Gemeinde aussergewöhnlich gross.',
+      'Addiert man die 60 kleinsten Gemeinden — von Rongellen mit 59 bis Celerina/Schlarigna mit 1\'415 Einwohnern — kommt man auf 39\'125 Personen: nahezu exakt Churs Bevölkerungszahl, Differenz 52 Personen. Diese 60 Gemeinden machen über die Hälfte aller 101 Bündner Gemeinden aus.',
+      'Was das zeigt: Graubünden ist kein Kanton mit mehreren annähernd gleich grossen Zentren, sondern einer mit einer dominanten Stadt und sehr vielen kleinen Gemeinden. 59 der 101 Gemeinden zählen weniger als 1\'400 Einwohnerinnen und Einwohner — für sich allein eine bescheidene Zahl, zusammen aber das Gewicht einer Kantonshauptstadt.'
     ],
     source: 'Kanton Graubünden, DVS/AWT: Permanente Bevölkerung nach Gemeinde und Nationalität (dvs_awt_soci_20250507), Stand 2024',
     linkedinPost: '',
