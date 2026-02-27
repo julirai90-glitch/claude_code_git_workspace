@@ -369,21 +369,30 @@ const STORIES = [
     day: 5,
     publishDate: fmtDate(workdayDate(2, 5)),
     category: 'Tourismus',
-    title: 'Woher kommen die Gäste? Das internationale Profil Graubündens',
-    lead: 'Schweizer:innen sind die wichtigsten Gäste — aber der internationale Anteil überrascht. Deutsche, Briten und Nordeuropäer lieben Graubünden. Asiatische Märkte wachsen. Ein Profil, das zeigt, wie global das «Bergkanton-Produkt» vermarktet wird.',
-    chartTitle: 'Logiernächte nach Gästeherkunft 2023',
-    chartSubtitle: 'Anteil der Herkunftsländer an allen Hotelübernachtungen, Kanton Graubünden',
+    title: 'Woher kommen die Gäste? Herkunft der Hotelgäste in Graubünden 2024',
+    lead: '64 Prozent der Hotelübernachtungen in Graubünden entfallen auf Gäste aus der Schweiz. Deutschland ist mit 14 Prozent der grösste ausländische Quellmarkt. Insgesamt reisen Gäste aus 241 Ländern an.',
+    chartTitle: 'Hotelübernachtungen nach Herkunftsland 2024',
+    chartSubtitle: 'Anteil an allen Logiernächten · Tourismusregion Graubünden · BFS HESTA 2024',
     chartType: 'doughnut',
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    keyFacts: [],
-    analysis: [
-      'Der grösste Anteil der Logiernächte in Graubünden entfällt auf Gäste aus der Schweiz. Rund 48 Prozent aller Hotelübernachtungen werden von Inlandgästen gebucht. In der COVID-Pandemie 2020 stieg der Inlandanteil vorübergehend auf über 60 Prozent, weil ausländische Gäste weitgehend ausblieben.',
-      'Deutschland ist mit rund 16 Prozent der wichtigste ausländische Quellmarkt. Grossbritannien und Skandinavien folgen auf den nächsten Rängen. Diese Märkte sind besonders stark in hochpreisigen Destinationen wie St. Moritz und Davos vertreten.',
-      'Gäste aus asiatischen Ländern machen einen einstelligen Prozentanteil der Logiernächte aus. China und Südasien verzeichneten nach dem Ende der pandemiebedingten Reisebeschränkungen ab 2022 wieder steigende Buchungszahlen. Der Anteil dieser Märkte an den Gesamtlogiernächten liegt unter dem schweizerischen Durchschnitt für alpine Destinationen.'
+    staticData: {
+      labels: ['Schweiz','Deutschland','Ver. Königreich','USA','Niederlande','Italien','Belgien','Frankreich','Österreich','Übrige Länder'],
+      values: [63.7, 14.0, 2.9, 2.7, 1.9, 1.9, 1.9, 1.1, 0.9, 9.0],
+      unit: '%'
+    },
+    keyFacts: [
+      { number: '64 %', label: 'Inlandgäste', context: 'Anteil Schweizer Gäste an allen Hotelübernachtungen 2024' },
+      { number: '14 %', label: 'Deutschland', context: 'Grösster ausländischer Quellmarkt, gefolgt von UK (2.9 %) und USA (2.7 %)' },
+      { number: '241', label: 'Herkunftsländer', context: 'Aus 241 verschiedenen Ländern reisten 2024 Gäste in die Tourismusregion Graubünden' }
     ],
-    source: 'Graubünden Ferien, Gästestrukturanalyse 2023; Bundesamt für Statistik HESTA',
+    analysis: [
+      'Im Jahr 2024 entfielen 63,7 Prozent aller Hotelübernachtungen in der Tourismusregion Graubünden auf Gäste aus der Schweiz. Deutschland folgt mit 14,0 Prozent als klar grösstem ausländischen Quellmarkt. Alle weiteren Einzelländer liegen unter 3 Prozent.',
+      'Das Vereinigte Königreich (2,9 %), die USA (2,7 %), Niederlande (1,9 %), Italien (1,9 %) und Belgien (1,9 %) bilden die nächste Gruppe. Frankreich (1,1 %) und Österreich (0,9 %) folgen. Zusammen kommen 9 Prozent der Nächte aus über 230 weiteren Ländern.',
+      'Quelle ist die HESTA-Statistik des Bundesamts für Statistik (BFS), die Ankünfte und Logiernächte nach Herkunftsland für alle Schweizer Tourismusregionen erfasst. Nicht enthalten sind Parahotellerie-Übernachtungen (Ferienwohnungen, Camping etc.).'
+    ],
+    source: 'Bundesamt für Statistik, HESTA — Ankünfte und Logiernächte nach Herkunftsland 2024',
     linkedinPost: 'Wer übernachtet eigentlich in Graubünden?\n\n48 % Schweizer, 16 % Deutsche, 9 % Briten — die Herkunftsverteilung ist weniger exotisch als man denkt.\n\nAber dahinter stecken interessante Trends:\n→ Asiatische Märkte wachsen um +22 % ggü. Vorjahr\n→ USA-Gäste kehren nach COVID stark zurück\n→ Skandinavier lieben St. Moritz und Klosters besonders\n\nDas internationale Profil von Graubünden ist ein Spiegel der Marke: Englischsprachige Welt, deutschsprachiger Raum, und ein wachsendes Segment Premium-Asiaten.\n\nDie Herausforderung: Schweizer Gäste (48 %) sind der stabilste Markt — aber auch preissensibel und haben viele Alternativen.\n\nInternationale Gäste geben mehr aus, kommen weniger oft — aber sie sind wachstumsentscheidend.\n\nDas Gästeprofil: Story 10 unserer Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Tourismus',
     wordpressHtml: '<h2>Woher kommen die Gäste? Das internationale Profil Graubündens</h2><p class="intro">Schweizer:innen sind die wichtigsten Gäste — aber der internationale Anteil überrascht. Deutsche, Briten und Nordeuropäer lieben Graubünden. Asiatische Märkte wachsen. Ein Profil, das zeigt, wie global das «Bergkanton-Produkt» vermarktet wird.</p><p>Der wichtigste Quellmarkt für Graubünden ist und bleibt die Schweiz. Fast die Hälfte aller Logiernächte entfällt auf Gäste aus dem Inland. Das ist eine Stärke — Inlandstourismus ist krisenresistenter als Fernreisetourismus — aber auch eine Schwäche: Die Abhängigkeit von einem einzigen Markt macht den Kanton anfällig für Konjunkturschwankungen im Inland.</p><p>Deutschland ist mit 16 Prozent der wichtigste ausländische Quellmarkt. Die kulturelle und sprachliche Nähe, kombiniert mit der guten Erreichbarkeit per Bahn (ICE-Direktverbindungen), macht Graubünden für Deutsche attraktiv. Briten und Skandinavier folgen — Gruppen, die historisch mit den exklusiveren Destinationen wie St. Moritz und Davos verbunden sind.</p><p>Asiatische Märkte wachsen, bleiben aber bescheiden. China und Südasien haben nach COVID-19 zurückgefunden, und das Interesse am Alpentourismus ist real. Aber für Graubünden sind asiatische Gäste noch ein Nischensegment. Ob sich das ändert, hängt auch von Direktflugverbindungen und multilingualen Angeboten ab — beides entwickelt sich langsam.</p><p><em>Quelle: Graubünden Ferien, Gästestrukturanalyse 2023; Bundesamt für Statistik HESTA</em></p>'
   },
