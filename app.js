@@ -440,31 +440,31 @@ const STORIES = [
     publishDate: fmtDate(workdayDate(3, 2)),
     category: 'Wirtschaft',
     title: 'Was Graubünden exportiert: die wichtigsten Waren',
-    lead: 'Graubünden ist kein klassischer Industriekanton — und dennoch exportiert der Bergkanton für mehrere Milliarden Franken im Jahr. Pharmaprodukte, Spezialmaschinen und Lebensmittel führen das Ranking an. Eine überraschende Exportstruktur.',
+    lead: 'Graubünden ist kein klassischer Industriekanton — und dennoch exportiert der Bergkanton für über 5 Milliarden Franken im Jahr. Chemische Erzeugnisse und Maschinen führen das Ranking an. Eine überraschende Exportstruktur für einen Bergkanton.',
     chartTitle: 'Exporte Graubünden nach Warengruppe 2024',
-    chartSubtitle: 'Top-10-Produktgruppen, Exportwert in Mio. CHF · BFS/EZV 2024',
+    chartSubtitle: 'Top-10-Produktgruppen, Exportwert in Mio. CHF · EZV/data.gr.ch 2024',
     chartType: 'hbar',
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
     staticData: {
-      labels: ['Chemische Erzeugnisse','Maschinen','EDV & Elektronik','Diverses','Elektrogeräte','Pharmazeutika','Kunststoff & Gummi','Metallerzeugnisse','Papier & Pappe','Nahrungsmittel'],
-      values: [764, 587, 190, 188, 113, 111, 95, 71, 67, 58],
+      labels: ['Chemische Erzeugnisse','Maschinen','Diverses (a.n.g.)','EDV & Elektronik','Elektrogeräte','Pharmazeutika','Kunststoff & Gummi','Metallerzeugnisse','Papier & Pappe','Nahrungsmittel'],
+      values: [764, 587, 191, 190, 113, 111, 95, 71, 67, 58],
       unit: 'Mio. CHF'
     },
     keyFacts: [
-      { number: '4\'945', label: 'Mio. CHF Exporte 2024', context: 'Gesamte Warenexporte Kanton Graubünden 2024' },
-      { number: '764', label: 'Mio. CHF Chemie', context: 'Grösste Einzelkategorie, vor Maschinen (587 Mio.) und EDV/Elektronik (190 Mio.)' },
-      { number: '98 %', label: 'Hergestellte Waren', context: '98 Prozent der GR-Exporte entfallen auf Sektion C (Verarbeitendes Gewerbe)' }
+      { number: '5\'094', label: 'Mio. CHF Exporte 2024', context: 'Gesamte Warenexporte Kanton Graubünden 2024 (alle CPA-Sektionen)' },
+      { number: '764', label: 'Mio. CHF Chemie', context: 'Grösste Einzelkategorie, vor Maschinen (587 Mio.) und Diverses (191 Mio.)' },
+      { number: '97 %', label: 'Hergestellte Waren', context: '97 Prozent der GR-Exporte entfallen auf Sektion C (Verarbeitendes Gewerbe)' }
     ],
     analysis: [
-      'Die Grafik zeigt die zehn grössten Exportkategorien des Kantons Graubünden im Jahr 2024 (Warenexporte gemäss Aussenhandelsstatistik EZV). Chemische Erzeugnisse führen mit 764 Mio. CHF, gefolgt von Maschinen (587 Mio.) und EDV/Elektronikgeräten (190 Mio.).',
-      'Pharmazeutische Erzeugnisse (CPA 21) kommen mit 111 Mio. CHF auf Rang 6. Zusammen mit Chemie (CPA 20) erreichen die beiden Branchen rund 875 Mio. CHF, was 18 Prozent der Gesamtexporte entspricht. Nahrungsmittel belegen mit 58 Mio. CHF Rang 10.',
-      'Insgesamt exportierte der Kanton Graubünden 2024 Waren im Wert von rund 4,95 Milliarden Franken. 98 Prozent davon entfallen auf die Sektion «Hergestellte Waren» (CPA C). Die Daten stammen aus der Aussenhandelsstatistik der Eidgenössischen Zollverwaltung.'
+      'Die Grafik zeigt die zehn grössten öffentlich verfügbaren Exportkategorien des Kantons Graubünden im Jahr 2024 (Aussenhandelsstatistik EZV). Chemische Erzeugnisse führen mit 764 Mio. CHF, gefolgt von Maschinen (587 Mio.) und diversen Waren (191 Mio.).',
+      'EDV- und Elektronikgeräte (190 Mio.) sowie Elektrogeräte (113 Mio.) bilden zusammen mit den Maschinen einen Technologiecluster von rund 490 Mio. CHF. Pharmazeutische Erzeugnisse (111 Mio.) folgen auf Rang 6. Nahrungsmittel belegen mit 58 Mio. CHF Rang 10.',
+      'Der Gesamtexport Graubündens betrug 2024 rund 5,1 Milliarden Franken. Davon entfallen 97 Prozent auf die Sektion C (Hergestellte Waren). Ein Teil der Exportdaten unterliegt der Geheimhaltungspflicht und ist in der Grafik nicht ausgewiesen.'
     ],
-    source: 'Eidgenössische Zollverwaltung, Exportstatistik; Statistik Graubünden 2023',
-    linkedinPost: 'Graubünden exportiert für 4,5 Milliarden Franken pro Jahr.\n\nÜberrascht? Viele sind es.\n\nDas Bergkanton-Image täuscht: Einige wenige Industrie- und Pharmafirmen exportieren für den ganzen Kanton.\n\nDie Top-Kategorien:\n→ Pharma & Chemie: 1,84 Mrd. CHF (41 %)\n→ Maschinen & Anlagen: 920 Mio. CHF\n→ Nahrungsmittel (inkl. Bündnerfleisch): 680 Mio. CHF\n\nBesonders interessant: Die Nahrungsmittelexporte sind nicht nur Handelsvolumen. Bündnerfleisch und Bergkäse sind Markenbotschafter — sie stärken das Tourismusimage des Kantons.\n\nDie Lektion: Auch ein Bergkanton ohne grossen Industriegürtel kann relevante Exportvolumen aufbauen — mit Spezialisierung und Qualität.\n\nStory 12, Woche 3 «Wirtschaft» der Serie «Graubünden in Zahlen». #Graubünden #Datenjournalismus #Wirtschaft',
-    wordpressHtml: '<h2>Was Graubünden exportiert: die wichtigsten Waren</h2><p class="intro">Graubünden ist kein klassischer Industriekanton — und dennoch exportiert der Bergkanton für mehrere Milliarden Franken im Jahr. Pharmaprodukte, Spezialmaschinen und Lebensmittel führen das Ranking an. Eine überraschende Exportstruktur.</p><p>Graubünden als Exportkanton? Das klingt paradox, ist aber Realität. Einige wenige grosse Industrieunternehmen — darunter Pharmafirmen und Maschinenbauer — generieren den Löwenanteil der Exporterlöse. Der Pharmasektor allein macht über 40 Prozent aller kantonalen Warenexporte aus, obwohl er nur wenige hundert Beschäftigte zählt.</p><p>Weniger bekannt, aber volkswirtschaftlich bedeutsam: die Nahrungsmittelexporte. Bündnerfleisch, Bündner Bergkäse und Weine aus Maienfeld und Malans finden ihre Käufer in der Deutschschweiz und im angrenzenden Ausland. Diese Produkte exportieren nicht nur Waren, sondern auch die Marke Graubünden — und stärken indirekt den Tourismus.</p><p>Die Exportstruktur zeigt die Zweispurigkeit der Bündner Wirtschaft: Auf der einen Seite hochpreisige Nischenprodukte mit globaler Reichweite, auf der anderen Seite lokale Qualitätserzeugnisse für regionale Märkte. Diese Kombination macht Graubünden resilienter als Kantone, die auf eine einzige Industrie setzen.</p><p><em>Quelle: Eidgenössische Zollverwaltung, Exportstatistik; Statistik Graubünden 2023</em></p>'
+    source: 'Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch dvs_awt_econ_20250702',
+    linkedinPost: 'Graubünden exportiert für über 5 Milliarden Franken pro Jahr.\n\nÜberrascht? Viele sind es.\n\nDas Bergkanton-Image täuscht: Einige wenige Industrie- und Pharmafirmen exportieren für den ganzen Kanton.\n\nDie Top-Kategorien 2024:\n→ Chemische Erzeugnisse: 764 Mio. CHF\n→ Maschinen: 587 Mio. CHF\n→ EDV & Elektronik: 190 Mio. CHF\n→ Pharmazeutika: 111 Mio. CHF\n\n97 Prozent der Exporte entfallen auf «Hergestellte Waren» — also auf die Industrie, nicht den Tourismus.\n\nStory 12, Woche 3 «Wirtschaft» der Serie «Graubünden in Zahlen». #Graubünden #Datenjournalismus #Wirtschaft',
+    wordpressHtml: '<h2>Was Graubünden exportiert: die wichtigsten Waren</h2><p class="intro">Graubünden ist kein klassischer Industriekanton — und dennoch exportiert der Bergkanton für über 5 Milliarden Franken im Jahr. Chemische Erzeugnisse und Maschinen führen das Ranking an.</p><p>Graubünden als Exportkanton? Das klingt paradox, ist aber Realität. Einige wenige grosse Industrieunternehmen — darunter Chemiefirmen und Maschinenbauer — generieren den Löwenanteil der Exporterlöse. Chemische Erzeugnisse (764 Mio. CHF) führen vor Maschinen (587 Mio.). Pharmazeutische Erzeugnisse folgen mit 111 Mio. CHF auf Rang 6.</p><p>Ein wichtiger Hinweis zur Grafik: Ein Teil der Exportdaten unterliegt der statistischen Geheimhaltungspflicht (Vertraulichkeit) und erscheint nicht in der öffentlichen Auswertung. Der Gesamtexport 2024 beträgt 5,1 Milliarden Franken; die Grafik zeigt nur die öffentlich verfügbaren Kategorien.</p><p><em>Quelle: Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch 2024</em></p>'
   },
 
   {
@@ -474,28 +474,34 @@ const STORIES = [
     publishDate: fmtDate(workdayDate(3, 3)),
     category: 'Wirtschaft',
     title: "Graubündens Handelspartner: wer kauft, wer liefert",
-    lead: 'Deutschland ist sowohl Haupt-Exportziel als auch wichtigster Importlieferant Graubündens. Die Handelspartner spiegeln die geografische Einbettung des Kantons — und zeigen, wie stark die Bündner Wirtschaft mit dem europäischen Markt verflochten ist.',
-    chartTitle: 'Aussenhandel Graubünden nach Ländern 2023',
-    chartSubtitle: 'Export- und Importwert in Mio. CHF nach Handelspartnern · Statistik GR (dvs_awt_econ_202507020)',
-    chartType: 'bar',
-    apiDatasetId: 'dvs_awt_econ_202507020',
-    apiQuery: {
-      select: 'land,SUM(tot1_chf) as total',
-      group_by: 'land',
-      order_by: 'total DESC',
-      limit: '10',
-      refine: 'knt:GR'
+    lead: 'Deutschland ist sowohl grösstes Exportziel als auch wichtigster Importlieferant Graubündens. Die USA sind trotz Distanz auf Platz 2 der Exportmärkte. Ein Blick auf die Handelspartner nach Export und Import getrennt.',
+    chartTitle: 'Handelspartner Graubünden 2024: Export vs. Import',
+    chartSubtitle: 'Exportwert und Importwert in Mio. CHF nach Ländern · EZV/data.gr.ch 2024',
+    chartType: 'groupedbar',
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
+    staticData: {
+      labels: ['Deutschland','USA','China','Italien','Frankreich','Österreich','Spanien','Japan'],
+      series: [
+        { label: 'Exporte', values: [598, 374, 228, 200, 176, 92, 64, 52], color: 'rgba(181,0,30,0.80)' },
+        { label: 'Importe', values: [604, 50, 221, 335, 148, 129, 60, 72], color: 'rgba(30,58,95,0.70)' }
+      ],
+      unit: 'Mio. CHF'
     },
-    parseData: 'parseTradePartners',
-    keyFacts: [],
-    analysis: [
-      'Deutschland ist der grösste Handelspartner Graubündens sowohl auf der Export- als auch auf der Importseite. Mit einem Exportvolumen von rund 1,82 Milliarden Franken entfällt mehr als ein Drittel der kantonalen Exporte auf Deutschland. Die geografische Nähe zur deutschen Grenze über die Bodenseeregion und den Vorarlberg-Transit begünstigt diese Handelsbeziehung.',
-      'Die USA sind trotz der geografischen Distanz der zweitwichtigste Exportmarkt Graubündens. Der Pharmaexport macht den Grossteil des Handelsvolumens mit den USA aus. Europäische Länder vereinen rund 68 Prozent aller kantonalen Exporte.',
-      'Die Handelsbilanz Graubündens ist leicht negativ: Der Kanton importiert gemessen am Wert etwas mehr als er exportiert. Auf der Importseite dominieren Energie, Rohstoffe und Konsumgüter; auf der Exportseite Pharmaprodukte, Maschinen und Nahrungsmittel.'
+    keyFacts: [
+      { number: '598', label: 'Mio. CHF Exporte nach DE', context: 'Deutschland ist grösstes Exportziel Graubündens (2024)' },
+      { number: '335', label: 'Mio. CHF Importe aus IT', context: 'Italien ist zweitwichtigster Importlieferant nach Deutschland (604 Mio.)' },
+      { number: '374', label: 'Mio. CHF Exporte in USA', context: 'USA auf Rang 2 der Exportmärkte, trotz geografischer Distanz' }
     ],
-    source: 'Eidgenössische Zollverwaltung, Aussenhandelsstatistik; Statistik Graubünden 2023',
-    linkedinPost: 'Der wichtigste Handelspartner Graubündens ist Deutschland — und das gleich doppelt.\n\n→ Grösstes Exportziel: 1,82 Mrd. CHF\n→ Grösster Importlieferant\n\nFür einen Bergkanton, der oft als «Naturidyll» wahrgenommen wird, ist das eine überraschende wirtschaftliche Realität.\n\n68 % der Exporte gehen nach Europa. Die USA sind trotz Distanz auf Platz 2 — dank Pharmaindustrie.\n\n3 Erkenntnisse aus den Handelsdaten:\n→ Graubündens Wirtschaft ist stärker exportorientiert als sein Image\n→ Die Pharmaindustrie macht einen kleinen Kanton global relevant\n→ Handelsbilanz: leicht negativ — aber unproblematisch\n\nDie Daten kommen vom Eidgenössischen Zoll. Aufbereitet und erklärt in Story 13 unserer Serie.\n\n#Graubünden #Datenjournalismus #Wirtschaft',
-    wordpressHtml: '<h2>Graubündens Handelspartner: wer kauft, wer liefert</h2><p class="intro">Deutschland ist sowohl Haupt-Exportziel als auch wichtigster Importlieferant Graubündens. Die Handelspartner spiegeln die geografische Einbettung des Kantons — und zeigen, wie stark die Bündner Wirtschaft mit dem europäischen Markt verflochten ist.</p><p>Deutschland dominiert die Bündner Handelsstatistik. Als Exportziel und Importquelle ist der nördliche Nachbar unverzichtbar. Das gilt nicht nur für Graubünden, sondern für die gesamte Schweiz — doch der Bergkanton mit seiner direkten Nähe zur deutschen Grenze (Bodenseeregion, Vorarlberg-Transit) ist besonders stark verflochten.</p><p>Die USA sind trotz der geografischen Distanz der zweitwichtigste Exportmarkt — getrieben hauptsächlich vom Pharmaexport. Hochwertige Spezialprodukte findet weltweit Käufer, auch wenn die physische Distanz gross ist. Das zeigt: Im globalen Handel zählen nicht Kilometer, sondern Marktmacht und Spezialisierung.</p><p>Die Handelsbilanz Graubündens ist leicht negativ: Der Kanton importiert etwas mehr als er exportiert. Energie, Rohstoffe und Konsumgüter fliessen herein, Fertigprodukte und Nahrungsmittel hinaus. Diese Struktur ist für einen kleinen, ressourcenarmen Bergkanton typisch — und volkswirtschaftlich unproblematisch.</p><p><em>Quelle: Eidgenössische Zollverwaltung, Aussenhandelsstatistik; Statistik Graubünden 2023</em></p>'
+    analysis: [
+      'Deutschland ist sowohl grösstes Exportziel (598 Mio. CHF) als auch wichtigster Importlieferant (604 Mio. CHF) Graubündens. Die geografische Nähe und die enge Wirtschaftsverflechtung der Schweiz mit dem nördlichen Nachbarn spiegelt sich auch auf Kantonsebene.',
+      'Die USA stehen mit 374 Mio. CHF Exporten auf Rang 2 — deutlich vor China (228 Mio.) und Italien (200 Mio.). Auf der Importseite hingegen sind die USA mit 50 Mio. CHF weniger bedeutend: hier liegen Italien (335 Mio.) und Frankreich (148 Mio.) vor Österreich (129 Mio.).',
+      'Die Unterschiede zwischen Export- und Importstruktur zeigen die Spezialisierung: Graubünden exportiert vor allem in industrielle Absatzmärkte (USA, China), importiert dagegen stärker aus geografisch nahen EU-Ländern.'
+    ],
+    source: 'Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch dvs_awt_econ_202507020 (2024)',
+    linkedinPost: 'Der wichtigste Handelspartner Graubündens ist Deutschland — und das gleich doppelt.\n\n→ Grösstes Exportziel: 598 Mio. CHF\n→ Grösster Importlieferant: 604 Mio. CHF\n\nAber auf Platz 2 der Exportmärkte stehen die USA mit 374 Mio. CHF — vor China (228 Mio.) und Italien (200 Mio.).\n\nBei den Importen sieht das Bild anders aus: Italien liefert 335 Mio., Frankreich 148 Mio., Österreich 129 Mio.\n\nGraubünden exportiert in industrielle Weltmärkte, importiert aus dem geografischen Umfeld.\n\nStory 13, Woche 3 «Wirtschaft» der Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Wirtschaft',
+    wordpressHtml: '<h2>Graubündens Handelspartner: wer kauft, wer liefert</h2><p class="intro">Deutschland ist sowohl grösstes Exportziel als auch wichtigster Importlieferant Graubündens. Die USA stehen trotz Distanz auf Rang 2 der Exportmärkte.</p><p>Die Grafik trennt erstmals Export- und Importströme nach Ländern. Deutschland dominiert auf beiden Seiten: 598 Mio. CHF Exporte, 604 Mio. CHF Importe. Die geografische Nähe und die Wirtschaftsverflechtung der Schweiz mit dem nördlichen Nachbarn ist auch auf Kantonsebene sichtbar.</p><p>Auffällig: Auf der Exportseite stehen die USA (374 Mio.) vor China (228 Mio.) und Italien (200 Mio.). Auf der Importseite hingegen liegt Italien (335 Mio.) weit vorne — vor Frankreich (148 Mio.) und Österreich (129 Mio.). Die USA spielen als Importlieferant mit 50 Mio. CHF eine untergeordnete Rolle.</p><p><em>Quelle: Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch 2024</em></p>'
   },
 
   {
