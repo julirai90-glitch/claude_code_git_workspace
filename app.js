@@ -205,19 +205,23 @@ const STORIES = [
     day: 5,
     publishDate: fmtDate(workdayDate(1, 5)),
     category: 'Bevölkerung',
-    title: 'Graubünden 2055: Szenarien für einen schrumpfenden Kanton',
-    lead: 'Je nach Annahmen zu Geburten, Sterblichkeit und Zuwanderung wird Graubünden 2055 zwischen 180\'000 und 215\'000 Einwohnerinnen und Einwohner haben. Das Basis-Szenario sagt ein leichtes Wachstum voraus — aber die Unsicherheit ist gross.',
+    title: 'Bevölkerungsszenarien Graubünden bis 2055',
+    lead: 'Das Bundesamt für Statistik projiziert drei Szenarien für Graubünden: Im Referenzszenario steigt die Bevölkerung bis etwa 2044 auf rund 215\'000 und sinkt danach leicht auf 213\'100. Im hohen Szenario wächst sie auf 243\'800, im tiefen sinkt sie auf 183\'800.',
     chartTitle: 'Bevölkerungsszenarien Graubünden 2023–2055',
     chartSubtitle: 'Bevölkerungsprojektionen (Hoch, Basis, Tief) · Statistik Graubünden (dvs_awt_soci_202505121)',
-    chartType: 'line',
-    apiDatasetId: 'dvs_awt_soci_202505121',
-    apiQuery: {
-      select: 'onn,valur',
-      where: null,
-      group_by: 'onn',
-      order_by: 'onn ASC'
+    chartType: 'multiline',
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
+    staticData: {
+      labels: ['2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050','2051','2052','2053','2054','2055'],
+      series: [
+        { label: 'Hohes Szenario',       color: '#1E3A5F', dash: [4,3], values: [206740,208562,210374,212150,213889,215582,217229,218820,220337,221769,223140,224438,225684,226890,228059,229190,230287,231364,232414,233431,234420,235386,236331,237247,238143,239019,239865,240691,241488,242268,243034,243794] },
+        { label: 'Referenzszenario',      color: '#B5001E', dash: [],    values: [205993,207029,208033,208976,209854,210685,211455,212149,212764,213283,213719,214056,214338,214565,214750,214883,214970,215031,215066,215070,215042,214990,214910,214800,214671,214516,214334,214123,213889,213643,213377,213100] },
+        { label: 'Tiefes Szenario',       color: '#6B6763', dash: [4,3], values: [205259,205506,205672,205764,205788,205728,205591,205378,205079,204664,204169,203573,202921,202211,201442,200620,199767,198879,197955,197006,196027,195024,193997,192944,191875,190783,189671,188538,187389,186217,185031,183830] }
+      ],
+      unit: 'Einwohner'
     },
-    parseData: 'parseScenarios',
     keyFacts: [],
     analysis: [
       'Die Bevölkerungsszenarien des Kantons Graubünden umfassen drei Projektionen bis 2055. Das Hochszenario — mit höherer Zuwanderung und stabiler Geburtenrate — sieht Graubünden 2055 bei rund 215\'000 Einwohnern. Das Tiefszenario rechnet mit unter 185\'000. Das Basisszenario liegt bei etwa 204\'000.',
@@ -1157,27 +1161,28 @@ function buildChart(story, data) {
           {
             label: 'Graubünden',
             data: grVals,
-            backgroundColor: 'rgba(181,0,30,0.75)',
+            backgroundColor: 'rgba(181,0,30,0.80)',
             borderWidth: 0,
             borderRadius: 2,
             borderSkipped: false,
-            barPercentage: 0.9,
-            categoryPercentage: 0.85
+            barPercentage: 0.85,
+            categoryPercentage: 0.95
           },
           {
             label: 'Schweiz',
             data: chVals,
-            backgroundColor: 'rgba(30,58,95,0.75)',
+            backgroundColor: 'rgba(30,58,95,0.80)',
             borderWidth: 0,
             borderRadius: 2,
             borderSkipped: false,
-            barPercentage: 0.9,
-            categoryPercentage: 0.85
+            barPercentage: 0.85,
+            categoryPercentage: 0.95
           }
         ]
       },
       options: {
         indexAxis: 'y',
+        grouped: false,
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -1217,7 +1222,69 @@ function buildChart(story, data) {
           },
           y: {
             grid: { display: false },
-            ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 11 }, color: '#161616' }
+            ticks: {
+              font: { family: "'Inter', system-ui, sans-serif", size: 11 },
+              color: '#161616',
+              autoSkip: false
+            }
+          }
+        }
+      }
+    });
+    return;
+  }
+
+  // ---- MULTILINE ----
+  if (type === 'multiline') {
+    const datasets = (d.series || []).map(function(s) {
+      return {
+        label: s.label,
+        data: s.values,
+        borderColor: s.color,
+        backgroundColor: 'transparent',
+        borderWidth: s.dash && s.dash.length ? 1.5 : 2.5,
+        borderDash: s.dash || [],
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        tension: 0.3
+      };
+    });
+    activeChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels: d.labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true, position: 'top',
+            labels: { font: baseFont, color: '#161616', boxWidth: 24, padding: 16,
+              generateLabels: function(chart) {
+                return chart.data.datasets.map(function(ds, i) {
+                  return { text: ds.label, fillStyle: 'transparent', strokeStyle: ds.borderColor,
+                    lineWidth: 2, lineDash: ds.borderDash, datasetIndex: i, hidden: false };
+                });
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: '#161616',
+            titleFont: { ...baseFont, size: 13, weight: '600' },
+            bodyFont: baseFont,
+            padding: 12,
+            callbacks: {
+              label: function(ctx) {
+                return '  ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('de-CH');
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: GRID }, ticks: { font: baseFont, color: MUTED, maxTicksLimit: 8 } },
+          y: {
+            beginAtZero: false,
+            grid: { color: GRID },
+            ticks: { font: baseFont, color: MUTED, callback: function(v) { return (v/1000).toFixed(0) + 'k'; } }
           }
         }
       }
