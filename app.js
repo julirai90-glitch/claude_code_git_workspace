@@ -716,10 +716,14 @@ function parseTopMunicipalities(records) {
 
 function parseAgeStructure(records) {
   if (!records || !records.length) return null;
+  const ageStart = function(label) {
+    const m = String(label).match(/\d+/);
+    return m ? parseInt(m[0], 10) : 999;
+  };
   const sorted = [...records].sort((a, b) => {
     const la = detectLabel(a, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']);
     const lb = detectLabel(b, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']);
-    return String(la).localeCompare(String(lb));
+    return ageStart(la) - ageStart(lb);
   });
   const labels = sorted.map(r => detectLabel(r, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']));
   const rawVals = sorted.map(r => detectValue(r, ['total', 'anzahl_personen', 'populaziun_permanenta', 'anzahl']));
