@@ -1058,7 +1058,6 @@ function buildChart(story, data) {
         datasets: datasets
       },
       options: {
-        indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -1070,7 +1069,7 @@ function buildChart(story, data) {
             padding: 12,
             callbacks: {
               label: function(ctx) {
-                const v = ctx.parsed.x;
+                const v = ctx.parsed.y;
                 if (v == null) return null;
                 return '  ' + ctx.dataset.label + ': ' + v.toLocaleString('de-CH') + ' Einw.';
               }
@@ -1080,15 +1079,15 @@ function buildChart(story, data) {
         scales: {
           x: {
             stacked: true,
+            grid: { display: false },
+            ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' }, color: '#161616' }
+          },
+          y: {
+            stacked: true,
             grid: { color: GRID },
             ticks: { font: baseFont, color: MUTED, callback: function(v) { return (v/1000).toFixed(0) + 'k'; } },
             beginAtZero: true,
             max: Math.ceil(d.chur * 1.05 / 1000) * 1000
-          },
-          y: {
-            stacked: true,
-            grid: { display: false },
-            ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' }, color: '#161616' }
           }
         }
       }
