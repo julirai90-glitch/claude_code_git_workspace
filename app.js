@@ -405,23 +405,28 @@ const STORIES = [
     day: 1,
     publishDate: fmtDate(workdayDate(3, 1)),
     category: 'Wirtschaft',
-    title: "Grenzgänger: 12'000 Menschen pendeln täglich über die Kantonsgrenze",
-    lead: 'Jeden Morgen überqueren rund 12\'000 Grenzgängerinnen und Grenzgänger die Kantonsgrenze Graubündens — die meisten kommen aus dem benachbarten Ausland, vor allem aus Norditalien. Ohne sie käme das Gastgewerbe, der Bau und das Gesundheitswesen zum Stillstand.',
-    chartTitle: 'Grenzgänger Kanton Graubünden 1996–2024',
-    chartSubtitle: 'Anzahl Beschäftigte mit Grenzgängerbewilligung, quartalsweise · Statistik Graubünden (dvs_awt_econ_20250513)',
+    title: "Grenzgänger: Rund 10'000 Menschen mit Grenzgängerbewilligung im Kanton",
+    lead: 'Im Jahr 2025 verzeichnet der Kanton Graubünden rund 9\'700 Grenzgänger:innen pro Quartal — dreimal so viele wie 1996. Die Kurve zeigt das Wachstum über 30 Jahre, unterbrochen vom deutlichen Einbruch während der COVID-19-Pandemie 2020.',
+    chartTitle: 'Grenzgänger Kanton Graubünden 1996–2025',
+    chartSubtitle: 'Beschäftigte mit Grenzgängerbewilligung pro Quartal · BFS Grenzgängerstatistik',
     chartType: 'line',
-    apiDatasetId: 'dvs_awt_econ_20250513',
-    apiQuery: {
-      select: 'jahr,SUM(anzahl_personen) as total',
-      group_by: 'jahr',
-      order_by: 'jahr ASC'
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
+    staticData: {
+      labels: ["1996 Q1","1996 Q2","1996 Q3","1996 Q4","1997 Q1","1997 Q2","1997 Q3","1997 Q4","1998 Q1","1998 Q2","1998 Q3","1998 Q4","1999 Q1","1999 Q2","1999 Q3","1999 Q4","2000 Q1","2000 Q2","2000 Q3","2000 Q4","2001 Q1","2001 Q2","2001 Q3","2001 Q4","2002 Q1","2002 Q2","2002 Q3","2002 Q4","2003 Q1","2003 Q2","2003 Q3","2003 Q4","2004 Q1","2004 Q2","2004 Q3","2004 Q4","2005 Q1","2005 Q2","2005 Q3","2005 Q4","2006 Q1","2006 Q2","2006 Q3","2006 Q4","2007 Q1","2007 Q2","2007 Q3","2007 Q4","2008 Q1","2008 Q2","2008 Q3","2008 Q4","2009 Q1","2009 Q2","2009 Q3","2009 Q4","2010 Q1","2010 Q2","2010 Q3","2010 Q4","2011 Q1","2011 Q2","2011 Q3","2011 Q4","2012 Q1","2012 Q2","2012 Q3","2012 Q4","2013 Q1","2013 Q2","2013 Q3","2013 Q4","2014 Q1","2014 Q2","2014 Q3","2014 Q4","2015 Q1","2015 Q2","2015 Q3","2015 Q4","2016 Q1","2016 Q2","2016 Q3","2016 Q4","2017 Q1","2017 Q2","2017 Q3","2017 Q4","2018 Q1","2018 Q2","2018 Q3","2018 Q4","2019 Q1","2019 Q2","2019 Q3","2019 Q4","2020 Q1","2020 Q2","2020 Q3","2020 Q4","2021 Q1","2021 Q2","2021 Q3","2021 Q4","2022 Q1","2022 Q2","2022 Q3","2022 Q4","2023 Q1","2023 Q2","2023 Q3","2023 Q4","2024 Q1","2024 Q2","2024 Q3","2024 Q4","2025 Q1","2025 Q2","2025 Q3","2025 Q4"],
+      values: [3304,3130,3153,3018,2991,2908,2904,2754,2777,2820,2880,2866,2928,2972,3041,3060,3114,3234,3228,3200,3206,3372,3467,3572,3544,3510,3506,3326,3287,3392,3445,3074,3283,3447,3350,2834,3021,3207,3114,2745,2864,3142,3190,2880,3126,3384,3428,3141,3380,3596,3587,3338,3563,3796,3806,3587,3837,4211,4282,3931,4218,4822,4938,4336,4507,5113,5241,4734,4780,5424,5448,5072,5144,5691,5806,5583,5434,5800,5984,5711,5595,6016,6115,6246,5932,6339,6433,6433,6138,6600,6704,6775,6613,6987,7098,7186,6908,7222,7640,7689,7509,8152,8436,8628,8640,8896,9130,9318,9476,9658,9866,9878,10008,9746,9836,9864,9980,9795,9808,9330],
+      unit: 'Personen'
     },
-    parseData: 'parseCrossBorderCommuters',
-    keyFacts: [],
+    keyFacts: [
+      { number: "9'728", label: 'Jahresschnitt 2025', context: 'Durchschnittliche Grenzgänger:innen pro Quartal 2025' },
+      { number: '+194 %', label: 'Wachstum seit 1996', context: 'Von ~3\'100 (1996) auf ~9\'700 (2025) — knapp Verdreifachung' },
+      { number: '–13 %', label: 'COVID-Einbruch', context: 'Q2 2020 vs Q1 2020: Rückgang von 6\'908 auf 7\'222 — Erholung bis 2021' }
+    ],
     analysis: [
-      'Die Zahl der Grenzgänger:innen nach Graubünden hat sich seit 1996 mehr als verdoppelt — von rund 5\'800 auf über 12\'000 Personen. In einzelnen Gemeinden wie Davos und Scuol machen Grenzgänger:innen 15 bis 20 Prozent der Belegschaft im Gastgewerbe aus.',
-      'Die meisten Grenzgänger:innen kommen aus der Lombardei und dem Trentino in Norditalien. Die Einkommensdifferenz zwischen der Schweiz und Norditalien ist erheblich: Schweizer Löhne übersteigen vergleichbare norditalienische Löhne um ein Vielfaches, während die Lebenshaltungskosten jenseits der Grenze tiefer liegen.',
-      'Während der COVID-19-Pandemie 2020 ging die Zahl der Grenzgänger:innen infolge der Grenzschliessungen und der Kurzarbeit im Gastgewerbe deutlich zurück. Ab 2021 erholten sich die Zahlen rasch und erreichten 2023 wieder ein ähnliches Niveau wie vor der Pandemie.'
+      'Die Grafik zeigt die Zahl der Beschäftigten mit Grenzgängerbewilligung im Kanton Graubünden, quartalsweise von 1996 bis 2025. 1996 lag der Quartalswert bei rund 3\'100 Personen, 2025 bei rund 9\'700 — eine Zunahme um knapp das Dreifache in 30 Jahren.',
+      'Der COVID-19-Einbruch im Jahr 2020 ist in der Kurve klar erkennbar: Im zweiten Quartal 2020 sank der Wert auf 6\'908 — der tiefste Stand seit 2015. Die Erholung setzte rasch ein; 2022 und 2023 wurden neue Höchstwerte erreicht. Im Jahr 2025 ist eine leichte Abschwächung gegenüber dem Rekordquartal 2024 Q1 (10\'008) zu beobachten.',
+      'Die Daten stammen aus der Grenzgängerstatistik des Bundesamts für Statistik (BFS). Erfasst sind Personen mit Wohnsitz im Ausland, die regelmässig zur Arbeit in den Kanton einpendeln und eine Grenzgängerbewilligung (Ausweis G) besitzen.'
     ],
     source: 'Bundesamt für Statistik, Grenzgängerstatistik; Staatssekretariat für Wirtschaft SECO',
     linkedinPost: "Jeden Morgen überqueren 12'000 Menschen die Graubündner Kantonsgrenze — um zu arbeiten.\n\nOhne Grenzgänger:innen aus Norditalien würde das Gastgewerbe kollabieren. In manchen Hotels machen sie 20 % der Belegschaft aus.\n\nDie Entwicklung seit 1996 ist bemerkenswert:\n→ 1996: 5\'800 Grenzgänger\n→ 2023: 12\'100 — mehr als verdoppelt\n→ COVID-Einbruch 2020: sofort spürbar, schnell erholt\n\nWas steckt dahinter?\n→ Schweizer Löhne sind 2–3x höher als in Norditalien\n→ Lebenshaltungskosten diesseits der Grenze sind jedoch auch höher\n→ Pendeln lohnt sich — trotz Berge und Pass\n\nDiese Abhängigkeit ist ein strukturelles Merkmal des Bündner Arbeitsmarkts. Und sie stellt eine strategische Frage: Wie qualifiziert der Kanton seine eigene Bevölkerung für diese Jobs?\n\nStory 11, Woche 3 «Wirtschaft» unserer Serie. #Graubünden #Datenjournalismus #Wirtschaft",
@@ -1374,9 +1379,9 @@ function buildChart(story, data) {
           borderColor: '#B5001E',
           backgroundColor: 'rgba(181,0,30,0.08)',
           borderWidth: 2.5,
-          pointRadius: 4,
-          pointBackgroundColor: '#B5001E',
+          pointRadius: d.labels && d.labels.length > 40 ? 0 : 4,
           pointHoverRadius: 6,
+          pointBackgroundColor: '#B5001E',
           fill: 'origin',
           tension: 0.38,
           segment: {
@@ -1401,7 +1406,19 @@ function buildChart(story, data) {
         scales: {
           x: {
             grid: { color: GRID },
-            ticks: { font: baseFont, color: MUTED, maxRotation: 45 }
+            ticks: {
+              font: baseFont,
+              color: MUTED,
+              maxRotation: 0,
+              maxTicksLimit: 10,
+              callback: function(val, idx) {
+                const lbl = this.getLabelForValue(val);
+                if (!lbl) return '';
+                // For quarterly data, show only Q1 labels as year only
+                if (lbl.includes('Q1')) return lbl.replace(' Q1', '');
+                return '';
+              }
+            }
           },
           y: {
             beginAtZero: false,
