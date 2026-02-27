@@ -113,8 +113,8 @@ const STORIES = [
     day: 2,
     publishDate: fmtDate(workdayDate(1, 2)),
     category: 'Bevölkerung',
-    title: 'Graubünden wird älter — und das schneller als gedacht',
-    lead: 'Der Medianalter in Graubünden liegt über dem Schweizer Durchschnitt. Jede dritte Person ist über 50 Jahre alt. Die Alterung schreitet rascher voran als Prognosen vor 20 Jahren vorhergesagt hatten — mit Folgen für Pflegeheime, Gesundheitskosten und die Sozialpolitik.',
+    title: 'Graubünden hat einen höheren Medianalter als die Schweiz',
+    lead: 'Der Medianalter in Graubünden beträgt 44,8 Jahre — 2,5 Jahre mehr als im Schweizer Durchschnitt von 42,3 Jahren. In den Altersgruppen unter 20 ist Graubünden untervertreten, in den Gruppen ab 60 übervertreten.',
     chartTitle: 'Altersstruktur: Graubünden vs. Schweiz',
     chartSubtitle: 'Bevölkerungsanteil je 5-Jahres-Kohorte in % · Links: Graubünden 2023, Rechts: Schweiz 2023',
     chartType: 'butterfly',
@@ -127,14 +127,14 @@ const STORIES = [
     },
     parseData: 'parseAgeStructure',
     keyFacts: [
-      { number: '44.8', label: 'Medianalter GR', context: 'Gegenüber 42.3 Jahren im Schweizer Durchschnitt' },
-      { number: '–3.3 %', label: 'Weniger Unter-20', context: 'GR hat deutlich weniger Kinder und Jugendliche als der CH-Schnitt' },
-      { number: '+3.2 %', label: 'Mehr 60–74', context: 'In den Pensionierungskohorten liegt GR klar über dem Schweizer Schnitt' }
+      { number: '44.8', label: 'Medianalter GR', context: 'Schweizer Durchschnitt: 42.3 Jahre (2023)' },
+      { number: '–3.3 %', label: 'Differenz Unter-20', context: 'Anteil der 0–19-Jährigen: GR 17.2 %, CH 20.5 %' },
+      { number: '+3.2 %', label: 'Differenz 60–74', context: 'Anteil der 60–74-Jährigen: GR 19.1 %, CH 15.9 %' }
     ],
     analysis: [
-      'Die Grafik zeigt links Graubündens Altersverteilung, rechts jene der gesamten Schweiz — je Alterskohorte in Prozent der jeweiligen Bevölkerung. Der Unterschied ist deutlich: Graubünden hat weniger Kinder und Jugendliche (0–19 Jahre) als der Landesdurchschnitt, dafür mehr Menschen im Rentenalter.',
-      'Besonders auffällig ist das Defizit in den jungen Kohorten: In der Gruppe 0–4 Jahre liegt Graubünden rund 0,8 Prozentpunkte unter dem CH-Schnitt. Das setzt sich durch die Kindheits- und Jugendjahre fort. Im Gegenzug sind die Jahrgänge 60 bis 74 übervertreten — ein Zeichen, dass ältere Menschen in den Bergkanton zurückziehen oder dort verbleiben.',
-      'Diese Schere zwischen jung und alt ist keine Momentaufnahme: Die heute 40- bis 59-Jährigen werden in den nächsten Jahrzehnten nachrücken. Graubünden altert schneller als die Schweiz als Ganzes — mit direkten Auswirkungen auf Schulen, Pflegeeinrichtungen und die Finanzierung der Sozialversicherungen.'
+      'Die Grafik vergleicht die Altersverteilung Graubündens (links, rot) mit der Schweiz gesamt (rechts, blau). Jeder Balken zeigt den prozentualen Anteil einer Fünf-Jahres-Kohorte an der jeweiligen Gesamtbevölkerung — Datenquelle: Statistik Graubünden und BFS, beide 2023.',
+      'In den Kohorten 0–19 Jahre liegt Graubünden in jeder Gruppe 0,5 bis 0,8 Prozentpunkte unter dem Schweizer Wert. In den Kohorten 60–74 Jahre liegt Graubünden in jeder Gruppe 0,8 bis 0,9 Prozentpunkte darüber. Die mittleren Jahrgänge (25–55 Jahre) sind in beiden Vergleichsregionen ähnlich stark vertreten.',
+      'Der Medianalter von 44,8 Jahren in Graubünden gegenüber 42,3 Jahren schweizweit spiegelt diese Verschiebung: Graubünden hat einen höheren Anteil älterer und einen tieferen Anteil jüngerer Menschen als der nationale Durchschnitt.'
     ],
     source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023',
     linkedinPost: 'Graubünden altert — und zwar schneller als gedacht.\n\nDer Medianalter liegt bei 44,8 Jahren. Jede dritte Person im Kanton ist über 60. Vor 20 Jahren hätte das niemand für möglich gehalten.\n\nWas steckt dahinter?\n→ Junge verlassen den Bergkanton für Städte\n→ Geburtenrate liegt bei nur 1.36 Kindern pro Frau\n→ Die Babyboomer-Generation rückt ins Rentenalter\n\nDie Folgen sind schon heute spürbar: Pflegeheimplätze werden knapp, Fachkräfte in der Altersbetreuung fehlen, und die Sozialausgaben steigen.\n\nGleichzeitig bietet das Homeoffice-Zeitalter eine Chance: Gut verdienende Fachleute mittleren Alters zieht es zunehmend in die Berge. Ob das die Alterspyramide kippen kann? Die Daten sagen: kaum.\n\nDiese Grafik zeigt die vollständige Altersverteilung — aufgeschlüsselt nach Jahrzehnten. Teil unserer Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Demografie',
@@ -1158,19 +1158,21 @@ function buildChart(story, data) {
             label: 'Graubünden',
             data: grVals,
             backgroundColor: 'rgba(181,0,30,0.75)',
-            borderColor: '#B5001E',
             borderWidth: 0,
             borderRadius: 2,
-            borderSkipped: false
+            borderSkipped: false,
+            barPercentage: 0.9,
+            categoryPercentage: 0.85
           },
           {
             label: 'Schweiz',
             data: chVals,
             backgroundColor: 'rgba(30,58,95,0.75)',
-            borderColor: '#1E3A5F',
             borderWidth: 0,
             borderRadius: 2,
-            borderSkipped: false
+            borderSkipped: false,
+            barPercentage: 0.9,
+            categoryPercentage: 0.85
           }
         ]
       },
