@@ -64,23 +64,14 @@ const STORIES = [
     chartType: 'bar',
     apiDatasetId: 'dvs_awt_soci_202502111',
     apiQuery: {
-      select: 'vischnanca,populaziun_permanenta',
-      where: 'onn=2023',
-      group_by: 'vischnanca',
-      order_by: 'populaziun_permanenta DESC'
+      select: 'gemeinde,SUM(anzahl_personen) as total',
+      group_by: 'gemeinde',
+      order_by: 'total DESC',
+      limit: '10',
+      refine: 'jahr:2023'
     },
     parseData: 'parseTopMunicipalities',
-    fallbackData: {
-      labels: ['Chur', 'Davos', 'Landquart', 'Domat/Ems', 'Thusis', 'Ilanz/Glion', 'Samedan', 'Poschiavo', 'Scuol', 'Vals'],
-      values: [40200, 11700, 9400, 7900, 3500, 2500, 3200, 3900, 2200, 1050],
-      unit: 'Einwohner',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '200\'000', label: 'Einwohner total', context: 'Kanton Graubünden 2023' },
-      { number: '20 %', label: 'Wohnen in Chur', context: 'Einziges städtisches Zentrum' },
-      { number: '7\'105 km²', label: 'Kantonsfläche', context: 'Grösster Kanton der Schweiz' }
-    ],
+    keyFacts: [],
     analysis: [
       'Chur ist das unbestrittene Zentrum Graubündens. Mit über 40\'000 Einwohnerinnen und Einwohnern lebt dort jeder fünfte Bündner — in einem Kanton, der flächenmässig so gross ist wie Mallorca. Die Konzentrierung in der Kantonshauptstadt ist kein Zufall: Chur liegt am Schnittpunkt der wichtigsten Täler und ist seit der Römerzeit Verwaltungs- und Handelszentrum.',
       'Hinter Chur klafft eine grosse Lücke. Davos als zweitgrösste Gemeinde hat nur rund 11\'700 Einwohner — und verdankt seine Grösse vor allem dem Tourismus. Ohne Hotels, Kliniken und internationale Kongresse wäre Davos deutlich kleiner. Ähnliches gilt für viele Bündner Gemeinden: Tourismus ist der eigentliche Bevölkerungsmotor.',
@@ -104,23 +95,13 @@ const STORIES = [
     chartType: 'bar',
     apiDatasetId: 'dvs_awt_soci_202502111',
     apiQuery: {
-      select: 'classa_da_vegliadetgna,populaziun_permanenta',
-      where: 'onn=2023',
-      group_by: 'classa_da_vegliadetgna',
-      order_by: 'classa_da_vegliadetgna ASC'
+      select: 'altersklasse,SUM(anzahl_personen) as total',
+      group_by: 'altersklasse',
+      order_by: 'altersklasse ASC',
+      refine: 'jahr:2023'
     },
     parseData: 'parseAgeStructure',
-    fallbackData: {
-      labels: ['0–9', '10–19', '20–29', '30–39', '40–49', '50–59', '60–69', '70–79', '80+'],
-      values: [10.2, 10.8, 10.5, 12.3, 13.1, 14.2, 12.4, 9.1, 7.4],
-      unit: '%',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '44.8', label: 'Medianalter (Jahre)', context: 'Über Schweizer Schnitt (42.5)' },
-      { number: '34 %', label: 'Über 60-Jährige', context: 'Tendenz stark steigend' },
-      { number: '1.36', label: 'Kinder pro Frau', context: 'Weit unter Bestandserhalt (2.1)' }
-    ],
+    keyFacts: [],
     analysis: [
       'Graubünden altert — und das in einem Tempo, das Demograf:innen überrascht. Der Medianalter liegt bereits bei 44,8 Jahren, fast 2,5 Jahre über dem Schweizer Durchschnitt. Das liegt nicht nur an der Geburtenrate, sondern auch an der Abwanderung: Junge verlassen den Bergkanton für Städte, und wer bleibt, wird älter.',
       'Die mittleren Jahrgänge — die 40- bis 59-Jährigen — sind heute die stärkste Gruppe. In zehn Jahren werden sie in die Altersgruppe 60+ rücken. Das ist die Generation, die Graubündens Pflegeplätze und Altersheime füllen wird. Die Planung dafür beginnt jetzt — und ist bereits im Rückstand.',
@@ -142,29 +123,18 @@ const STORIES = [
     chartTitle: 'Lebendgeburten im Kanton Graubünden 1975–2023',
     chartSubtitle: 'Anzahl Geburten pro Jahr · Statistik Graubünden (dvs_awt_soci_202505120)',
     chartType: 'line',
-    apiDatasetId: 'dvs_awt_soci_202505120',
+    apiDatasetId: 'dvs_awt_soci_20250508',
     apiQuery: {
-      select: 'onn,naschientschas_vivas',
-      where: 'onn>=1975',
-      group_by: 'onn',
-      order_by: 'onn ASC'
+      select: 'jahr,SUM(lebendgeburt) as total',
+      group_by: 'jahr',
+      order_by: 'jahr ASC'
     },
     parseData: 'parseBirths',
-    fallbackData: {
-      labels: ['1975','1980','1985','1990','1995','2000','2005','2010','2015','2020','2023'],
-      values: [3210, 3050, 2810, 2690, 2350, 2180, 2020, 2100, 2050, 1940, 1880],
-      unit: 'Geburten',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '−41 %', label: 'Geburtenrückgang', context: 'Seit 1975 bis heute' },
-      { number: '1.36', label: 'Fertilitätsrate 2023', context: 'Unter Schweizer Schnitt (1.52)' },
-      { number: '1880', label: 'Geburten 2023', context: 'Tiefststand seit Jahrzehnten' }
-    ],
+    keyFacts: [],
     analysis: [
       'Der Rückgang der Geburtenzahlen in Graubünden folgt dem nationalen und europäischen Trend — aber mit einer eigenen Note. In Bergregionen sinkt die Fertilitätsrate schneller als in urbanen Zentren, weil junge Frauen mit Kindern das Angebot an Krippen, Teilzeitstellen und Bildungseinrichtungen in der Stadt bevorzugen. Was in Chur funktioniert, ist in einem Bergdorf oft schlicht nicht vorhanden.',
       'Die Auswirkungen sind heute in den Schulen sichtbar. Zahlreiche Dorfschulen im Kanton haben ihren Betrieb eingestellt oder zu Mehrklassenschulen zusammengefasst. Bildungsexperten schätzen, dass in den nächsten zehn Jahren weitere 30 bis 40 Schulstandorte verschwinden werden. Das verändert das Dorfgefüge fundamental.',
-      'Demografie ist keine Schicksalsfrage, sie ist eine politische. Andere Kantone und Länder zeigen, dass gezielte Familienförderung, bezahlbare Kinderbetreuung und flexible Arbeitsmodelle die Fertilität stabilisieren können — wenn nicht erhöhen. Graubünden hat hier noch erheblichen Spielraum nach oben.'
+      'Die Auswirkungen sind regional unterschiedlich stark. In Bergdörfern ohne Kita-Angebot und Teilzeitstellen zeigen die Daten stärkere Rückgänge als in Chur. Die geografische Spaltung zwischen städtischen und abgelegenen Gemeinden ist in der Geburtenstatistik deutlich sichtbar.'
     ],
     source: 'Statistik Graubünden, Natürliche Bevölkerungsbewegung 2023',
     linkedinPost: 'In 50 Jahren fast 40 % weniger Geburten im Bergkanton.\n\n1975: 3\'210 Babys in Graubünden. 2023: 1\'880.\n\nDieser Rückgang ist keine abstrakte Statistik — er schliesst Schulen, leert Dörfer und verändert, wie der Kanton funktioniert.\n\nWarum sinken die Geburten in Bergregionen besonders stark?\n→ Junge Frauen ziehen in Städte für Ausbildung und Karriere\n→ Kita-Plätze und Teilzeitstellen fehlen auf dem Land\n→ Wohnraum ist teuer, Infrastruktur dünn\n\nDie Konsequenzen spüren wir jetzt: Schulschliessungen, alternde Gemeinden, steigende Kosten pro Kopf für Infrastruktur.\n\nDie gute Nachricht: Demographischer Wandel ist gestaltbar. Investitionen in Kinderbetreuung, Vereinbarkeit und lokale Wirtschaft können bremsen — wenn man rechtzeitig beginnt.\n\nBegonnen haben wir mit dieser Datenstory. Teil 3 der Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Demografie',
@@ -184,26 +154,15 @@ const STORIES = [
     chartType: 'line',
     apiDatasetId: 'dvs_awt_soci_20250508',
     apiQuery: {
-      select: 'onn,naschientschas_vivas,mortoris',
-      where: 'onn>=1981',
-      group_by: 'onn',
-      order_by: 'onn ASC'
+      select: 'jahr,SUM(lebendgeburt) as births,SUM(todesfall) as deaths',
+      group_by: 'jahr',
+      order_by: 'jahr ASC'
     },
     parseData: 'parseDemographicBalance',
-    fallbackData: {
-      labels: ['1981','1986','1991','1996','2001','2006','2011','2016','2020','2023'],
-      values: [420, 310, 280, 180, 90, -20, 30, -60, 120, 80],
-      unit: 'Saldo (Personen)',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '+200\'000', label: 'Bevölkerung stabil', context: 'Seit 2000 auf gleichem Niveau' },
-      { number: '−200', label: 'Natürl. Rückgang/Jahr', context: 'Mehr Tote als Geburten' },
-      { number: '+350', label: 'Wanderungssaldo', context: 'Hält Bevölkerung stabil' }
-    ],
+    keyFacts: [],
     analysis: [
       'Die natürliche Bevölkerungsbewegung — Geburten minus Todesfälle — ist in Graubünden seit Jahren negativ. Das bedeutet: Würde niemand zuwandern, würde der Kanton schrumpfen. Allein die Zuwanderung von aussen — aus anderen Kantonen und dem Ausland — stabilisiert die Bevölkerungszahl auf knapp über 200\'000.',
-      'Diese Abhängigkeit von Zuwanderung ist politisch heikel, demografisch aber unvermeidlich. Die grosse Frage lautet: Woher kommen die Zuwandernden, und warum? Analysen zeigen, dass es vor allem Menschen im erwerbsfähigen Alter sind, die wegen guter Jobs im Tourismus, Gesundheitswesen oder öffentlichen Sektor nach Graubünden kommen.',
+      'Die Zuwanderung besteht überwiegend aus Menschen im erwerbsfähigen Alter. Analysen zeigen, dass Tourismus, Gesundheitswesen und der öffentliche Sektor die wichtigsten Arbeitgeber für Zuziehende sind. Die natürliche Bevölkerungsbewegung und die Wanderungsbilanz entwickeln sich dabei gegenläufig.',
       'Die Pandemie hat das Muster vorübergehend verändert: Der Stadtflücht-Trend 2020/21 brachte eine ungewöhnliche Zuwanderungswelle aus städtischen Kantonen. Viele sind geblieben. Ob Graubünden dauerhaft von diesem Trend profitiert, wird die Bevölkerungsstatistik der nächsten Jahre zeigen.'
     ],
     source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik, Zeitreihe 1981–2023',
@@ -230,17 +189,7 @@ const STORIES = [
       order_by: 'onn ASC'
     },
     parseData: 'parseScenarios',
-    fallbackData: {
-      labels: ['2023','2025','2030','2035','2040','2045','2050','2055'],
-      values: [200800, 202000, 205500, 207200, 208100, 207900, 206500, 204000],
-      unit: 'Einwohner (Basisszenario)',
-      year: 2055
-    },
-    keyFacts: [
-      { number: '+2 %', label: 'Basis-Szenario 2055', context: 'Leichtes Wachstum erwartet' },
-      { number: '−10 %', label: 'Tiefes Szenario', context: 'Bei starker Abwanderung' },
-      { number: '29 %', label: 'Anteil 65+ in 2055', context: 'Gegenüber 22 % heute' }
-    ],
+    keyFacts: [],
     analysis: [
       'Die Bevölkerungsszenarien des Kantons Graubünden zeigen ein gespaltenes Bild. Das optimistische Hochszenario — basierend auf hoher Zuwanderung und stabiler Geburtenrate — sieht Graubünden 2055 mit 215\'000 Einwohnern. Das pessimistische Tiefszenario — wenig Zuwanderung, sinkende Geburten — rechnet mit unter 185\'000. Der Korridor ist enorm.',
       'Was alle Szenarien gemeinsam haben: Der Anteil der über 65-Jährigen wird massiv steigen. Heute liegt er bei etwa 22 Prozent, 2055 werden es je nach Szenario zwischen 27 und 31 Prozent sein. Diese Alterung ist unvermeidlich — sie ist bereits in der Altersstruktur der heutigen Bevölkerung eingebacken.',
@@ -266,23 +215,12 @@ const STORIES = [
     chartType: 'line',
     apiDatasetId: 'dvs_awt_econ_202502031',
     apiQuery: {
-      select: 'onn,pernottaziuns',
-      where: 'onn>=1992',
-      group_by: 'onn',
-      order_by: 'onn ASC'
+      select: 'jahr,SUM(logiernachte) as total',
+      group_by: 'jahr',
+      order_by: 'jahr ASC'
     },
     parseData: 'parseTourismAnnual',
-    fallbackData: {
-      labels: ['1992','1995','1998','2001','2004','2007','2010','2013','2016','2019','2020','2021','2022','2023'],
-      values: [12.8, 12.1, 12.9, 13.1, 13.5, 14.2, 14.8, 15.1, 14.6, 15.7, 9.8, 12.4, 14.9, 15.4],
-      unit: 'Mio. Logiernächte',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '15.7 Mio', label: 'Rekord vor Pandemie', context: '2019, Vorpandemie-Höchststand' },
-      { number: '−37 %', label: 'Einbruch 2020', context: 'Auf 9.8 Mio. durch COVID-19' },
-      { number: '15.4 Mio', label: 'Logiernächte 2023', context: 'Fast auf Vorkrisenniveau' }
-    ],
+    keyFacts: [],
     analysis: [
       'Die 30-Jahres-Kurve der Bündner Hotelübernachtungen ist ein Seismograph für globale Krisen. Der Währungsschock 2015 — SNB hebt Euro-Kurs auf — traf den Tourismus empfindlich: Ausländische Gäste mieden die teuer gewordene Schweiz. Zwei Jahre später hatte sich Graubünden erholt. Die Resilienz der Tourismusregion ist bemerkenswert.',
       'Doch nichts hat die Branche so getroffen wie COVID-19. Im Jahr 2020 brachen die Logiernächte um 37 Prozent ein — von 15,7 auf 9,8 Millionen. Viele Betriebe überlebten nur dank Kurzarbeit, Staatshilfen und einem starken Inlandstourismus: Schweizer:innen entdeckten ihre eigenen Berge.',
@@ -306,23 +244,12 @@ const STORIES = [
     chartType: 'bar',
     apiDatasetId: 'dvs_awt_econ_202502031',
     apiQuery: {
-      select: 'mais,pernottaziuns',
-      where: 'onn>=2019',
-      group_by: 'mais',
-      order_by: 'mais ASC'
+      select: 'monat,SUM(logiernachte) as total',
+      group_by: 'monat',
+      order_by: 'monat ASC'
     },
     parseData: 'parseTourismMonthly',
-    fallbackData: {
-      labels: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
-      values: [1820, 1950, 1450, 540, 460, 740, 1640, 1870, 940, 680, 360, 1280],
-      unit: 'Tsd. Logiernächte',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '5x', label: 'Winter vs. November', context: 'Extremste Monatsschwankung' },
-      { number: '62 %', label: 'Winteranteil Okt–Mär', context: 'Trotz wachsendem Sommer' },
-      { number: '+18 %', label: 'Sommer-Wachstum', context: 'Jul/Aug vs. Vorjahrzehnt' }
-    ],
+    keyFacts: [],
     analysis: [
       'Die Monatsdaten sind eindeutig: Graubünden ist ein Winterkanton. Februar ist der stärkste Monat mit fast 2 Millionen Übernachtungen, November der schwächste mit kaum 360\'000 — ein Verhältnis von mehr als 5 zu 1. Diese Extreme stellen Betriebe, die Personal halten und Fixkosten decken müssen, vor enorme Herausforderungen.',
       'Der Frühling — April und Mai — ist die grosse Schwachstelle. Ski-Saison vorbei, Wandersaison noch nicht richtig gestartet, die Bergbahnen fahren eingeschränkt. Viele Hotels schliessen in dieser Zeit komplett. Diese Zwischensaison kostet die Branche Umsatz und bindet Personal, das man eigentlich das ganze Jahr bräuchte.',
@@ -346,23 +273,14 @@ const STORIES = [
     chartType: 'bar',
     apiDatasetId: 'dvs_awt_econ_20250203',
     apiQuery: {
-      select: 'vischnanca,pernottaziuns',
-      where: 'onn=2023',
-      group_by: 'vischnanca',
-      order_by: 'pernottaziuns DESC'
+      select: 'gemeinde_name,SUM(logiernachte) as total',
+      group_by: 'gemeinde_name',
+      order_by: 'total DESC',
+      limit: '12',
+      refine: 'jahr:2023'
     },
     parseData: 'parseTourismMunicipalities',
-    fallbackData: {
-      labels: ['Davos', 'St. Moritz', 'Scuol', 'Laax', 'Arosa', 'Klosters', 'Flims', 'Lenzerheide', 'Pontresina', 'Samnaun', 'Vals', 'Savognin'],
-      values: [3280, 2150, 780, 920, 690, 620, 540, 610, 480, 390, 210, 280],
-      unit: 'Tsd. Logiernächte',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '21 %', label: 'Davos-Anteil kantonsweit', context: 'Stärkster Tourismusort' },
-      { number: '+12 %', label: 'Laax Wachstum', context: 'Stark durch jüngeres Publikum' },
-      { number: '12', label: 'Top-Orte = 70 % der Nächte', context: 'Starke Konzentration' }
-    ],
+    keyFacts: [],
     analysis: [
       'Davos ist mit Abstand der stärkste Tourismusstandort Graubündens und der Schweiz. Über 3 Millionen Logiernächte pro Jahr — fast doppelt so viele wie St. Moritz auf Platz 2. Davos verdankt diese Position nicht nur dem Weltklasse-Skigebiet, sondern auch dem WEF und einer Fülle von Kongressen und Tagungen, die das ganze Jahr Gäste bringen.',
       'Laax und Flims holen auf. Beide Orte setzen auf Sommertourismus und haben mit dem Freestyle-Skifahren und dem Surfsee Caumasee eine jüngere Zielgruppe erschlossen. Das zeigt: Im Bündner Tourismus gibt es noch Wachstumspotenzial, wenn die Positionierung stimmt.',
@@ -384,25 +302,12 @@ const STORIES = [
     chartTitle: 'Übernachtungen Hotellerie vs. Parahotellerie',
     chartSubtitle: 'Logiernächte nach Unterkunftsart in Tsd. · Statistik Graubünden (dvs_awt_econ_20250331)',
     chartType: 'bar',
-    apiDatasetId: 'dvs_awt_econ_20250331',
-    apiQuery: {
-      select: 'art_unterkunft,pernottaziuns',
-      where: 'onn=2023',
-      group_by: 'art_unterkunft',
-      order_by: 'pernottaziuns DESC'
-    },
-    parseData: 'parseParahotellerie',
-    fallbackData: {
-      labels: ['Hotellerie', 'Ferienwohnungen', 'Gruppenunterk.', 'Camping', 'Jugendherbergen', 'Sonstiges'],
-      values: [15400, 8200, 1800, 1200, 420, 380],
-      unit: 'Tsd. Logiernächte',
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
       year: 2023
     },
-    keyFacts: [
-      { number: '8.2 Mio', label: 'Ferienwohnungsnächte', context: '53 % der Hotelkapazität' },
-      { number: '40\'000+', label: 'Ferienwohnungen GR', context: 'Zweitwohnungsanteil hoch' },
-      { number: '35 %', label: 'Parahotellerie-Anteil', context: 'An allen Übernachtungen' }
-    ],
+    keyFacts: [],
     analysis: [
       'Die Hotellerie ist das Schaufenster des Bündner Tourismus — aber nicht das ganze Bild. Neben den offiziellen 15,4 Millionen Hotelübernachtungen stehen weitere 8 bis 9 Millionen Nächte in Ferienwohnungen, Gruppenunterkünften, auf Campingplätzen und in Jugendherbergen. Der Bündner Tourismus ist grösser als die Hotelstatistik suggeriert.',
       'Die Ferienwohnung ist die dominante Parahotellerie-Form. Graubünden hat eine hohe Dichte an Zweitwohnungen — viele von ihnen werden als Ferienwohnungen vermietet, zumindest zeitweise. Das Zweitwohnungsgesetz (Weber-Initiative 2012) hat neue Baubewilligungen stark eingeschränkt, aber den Bestand nicht reduziert.',
@@ -427,17 +332,7 @@ const STORIES = [
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    fallbackData: {
-      labels: ['Schweiz', 'Deutschland', 'UK & Irland', 'Skandinavien', 'BeNeLux', 'USA & Kanada', 'Asien', 'Übrige'],
-      values: [48, 16, 9, 7, 5, 6, 5, 4],
-      unit: '%',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '48 %', label: 'Schweizer Gäste', context: 'Wichtigster Quellmarkt' },
-      { number: '16 %', label: 'Deutsche Gäste', context: 'Grösster Auslandsmarkt' },
-      { number: '+22 %', label: 'Asiatisches Wachstum', context: 'Gegenüber 2022' }
-    ],
+    keyFacts: [],
     analysis: [
       'Der wichtigste Quellmarkt für Graubünden ist und bleibt die Schweiz. Fast die Hälfte aller Logiernächte entfällt auf Gäste aus dem Inland. Das ist eine Stärke — Inlandstourismus ist krisenresistenter als Fernreisetourismus — aber auch eine Schwäche: Die Abhängigkeit von einem einzigen Markt macht den Kanton anfällig für Konjunkturschwankungen im Inland.',
       'Deutschland ist mit 16 Prozent der wichtigste ausländische Quellmarkt. Die kulturelle und sprachliche Nähe, kombiniert mit der guten Erreichbarkeit per Bahn (ICE-Direktverbindungen), macht Graubünden für Deutsche attraktiv. Briten und Skandinavier folgen — Gruppen, die historisch mit den exklusiveren Destinationen wie St. Moritz und Davos verbunden sind.',
@@ -463,23 +358,12 @@ const STORIES = [
     chartType: 'line',
     apiDatasetId: 'dvs_awt_econ_20250513',
     apiQuery: {
-      select: 'datum,cunfinaris',
-      where: 'datum>=1996-01-01',
-      group_by: 'datum',
-      order_by: 'datum ASC'
+      select: 'jahr,SUM(anzahl_personen) as total',
+      group_by: 'jahr',
+      order_by: 'jahr ASC'
     },
     parseData: 'parseCrossBorderCommuters',
-    fallbackData: {
-      labels: ['1996','1999','2002','2005','2008','2011','2014','2017','2020','2023'],
-      values: [5800, 6200, 6900, 7800, 9200, 10100, 10800, 11400, 10200, 12100],
-      unit: 'Grenzgänger',
-      year: 2023
-    },
-    keyFacts: [
-      { number: "12'100", label: 'Grenzgänger 2023', context: 'Neuer Höchststand' },
-      { number: '8 %', label: 'Aller Beschäftigten in GR', context: 'Hoher Anteil für Bergkanton' },
-      { number: '+108 %', label: 'Wachstum seit 1996', context: 'In knapp 30 Jahren verdoppelt' }
-    ],
+    keyFacts: [],
     analysis: [
       'Die Zahl der Grenzgänger:innen nach Graubünden hat sich seit 1996 mehr als verdoppelt. Was als relativ kleines Phänomen begann, ist heute zu einem strukturellen Merkmal des kantonalen Arbeitsmarkts geworden. Ohne Grenzgänger:innen würde das Gastgewerbe kollabieren — in Davos und Scuol kommen sie auf 15 bis 20 Prozent der Belegschaft.',
       'Die meisten Grenzgänger:innen kommen aus der Lombardei und dem Trentino — also aus dem nahen Norditalien, das über die Graubündner Pässe und den Tunnel erreichbar ist. Die Löhne sind in der Schweiz substanziell höher, die Lebenshaltungskosten auf der anderen Seite der Grenze tiefer. Das macht die Kombination für viele attraktiv.',
@@ -503,23 +387,14 @@ const STORIES = [
     chartType: 'bar',
     apiDatasetId: 'dvs_awt_econ_20250702',
     apiQuery: {
-      select: 'warengruppe,valur',
-      where: 'onn=2023',
-      group_by: 'warengruppe',
-      order_by: 'valur DESC'
+      select: 'cpa_section,SUM(tot1_chf) as total',
+      group_by: 'cpa_section',
+      order_by: 'total DESC',
+      limit: '10',
+      refine: 'knt:GR'
     },
     parseData: 'parseExports',
-    fallbackData: {
-      labels: ['Pharma & Chemie', 'Maschinen & Anlagen', 'Nahrungsmittel', 'Uhren & Schmuck', 'Elektronik', 'Kunststoffe', 'Metalle'],
-      values: [1840, 920, 680, 340, 280, 210, 190],
-      unit: 'Mio. CHF',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '4.5 Mrd', label: 'Gesamtexporte 2023', context: 'In CHF, alle Warengruppen' },
-      { number: '41 %', label: 'Pharma-Anteil', context: 'Dominant trotz weniger Firmen' },
-      { number: '680 Mio', label: 'Nahrungsmittel-Export', context: 'Bündnerfleisch, Käse, Wein' }
-    ],
+    keyFacts: [],
     analysis: [
       'Graubünden als Exportkanton? Das klingt paradox, ist aber Realität. Einige wenige grosse Industrieunternehmen — darunter Pharmafirmen und Maschinenbauer — generieren den Löwenanteil der Exporterlöse. Der Pharmasektor allein macht über 40 Prozent aller kantonalen Warenexporte aus, obwohl er nur wenige hundert Beschäftigte zählt.',
       'Weniger bekannt, aber volkswirtschaftlich bedeutsam: die Nahrungsmittelexporte. Bündnerfleisch, Bündner Bergkäse und Weine aus Maienfeld und Malans finden ihre Käufer in der Deutschschweiz und im angrenzenden Ausland. Diese Produkte exportieren nicht nur Waren, sondern auch die Marke Graubünden — und stärken indirekt den Tourismus.',
@@ -543,23 +418,14 @@ const STORIES = [
     chartType: 'bar',
     apiDatasetId: 'dvs_awt_econ_202507020',
     apiQuery: {
-      select: 'land,valur_export,valur_import',
-      where: 'onn=2023',
+      select: 'land,SUM(tot1_chf) as total',
       group_by: 'land',
-      order_by: 'valur_export DESC'
+      order_by: 'total DESC',
+      limit: '10',
+      refine: 'knt:GR'
     },
     parseData: 'parseTradePartners',
-    fallbackData: {
-      labels: ['Deutschland', 'USA', 'Italien', 'Frankreich', 'Österreich', 'China', 'UK', 'Andere'],
-      values: [1820, 680, 540, 420, 380, 290, 240, 620],
-      unit: 'Mio. CHF Export',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '1.82 Mrd', label: 'Export nach Deutschland', context: 'Grösster Einzelmarkt' },
-      { number: '68 %', label: 'Europa-Anteil Exporte', context: 'Starke Europa-Orientierung' },
-      { number: '3.1 Mrd', label: 'Importvolumen gesamt', context: 'Handelsbilanz leicht negativ' }
-    ],
+    keyFacts: [],
     analysis: [
       'Deutschland dominiert die Bündner Handelsstatistik. Als Exportziel und Importquelle ist der nördliche Nachbar unverzichtbar. Das gilt nicht nur für Graubünden, sondern für die gesamte Schweiz — doch der Bergkanton mit seiner direkten Nähe zur deutschen Grenze (Bodenseeregion, Vorarlberg-Transit) ist besonders stark verflochten.',
       'Die USA sind trotz der geografischen Distanz der zweitwichtigste Exportmarkt — getrieben hauptsächlich vom Pharmaexport. Hochwertige Spezialprodukte findet weltweit Käufer, auch wenn die physische Distanz gross ist. Das zeigt: Im globalen Handel zählen nicht Kilometer, sondern Marktmacht und Spezialisierung.',
@@ -584,17 +450,7 @@ const STORIES = [
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    fallbackData: {
-      labels: ['Gastgewerbe & Tourismus', 'Gesundheit & Soziales', 'Bau & Immobilien', 'Handel', 'Öffentl. Verwaltung', 'Industrie & Gewerbe', 'Bildung', 'Sonstiges'],
-      values: [22, 15, 14, 11, 9, 10, 7, 12],
-      unit: '%',
-      year: 2022
-    },
-    keyFacts: [
-      { number: "141'000", label: 'Beschäftigte total', context: 'In Vollzeitäquivalenten 2022' },
-      { number: '22 %', label: 'Gastgewerbe-Anteil', context: 'Schweizweit höchster Wert' },
-      { number: '3.2 %', label: 'Arbeitslosenquote', context: 'Unter Schweizer Schnitt (3.6 %)' }
-    ],
+    keyFacts: [],
     analysis: [
       'Wer in Graubünden arbeitet, arbeitet zu einem überproportionalen Anteil im Gastgewerbe. Rund jede fünfte Stelle hängt direkt mit Tourismus und Beherbergung zusammen — schweizweit der höchste Anteil. Das prägt den Arbeitsmarkt: saisonale Schwankungen, hohe Teilzeitquote, und eine strukturelle Abhängigkeit von Grenzgänger:innen und ausländischen Arbeitskräften.',
       'Der Gesundheitssektor ist auf dem Vormarsch. Mit 15 Prozent ist er die zweitgrösste Branche und wächst im Zuge der Bevölkerungsalterung weiter. Das Kantonsspital Graubünden in Chur, die Reha-Kliniken und zahlreiche Altersheime sind heute schon einer der grössten Arbeitgeber des Kantons.',
@@ -624,21 +480,11 @@ const STORIES = [
       order_by: 'valur DESC'
     },
     parseData: 'parseInfrastructure',
-    fallbackData: {
-      labels: ['Strassenbau & Unterhalt', 'RhB & öffentl. Verkehr', 'Energieversorgung', 'Wasserversorgung', 'Breitband & Digital', 'Hochbau öffentlich'],
-      values: [310, 185, 140, 82, 48, 210],
-      unit: 'Mio. CHF',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '975 km', label: 'RhB-Streckennetz', context: 'Weltweit dichtestes Schmalspur' },
-      { number: '310 Mio', label: 'Strassenunterhalt p.a.', context: 'In Mio. CHF, 2023' },
-      { number: '4\'800 CHF', label: 'Infrastruktur pro Kopf', context: '3x höher als in städt. Kantonen' }
-    ],
+    keyFacts: [],
     analysis: [
       'Infrastruktur im Bergkanton ist teuer — sehr teuer. Pro Einwohner:in gibt Graubünden rund dreimal so viel für Infrastruktur aus wie ein städtischer Kanton. Tunnel, Lawinenverbauungen, Wildbachverbauungen und die Unterhaltung von Schmalspurbahnen in entlegenen Tälern kosten Millionen, die für wenige Tausend Menschen zugutekommen.',
       'Die Rhätische Bahn ist das Herzstück der Bündner Infrastruktur — und ein globales Alleinstellungsmerkmal. Das UNESCO-Welterbe-Bahnnetz verbindet Täler, die sonst kaum erreichbar wären, und macht den Kanton überhaupt lebensfähig. Aber es kostet: Die jährlichen Betriebszuschüsse von Bund und Kanton übersteigen 150 Millionen Franken.',
-      'Die politische Frage ist: Wie viel Infrastruktur für wie viele Menschen? Die Debatte über den Rückzug aus der Fläche — also das geordnete Aufgeben dünn besiedelter Regionen — wird lauter. Doch Graubünden wehrt sich: Der Anspruch, in jedem Tal zu leben, ist Teil der Bündner Identität — und er hat seinen Preis.'
+      'Die Kostenfrage ist strukturell: Ein Bergkanton mit wenig Bevölkerung und grosser Fläche hat grundsätzlich höhere Infrastrukturkosten pro Kopf als dicht besiedelte Kantone. Graubündens Infrastruktur verbindet Täler, die sonst kaum erreichbar wären — das ist eine geografische Eigenheit mit messbaren finanziellen Konsequenzen.'
     ],
     source: 'Kanton Graubünden, Finanzverwaltung; Rhätische Bahn, Geschäftsbericht 2023',
     linkedinPost: 'Ein Kanton, der dreimal so viel Infrastruktur pro Kopf betreibt wie Zürich.\n\nGraubünden: 7\'105 km², 200\'000 Menschen, 975 km Schmalspur-Bahn.\n\nDie Rechnung:\n→ Strassenunterhalt: 310 Mio. CHF/Jahr\n→ RhB-Subventionen: 185 Mio. CHF/Jahr\n→ Infrastruktur pro Kopf: 4\'800 CHF — 3x städtische Kantone\n\nWas man dafür bekommt:\n→ Eine der schönsten Bahnstrecken der Welt (UNESCO-Welterbe)\n→ Erreichbarkeit für jedes Tal — auch im Winter\n→ Die Voraussetzung für Tourismus in abgelegenen Regionen\n\nIst das sinnvoll? Volkswirtschaftlich ja: Ohne Infrastruktur kein Tourismus, ohne Tourismus keine Steuereinnahmen.\n\nAber die Frage, wie viel Infrastruktur für wie wenige Menschen, wird lauter.\n\nStory 15, letzte der Wirtschaftswoche. #Graubünden #Datenjournalismus #Infrastruktur',
@@ -661,17 +507,7 @@ const STORIES = [
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    fallbackData: {
-      labels: ['Deutsch', 'Romanisch', 'Italienisch', 'Andere'],
-      values: [68.3, 14.9, 9.8, 7.0],
-      unit: '%',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '14.9 %', label: 'Romanischsprachige', context: 'Rund 28\'000 Personen' },
-      { number: '5', label: 'Romanisch-Idiome', context: 'Plus Rumantsch Grischun' },
-      { number: '39', label: 'Romanisch-Gemeinden', context: 'Mit Romanisch als Amtssprache' }
-    ],
+    keyFacts: [],
     analysis: [
       'Das Romanische ist einzigartig: Es ist die einzige rätoromanische Sprache mit amtlichem Status und staatlicher Förderung. Aber es ist auch eine bedrohte Sprache. Seit dem Jahr 2000 ist der Anteil der Romanischsprachigen von 17 auf knapp 15 Prozent gesunken. Das klingt wenig — bedeutet aber Tausende Menschen, die das Romanische zugunsten des Deutschen aufgeben.',
       'Die Gründe für den Rückgang sind strukturell. Gemischte Ehen, Urbanisierung und die wirtschaftliche Dominanz des Deutschen machen es schwer, die Sprache im Alltag zu erhalten. In Chur sprechen kaum noch 5 Prozent der Menschen Romanisch — und doch pendeln viele Romanischsprechende täglich in die Kantonshauptstadt.',
@@ -696,17 +532,7 @@ const STORIES = [
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    fallbackData: {
-      labels: ['1901','1911','1921','1931','1941','1951','1961','1971','1981','1991','2001','2011','2020','2024'],
-      values: [-0.9, -0.7, -0.5, -0.3, -0.1, 0.1, 0.0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.9, 2.2],
-      unit: '°C Anomalie',
-      year: 2024
-    },
-    keyFacts: [
-      { number: '+2.2 °C', label: 'Erwärmung seit 1900', context: 'Doppelt so viel wie global' },
-      { number: '90 %', label: 'Gletscherverlust droht', context: 'Bis 2100 ohne Massnahmen' },
-      { number: '−3 Wo.', label: 'Kürzere Schneesaison', context: 'Pro Jahrzehnt in mittleren Lagen' }
-    ],
+    keyFacts: [],
     analysis: [
       'Der Klimawandel ist in Graubünden keine abstrakte Zukunftsgefahr — er ist Gegenwart. Die Messreihen von MeteoSchweiz zeigen einen klaren Aufwärtstrend: Über 120 Jahre hat sich die Durchschnittstemperatur im Alpenraum um mehr als 2 Grad erhöht. Das ist fast doppelt so viel wie der globale Durchschnitt, und es beschleunigt sich noch.',
       'Die sichtbarsten Opfer sind die Gletscher. Der Morteratschgletscher — eines der Wahrzeichen des Engadins — zieht sich jährlich um 20 bis 30 Meter zurück. Der Pasterze-Gletscher in Österreich verlor in den letzten 30 Jahren fast einen Kilometer. Ohne drastische Klimamassnahmen werden die alpinen Gletscher bis 2100 zu 80 bis 90 Prozent verschwunden sein.',
@@ -731,17 +557,7 @@ const STORIES = [
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    fallbackData: {
-      labels: ['Alpweiden & Sömmerung', 'Kunstwiesen', 'Naturwiesen & Weiden', 'Ackerbau & Getreide', 'Obstbau & Reben', 'Übriges'],
-      values: [52, 18, 16, 6, 5, 3],
-      unit: '%',
-      year: 2022
-    },
-    keyFacts: [
-      { number: "2'100", label: 'Landwirtschaftsbetriebe', context: 'Im Kanton Graubünden 2022' },
-      { number: '52 %', label: 'Alpwirtschaftsanteil', context: 'Dominierende Nutzungsform' },
-      { number: '90 %', label: 'Direktzahlungsanteil', context: 'Betriebe erhalten Bundesbeiträge' }
-    ],
+    keyFacts: [],
     analysis: [
       'Die Bündner Berglandwirtschaft ist eine Besonderheit. Wo andere Kantone Mais- und Weizenfelder haben, dominieren in Graubünden Alpweiden. Die Sömmerungswirtschaft — Vieh für drei bis vier Monate auf die Alpen treiben — ist eine jahrtausendealte Praxis, die das Landschaftsbild prägt und den Tourismus erst ermöglicht.',
       'Wirtschaftlich steht die Berglandwirtschaft unter enormem Druck. Die Betriebe sind zu klein für moderne Effizienzstandards, die Erträge zu gering für rentables Wirtschaften ohne Subventionen. Fast alle Betriebe beziehen Direktzahlungen des Bundes — nicht als Almosen, sondern als Abgeltung für Ökosystemleistungen, die der Markt nicht bezahlt.',
@@ -766,20 +582,10 @@ const STORIES = [
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    fallbackData: {
-      labels: ['Tourismus-Intensität', 'Bevölkerungsdichte', 'Alterung (Medianalter)', 'Infrastrukturkosten/Kopf', 'Lohnniveau'],
-      values: [320, 18, 106, 290, 88],
-      unit: 'Index (CH=100)',
-      year: 2023
-    },
-    keyFacts: [
-      { number: '3.2x', label: 'Tourismus-Intensität', context: 'Gegenüber Schweizer Schnitt' },
-      { number: '44.8 J.', label: 'Medianalter', context: 'Höher als Schweizer Schnitt' },
-      { number: '88 %', label: 'Lohnniveau', context: 'Unter Schweizer Durchschnitt' }
-    ],
+    keyFacts: [],
     analysis: [
-      'Die fünf Schlüsselindikatoren erzählen die Geschichte Graubündens in komprimierter Form. Der Kanton ist beim Tourismus dreimal so intensiv wie der Schweizer Durchschnitt — das ist seine Stärke und sein grösstes Risiko zugleich. Er ist dünn besiedelt und alt — das prägt seine politischen Prioritäten. Und er liegt beim Lohnniveau unter dem Schweizer Schnitt — das erklärt die Abwanderung junger Fachleute.',
-      'Das Zusammenspiel dieser Indikatoren zeigt eine strukturelle Herausforderung: Ein tourismusintensiver Kanton mit einer alternden Bevölkerung, hohen Infrastrukturkosten und unterdurchschnittlichen Löhnen muss ausserordentlich gut darin sein, sich attraktiv zu halten — für Touristen, Unternehmen und Einwohnende gleichermassen.',
+      'Die fünf Schlüsselindikatoren zeigen Graubündens Position im Schweizer Vergleich: überdurchschnittliche Tourismusintensität, geringe Bevölkerungsdichte, höheres Medianalter und höhere Infrastrukturkosten pro Kopf. Das Lohnniveau liegt unter dem Schweizer Schnitt.',
+      'Diese Indikatoren entwickeln sich nicht isoliert: Hohe Infrastrukturkosten und niedrigeres Lohnniveau sind zu einem erheblichen Teil Folge der geringen Bevölkerungsdichte in einem grossen Gebirgsgebiet. Die Zeitreihen dieser Kennzahlen zeigen langfristige Strukturveränderungen im Kanton.',
       'Was Graubünden auszeichnet, ist seine Vielfalt und seine Resilienz. Drei Sprachen, drei Kulturen, hundert Täler — diese Diversität ist keine Schwäche, sondern eine Quelle von Innovationskraft und Anpassungsfähigkeit. Die 20 Geschichten dieser Serie zeigen einen Kanton, der sich seiner Herausforderungen bewusst ist — und aktiv an seiner Zukunft arbeitet.'
     ],
     source: 'Eigene Berechnungen auf Basis: Statistik Graubünden, Bundesamt für Statistik, Graubünden Ferien 2023',
@@ -801,17 +607,7 @@ const STORIES = [
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    fallbackData: {
-      labels: ['Bevölkerung', 'Tourismus', 'Wirtschaft', 'Gesellschaft & Klima', 'Synthese'],
-      values: [5, 5, 5, 3, 2],
-      unit: 'Stories',
-      year: 2026
-    },
-    keyFacts: [
-      { number: '20', label: 'Datenstories', context: 'In 4 Wochen, März 2026' },
-      { number: '60+', label: 'Datenquellen', context: 'Aus Statistik GR und BFS' },
-      { number: '4', label: 'Themenblöcke', context: 'Bevölkerung, Tourismus, Wirtschaft, Gesellschaft' }
-    ],
+    keyFacts: [],
     analysis: [
       'Vier Wochen, zwanzig Geschichten, ein Kanton. Was hat diese Datenstory-Serie über Graubünden geleistet? Sie hat Zahlen in Erzählungen verwandelt, Statistiken in Bedeutung. Datengetriebener Journalismus kann zeigen, was ansonsten unsichtbar bleibt: Langzeittrends, Strukturprobleme, stille Veränderungen.',
       'Gleichzeitig hat die Serie ihre Grenzen aufgezeigt. Daten erfassen, was messbar ist. Was Graubünden ausmacht — die Stille auf einem Berggipfel, die Freude eines Bauern beim ersten Almauftrieb, die Verbundenheit einer Romanisch-Gemeinde mit ihrer Sprache — lässt sich nicht tabellieren. Datengetriebener Journalismus ergänzt traditionelle Reportage, ersetzt sie nie.',
@@ -832,12 +628,17 @@ const STORIES = [
 async function fetchDatasetRecords(datasetId, queryParams) {
   if (!datasetId) return null;
   try {
-    const params = new URLSearchParams({ limit: '100', lang: 'de' });
+    const params = new URLSearchParams({ lang: 'de' });
     if (queryParams) {
       if (queryParams.select)   params.set('select',   queryParams.select);
-      if (queryParams.where)    params.set('where',    queryParams.where);
       if (queryParams.group_by) params.set('group_by', queryParams.group_by);
       if (queryParams.order_by) params.set('order_by', queryParams.order_by);
+      if (queryParams.limit)    params.set('limit',    queryParams.limit);
+      else                      params.set('limit',    '100');
+      // refine supports field:value filter (correct syntax for this API)
+      if (queryParams.refine)   params.append('refine', queryParams.refine);
+    } else {
+      params.set('limit', '100');
     }
     const url = `${API_BASE}/${datasetId}/records?${params.toString()}`;
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
@@ -884,8 +685,8 @@ function detectLabel(record, candidates) {
 function parseTopMunicipalities(records) {
   if (!records || !records.length) return null;
   const top = records.slice(0, 10);
-  const labels = top.map(r => detectLabel(r, ['vischnanca', 'gemeinde', 'municipality', 'nom', 'name']));
-  const values = top.map(r => detectValue(r, ['populaziun_permanenta', 'bevoelkerung', 'population', 'einwohner', 'valur']));
+  const labels = top.map(r => detectLabel(r, ['gemeinde', 'gemeinde_name', 'vischnanca', 'municipality', 'name']));
+  const values = top.map(r => detectValue(r, ['total', 'anzahl_personen', 'populaziun_permanenta', 'bevoelkerung']));
   if (labels.some(l => !l) || values.some(v => v === null)) return null;
   return { labels, values, unit: 'Einwohner', year: new Date().getFullYear() };
 }
@@ -893,27 +694,27 @@ function parseTopMunicipalities(records) {
 function parseAgeStructure(records) {
   if (!records || !records.length) return null;
   const sorted = [...records].sort((a, b) => {
-    const la = detectLabel(a, ['classa_da_vegliadetgna', 'altersklasse', 'age_class']);
-    const lb = detectLabel(b, ['classa_da_vegliadetgna', 'altersklasse', 'age_class']);
+    const la = detectLabel(a, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']);
+    const lb = detectLabel(b, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']);
     return String(la).localeCompare(String(lb));
   });
-  const labels = sorted.map(r => detectLabel(r, ['classa_da_vegliadetgna', 'altersklasse', 'age_class']));
-  const rawVals = sorted.map(r => detectValue(r, ['populaziun_permanenta', 'anzahl', 'count', 'valur']));
+  const labels = sorted.map(r => detectLabel(r, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']));
+  const rawVals = sorted.map(r => detectValue(r, ['total', 'anzahl_personen', 'populaziun_permanenta', 'anzahl']));
   if (labels.some(l => !l) || rawVals.some(v => v === null)) return null;
-  const total = rawVals.reduce((a, b) => a + b, 0);
-  const values = rawVals.map(v => +((v / total) * 100).toFixed(1));
+  const sum = rawVals.reduce((a, b) => a + b, 0);
+  const values = rawVals.map(v => +((v / sum) * 100).toFixed(1));
   return { labels, values, unit: '%', year: new Date().getFullYear() };
 }
 
 function parseBirths(records) {
   if (!records || !records.length) return null;
   const sorted = [...records].sort((a, b) => {
-    const ya = detectValue(a, ['onn', 'jahr', 'year', 'annee']);
-    const yb = detectValue(b, ['onn', 'jahr', 'year', 'annee']);
-    return ya - yb;
+    const ya = detectValue(a, ['jahr', 'onn', 'year']);
+    const yb = detectValue(b, ['jahr', 'onn', 'year']);
+    return String(ya).localeCompare(String(yb));
   });
-  const labels = sorted.map(r => String(detectValue(r, ['onn', 'jahr', 'year', 'annee'])));
-  const values = sorted.map(r => detectValue(r, ['naschientschas_vivas', 'geburten', 'births', 'naissances', 'valur']));
+  const labels = sorted.map(r => String(detectLabel(r, ['jahr', 'onn', 'year'])));
+  const values = sorted.map(r => detectValue(r, ['total', 'lebendgeburt', 'naschientschas_vivas', 'geburten']));
   if (labels.some(l => !l) || values.some(v => v === null)) return null;
   return { labels, values, unit: 'Geburten', year: new Date().getFullYear() };
 }
@@ -921,13 +722,13 @@ function parseBirths(records) {
 function parseDemographicBalance(records) {
   if (!records || !records.length) return null;
   const sorted = [...records].sort((a, b) => {
-    const ya = detectValue(a, ['onn', 'jahr', 'year']);
-    const yb = detectValue(b, ['onn', 'jahr', 'year']);
-    return ya - yb;
+    const ya = detectLabel(a, ['jahr', 'onn', 'year']);
+    const yb = detectLabel(b, ['jahr', 'onn', 'year']);
+    return String(ya).localeCompare(String(yb));
   });
-  const labels = sorted.map(r => String(detectValue(r, ['onn', 'jahr', 'year'])));
-  const births = sorted.map(r => detectValue(r, ['naschientschas_vivas', 'geburten', 'births']) || 0);
-  const deaths = sorted.map(r => detectValue(r, ['mortoris', 'todesfaelle', 'deaths']) || 0);
+  const labels = sorted.map(r => String(detectLabel(r, ['jahr', 'onn', 'year'])));
+  const births = sorted.map(r => detectValue(r, ['births', 'lebendgeburt', 'naschientschas_vivas']) || 0);
+  const deaths = sorted.map(r => detectValue(r, ['deaths', 'todesfall', 'mortoris']) || 0);
   const values = births.map((b, i) => b - deaths[i]);
   if (labels.some(l => !l)) return null;
   return { labels, values, unit: 'Saldo (Personen)', year: new Date().getFullYear() };
@@ -949,13 +750,13 @@ function parseScenarios(records) {
 function parseTourismAnnual(records) {
   if (!records || !records.length) return null;
   const sorted = [...records].sort((a, b) => {
-    const ya = detectValue(a, ['onn', 'jahr', 'year', 'annee']);
-    const yb = detectValue(b, ['onn', 'jahr', 'year', 'annee']);
-    return ya - yb;
+    const ya = detectLabel(a, ['jahr', 'onn', 'year']);
+    const yb = detectLabel(b, ['jahr', 'onn', 'year']);
+    return String(ya).localeCompare(String(yb));
   });
-  const labels = sorted.map(r => String(detectValue(r, ['onn', 'jahr', 'year', 'annee'])));
+  const labels = sorted.map(r => String(detectLabel(r, ['jahr', 'onn', 'year'])));
   const values = sorted.map(r => {
-    const v = detectValue(r, ['pernottaziuns', 'logiernächte', 'overnight_stays', 'nuitees', 'valur']);
+    const v = detectValue(r, ['total', 'logiernachte', 'pernottaziuns', 'overnight_stays']);
     return v !== null ? +(v / 1e6).toFixed(2) : null;
   });
   if (labels.some(l => !l) || values.some(v => v === null)) return null;
@@ -965,26 +766,24 @@ function parseTourismAnnual(records) {
 function parseTourismMonthly(records) {
   if (!records || !records.length) return null;
   const MONTH_DE = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-  const agg = new Array(12).fill(0);
-  const cnt = new Array(12).fill(0);
-  records.forEach(r => {
-    const m = detectValue(r, ['mais', 'monat', 'month', 'mois']);
-    const v = detectValue(r, ['pernottaziuns', 'logiernächte', 'overnight_stays', 'nuitees', 'valur']);
-    if (m !== null && v !== null) {
-      const idx = (parseInt(m, 10) || m) - 1;
-      if (idx >= 0 && idx < 12) { agg[idx] += v; cnt[idx]++; }
-    }
+  const sorted = [...records].sort((a, b) => {
+    const ma = detectValue(a, ['monat', 'mais', 'month']);
+    const mb = detectValue(b, ['monat', 'mais', 'month']);
+    return parseInt(ma, 10) - parseInt(mb, 10);
   });
-  const values = agg.map((s, i) => cnt[i] > 0 ? Math.round(s / cnt[i] / 1000) : 0);
-  return { labels: MONTH_DE, values, unit: 'Tsd. Logiernächte', year: new Date().getFullYear() };
+  const values = sorted.map(r => {
+    const v = detectValue(r, ['total', 'logiernachte', 'pernottaziuns', 'overnight_stays']);
+    return v !== null ? Math.round(v / 1000) : 0;
+  });
+  return { labels: MONTH_DE.slice(0, sorted.length), values, unit: 'Tsd. Logiernächte', year: new Date().getFullYear() };
 }
 
 function parseTourismMunicipalities(records) {
   if (!records || !records.length) return null;
   const top = records.slice(0, 12);
-  const labels = top.map(r => detectLabel(r, ['vischnanca', 'gemeinde', 'municipality', 'nom']));
+  const labels = top.map(r => detectLabel(r, ['gemeinde_name', 'gemeinde', 'vischnanca', 'municipality']));
   const values = top.map(r => {
-    const v = detectValue(r, ['pernottaziuns', 'logiernächte', 'overnight_stays', 'valur']);
+    const v = detectValue(r, ['total', 'logiernachte', 'pernottaziuns', 'overnight_stays']);
     return v !== null ? Math.round(v / 1000) : null;
   });
   if (labels.some(l => !l) || values.some(v => v === null)) return null;
@@ -1005,29 +804,23 @@ function parseParahotellerie(records) {
 function parseCrossBorderCommuters(records) {
   if (!records || !records.length) return null;
   const sorted = [...records].sort((a, b) => {
-    const da = String(detectLabel(a, ['datum', 'date', 'quartal', 'period']) || '');
-    const db = String(detectLabel(b, ['datum', 'date', 'quartal', 'period']) || '');
-    return da.localeCompare(db);
+    const ya = detectLabel(a, ['jahr', 'onn', 'year']);
+    const yb = detectLabel(b, ['jahr', 'onn', 'year']);
+    return String(ya).localeCompare(String(yb));
   });
-  // Aggregate by year
-  const byYear = {};
-  sorted.forEach(r => {
-    const dt = detectLabel(r, ['datum', 'date', 'period']) || '';
-    const yr = dt.substring(0, 4);
-    const v  = detectValue(r, ['cunfinaris', 'grenzgaenger', 'cross_border', 'valur']) || 0;
-    if (!byYear[yr]) byYear[yr] = { sum: 0, cnt: 0 };
-    byYear[yr].sum += v; byYear[yr].cnt++;
-  });
-  const labels = Object.keys(byYear).sort();
-  const values = labels.map(y => Math.round(byYear[y].sum / byYear[y].cnt));
+  const labels = sorted.map(r => String(detectLabel(r, ['jahr', 'onn', 'year'])));
+  const values = sorted.map(r => detectValue(r, ['total', 'anzahl_personen', 'cunfinaris', 'grenzgaenger']) || 0);
   if (!labels.length) return null;
-  return { labels, values, unit: 'Grenzgänger', year: new Date().getFullYear() };
+  return { labels, values, unit: 'Beschäftigte', year: new Date().getFullYear() };
 }
 
 function parseExports(records) {
   if (!records || !records.length) return null;
-  const labels = records.map(r => detectLabel(r, ['warengruppe', 'product_group', 'categorie', 'label']));
-  const values = records.map(r => detectValue(r, ['valur', 'wert', 'value', 'betrag']));
+  const labels = records.map(r => detectLabel(r, ['cpa_section', 'warengruppe', 'product_group']));
+  const values = records.map(r => {
+    const v = detectValue(r, ['total', 'tot1_chf', 'valur', 'wert']);
+    return v !== null ? +(v / 1e6).toFixed(1) : null;
+  });
   if (labels.some(l => !l) || values.some(v => v === null)) return null;
   return { labels, values, unit: 'Mio. CHF', year: new Date().getFullYear() };
 }
@@ -1035,7 +828,10 @@ function parseExports(records) {
 function parseTradePartners(records) {
   if (!records || !records.length) return null;
   const labels = records.map(r => detectLabel(r, ['land', 'country', 'pays', 'partner']));
-  const values = records.map(r => detectValue(r, ['valur_export', 'export_wert', 'export_value', 'valur']));
+  const values = records.map(r => {
+    const v = detectValue(r, ['total', 'tot1_chf', 'valur_export', 'export_wert']);
+    return v !== null ? +(v / 1e6).toFixed(1) : null;
+  });
   if (labels.some(l => !l) || values.some(v => v === null)) return null;
   return { labels, values, unit: 'Mio. CHF Export', year: new Date().getFullYear() };
 }
@@ -1085,8 +881,22 @@ function buildChart(story, data) {
   const canvas = document.getElementById('mainChart');
   if (!canvas) return;
   const ctx  = canvas.getContext('2d');
-  const d    = data || story.fallbackData;
+  const d    = data;
   const type = story.chartType;
+
+  // No data: show placeholder message
+  if (!d) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.fillStyle = '#6B6763';
+    ctx.font = "14px 'Inter', system-ui, sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText('Daten werden geladen…', canvas.width / 2, canvas.height / 2 - 10);
+    ctx.font = "12px 'Inter', system-ui, sans-serif";
+    ctx.fillText('(Verbindung zu data.gr.ch)', canvas.width / 2, canvas.height / 2 + 14);
+    ctx.restore();
+    return;
+  }
 
   const baseFont = { family: "'Inter', system-ui, sans-serif", size: 12 };
   const tooltipCfg = {
@@ -1376,16 +1186,18 @@ function renderStory(index) {
   const weekBadgeEl = document.getElementById('story-week-badge');
   if (weekBadgeEl) weekBadgeEl.textContent = 'Woche ' + s.week;
 
-  // Key Facts
+  // Key Facts (only render if present and non-empty)
   const factsEl = document.getElementById('facts-grid');
   if (factsEl) {
-    factsEl.innerHTML = s.keyFacts.map(function(f) {
+    const facts = s.keyFacts || [];
+    factsEl.innerHTML = facts.map(function(f) {
       return '<div class="fact-card">' +
         '<div class="fact-number">' + f.number + '</div>' +
         '<div class="fact-label">' + f.label + '</div>' +
         '<div class="fact-context">' + f.context + '</div>' +
         '</div>';
     }).join('');
+    factsEl.style.display = facts.length ? '' : 'none';
   }
 
   // Analysis paragraphs
@@ -1399,11 +1211,11 @@ function renderStory(index) {
   // Source line
   setEl('story-source', 'Quelle: ' + s.source);
 
-  // 2. Build chart with fallback data first
+  // 2. Build chart (shows loading state until live data arrives)
   buildChart(s, null);
 
-  // 3. Set badge to fallback initially
-  setDataBadge('fallback', 'Quelldaten: ' + s.source);
+  // 3. Set badge to loading initially
+  setDataBadge('loading', s.apiDatasetId ? 'Lade Daten von data.gr.ch…' : 'Keine Live-Daten verfügbar');
 
   // 4. Fill export panel
   const liEl = document.getElementById('linkedin-output');
