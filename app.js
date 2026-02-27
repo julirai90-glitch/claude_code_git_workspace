@@ -334,15 +334,29 @@ const STORIES = [
     lead: 'Neben den 520 klassifizierten Hotels gibt es in Graubünden Tausende Ferienwohnungen und mehrere Dutzend Campingplätze. Die Parahotellerie ist ein unterschätzter Faktor — in manchen Tälern übernachten mehr Menschen ausserhalb von Hotels als darin.',
     chartTitle: 'Übernachtungen Hotellerie vs. Parahotellerie',
     chartSubtitle: 'Logiernächte nach Unterkunftsart in Tsd. · Statistik Graubünden (dvs_awt_econ_20250331)',
-    chartType: 'bar',
+    chartType: 'groupedbar',
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    keyFacts: [],
+    staticData: {
+      labels: ['2016','2017','2018','2019','2020','2021','2022','2023','2024'],
+      series: [
+        { label: 'Hotellerie',          color: '#1E3A5F', values: [4622,4847,5129,5252,4764,5130,5542,5393,5493] },
+        { label: 'Ferienwohnungen',     color: '#B5001E', values: [1819,1809,1925,1915,2202,2295,2016,1966,1929] },
+        { label: 'Kollektivunterkünfte',color: '#6B6763', values: [746,746,812,846,669,455,775,870,920] },
+        { label: 'Campingplätze',       color: '#D4A847', values: [276,295,354,369,484,532,479,508,545] }
+      ],
+      unit: 'Tsd. Logiernächte'
+    },
+    keyFacts: [
+      { number: '3\'394', label: 'Tsd. Parahotellerie 2024', context: 'Ferienwohnungen + Kollektivunterkünfte + Camping' },
+      { number: '38 %', label: 'Anteil Parahotellerie', context: 'Anteil an allen erfassten Logiernächten 2024' },
+      { number: '+66 %', label: 'Camping-Wachstum', context: 'Campingplätze: von 276 Tsd. (2016) auf 545 Tsd. (2024)' }
+    ],
     analysis: [
-      'Neben den rund 15,4 Millionen Hotelübernachtungen verzeichnet Graubünden weitere 8 bis 9 Millionen Übernachtungen in der Parahotellerie — also in Ferienwohnungen, Gruppenunterkünften, auf Campingplätzen und in Jugendherbergen. Die Parahotellerie macht damit rund 35 bis 37 Prozent aller Übernachtungen aus.',
-      'Ferienwohnungen sind die dominante Parahotellerie-Form. Graubünden weist eine überdurchschnittlich hohe Zweitwohnungsdichte auf. Die Volksinitiative zur Beschränkung des Zweitwohnungsbaus (angenommen 2012) hat neue Baubewilligungen für Zweitwohnungen in Gemeinden mit einem Zweitwohnungsanteil über 20 Prozent gestoppt, lässt aber den bestehenden Bestand unberührt.',
-      'Statistisch erfasste Parahotellerie-Betriebe umfassen Campingplätze, Gruppenunterkünfte und gewerblich vermietete Ferienwohnungen. Ein unbekannter Teil der Ferienwohnungen wird privat vermietet und erscheint nicht in der offiziellen Logiernächtestatistik. Die tatsächliche Zahl der Übernachtungen im Kanton ist damit höher als offiziell ausgewiesen.'
+      'Die Grafik zeigt die erfassten Logiernächte in Graubünden nach Unterkunftsart von 2016 bis 2024. Die Hotellerie ist mit rund 5,5 Millionen Übernachtungen der grösste Einzelbereich. Die drei Parahotellerie-Kategorien zusammen erreichten 2024 rund 3,4 Millionen Nächte — das entspricht 38 Prozent aller erfassten Übernachtungen.',
+      'Innerhalb der Parahotellerie sind Ferienwohnungen mit rund 1,9 Millionen Nächten (2024) klar dominierend. Kollektivunterkünfte — Jugendherbergen, Gruppenunterkünfte, Hütten — erreichen rund 920\'000 Nächte. Campingplätze haben sich von 276\'000 (2016) auf 545\'000 (2024) nahezu verdoppelt.',
+      'Nicht in diesen Zahlen enthalten: privat vermietete Ferienwohnungen, die nicht als gewerbliche Betriebe registriert sind. Die tatsächliche Zahl der Übernachtungen im Kanton liegt höher als in der Statistik ausgewiesen.'
     ],
     source: 'Bundesamt für Statistik, Parahotellerie-Statistik; Statistik Graubünden 2023',
     linkedinPost: 'Die Hotelstatistik erzählt nur die halbe Geschichte des Bündner Tourismus.\n\n15,4 Mio. Hotelübernachtungen 2023 — das ist die bekannte Zahl.\n\nWas fehlt: Weitere 8+ Millionen Nächte in Ferienwohnungen, Camping und Gruppenunterkünften.\n\nDer Gesamttourismus Graubündens: über 27 Millionen Übernachtungen.\n\n3 Fakten zur Parahotellerie:\n→ 40\'000+ Ferienwohnungen im Kanton\n→ Zweitwohnungsanteil: einer der höchsten in der Schweiz\n→ Neue Ferienwohnungen: seit 2012 stark reguliert (Weber-Initiative)\n\nDas Paradox: Ferienwohnungen generieren Logiernächte, aber wenig lokale Wertschöpfung. Gäste kochen selbst, nutzen selten Restaurants.\n\nFür Bergdörfer ist das relevant: Vollbesetzte Ferienwohnungen im Winter ≠ belebtes Dorf.\n\nDie Daten kommen aus unserem 4. Tourismusstory. #Graubünden #Datenjournalismus #Tourismus',
@@ -1227,6 +1241,53 @@ function buildChart(story, data) {
               color: '#161616',
               autoSkip: false
             }
+          }
+        }
+      }
+    });
+    return;
+  }
+
+  // ---- GROUPED BAR ----
+  if (type === 'groupedbar') {
+    const datasets = (d.series || []).map(function(s) {
+      return {
+        label: s.label,
+        data: s.values,
+        backgroundColor: s.color,
+        borderWidth: 0,
+        borderRadius: 2
+      };
+    });
+    activeChart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels: d.labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true, position: 'top',
+            labels: { font: baseFont, color: '#161616', boxWidth: 14, padding: 14 }
+          },
+          tooltip: {
+            backgroundColor: '#161616',
+            titleFont: { ...baseFont, size: 13, weight: '600' },
+            bodyFont: baseFont,
+            padding: 12,
+            callbacks: {
+              label: function(ctx) {
+                return '  ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('de-CH') + ' ' + (d.unit || '');
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: baseFont, color: MUTED } },
+          y: {
+            beginAtZero: true,
+            grid: { color: GRID },
+            ticks: { font: baseFont, color: MUTED, callback: function(v) { return (v/1000).toFixed(0) + 'k'; } }
           }
         }
       }
