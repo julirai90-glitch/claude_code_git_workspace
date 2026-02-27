@@ -640,7 +640,7 @@ async function fetchDatasetRecords(datasetId, queryParams) {
     } else {
       params.set('limit', '100');
     }
-    const url = `${API_BASE}/${datasetId}/records?${params.toString()}`;
+    const url = `${API_BASE}/${datasetId}/records?${params.toString().replace(/\+/g, '%20')}`;
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
