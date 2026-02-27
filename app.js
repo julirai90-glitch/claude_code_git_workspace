@@ -305,8 +305,6 @@ const STORIES = [
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-      year: 2023
-    },
     keyFacts: [],
     analysis: [
       'Die Hotellerie ist das Schaufenster des Bündner Tourismus — aber nicht das ganze Bild. Neben den offiziellen 15,4 Millionen Hotelübernachtungen stehen weitere 8 bis 9 Millionen Nächte in Ferienwohnungen, Gruppenunterkünften, auf Campingplätzen und in Jugendherbergen. Der Bündner Tourismus ist grösser als die Hotelstatistik suggeriert.',
