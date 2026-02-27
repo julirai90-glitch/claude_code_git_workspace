@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Datenstory Graubünden</title>
-  <meta name="description" content="Eine Datengeschichte pro Tag, basierend auf offenen Statistikdaten des Kantons Graubünden." />
+  <meta name="description" content="Täglich eine datengestützte Geschichte aus dem Kanton Graubünden – basierend auf offenen Statistikdaten." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
@@ -21,10 +21,25 @@
           <div class="logo-mark">GR</div>
           <div class="logo-text">Datenstory</div>
         </div>
-        <div class="header-date" id="header-date"></div>
+        <div class="header-right">
+          <span class="header-date" id="header-date"></span>
+          <button class="calendar-toggle" id="calendar-toggle" title="Redaktionskalender">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="1" y="3" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M1 7h14" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 1v4M11 1v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Kalender
+          </button>
+        </div>
       </div>
     </div>
   </header>
+
+  <!-- ===== CALENDAR STRIP ===== -->
+  <nav class="calendar-strip" id="calendar-strip" aria-label="Redaktionskalender" hidden>
+    <div class="calendar-inner" id="calendar-inner"></div>
+  </nav>
 
   <!-- ===== MAIN ===== -->
   <main>
@@ -35,6 +50,7 @@
         <div class="story-eyebrow">
           <span class="story-tag" id="story-category"></span>
           <span class="story-label" id="story-counter"></span>
+          <span class="story-date" id="story-publish-date"></span>
         </div>
         <h1 class="story-title" id="story-title">Wird geladen…</h1>
         <p class="story-lead" id="story-lead"></p>
@@ -74,6 +90,39 @@
       </div>
     </section>
 
+    <!-- Export Panel -->
+    <section class="export-section">
+      <div class="container">
+        <details class="export-panel">
+          <summary class="export-summary">
+            <span>Inhalte exportieren</span>
+            <svg class="export-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </summary>
+          <div class="export-body">
+
+            <div class="export-block">
+              <div class="export-block-header">
+                <h3>LinkedIn-Post</h3>
+                <button class="copy-btn" data-target="export-linkedin">Kopieren</button>
+              </div>
+              <textarea class="export-textarea" id="export-linkedin" readonly rows="8"></textarea>
+            </div>
+
+            <div class="export-block">
+              <div class="export-block-header">
+                <h3>WordPress-Artikel (HTML)</h3>
+                <button class="copy-btn" data-target="export-wordpress">Kopieren</button>
+              </div>
+              <textarea class="export-textarea" id="export-wordpress" readonly rows="12"></textarea>
+            </div>
+
+          </div>
+        </details>
+      </div>
+    </section>
+
     <!-- Navigation -->
     <section class="story-nav">
       <div class="container">
@@ -98,10 +147,13 @@
     <div class="container">
       <div class="footer-inner">
         <p>Daten: <a href="https://data.gr.ch" target="_blank" rel="noopener">Statistik Graubünden · data.gr.ch</a></p>
-        <p>Eine datengestützte Geschichte pro Tag aus dem Kanton Graubünden</p>
+        <p>20 datengestützte Geschichten aus dem Kanton Graubünden · März 2026</p>
       </div>
     </div>
   </footer>
+
+  <!-- Copy Toast -->
+  <div class="copy-toast" id="copy-toast" aria-live="polite">Kopiert!</div>
 
   <script src="app.js"></script>
 </body>
