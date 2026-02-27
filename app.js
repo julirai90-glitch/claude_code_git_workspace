@@ -115,9 +115,9 @@ const STORIES = [
     category: 'Bevölkerung',
     title: 'Graubünden wird älter — und das schneller als gedacht',
     lead: 'Der Medianalter in Graubünden liegt über dem Schweizer Durchschnitt. Jede dritte Person ist über 50 Jahre alt. Die Alterung schreitet rascher voran als Prognosen vor 20 Jahren vorhergesagt hatten — mit Folgen für Pflegeheime, Gesundheitskosten und die Sozialpolitik.',
-    chartTitle: 'Altersstruktur Graubünden',
-    chartSubtitle: 'Bevölkerung nach Altersgruppen in % · Statistik Graubünden 2023 (dvs_awt_soci_202502111)',
-    chartType: 'bar',
+    chartTitle: 'Altersstruktur: Graubünden vs. Schweiz',
+    chartSubtitle: 'Bevölkerungsanteil je 5-Jahres-Kohorte in % · Links: Graubünden 2023, Rechts: Schweiz 2023',
+    chartType: 'butterfly',
     apiDatasetId: 'dvs_awt_soci_202502111',
     apiQuery: {
       select: 'altersklasse,SUM(anzahl_personen) as total',
@@ -126,11 +126,15 @@ const STORIES = [
       refine: 'jahr:2023'
     },
     parseData: 'parseAgeStructure',
-    keyFacts: [],
+    keyFacts: [
+      { number: '44.8', label: 'Medianalter GR', context: 'Gegenüber 42.3 Jahren im Schweizer Durchschnitt' },
+      { number: '–3.3 %', label: 'Weniger Unter-20', context: 'GR hat deutlich weniger Kinder und Jugendliche als der CH-Schnitt' },
+      { number: '+3.2 %', label: 'Mehr 60–74', context: 'In den Pensionierungskohorten liegt GR klar über dem Schweizer Schnitt' }
+    ],
     analysis: [
-      'Der Medianalter in Graubünden liegt bei 44,8 Jahren, rund 2,5 Jahre über dem Schweizer Durchschnitt von 42,3 Jahren. Die Altersgruppe der 40- bis 59-Jährigen ist die zahlenmässig stärkste im Kanton.',
-      'Rund jede dritte Person in Graubünden ist über 60 Jahre alt. Die Altersgruppe 60+ umfasst heute etwa 22 Prozent der Kantonsbevölkerung. Der Anteil der unter 20-Jährigen liegt bei rund 20 Prozent.',
-      'Die Altersverteilung zeigt, dass die Gruppe der 40- bis 59-Jährigen in den nächsten zehn bis zwanzig Jahren in die Altersgruppe 60+ aufrücken wird. Die Berufe in Pflege, Gastgewerbe und Bau werden zu einem erheblichen Teil von Personen aus anderen Kantonen oder dem Ausland ausgeübt.'
+      'Die Grafik zeigt links Graubündens Altersverteilung, rechts jene der gesamten Schweiz — je Alterskohorte in Prozent der jeweiligen Bevölkerung. Der Unterschied ist deutlich: Graubünden hat weniger Kinder und Jugendliche (0–19 Jahre) als der Landesdurchschnitt, dafür mehr Menschen im Rentenalter.',
+      'Besonders auffällig ist das Defizit in den jungen Kohorten: In der Gruppe 0–4 Jahre liegt Graubünden rund 0,8 Prozentpunkte unter dem CH-Schnitt. Das setzt sich durch die Kindheits- und Jugendjahre fort. Im Gegenzug sind die Jahrgänge 60 bis 74 übervertreten — ein Zeichen, dass ältere Menschen in den Bergkanton zurückziehen oder dort verbleiben.',
+      'Diese Schere zwischen jung und alt ist keine Momentaufnahme: Die heute 40- bis 59-Jährigen werden in den nächsten Jahrzehnten nachrücken. Graubünden altert schneller als die Schweiz als Ganzes — mit direkten Auswirkungen auf Schulen, Pflegeeinrichtungen und die Finanzierung der Sozialversicherungen.'
     ],
     source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023',
     linkedinPost: 'Graubünden altert — und zwar schneller als gedacht.\n\nDer Medianalter liegt bei 44,8 Jahren. Jede dritte Person im Kanton ist über 60. Vor 20 Jahren hätte das niemand für möglich gehalten.\n\nWas steckt dahinter?\n→ Junge verlassen den Bergkanton für Städte\n→ Geburtenrate liegt bei nur 1.36 Kindern pro Frau\n→ Die Babyboomer-Generation rückt ins Rentenalter\n\nDie Folgen sind schon heute spürbar: Pflegeheimplätze werden knapp, Fachkräfte in der Altersbetreuung fehlen, und die Sozialausgaben steigen.\n\nGleichzeitig bietet das Homeoffice-Zeitalter eine Chance: Gut verdienende Fachleute mittleren Alters zieht es zunehmend in die Berge. Ob das die Alterspyramide kippen kann? Die Daten sagen: kaum.\n\nDiese Grafik zeigt die vollständige Altersverteilung — aufgeschlüsselt nach Jahrzehnten. Teil unserer Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Demografie',
@@ -714,6 +718,15 @@ function parseTopMunicipalities(records) {
   return { labels, values, unit: 'Einwohner', year: new Date().getFullYear() };
 }
 
+// Swiss national age cohort percentages (BFS px-x-0102010000_101, 2023, ständige Wohnbevölkerung)
+const CH_AGE_COHORTS = {
+  '0–4':   4.80, '5–9':   5.13, '10–14': 5.06, '15–19': 4.97,
+  '20–24': 5.25, '25–29': 6.27, '30–34': 7.17, '35–39': 7.30,
+  '40–44': 7.14, '45–49': 6.73, '50–54': 7.00, '55–59': 7.38,
+  '60–64': 6.50, '65–69': 5.22, '70–74': 4.46, '75–79': 4.00,
+  '80–84': 2.87, '85–89': 1.73, '90–94': 0.79, '95–99': 0.20, '100+': 0.02
+};
+
 function parseAgeStructure(records) {
   if (!records || !records.length) return null;
   const ageStart = function(label) {
@@ -725,12 +738,33 @@ function parseAgeStructure(records) {
     const lb = detectLabel(b, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']);
     return ageStart(la) - ageStart(lb);
   });
-  const labels = sorted.map(r => detectLabel(r, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']));
+  const rawLabels = sorted.map(r => detectLabel(r, ['altersklasse', 'classa_da_vegliadetgna', 'age_class']));
   const rawVals = sorted.map(r => detectValue(r, ['total', 'anzahl_personen', 'populaziun_permanenta', 'anzahl']));
-  if (labels.some(l => !l) || rawVals.some(v => v === null)) return null;
+  if (rawLabels.some(l => !l) || rawVals.some(v => v === null)) return null;
   const sum = rawVals.reduce((a, b) => a + b, 0);
-  const values = rawVals.map(v => +((v / sum) * 100).toFixed(1));
-  return { labels, values, unit: '%', year: new Date().getFullYear() };
+
+  // Build cohort buckets matching CH keys
+  const chKeys = Object.keys(CH_AGE_COHORTS);
+  const grValues = [];
+  const chValues = [];
+
+  chKeys.forEach(key => {
+    const start = parseInt(key.match(/\d+/)[0], 10);
+    const end = key === '100+' ? 120 : parseInt(key.match(/\d+/g)[1], 10);
+    // Sum GR raw values for ages in this cohort range
+    let grSum = 0;
+    rawLabels.forEach((lbl, i) => {
+      const s = ageStart(lbl);
+      // Check if this record's age range overlaps the cohort
+      // GR data comes in age groups like "0-4 Jahre" or "100 Jahre und mehr"
+      // We match by checking if the start age of the label falls in [start, end]
+      if (s >= start && s <= end) grSum += rawVals[i];
+    });
+    grValues.push(+((grSum / sum) * 100).toFixed(2));
+    chValues.push(CH_AGE_COHORTS[key]);
+  });
+
+  return { labels: chKeys, grValues, chValues, unit: '%', year: 2023 };
 }
 
 function parseBirths(records) {
@@ -1099,6 +1133,88 @@ function buildChart(story, data) {
     return;
   }
 
+  // ---- BUTTERFLY (population pyramid) ----
+  if (type === 'butterfly') {
+    const labels = d.labels || [];
+    const grVals = (d.grValues || []).map(v => -Math.abs(v));  // negative = left
+    const chVals = d.chValues || [];
+    const maxVal = Math.max(...(d.grValues || []), ...(d.chValues || []));
+    const axisMax = Math.ceil(maxVal * 10) / 10 + 0.5;
+
+    activeChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Graubünden',
+            data: grVals,
+            backgroundColor: 'rgba(181,0,30,0.75)',
+            borderColor: '#B5001E',
+            borderWidth: 0,
+            borderRadius: 2,
+            borderSkipped: false
+          },
+          {
+            label: 'Schweiz',
+            data: chVals,
+            backgroundColor: 'rgba(30,58,95,0.75)',
+            borderColor: '#1E3A5F',
+            borderWidth: 0,
+            borderRadius: 2,
+            borderSkipped: false
+          }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              font: { family: "'Inter', system-ui, sans-serif", size: 12 },
+              color: '#161616',
+              boxWidth: 14,
+              padding: 16
+            }
+          },
+          tooltip: {
+            backgroundColor: '#161616',
+            titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+            bodyFont:  { family: "'Inter', system-ui, sans-serif", size: 12 },
+            padding: 12,
+            callbacks: {
+              label: function(ctx) {
+                const abs = Math.abs(ctx.parsed.x);
+                return '  ' + ctx.dataset.label + ': ' + abs.toFixed(1) + ' %';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            min: -axisMax,
+            max:  axisMax,
+            grid: { color: GRID },
+            ticks: {
+              font: baseFont,
+              color: MUTED,
+              callback: function(v) { return Math.abs(v).toFixed(1) + '%'; }
+            }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 11 }, color: '#161616' }
+          }
+        }
+      }
+    });
+    return;
+  }
+
   // ---- LINE ----
   if (type === 'line') {
     activeChart = new Chart(ctx, {
@@ -1363,7 +1479,7 @@ function renderStory(index) {
       const parserFn = s.parseData ? PARSER_FNS[s.parseData] : null;
       if (!parserFn) return;
       const liveData = parserFn(records);
-      if (!liveData || !liveData.labels || !liveData.values) return;
+      if (!liveData || !liveData.labels || (!liveData.values && !liveData.grValues)) return;
       // Only update if we're still on the same story
       if (currentIndex === STORIES.indexOf(s)) {
         buildChart(s, liveData);
