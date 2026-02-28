@@ -851,18 +851,16 @@ const STORIES = [
       year: 2023
     },
     keyFacts: [
-      { number: '~16', label: 'Gemeinden für 50 %', context: 'der Bündner Wohnbevölkerung 2023' },
-      { number: '~85', label: 'Weitere Gemeinden',  context: 'mit den anderen 50 % der Bevölkerung' },
+      { number: '16',  label: 'Gemeinden für 50 %', context: 'der Bündner Wohnbevölkerung 2023' },
+      { number: '85',  label: 'Weitere Gemeinden',  context: 'mit den anderen 50 % der Bevölkerung' },
       { number: '101', label: 'Gemeinden total',     context: 'Stand 2023, nach Fusionen' }
     ],
     analysis: [
-      'Graubünden zählte 2023 rund 200\'000 Einwohnerinnen und Einwohner, verteilt auf 101 Gemeinden. Sortiert man die Gemeinden nach Bevölkerungsgrösse und summiert von oben, braucht es ca. 16 Gemeinden bis die Hälfte der Kantonsbevölkerung erreicht ist. Die anderen ~85 Gemeinden beheimaten die zweite Hälfte.',
-      '<span id="muni-list-live">Bekannte grosse Gemeinden (Schätzwerte, Top 10): Chur (ca. 40\'200), Davos (ca. 11\'700), Landquart (ca. 9\'400), Domat/Ems (ca. 7\'900), Poschiavo (ca. 3\'900), Thusis (ca. 3\'500), Samedan (ca. 3\'200), Ilanz/Glion (ca. 2\'500), Scuol (ca. 2\'200) — vollständige Live-Liste wird aus data.gr.ch geladen …</span>',
+      'Graubünden zählte 2023 rund 200\'000 Einwohnerinnen und Einwohner, verteilt auf 101 Gemeinden. Sortiert man die Gemeinden nach Bevölkerungsgrösse und summiert von oben, braucht es rund 16 Gemeinden bis die Hälfte der Kantonsbevölkerung erreicht ist.',
+      '<span id="muni-list-live"><strong>Gemeinden in der ersten Hälfte (grösste 10, Stand 2023):</strong><ul style="columns:2;column-gap:2em;margin:0.5em 0 0;padding-left:1.2em;font-size:0.9em"><li>Chur (40\'200)</li><li>Davos (11\'700)</li><li>Landquart (9\'400)</li><li>Domat/Ems (7\'900)</li><li>Poschiavo (3\'900)</li><li>Thusis (3\'500)</li><li>Samedan (3\'200)</li><li>Ilanz/Glion (2\'500)</li><li>Scuol (2\'200)</li><li>… plus ca. 6 weitere</li></ul>Die vollständige Liste aktualisiert sich, wenn Live-Daten von data.gr.ch verfügbar sind.</span>',
       'Quelle: Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023 (dvs_awt_soci_202502111).'
     ],
-    source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023',
-    linkedinPost: '50 % der Bündner Bevölkerung lebt in 16 von 101 Gemeinden.\n\nDas ist keine Übertreibung. Das sind die Daten.\n\nDie andere Hälfte? Verteilt auf 85 Gemeinden — viele davon mit weniger als 500 Einwohnerinnen und Einwohnern.\n\nWas das bedeutet:\n→ Chur allein: ~20 % der Kantonsbevölkerung\n→ Top-4-Gemeinden: über 35 %\n→ 101 Gemeinden mit gleichen Pflichten, aber sehr unterschiedlichen Mitteln\n\nDiese Ungleichverteilung ist Graubündens innenpolitische Daueraufgabe. Kein Wunder, dass die Gemeindefusionen seit 2000 die Zahl von 212 auf 101 halbiert haben.\n\nDatenstory #21 — als Ergänzung zur Bevölkerungsserie.\n\n#Graubünden #Datenjournalismus #Bevölkerung',
-    wordpressHtml: '<h2>Halbierter Kanton: 16 Gemeinden beheimaten die Hälfte aller Bündnerinnen</h2><p class="intro">Graubünden hat 101 Gemeinden. Aber die Hälfte der Bevölkerung lebt in nur 16 davon — während die anderen 85 Gemeinden zusammen genauso viele Menschen zählen. Eine einfache Zahl, die zeigt, wie extrem ungleich die Bevölkerung im grössten Schweizer Kanton verteilt ist.</p><p>Die Hälfte der Bündner Bevölkerung lebt in nur 16 von 101 Gemeinden — das sind gerade einmal 16 Prozent aller Gemeinden. Die andere Hälfte verteilt sich auf 85 Gemeinden. Hinter dieser schlichten Zahl steckt die ganze geografische und wirtschaftliche Realität Graubündens: Zentren und Täler, Wachstum und Abwanderung, Erreichbarkeit und Isolation.</p><p>Chur allein macht rund 20 Prozent der Kantonsgesamtbevölkerung aus. Die vier grössten Gemeinden — Chur, Davos, Landquart, Domat/Ems — kommen zusammen bereits auf über 35 Prozent. Die Konzentration ist nicht gleichmässig, sondern steil: wenige grosse Zentren, dann ein langer Schwanz kleiner und kleinster Gemeinden.</p><p>Für die Raumplanung und die Gemeindeautonomie ist das eine politische Herausforderung. Kleine Gemeinden mit 300 oder 500 Einwohnern haben dieselben Pflichten wie Chur — aber einen Bruchteil der Mittel. Schule, Wasser, Strassen, Verwaltung: All das muss finanziert werden. Kein Wunder, dass die Zahl der Gemeinden seit 2000 von 212 auf 101 gesunken ist — und der Druck anhält.</p><p><em>Quelle: Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023</em></p>'
+    source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023'
   }
 
 ]; // end STORIES
@@ -1402,26 +1400,6 @@ function scrollActiveDayIntoView() {
 }
 
 // ============================================================
-// TOAST NOTIFICATION
-// ============================================================
-
-function showToast(msg) {
-  let toast = document.getElementById('copy-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'copy-toast';
-    toast.style.cssText =
-      'position:fixed;bottom:24px;right:24px;background:#161616;color:#fff;' +
-      'padding:10px 20px;border-radius:6px;font-size:14px;z-index:9999;' +
-      'opacity:0;transition:opacity 0.3s;pointer-events:none;';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg || 'Kopiert!';
-  toast.style.opacity = '1';
-  setTimeout(function() { toast.style.opacity = '0'; }, 2000);
-}
-
-// ============================================================
 // DATA BADGE
 // ============================================================
 
@@ -1491,14 +1469,7 @@ function renderStory(index) {
   // 3. Set badge to fallback initially
   setDataBadge('fallback', 'Quelldaten: ' + s.source);
 
-  // 4. Fill export panel
-  const liEl = document.getElementById('linkedin-output');
-  if (liEl) liEl.value = generateLinkedIn(s);
-
-  const wpEl = document.getElementById('wordpress-output');
-  if (wpEl) wpEl.value = generateWordpress(s);
-
-  // 5. Update calendar active state
+  // 4. Update calendar active state
   renderCalendar();
 
   // 6. Update URL hash (silent)
@@ -1594,33 +1565,6 @@ function renderStory(index) {
     if (e.key === 'ArrowRight') renderStory((currentIndex + 1) % STORIES.length);
   });
 
-  // Copy buttons
-  document.querySelectorAll('.copy-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      const targetId = btn.dataset.target;
-      const target   = document.getElementById(targetId);
-      if (!target) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(target.value).then(function() {
-          showToast('Kopiert!');
-        }).catch(function() {
-          fallbackCopy(target);
-        });
-      } else {
-        fallbackCopy(target);
-      }
-    });
-  });
-
-  function fallbackCopy(el) {
-    el.select();
-    try {
-      document.execCommand('copy');
-      showToast('Kopiert!');
-    } catch (err) {
-      showToast('Bitte manuell kopieren (Strg+C)');
-    }
-  }
 
   // Handle browser back/forward
   window.addEventListener('hashchange', function() {
