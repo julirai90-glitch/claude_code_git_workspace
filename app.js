@@ -835,6 +835,7 @@ const STORIES = [
     chartTitle: 'Wie viele Gemeinden beheimaten je 50 % der Bündner Bevölkerung?',
     chartSubtitle: 'Anzahl Gemeinden je Bevölkerungshälfte · Statistik Graubünden 2023 (dvs_awt_soci_202502111)',
     chartType: 'doughnut',
+    chartColors: ['#0077BB', '#EE7733'],
     apiDatasetId: 'dvs_awt_soci_202502111',
     apiQuery: {
       select: 'vischnanca,populaziun_permanenta',
@@ -844,20 +845,20 @@ const STORIES = [
     },
     parseData: 'parseConcentration',
     fallbackData: {
-      labels: ['16 Gemeinden – erste Hälfte', '85 Gemeinden – zweite Hälfte'],
+      labels: ['~16 Gemeinden – erste Hälfte', '~85 Gemeinden – zweite Hälfte'],
       values: [16, 85],
       unit: 'Gemeinden',
       year: 2023
     },
     keyFacts: [
-      { number: '16',  label: 'Gemeinden für 50 %', context: 'der Bündner Wohnbevölkerung' },
-      { number: '85',  label: 'Weitere Gemeinden',   context: 'mit den anderen 50 % der Bevölkerung' },
-      { number: '101', label: 'Gemeinden total',      context: 'nach Fusionswelle seit 2000' }
+      { number: '~16', label: 'Gemeinden für 50 %', context: 'der Bündner Wohnbevölkerung 2023' },
+      { number: '~85', label: 'Weitere Gemeinden',  context: 'mit den anderen 50 % der Bevölkerung' },
+      { number: '101', label: 'Gemeinden total',     context: 'Stand 2023, nach Fusionen' }
     ],
     analysis: [
-      'Die Hälfte der Bündner Bevölkerung lebt in nur 16 von 101 Gemeinden — das sind gerade einmal 16 Prozent aller Gemeinden. Die andere Hälfte verteilt sich auf 85 Gemeinden. Hinter dieser schlichten Zahl steckt die ganze geografische und wirtschaftliche Realität Graubündens: Zentren und Täler, Wachstum und Abwanderung, Erreichbarkeit und Isolation.',
-      'Chur allein macht rund 20 Prozent der Kantonsgesamtbevölkerung aus. Die vier grössten Gemeinden — Chur, Davos, Landquart, Domat/Ems — kommen zusammen bereits auf über 35 Prozent. Die Konzentration ist nicht gleichmässig, sondern steil: wenige grosse Zentren, dann ein langer Schwanz kleiner und kleinster Gemeinden.',
-      'Für die Raumplanung und die Gemeindeautonomie ist das eine politische Herausforderung. Kleine Gemeinden mit 300 oder 500 Einwohnern haben dieselben Pflichten wie Chur — aber einen Bruchteil der Mittel. Schule, Wasser, Strassen, Verwaltung: All das muss finanziert werden. Kein Wunder, dass die Zahl der Gemeinden seit 2000 von 212 auf 101 gesunken ist — und der Druck anhält.'
+      'Graubünden zählte 2023 rund 200\'000 Einwohnerinnen und Einwohner, verteilt auf 101 Gemeinden. Sortiert man die Gemeinden nach Bevölkerungsgrösse und summiert von oben, braucht es ca. 16 Gemeinden bis die Hälfte der Kantonsbevölkerung erreicht ist. Die anderen ~85 Gemeinden beheimaten die zweite Hälfte.',
+      '<span id="muni-list-live">Bekannte grosse Gemeinden (Schätzwerte, Top 10): Chur (ca. 40\'200), Davos (ca. 11\'700), Landquart (ca. 9\'400), Domat/Ems (ca. 7\'900), Poschiavo (ca. 3\'900), Thusis (ca. 3\'500), Samedan (ca. 3\'200), Ilanz/Glion (ca. 2\'500), Scuol (ca. 2\'200) — vollständige Live-Liste wird aus data.gr.ch geladen …</span>',
+      'Quelle: Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023 (dvs_awt_soci_202502111).'
     ],
     source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023',
     linkedinPost: '50 % der Bündner Bevölkerung lebt in 16 von 101 Gemeinden.\n\nDas ist keine Übertreibung. Das sind die Daten.\n\nDie andere Hälfte? Verteilt auf 85 Gemeinden — viele davon mit weniger als 500 Einwohnerinnen und Einwohnern.\n\nWas das bedeutet:\n→ Chur allein: ~20 % der Kantonsbevölkerung\n→ Top-4-Gemeinden: über 35 %\n→ 101 Gemeinden mit gleichen Pflichten, aber sehr unterschiedlichen Mitteln\n\nDiese Ungleichverteilung ist Graubündens innenpolitische Daueraufgabe. Kein Wunder, dass die Gemeindefusionen seit 2000 die Zahl von 212 auf 101 halbiert haben.\n\nDatenstory #21 — als Ergänzung zur Bevölkerungsserie.\n\n#Graubünden #Datenjournalismus #Bevölkerung',
@@ -1115,11 +1116,20 @@ function parseConcentration(records) {
   }
   if (!threshold) return null;
   const rest = rows.length - threshold;
+  const topRows = rows.slice(0, threshold);
+  const listItems = topRows.map(function(r) {
+    return '<li>' + r.name + ' (' + r.pop.toLocaleString('de-CH') + ')</li>';
+  }).join('');
+  const listHtml =
+    '<strong>Diese ' + threshold + ' Gemeinden bilden die erste Hälfte (2023):</strong>' +
+    '<ul style="columns:2;column-gap:2em;margin:0.5em 0 0;padding-left:1.2em;font-size:0.9em">' +
+    listItems + '</ul>';
   return {
-    labels: [`${threshold} Gemeinden – erste Hälfte`, `${rest} Gemeinden – zweite Hälfte`],
+    labels: [threshold + ' Gemeinden – erste Hälfte', rest + ' Gemeinden – zweite Hälfte'],
     values: [threshold, rest],
     unit: 'Gemeinden',
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
+    municipalityList: listHtml
   };
 }
 
@@ -1179,13 +1189,14 @@ function buildChart(story, data) {
 
   // ---- DOUGHNUT ----
   if (type === 'doughnut') {
+    const colors = story.chartColors || PALETTE;
     activeChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: d.labels,
         datasets: [{
           data: d.values,
-          backgroundColor: PALETTE,
+          backgroundColor: colors,
           borderWidth: 2,
           borderColor: '#fff',
           hoverOffset: 6
@@ -1521,6 +1532,10 @@ function renderStory(index) {
       if (currentIndex === STORIES.indexOf(s)) {
         buildChart(s, liveData);
         setDataBadge('live', 'Live-Daten via data.gr.ch');
+        if (liveData.municipalityList) {
+          var el = document.getElementById('muni-list-live');
+          if (el) el.outerHTML = liveData.municipalityList;
+        }
       }
     }).catch(function(err) {
       console.info('[Datenstory] Live fetch fehlgeschlagen:', err.message);
