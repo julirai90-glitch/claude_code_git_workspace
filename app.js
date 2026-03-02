@@ -223,6 +223,42 @@ const STORIES = [
     source: 'Statistik Graubünden, Kantonale Bevölkerungsszenarien 2024–2055; data.gr.ch dvs_awt_soci_202505121',
   },
 
+  {
+    id: 'geburten-alter-muetter',
+    week: 1,
+    day: 6,
+    publishDate: fmtDate(workdayDate(1, 5)),
+    category: 'Bevölkerung',
+    title: 'Wann bekommen Frauen Kinder? Das Alter der Mütter in Graubünden',
+    lead: '1970 war die grösste Altersgruppe bei Geburten die unter 25-Jährigen. 2023 sind es die 30- bis 34-Jährigen. Die Verschiebung zeigt sich in jeder Altersgruppe — und erklärt teilweise den Geburtenrückgang.',
+    chartTitle: 'Geburten nach Alter der Mutter 1970–2023',
+    chartSubtitle: 'Lebendgeburten pro Altersgruppe · Amt für Wirtschaft und Tourismus GR',
+    chartType: 'stackedarea',
+    apiDatasetId: null,
+    staticData: {
+      labels: ['1970', '1980', '1990', '2000', '2010', '2020', '2023'],
+      series: [
+        { label: 'unter 25 Jahre', values: [871, 524, 369, 208, 120, 77, 64],  color: '#B5001E', bgColor: 'rgba(181,0,30,0.65)' },
+        { label: '25–29 Jahre',    values: [979, 811, 973, 616, 448, 337, 301], color: '#D4621A', bgColor: 'rgba(212,98,26,0.60)' },
+        { label: '30–34 Jahre',    values: [550, 530, 668, 840, 578, 708, 648], color: '#1E3A5F', bgColor: 'rgba(30,58,95,0.60)' },
+        { label: '35–39 Jahre',    values: [274, 163, 203, 303, 375, 419, 440], color: '#3A7CA5', bgColor: 'rgba(58,124,165,0.55)' },
+        { label: '40+ Jahre',      values: [101, 26, 27, 44, 81, 96, 85],      color: '#6B4C8A', bgColor: 'rgba(107,76,138,0.55)' }
+      ],
+      unit: 'Geburten'
+    },
+    keyFacts: [
+      { number: '−45 %', label: 'Geburten seit 1970', context: 'Von 2\'775 (1970) auf 1\'538 (2023)' },
+      { number: '−93 %', label: 'unter 25-jährige Mütter', context: 'Von 871 (1970) auf 64 (2023)' },
+      { number: '1995', label: 'Wendepunkt', context: 'Ab ca. 1995 überwiegen Geburten bei Müttern über 30 Jahren' }
+    ],
+    analysis: [
+      '1970 entfielen 32 Prozent aller Geburten auf Mütter unter 25 Jahren (871 von 2\'775). 2023 sind es noch 4 Prozent (64 von 1\'538). Die Altersgruppe unter 25 Jahre ist damit um 93 Prozent zurückgegangen.',
+      'Die Gruppe der 30- bis 34-Jährigen ist heute die zahlenmässig grösste: 648 Geburten (42 % aller Geburten 2023). 1970 lag ihr Anteil bei 20 Prozent (550 Geburten). Die 35- bis 39-Jährigen haben ebenfalls stark zugelegt: von 274 (1970) auf 440 (2023), ein Anstieg um 61 Prozent.',
+      'Die Gesamtzahl der Geburten unter 30-jährigen Müttern sank von 1\'850 (1970) auf 365 (2023), ein Rückgang von 80 Prozent. Die Geburten bei Müttern ab 30 Jahren stiegen von 925 auf 1\'173 (+27 %).'
+    ],
+    source: 'Amt für Wirtschaft und Tourismus Graubünden, Bevölkerungsstatistik (Naschientschas vivas)',
+  },
+
   // ── WOCHE 2: TOURISMUS ───────────────────────────────────
 
   {
@@ -481,6 +517,7 @@ const STORIES = [
 
   {
     id: 'arbeitsmarkt',
+    active: false,
     week: 3,
     day: 4,
     publishDate: fmtDate(workdayDate(3, 4)),
@@ -504,6 +541,7 @@ const STORIES = [
 
   {
     id: 'infrastruktur',
+    active: false,
     week: 3,
     day: 5,
     publishDate: fmtDate(workdayDate(3, 5)),
@@ -529,6 +567,7 @@ const STORIES = [
 
   {
     id: 'romanisch',
+    active: false,
     week: 4,
     day: 1,
     publishDate: fmtDate(workdayDate(4, 1)),
@@ -552,6 +591,7 @@ const STORIES = [
 
   {
     id: 'klimaerwaermung',
+    active: false,
     week: 4,
     day: 2,
     publishDate: fmtDate(workdayDate(4, 2)),
@@ -575,6 +615,7 @@ const STORIES = [
 
   {
     id: 'berglandwirtschaft',
+    active: false,
     week: 4,
     day: 3,
     publishDate: fmtDate(workdayDate(4, 3)),
@@ -598,6 +639,7 @@ const STORIES = [
 
   {
     id: 'synthese-indikatoren',
+    active: false,
     week: 4,
     day: 4,
     publishDate: fmtDate(workdayDate(4, 4)),
@@ -621,6 +663,7 @@ const STORIES = [
 
   {
     id: 'datenstory-bilanz',
+    active: false,
     week: 4,
     day: 5,
     publishDate: fmtDate(workdayDate(4, 5)),
@@ -642,7 +685,7 @@ const STORIES = [
     source: 'Datenstory-Serie «Graubünden in Zahlen», März 2026; data.gr.ch',
   }
 
-]; // end STORIES
+].filter(function(s) { return s.active !== false; }); // end STORIES (active:false = Backlog)
 
 
 // ============================================================
@@ -1351,6 +1394,59 @@ function buildChart(story, data) {
             beginAtZero: false,
             grid: { color: GRID },
             ticks: { font: baseFont, color: MUTED, callback: function(v) { return (v/1000).toFixed(0) + 'k'; } }
+          }
+        }
+      }
+    });
+    return;
+  }
+
+  // ---- STACKED AREA ----
+  if (type === 'stackedarea') {
+    const datasets = (d.series || []).map(function(s) {
+      return {
+        label: s.label,
+        data: s.values,
+        borderColor: s.color,
+        backgroundColor: s.bgColor,
+        borderWidth: 1.5,
+        fill: true,
+        tension: 0.35,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        pointBackgroundColor: s.color
+      };
+    });
+    activeChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels: d.labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true, position: 'top',
+            labels: { font: baseFont, color: '#161616', boxWidth: 14, padding: 14 }
+          },
+          tooltip: {
+            backgroundColor: '#161616',
+            titleFont: { ...baseFont, size: 13, weight: '600' },
+            bodyFont: baseFont,
+            padding: 12,
+            callbacks: {
+              label: function(ctx) {
+                return '  ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('de-CH');
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: GRID }, ticks: { font: baseFont, color: MUTED } },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            grid: { color: GRID },
+            ticks: { font: baseFont, color: MUTED, callback: function(v) { return v.toLocaleString('de-CH'); } }
           }
         }
       }
