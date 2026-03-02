@@ -1409,9 +1409,12 @@ function buildChart(story, data) {
               callback: function(val, idx) {
                 const lbl = this.getLabelForValue(val);
                 if (!lbl) return '';
-                // For quarterly data, show only Q1 labels as year only
-                if (lbl.includes('Q1')) return lbl.replace(' Q1', '');
-                return '';
+                // Quarterly data: show only Q1 as year
+                if (String(lbl).includes('Q')) {
+                  return lbl.includes('Q1') ? lbl.replace(' Q1', '') : '';
+                }
+                // Yearly data: show as-is (maxTicksLimit handles density)
+                return lbl;
               }
             }
           },
