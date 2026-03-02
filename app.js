@@ -301,11 +301,11 @@ const STORIES = [
     parseData: 'parseTourismMunicipalities',
     keyFacts: [],
     analysis: [
-      'Davos führt das Gemeinde-Ranking mit rund 3,28 Millionen Logiernächten pro Jahr an. St. Moritz folgt mit rund 2,15 Millionen an zweiter Stelle. Der Abstand zwischen Davos und St. Moritz beträgt damit mehr als 1 Million Übernachtungen. Davos verfügt neben dem Skigebiet auch über das Weltwirtschaftsforum sowie eine grössere Kongress- und Klinikinfrastruktur.',
-      'Laax und Flims verzeichnen im Vergleich zum kantonalen Durchschnitt überdurchschnittliche Wachstumsraten bei den Logiernächten. Beide Orte haben in den letzten Jahren ihr Angebot für Sommerfreizeitaktivitäten ausgebaut. Der Caumasee bei Flims zählt zu den meistbesuchten Ausflugsdestinationen der Region.',
-      'Die 12 stärksten Gemeinden vereinen rund 70 Prozent aller kantonalen Logiernächte. Die übrigen Gemeinden des Kantons teilen sich die verbleibenden 30 Prozent. Diese Konzentration auf wenige grosse Tourismusorte ist ein strukturelles Merkmal des Bündner Tourismus.'
+      'Davos führt das Gemeinde-Ranking mit rund 810\'000 Hotelübernachtungen 2023 an. St. Moritz folgt mit rund 783\'000 an zweiter Stelle — der Abstand zwischen den beiden ist damit vergleichsweise gering. Dahinter folgen Arosa (404\'000) und Pontresina (347\'000). Vaz/Obervaz umfasst als Gemeinde das gesamte Lenzerheide-Gebiet.',
+      'Die Zahlen erfassen ausschliesslich klassifizierte Hotelbetriebe (HESTA). Ferienwohnungen, Camping und Gruppenunterkünfte sind nicht enthalten. Der tatsächliche Gesamttourismus pro Gemeinde liegt daher deutlich höher — besonders in Zweitwohnungsgemeinden wie Laax, Flims und Sils.',
+      'Die 12 stärksten Gemeinden vereinen rund 78 Prozent aller kantonalen Hotelübernachtungen (4,0 von 5,2 Mio.). Die übrigen Gemeinden des Kantons teilen sich die verbleibenden 22 Prozent. Diese Konzentration auf wenige grosse Tourismusorte ist ein strukturelles Merkmal des Bündner Tourismus.'
     ],
-    source: 'Bundesamt für Statistik, Beherbergungsstatistik HESTA 2023; Statistik Graubünden',
+    source: 'Statistik Graubünden, HESTA Hotelübernachtungen nach Gemeinde 2023 (dvs_awt_econ_20250203)',
   },
 
   {
