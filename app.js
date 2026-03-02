@@ -103,8 +103,6 @@ const STORIES = [
       'Was das zeigt: Graubünden ist kein Kanton mit mehreren annähernd gleich grossen Zentren, sondern einer mit einer dominanten Stadt und sehr vielen kleinen Gemeinden. 59 der 101 Gemeinden zählen weniger als 1\'400 Einwohnerinnen und Einwohner — für sich allein eine bescheidene Zahl, zusammen aber das Gewicht einer Kantonshauptstadt.'
     ],
     source: 'Kanton Graubünden, DVS/AWT: Permanente Bevölkerung nach Gemeinde und Nationalität (dvs_awt_soci_20250507), Stand 2024',
-    linkedinPost: '',
-    wordpressHtml: ''
   },
 
   {
@@ -137,8 +135,6 @@ const STORIES = [
       'Der Medianalter von 44,8 Jahren in Graubünden gegenüber 42,3 Jahren schweizweit spiegelt diese Verschiebung: Graubünden hat einen höheren Anteil älterer und einen tieferen Anteil jüngerer Menschen als der nationale Durchschnitt.'
     ],
     source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023',
-    linkedinPost: 'Der Medianalter in Graubünden beträgt 44,8 Jahre — 2,5 Jahre über dem Schweizer Durchschnitt von 42,3 Jahren.\n\nDie Altersverteilung zeigt: In den Kohorten 0–19 liegt Graubünden in jeder Gruppe 0,5–0,8 Prozentpunkte unter dem Schweizer Wert. In den Kohorten 60–74 liegt der Kanton 0,8–0,9 Prozentpunkte darüber.\n\nDiese Grafik zeigt die vollständige Altersverteilung nach 5-Jahres-Kohorten — im Vergleich Graubünden vs. Schweiz gesamt.\n\n#Graubünden #Datenjournalismus #Demografie',
-    wordpressHtml: '<h2>Graubünden hat einen höheren Medianalter als die Schweiz</h2><p class="intro">Der Medianalter in Graubünden beträgt 44,8 Jahre — 2,5 Jahre über dem Schweizer Durchschnitt von 42,3 Jahren. In den Altersgruppen unter 20 ist Graubünden untervertreten, in den Gruppen ab 60 übervertreten.</p><p>Die Altersverteilung nach 5-Jahres-Kohorten zeigt, wo Graubünden vom Schweizer Durchschnitt abweicht. In den jüngeren Kohorten (0–19 Jahre) liegt der Kanton in jeder Gruppe 0,5 bis 0,8 Prozentpunkte unter dem Schweizer Wert. In den Kohorten der 60- bis 74-Jährigen liegt er 0,8 bis 0,9 Prozentpunkte darüber.</p><p>Die mittleren Jahrgänge (25–55 Jahre) sind in Graubünden und der Schweiz gesamt ähnlich stark vertreten.</p><p><em>Quelle: Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023; BFS 2023</em></p>'
   },
 
   {
@@ -166,8 +162,6 @@ const STORIES = [
       'Der Rückgang der Geburtenzahlen in Graubünden verläuft parallel zum nationalen Trend. Die aktuelle Geburtenziffer liegt in Graubünden unter dem Bestanderhaltungsniveau von 2,1 Kindern pro Frau — wie im gesamtschweizerischen und westeuropäischen Vergleich.'
     ],
     source: 'Statistik Graubünden, Natürliche Bevölkerungsbewegung 2023',
-    linkedinPost: 'In 50 Jahren fast 40 % weniger Geburten im Bergkanton.\n\n1975: 3\'210 Babys in Graubünden. 2023: 1\'880.\n\nDieser Rückgang ist keine abstrakte Statistik — er schliesst Schulen, leert Dörfer und verändert, wie der Kanton funktioniert.\n\nWarum sinken die Geburten in Bergregionen besonders stark?\n→ Junge Frauen ziehen in Städte für Ausbildung und Karriere\n→ Kita-Plätze und Teilzeitstellen fehlen auf dem Land\n→ Wohnraum ist teuer, Infrastruktur dünn\n\nDie Konsequenzen spüren wir jetzt: Schulschliessungen, alternde Gemeinden, steigende Kosten pro Kopf für Infrastruktur.\n\nDie gute Nachricht: Demographischer Wandel ist gestaltbar. Investitionen in Kinderbetreuung, Vereinbarkeit und lokale Wirtschaft können bremsen — wenn man rechtzeitig beginnt.\n\nBegonnen haben wir mit dieser Datenstory. Teil 3 der Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Demografie',
-    wordpressHtml: '<h2>Weniger Babys im Bergkanton: 50 Jahre Geburtenrückgang</h2><p class="intro">1975 wurden im Kanton Graubünden noch über 3\'200 Kinder geboren. Heute sind es knapp 1\'900. Dieser Rückgang von fast 40 Prozent in fünf Jahrzehnten verändert Schulen, Gemeinden und die gesamte Bevölkerungsstruktur grundlegend.</p><p>Der Rückgang der Geburtenzahlen in Graubünden folgt dem nationalen und europäischen Trend — aber mit einer eigenen Note. In Bergregionen sinkt die Fertilitätsrate schneller als in urbanen Zentren, weil junge Frauen mit Kindern das Angebot an Krippen, Teilzeitstellen und Bildungseinrichtungen in der Stadt bevorzugen. Was in Chur funktioniert, ist in einem Bergdorf oft schlicht nicht vorhanden.</p><p>Die Auswirkungen sind heute in den Schulen sichtbar. Zahlreiche Dorfschulen im Kanton haben ihren Betrieb eingestellt oder zu Mehrklassenschulen zusammengefasst. Bildungsexperten schätzen, dass in den nächsten zehn Jahren weitere 30 bis 40 Schulstandorte verschwinden werden. Das verändert das Dorfgefüge fundamental.</p><p>Demografie ist keine Schicksalsfrage, sie ist eine politische. Andere Kantone und Länder zeigen, dass gezielte Familienförderung, bezahlbare Kinderbetreuung und flexible Arbeitsmodelle die Fertilität stabilisieren können — wenn nicht erhöhen. Graubünden hat hier noch erheblichen Spielraum nach oben.</p><p><em>Quelle: Statistik Graubünden, Natürliche Bevölkerungsbewegung 2023</em></p>'
   },
 
   {
@@ -195,8 +189,6 @@ const STORIES = [
       'In den Jahren 2020 und 2021 verzeichnete Graubünden eine erhöhte Zuwanderung aus städtischen Kantonen. Dieser Effekt trat in derselben Periode auf, in der schweizweit Homeoffice-Arbeit stark zunahm. Die Bevölkerungsstatistik der Folgejahre zeigt, ob sich dieses Muster verstetigt hat.'
     ],
     source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik, Zeitreihe 1981–2023',
-    linkedinPost: 'Graubünden wächst nicht aus sich selbst heraus — und das seit Jahrzehnten.\n\nDie natürliche Bevölkerungsbewegung (Geburten minus Todesfälle) ist negativ. Nur Zuwanderung hält die Zahl bei rund 200\'000.\n\nWas bedeutet das konkret?\n→ Pro Jahr sterben ca. 200 mehr Menschen als Babys geboren werden\n→ Rund 350 Personen ziehen netto zu — sie kompensieren den Rückgang\n→ Ohne Zuwanderung: Graubünden würde schrumpfen\n\nDie spannende Frage dahinter: Wer zieht warum zu?\n\nVor allem Erwerbstätige im Tourismus, Gesundheitswesen und dem öffentlichen Dienst. Und seit der Pandemie: Stadtmüde aus Zürich und Basel.\n\nDemografie ist Schicksal? Nein. Es ist Politik.\n\nDie vollständige Zeitreihe seit 1981 finden Sie in unserer Datenstory. #Graubünden #Datenjournalismus #Bevölkerungsentwicklung',
-    wordpressHtml: '<h2>Die demografische Bilanz: Wer kommt, wer geht</h2><p class="intro">Geburten minus Todesfälle, Zuzüge minus Wegzüge — die demografische Bilanz Graubündens ist seit Jahrzehnten negativ aus natürlicher Bewegung. Nur Zuwanderung hält die Bevölkerungszahl stabil. Eine Analyse, die offenlegt, wie fragil das demografische Gleichgewicht ist.</p><p>Die natürliche Bevölkerungsbewegung — Geburten minus Todesfälle — ist in Graubünden seit Jahren negativ. Das bedeutet: Würde niemand zuwandern, würde der Kanton schrumpfen. Allein die Zuwanderung von aussen — aus anderen Kantonen und dem Ausland — stabilisiert die Bevölkerungszahl auf knapp über 200\'000.</p><p>Diese Abhängigkeit von Zuwanderung ist politisch heikel, demografisch aber unvermeidlich. Die grosse Frage lautet: Woher kommen die Zuwandernden, und warum? Analysen zeigen, dass es vor allem Menschen im erwerbsfähigen Alter sind, die wegen guter Jobs im Tourismus, Gesundheitswesen oder öffentlichen Sektor nach Graubünden kommen.</p><p>Die Pandemie hat das Muster vorübergehend verändert: Der Stadtflücht-Trend 2020/21 brachte eine ungewöhnliche Zuwanderungswelle aus städtischen Kantonen. Viele sind geblieben. Ob Graubünden dauerhaft von diesem Trend profitiert, wird die Bevölkerungsstatistik der nächsten Jahre zeigen.</p><p><em>Quelle: Statistik Graubünden, Kantonale Bevölkerungsstatistik, Zeitreihe 1981–2023</em></p>'
   },
 
   {
@@ -229,8 +221,6 @@ const STORIES = [
       'Der Bevölkerungskorridor zwischen Hoch- und Tiefszenario beträgt 2055 rund 60\'000 Personen. Diese Spanne spiegelt die Unsicherheiten bei den Annahmen zu Geburtenrate, Lebenserwartung und Wanderungssaldo wider.'
     ],
     source: 'Statistik Graubünden, Kantonale Bevölkerungsszenarien 2024–2055; data.gr.ch dvs_awt_soci_202505121',
-    linkedinPost: 'Wie viele Menschen werden 2055 in Graubünden leben?\n\nNiemand weiss es genau. Aber die Bevölkerungsszenarien zeigen den möglichen Korridor:\n\n→ Hochszenario: 243\'794 Einwohner (+18 %)\n→ Referenzszenario: 213\'100 Einwohner (+3.5 %)\n→ Tiefszenario: 183\'830 Einwohner (−11 %)\n\nDer Korridor umfasst fast 60\'000 Personen — je nach Zuwanderung, Geburtenrate und Lebenserwartung.\n\nSeries-Abschluss Woche 1 «Bevölkerung», Datenstory-Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Demografie',
-    wordpressHtml: '<h2>Graubünden 2055: drei Szenarien, ein Korridor von 60\'000 Personen</h2><p class="intro">Je nach Annahmen zu Geburten, Sterblichkeit und Zuwanderung wird Graubünden 2055 zwischen 183\'830 und 243\'794 Einwohnerinnen und Einwohnern zählen. Das Referenzszenario liegt bei 213\'100.</p><p>Die Bevölkerungsszenarien des Kantons Graubünden umfassen drei Projektionen bis 2055. Das Referenzszenario sieht nach einem Peak um 2044 (rund 215\'000) einen leichten Rückgang auf 213\'100 im Jahr 2055. Das Hochszenario — mit hoher Zuwanderung — erreicht 243\'794. Das Tiefszenario rechnet mit 183\'830.</p><p>Was alle Szenarien gemeinsam haben: Der Anteil der über 65-Jährigen wird steigen. Heute liegt er bei etwa 22 Prozent, 2055 werden es je nach Szenario zwischen 27 und 31 Prozent sein.</p><p><em>Quelle: Statistik Graubünden, Kantonale Bevölkerungsszenarien 2024–2055</em></p>'
   },
 
   // ── WOCHE 2: TOURISMUS ───────────────────────────────────
@@ -260,8 +250,6 @@ const STORIES = [
       '2023 lagen die Logiernächte mit 15,4 Millionen nahe am Niveau vor der Pandemie. Der Sommertourismus verzeichnete 2023 einen neuen Höchstwert seit Beginn der Zeitreihe. Die Wintermonate blieben im langjährigen Vergleich auf einem stabilen Niveau.'
     ],
     source: 'Bundesamt für Statistik, Beherbergungsstatistik HESTA; Statistik Graubünden 2023',
-    linkedinPost: '30 Jahre Tourismus in Graubünden — in einer Linie.\n\n1992: 12,8 Mio. Logiernächte. 2023: 15,4 Mio.\n\nDazwischen: SNB-Schock, Griechenland-Krise, Vogelgrippe, COVID — und immer wieder Erholung.\n\nDer stärkste Einbruch: −37 % im Jahr 2020 auf 9,8 Millionen. Hotels standen leer, Bergbahnen standen still.\n\nDie stärkste Erholung: 2021 und 2022 kehrten die Gäste zurück — Swiss staycation war das Stichwort.\n\n3 Learnings aus 30 Jahren:\n→ Krisen kommen. Resilienz entscheidet.\n→ Inlandstourismus ist ein Puffer — unterschätzt bis heute\n→ Sommer holt auf: Der Gap zum Winter wird kleiner\n\nDie vollständige Zeitreihe gibt es in unserer neuen Datenstory. Woche 2: Tourismus.\n\n#Graubünden #Datenjournalismus #Tourismus',
-    wordpressHtml: '<h2>30 Jahre Tourismus: Höhen, Tiefen und ein Rekord</h2><p class="intro">Seit 1992 hat Graubündens Tourismus Epidemien, Währungsschocks und eine globale Pandemie überstanden. Die Logiernächte-Kurve erzählt die Geschichte eines Sektors, der sich immer wieder neu erfindet — und 2023 einen neuen Sommerrekord verzeichnete.</p><p>Die 30-Jahres-Kurve der Bündner Hotelübernachtungen ist ein Seismograph für globale Krisen. Der Währungsschock 2015 — SNB hebt Euro-Kurs auf — traf den Tourismus empfindlich: Ausländische Gäste mieden die teuer gewordene Schweiz. Zwei Jahre später hatte sich Graubünden erholt. Die Resilienz der Tourismusregion ist bemerkenswert.</p><p>Doch nichts hat die Branche so getroffen wie COVID-19. Im Jahr 2020 brachen die Logiernächte um 37 Prozent ein — von 15,7 auf 9,8 Millionen. Viele Betriebe überlebten nur dank Kurzarbeit, Staatshilfen und einem starken Inlandstourismus: Schweizer:innen entdeckten ihre eigenen Berge.</p><p>Die Erholung war schnell und kräftig. 2023 lag Graubünden mit 15,4 Millionen Übernachtungen fast auf Vor-Pandemie-Niveau. Besonders der Sommertourismus setzte neue Rekorde. Die Frage ist, ob dieser Trend nachhaltig ist — oder ob die nächste Krise, sei es Klimawandel oder Wirtschaftsabschwung, erneut alles verändert.</p><p><em>Quelle: Bundesamt für Statistik, Beherbergungsstatistik HESTA; Statistik Graubünden 2023</em></p>'
   },
 
   {
@@ -289,8 +277,6 @@ const STORIES = [
       'Juli und August weisen die höchsten Sommerwerte auf und nähern sich den Winterspitzenwerten an. Der Abstand zwischen den Sommermonaten Juli/August und den Wintermonaten Januar/Februar hat sich in den letzten zehn Jahren verringert.'
     ],
     source: 'Bundesamt für Statistik, Beherbergungsstatistik HESTA 2023; Statistik Graubünden',
-    linkedinPost: 'November in Graubünden: 360\'000 Hotelübernachtungen.\nFebruar in Graubünden: 1\'950\'000 Hotelübernachtungen.\n\nDas ist die Realität der Saisonalität — ein Faktor 5 zwischen dem schwächsten und dem stärksten Monat.\n\nWas bedeutet das für die Branche?\n→ Betriebe schliessen im Frühling und Herbst\n→ Fachkräfte sind 5 Monate ohne Stelle\n→ Infrastruktur wird monatelang nicht ausgelastet\n\nGleichzeitig wächst der Sommer. Juli und August nähern sich Winterwerten — weil Hitze im Flachland die Leute in die Berge treibt.\n\nDie grosse Frage: Schafft Graubünden den Sprung zum Ganzjahres-Kanton?\n\nUnsere Monatsdaten zeigen, wo der Kanton heute steht — und wie weit der Weg noch ist.\n\n#Graubünden #Datenjournalismus #Tourismus',
-    wordpressHtml: '<h2>Winter gegen Sommer: Die Saisonalität von Graubündens Tourismus</h2><p class="intro">Januar und Februar dominieren, April und November kollabieren — Graubündens Tourismus hat eine ausgeprägte Saisonalität. Die Monatsdaten zeigen, wie extrem die Schwankungen sind, und warum das Modell eines ganzjährigen Tourismuskantons noch Wunschdenken ist.</p><p>Die Monatsdaten sind eindeutig: Graubünden ist ein Winterkanton. Februar ist der stärkste Monat mit fast 2 Millionen Übernachtungen, November der schwächste mit kaum 360\'000 — ein Verhältnis von mehr als 5 zu 1. Diese Extreme stellen Betriebe, die Personal halten und Fixkosten decken müssen, vor enorme Herausforderungen.</p><p>Der Frühling — April und Mai — ist die grosse Schwachstelle. Ski-Saison vorbei, Wandersaison noch nicht richtig gestartet, die Bergbahnen fahren eingeschränkt. Viele Hotels schliessen in dieser Zeit komplett. Diese Zwischensaison kostet die Branche Umsatz und bindet Personal, das man eigentlich das ganze Jahr bräuchte.</p><p>Positiv zu vermerken: Der Sommer holt auf. Juli und August nähern sich den Winterspitzenwerten an — getrieben von Hitze im Flachland, die Touristen in die kühlen Berge treibt, und von wachsendem internationalen Interesse am Wandertourismus. Langfristig könnte Graubünden ein echter Ganzjahres-Kanton werden — wenn die Infrastruktur mitspielt.</p><p><em>Quelle: Bundesamt für Statistik, Beherbergungsstatistik HESTA 2023; Statistik Graubünden</em></p>'
   },
 
   {
@@ -320,8 +306,6 @@ const STORIES = [
       'Die 12 stärksten Gemeinden vereinen rund 70 Prozent aller kantonalen Logiernächte. Die übrigen Gemeinden des Kantons teilen sich die verbleibenden 30 Prozent. Diese Konzentration auf wenige grosse Tourismusorte ist ein strukturelles Merkmal des Bündner Tourismus.'
     ],
     source: 'Bundesamt für Statistik, Beherbergungsstatistik HESTA 2023; Statistik Graubünden',
-    linkedinPost: 'Davos: 3,28 Mio. Logiernächte. St. Moritz: 2,15 Mio. Und dann?\n\nDie Top-12-Gemeinden Graubündens vereinen 70 % aller kantonalen Hotelübernachtungen.\n\nWas die Daten ausserdem zeigen:\n→ Laax wächst am stärksten (+12 % in den letzten 5 Jahren)\n→ Sommerziele wie Vals gewinnen an Bedeutung\n→ Kleine Orte teilen sich 30 % der Nächte — Verteilung bleibt herausfordernd\n\nBesonders spannend: Laax und Flims haben mit Freestyle-Ski und Outdoorangeboten eine jüngere Zielgruppe erschlossen. Das zeigt: Tourismus ist gestaltbar.\n\nDer Benchmark zu Davos zeigt aber auch: Ohne internationales Profil (WEF, Kongresse) bleibt man in der zweiten Liga.\n\nDie vollständigen Gemeindedaten in unserer Datenstory der Woche. #Graubünden #Datenjournalismus #Tourismus',
-    wordpressHtml: '<h2>Wo die Touristen übernachten: die Top-Gemeinden</h2><p class="intro">Davos und St. Moritz führen das Ranking, aber Laax und Flims überraschen mit starkem Wachstum. Die Verteilung der Logiernächte auf die Gemeinden zeigt, wie konzentriert und gleichzeitig wie divers der Bündner Tourismus ist.</p><p>Davos ist mit Abstand der stärkste Tourismusstandort Graubündens und der Schweiz. Über 3 Millionen Logiernächte pro Jahr — fast doppelt so viele wie St. Moritz auf Platz 2. Davos verdankt diese Position nicht nur dem Weltklasse-Skigebiet, sondern auch dem WEF und einer Fülle von Kongressen und Tagungen, die das ganze Jahr Gäste bringen.</p><p>Laax und Flims holen auf. Beide Orte setzen auf Sommertourismus und haben mit dem Freestyle-Skifahren und dem Surfsee Caumasee eine jüngere Zielgruppe erschlossen. Das zeigt: Im Bündner Tourismus gibt es noch Wachstumspotenzial, wenn die Positionierung stimmt.</p><p>Auffällig ist die Konzentration: Die 12 stärksten Gemeinden vereinen rund 70 Prozent aller kantonalen Logiernächte auf sich. Das bedeutet: Hunderte von Bergdörfern teilen sich den Rest. Für sie ist Tourismus oft kein Hauptgeschäft — aber ein wichtiger Zusatzverdienst für lokale Landwirte, Vermieter und Restaurants.</p><p><em>Quelle: Bundesamt für Statistik, Beherbergungsstatistik HESTA 2023; Statistik Graubünden</em></p>'
   },
 
   {
@@ -359,8 +343,6 @@ const STORIES = [
       'Nicht in diesen Zahlen enthalten: privat vermietete Ferienwohnungen, die nicht als gewerbliche Betriebe registriert sind. Die tatsächliche Zahl der Übernachtungen im Kanton liegt höher als in der Statistik ausgewiesen.'
     ],
     source: 'Bundesamt für Statistik, Parahotellerie-Statistik; Statistik Graubünden 2023',
-    linkedinPost: 'Die Hotelstatistik erzählt nur die halbe Geschichte des Bündner Tourismus.\n\n15,4 Mio. Hotelübernachtungen 2023 — das ist die bekannte Zahl.\n\nWas fehlt: Weitere 8+ Millionen Nächte in Ferienwohnungen, Camping und Gruppenunterkünften.\n\nDer Gesamttourismus Graubündens: über 27 Millionen Übernachtungen.\n\n3 Fakten zur Parahotellerie:\n→ 40\'000+ Ferienwohnungen im Kanton\n→ Zweitwohnungsanteil: einer der höchsten in der Schweiz\n→ Neue Ferienwohnungen: seit 2012 stark reguliert (Weber-Initiative)\n\nDas Paradox: Ferienwohnungen generieren Logiernächte, aber wenig lokale Wertschöpfung. Gäste kochen selbst, nutzen selten Restaurants.\n\nFür Bergdörfer ist das relevant: Vollbesetzte Ferienwohnungen im Winter ≠ belebtes Dorf.\n\nDie Daten kommen aus unserem 4. Tourismusstory. #Graubünden #Datenjournalismus #Tourismus',
-    wordpressHtml: '<h2>Parahotellerie: Ferienwohnungen und Camping neben der Hotellerie</h2><p class="intro">Neben den 520 klassifizierten Hotels gibt es in Graubünden Tausende Ferienwohnungen und mehrere Dutzend Campingplätze. Die Parahotellerie ist ein unterschätzter Faktor — in manchen Tälern übernachten mehr Menschen ausserhalb von Hotels als darin.</p><p>Die Hotellerie ist das Schaufenster des Bündner Tourismus — aber nicht das ganze Bild. Neben den offiziellen 15,4 Millionen Hotelübernachtungen stehen weitere 8 bis 9 Millionen Nächte in Ferienwohnungen, Gruppenunterkünften, auf Campingplätzen und in Jugendherbergen. Der Bündner Tourismus ist grösser als die Hotelstatistik suggeriert.</p><p>Die Ferienwohnung ist die dominante Parahotellerie-Form. Graubünden hat eine hohe Dichte an Zweitwohnungen — viele von ihnen werden als Ferienwohnungen vermietet, zumindest zeitweise. Das Zweitwohnungsgesetz (Weber-Initiative 2012) hat neue Baubewilligungen stark eingeschränkt, aber den Bestand nicht reduziert.</p><p>Für Gemeinden ist die Parahotellerie ein zweischneidiges Schwert. Ferienwohnungen bringen Logiernächte, aber wenig Wertschöpfung: Gäste kochen selbst, kaufen in Grossverteilern ein und nutzen lokale Dienstleistungen selten. Hotels hingegen schaffen direkte Arbeitsplätze und kaufen lokale Produkte ein. Die Politik sucht nach dem richtigen Mix.</p><p><em>Quelle: Bundesamt für Statistik, Parahotellerie-Statistik; Statistik Graubünden 2023</em></p>'
   },
 
   {
@@ -393,8 +375,6 @@ const STORIES = [
       'Quelle ist die HESTA-Statistik des Bundesamts für Statistik (BFS). Erfasst werden Ankünfte und Logiernächte in Hotels und ähnlichen Betrieben nach Herkunftsland. Parahotellerie-Übernachtungen (Ferienwohnungen, Camping etc.) sind nicht enthalten.'
     ],
     source: 'Bundesamt für Statistik, HESTA — Ankünfte und Logiernächte nach Herkunftsland 2025; data.gr.ch dvs_awt_econ_202503260',
-    linkedinPost: 'Wer übernachtet eigentlich in Graubünden?\n\n66 % Schweizer, 14 % Deutsche, 3.3 % Briten, 3.3 % Amerikaner.\n\n5,39 Millionen Logiernächte 2025 in der Tourismusregion Graubünden — so verteilen sie sich nach Herkunftsland.\n\nDas internationale Profil: zwei Drittel Inland, ein Drittel Ausland. Deutschland als klarer Nr.-1-Auslandsmarkt. UK und USA gleichauf auf Rang 3 und 4.\n\nDas Gästeprofil: Story 10 unserer Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Tourismus',
-    wordpressHtml: '<h2>Woher kommen die Gäste? Das internationale Profil Graubündens</h2><p class="intro">Zwei Drittel der Hotelgäste kommen aus der Schweiz. Deutschland ist mit 14 Prozent der wichtigste ausländische Quellmarkt, gefolgt von UK und USA mit je 3,3 Prozent.</p><p>Der wichtigste Quellmarkt für Graubünden ist und bleibt die Schweiz: 66,2 Prozent aller Logiernächte entfallen auf Gäste aus dem Inland. Deutschland ist mit 14,1 Prozent der bedeutendste ausländische Quellmarkt — die kulturelle und sprachliche Nähe sowie die Erreichbarkeit per Bahn begünstigen diese Verbindung.</p><p>Das Vereinigte Königreich und die USA liegen gleichauf bei je 3,3 Prozent. Insgesamt wurden 2025 in der Tourismusregion Graubünden 5,39 Millionen Hotelübernachtungen registriert. Parahotellerie (Ferienwohnungen, Camping) ist darin nicht enthalten.</p><p><em>Quelle: Bundesamt für Statistik, HESTA 2025; data.gr.ch dvs_awt_econ_202503260</em></p>'
   },
 
   // ── WOCHE 3: WIRTSCHAFT ──────────────────────────────────
@@ -429,8 +409,6 @@ const STORIES = [
       'Die Daten stammen aus der Grenzgängerstatistik des Bundesamts für Statistik (BFS). Erfasst sind Personen mit Wohnsitz im Ausland, die regelmässig zur Arbeit in den Kanton einpendeln und eine Grenzgängerbewilligung (Ausweis G) besitzen.'
     ],
     source: 'Bundesamt für Statistik, Grenzgängerstatistik; data.gr.ch dvs_awt_econ_20250513',
-    linkedinPost: "Rund 10'000 Menschen pendeln quartalsweise über die Graubündner Kantonsgrenze — um zu arbeiten.\n\nDie Entwicklung seit 1996 ist bemerkenswert:\n→ 1996: ~3'100 Grenzgänger pro Quartal\n→ 2024: ~9'860 — fast Verdreifachung\n→ 2025: ~9'728 — leicht rückläufig\n\nDer COVID-19-Einbruch (Q1 2020: 6'908) war spürbar, aber mit –3.9 % gegenüber Q4 2019 vergleichsweise moderat. Die rasche Erholung zeigt: Grenzgänger-Bewilligungen werden nicht kurzfristig aufgegeben.\n\nStory 11, Woche 3 «Wirtschaft» unserer Serie. #Graubünden #Datenjournalismus #Wirtschaft",
-    wordpressHtml: "<h2>Grenzgänger: rund 10'000 Personen pro Quartal</h2><p class=\"intro\">Rund 10'000 Grenzgängerinnen und Grenzgänger sind quartalsweise im Kanton Graubünden beschäftigt. Die Zahl hat sich seit 1996 fast verdreifacht.</p><p>Die Zahl der Grenzgänger:innen nach Graubünden ist seit 1996 von rund 3'100 auf knapp 10'000 pro Quartal gestiegen. Der Höchstwert wurde im ersten Quartal 2024 mit 10'008 Personen erreicht. Im Jahr 2025 ist ein leichter Rückgang auf durchschnittlich 9'728 pro Quartal zu beobachten.</p><p>Die meisten Grenzgänger:innen kommen aus dem nahen Norditalien. Die Löhne sind in der Schweiz substanziell höher, die Lebenshaltungskosten auf der anderen Seite der Grenze tiefer — das macht die Kombination für viele attraktiv.</p><p>Der COVID-19-Einbruch im ersten Quartal 2020 (6'908 Personen, –3.9 % gegenüber Q4 2019) war vergleichsweise moderat und erholte sich rasch.</p><p><em>Quelle: Bundesamt für Statistik, Grenzgängerstatistik; data.gr.ch dvs_awt_econ_20250513</em></p>"
   },
 
   {
@@ -463,8 +441,6 @@ const STORIES = [
       'Der Gesamtexport Graubündens betrug 2024 rund 5,1 Milliarden Franken. Davon entfallen 97 Prozent auf die Sektion C (Hergestellte Waren). Ein Teil der Exportdaten unterliegt der Geheimhaltungspflicht und ist in der Grafik nicht ausgewiesen.'
     ],
     source: 'Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch dvs_awt_econ_20250702',
-    linkedinPost: 'Graubünden exportiert für über 5 Milliarden Franken pro Jahr.\n\nÜberrascht? Viele sind es.\n\nDas Bergkanton-Image täuscht: Einige wenige Industrie- und Pharmafirmen exportieren für den ganzen Kanton.\n\nDie Top-Kategorien 2024:\n→ Chemische Erzeugnisse: 764 Mio. CHF\n→ Maschinen: 587 Mio. CHF\n→ EDV & Elektronik: 190 Mio. CHF\n→ Pharmazeutika: 111 Mio. CHF\n\n97 Prozent der Exporte entfallen auf «Hergestellte Waren» — also auf die Industrie, nicht den Tourismus.\n\nStory 12, Woche 3 «Wirtschaft» der Serie «Graubünden in Zahlen». #Graubünden #Datenjournalismus #Wirtschaft',
-    wordpressHtml: '<h2>Was Graubünden exportiert: die wichtigsten Waren</h2><p class="intro">Graubünden ist kein klassischer Industriekanton — und dennoch exportiert der Bergkanton für über 5 Milliarden Franken im Jahr. Chemische Erzeugnisse und Maschinen führen das Ranking an.</p><p>Graubünden als Exportkanton? Das klingt paradox, ist aber Realität. Einige wenige grosse Industrieunternehmen — darunter Chemiefirmen und Maschinenbauer — generieren den Löwenanteil der Exporterlöse. Chemische Erzeugnisse (764 Mio. CHF) führen vor Maschinen (587 Mio.). Pharmazeutische Erzeugnisse folgen mit 111 Mio. CHF auf Rang 6.</p><p>Ein wichtiger Hinweis zur Grafik: Ein Teil der Exportdaten unterliegt der statistischen Geheimhaltungspflicht (Vertraulichkeit) und erscheint nicht in der öffentlichen Auswertung. Der Gesamtexport 2024 beträgt 5,1 Milliarden Franken; die Grafik zeigt nur die öffentlich verfügbaren Kategorien.</p><p><em>Quelle: Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch 2024</em></p>'
   },
 
   {
@@ -500,8 +476,6 @@ const STORIES = [
       'Die Unterschiede zwischen Export- und Importstruktur zeigen die Spezialisierung: Graubünden exportiert vor allem in industrielle Absatzmärkte (USA, China), importiert dagegen stärker aus geografisch nahen EU-Ländern.'
     ],
     source: 'Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch dvs_awt_econ_202507020 (2024)',
-    linkedinPost: 'Der wichtigste Handelspartner Graubündens ist Deutschland — und das gleich doppelt.\n\n→ Grösstes Exportziel: 598 Mio. CHF\n→ Grösster Importlieferant: 604 Mio. CHF\n\nAber auf Platz 2 der Exportmärkte stehen die USA mit 374 Mio. CHF — vor China (228 Mio.) und Italien (200 Mio.).\n\nBei den Importen sieht das Bild anders aus: Italien liefert 335 Mio., Frankreich 148 Mio., Österreich 129 Mio.\n\nGraubünden exportiert in industrielle Weltmärkte, importiert aus dem geografischen Umfeld.\n\nStory 13, Woche 3 «Wirtschaft» der Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Wirtschaft',
-    wordpressHtml: '<h2>Graubündens Handelspartner: wer kauft, wer liefert</h2><p class="intro">Deutschland ist sowohl grösstes Exportziel als auch wichtigster Importlieferant Graubündens. Die USA stehen trotz Distanz auf Rang 2 der Exportmärkte.</p><p>Die Grafik trennt erstmals Export- und Importströme nach Ländern. Deutschland dominiert auf beiden Seiten: 598 Mio. CHF Exporte, 604 Mio. CHF Importe. Die geografische Nähe und die Wirtschaftsverflechtung der Schweiz mit dem nördlichen Nachbarn ist auch auf Kantonsebene sichtbar.</p><p>Auffällig: Auf der Exportseite stehen die USA (374 Mio.) vor China (228 Mio.) und Italien (200 Mio.). Auf der Importseite hingegen liegt Italien (335 Mio.) weit vorne — vor Frankreich (148 Mio.) und Österreich (129 Mio.). Die USA spielen als Importlieferant mit 50 Mio. CHF eine untergeordnete Rolle.</p><p><em>Quelle: Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch 2024</em></p>'
   },
 
   {
@@ -525,8 +499,6 @@ const STORIES = [
       'Die Industrie macht rund 10 Prozent der Beschäftigung aus — ein im interkantonalen Vergleich unterdurchschnittlicher Wert. Die industriellen Betriebe konzentrieren sich auf den Churer Rheintal-Raum und auf wenige spezialisierte Standorte wie Domat/Ems (Industrie) und Landquart.'
     ],
     source: 'Bundesamt für Statistik, Betriebszählung / Strukturerhebung 2022',
-    linkedinPost: "141'000 Beschäftigte in Graubünden — verteilt auf Sektoren, die anderswo nicht so dominieren.\n\n22 % im Gastgewerbe: Spitzenwert in der Schweiz.\n15 % im Gesundheitssektor: Wächst mit der Bevölkerungsalterung.\n10 % Industrie: Vergleichsweise wenig.\n\nDas ist der Bündner Arbeitsmarkt in Zahlen.\n\nWas mich besonders interessiert: Die Kombination aus Tourismus und Gesundheit.\n\nBeide sind Menschen-Berufe. Beide haben Fachkräftemangel. Beide profitieren nicht von Automatisierung wie die Industrie.\n\nGraubünden braucht Menschen — gut ausgebildete, motivierte, mehrsprachige. Und das in einem Kanton, aus dem junge Leute abwandern.\n\nDie Spannung zwischen Bedarf und Angebot ist die zentrale Herausforderung des Bündner Arbeitsmarkts.\n\nStory 14, Woche 3 der Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Arbeitsmarkt",
-    wordpressHtml: "<h2>141'000 Jobs: Wer arbeitet in Graubünden wofür?</h2><p class=\"intro\">Graubünden hat rund 141'000 Beschäftigte — ein Drittel davon im Gastgewerbe und Tourismus. Die Wirtschaftsstruktur ist ungewöhnlich: Tourismus dominiert, Industrie spielt eine Nebenrolle. Ein Blick auf die Sektoren zeigt, was Graubündens Arbeitsmarkt antreibt und wo er verwundbar ist.</p><p>Wer in Graubünden arbeitet, arbeitet zu einem überproportionalen Anteil im Gastgewerbe. Rund jede fünfte Stelle hängt direkt mit Tourismus und Beherbergung zusammen — schweizweit der höchste Anteil. Das prägt den Arbeitsmarkt: saisonale Schwankungen, hohe Teilzeitquote, und eine strukturelle Abhängigkeit von Grenzgänger:innen und ausländischen Arbeitskräften.</p><p>Der Gesundheitssektor ist auf dem Vormarsch. Mit 15 Prozent ist er die zweitgrösste Branche und wächst im Zuge der Bevölkerungsalterung weiter. Das Kantonsspital Graubünden in Chur, die Reha-Kliniken und zahlreiche Altersheime sind heute schon einer der grössten Arbeitgeber des Kantons.</p><p>Die Industrie spielt eine untergeordnete Rolle — nur 10 Prozent der Stellen. Das ist Stärke und Schwäche zugleich. Ohne schwere Industrie leidet Graubünden weniger unter Strukturwandel und Robotisierung. Aber ohne Industrie fehlt auch der stabile, hochbezahlte Kern vieler erfolgreicher Volkswirtschaften. Die Diversifizierung bleibt eine Priorität.</p><p><em>Quelle: Bundesamt für Statistik, Betriebszählung / Strukturerhebung 2022</em></p>"
   },
 
   {
@@ -555,8 +527,6 @@ const STORIES = [
       'Die Infrastrukturausgaben pro Kopf in Graubünden liegen bei rund 4\'800 Franken jährlich. Im Vergleich dazu liegen die entsprechenden Werte für dicht besiedelte Kantone bei 1\'500 bis 2\'000 Franken. Der Strassenunterhalt macht rund 310 Millionen Franken pro Jahr aus.'
     ],
     source: 'Kanton Graubünden, Finanzverwaltung; Rhätische Bahn, Geschäftsbericht 2023',
-    linkedinPost: 'Ein Kanton, der dreimal so viel Infrastruktur pro Kopf betreibt wie Zürich.\n\nGraubünden: 7\'105 km², 200\'000 Menschen, 975 km Schmalspur-Bahn.\n\nDie Rechnung:\n→ Strassenunterhalt: 310 Mio. CHF/Jahr\n→ RhB-Subventionen: 185 Mio. CHF/Jahr\n→ Infrastruktur pro Kopf: 4\'800 CHF — 3x städtische Kantone\n\nWas man dafür bekommt:\n→ Eine der schönsten Bahnstrecken der Welt (UNESCO-Welterbe)\n→ Erreichbarkeit für jedes Tal — auch im Winter\n→ Die Voraussetzung für Tourismus in abgelegenen Regionen\n\nIst das sinnvoll? Volkswirtschaftlich ja: Ohne Infrastruktur kein Tourismus, ohne Tourismus keine Steuereinnahmen.\n\nAber die Frage, wie viel Infrastruktur für wie wenige Menschen, wird lauter.\n\nStory 15, letzte der Wirtschaftswoche. #Graubünden #Datenjournalismus #Infrastruktur',
-    wordpressHtml: '<h2>Infrastruktur im Bergkanton: systemrelevant und unterschätzt</h2><p class="intro">Strassen, Bahnen und Energieinfrastruktur kosten in Berggebieten pro Kopf ein Vielfaches des Flachlands. Graubünden betreibt das dichteste Schmalspurbahnetz der Welt — und zahlt dafür jährlich Hunderte Millionen Franken. Eine Investition, die den Kanton erst möglich macht.</p><p>Infrastruktur im Bergkanton ist teuer — sehr teuer. Pro Einwohner:in gibt Graubünden rund dreimal so viel für Infrastruktur aus wie ein städtischer Kanton. Tunnel, Lawinenverbauungen, Wildbachverbauungen und die Unterhaltung von Schmalspurbahnen in entlegenen Tälern kosten Millionen, die für wenige Tausend Menschen zugutekommen.</p><p>Die Rhätische Bahn ist das Herzstück der Bündner Infrastruktur — und ein globales Alleinstellungsmerkmal. Das UNESCO-Welterbe-Bahnnetz verbindet Täler, die sonst kaum erreichbar wären, und macht den Kanton überhaupt lebensfähig. Aber es kostet: Die jährlichen Betriebszuschüsse von Bund und Kanton übersteigen 150 Millionen Franken.</p><p>Die politische Frage ist: Wie viel Infrastruktur für wie viele Menschen? Die Debatte über den Rückzug aus der Fläche — also das geordnete Aufgeben dünn besiedelter Regionen — wird lauter. Doch Graubünden wehrt sich: Der Anspruch, in jedem Tal zu leben, ist Teil der Bündner Identität — und er hat seinen Preis.</p><p><em>Quelle: Kanton Graubünden, Finanzverwaltung; Rhätische Bahn, Geschäftsbericht 2023</em></p>'
   },
 
   // ── WOCHE 4: GESELLSCHAFT & ZUKUNFT ─────────────────────
@@ -582,8 +552,6 @@ const STORIES = [
       'Radiotelevisiun Svizra Rumantscha (RTR) produziert tägliche Radio- und Fernsehsendungen auf Romanisch. In 39 Gemeinden des Kantons werden zweisprachige Schulen gefördert. Das Rumantsch Grischun wurde 1982 als schriftliche Standardform eingeführt und dient heute als Verwaltungs- und Schulsprache.'
     ],
     source: 'Bundesamt für Statistik, Strukturerhebung 2021/2023; Lia Rumantscha',
-    linkedinPost: '14.9 % der Graubündner sprechen Romanisch. Tendenz: sinkend.\n\nDas Romanische ist mehr als eine Sprache — es ist eine 2000 Jahre alte Kulturtradition, die direkt auf das Latein der Römer zurückgeht.\n\nWas gefährdet sie?\n→ Urbanisierung: In Chur nur noch 5 % Romanischsprechende\n→ Gemischte Ehen: Kinder wachsen meist deutschsprachig auf\n→ Wirtschaftliche Dominanz des Deutschen\n\nWas schützt sie?\n→ RTR (Radio und TV auf Romanisch)\n→ Zweisprachige Schulen in 39 Gemeinden\n→ Rumantsch Grischun als schriftliche Standardform\n\nDie grosse Frage: Kann eine Sprache überleben, wenn sie wirtschaftlich nicht notwendig ist?\n\nGraubünden versucht es. Die Geschichte wird zeigen, ob die Investitionen Früchte tragen.\n\nStory 16, Woche 4 «Gesellschaft» der Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Romanisch',
-    wordpressHtml: '<h2>Drei Sprachen, eine Identität — Romanisch unter Druck</h2><p class="intro">Das Romanische ist die kleinste Nationalsprache der Schweiz und das kulturelle Erbe Graubündens. Doch der Anteil der Romanischsprachigen sinkt seit Jahrzehnten. Zwischen Sprachpflege und Realismus: Was tut der Kanton, um eine der ältesten lebenden Sprachen Europas zu erhalten?</p><p>Das Romanische ist einzigartig: Es ist die einzige rätoromanische Sprache mit amtlichem Status und staatlicher Förderung. Aber es ist auch eine bedrohte Sprache. Seit dem Jahr 2000 ist der Anteil der Romanischsprachigen von 17 auf knapp 15 Prozent gesunken. Das klingt wenig — bedeutet aber Tausende Menschen, die das Romanische zugunsten des Deutschen aufgeben.</p><p>Die Gründe für den Rückgang sind strukturell. Gemischte Ehen, Urbanisierung und die wirtschaftliche Dominanz des Deutschen machen es schwer, die Sprache im Alltag zu erhalten. In Chur sprechen kaum noch 5 Prozent der Menschen Romanisch — und doch pendeln viele Romanischsprechende täglich in die Kantonshauptstadt.</p><p>Die Gegenmassnahmen sind vielfältig: Radiotelevisiun Svizra Rumantscha (RTR) sendet täglich auf Romanisch, zweisprachige Schulen werden gefördert, und das Rumantsch Grischun hat eine schriftliche Standardform geschaffen. Ob das reicht, um eine lebende Sprache zu erhalten, ist unsicher — aber der Wille ist vorhanden.</p><p><em>Quelle: Bundesamt für Statistik, Strukturerhebung 2021/2023; Lia Rumantscha</em></p>'
   },
 
   {
@@ -607,8 +575,6 @@ const STORIES = [
       'Die Zahlen der Hotelübernachtungen zeigen einen wachsenden Sommertourismus in Graubünden. Gleichzeitig werden Beschneiungsanlagen auf höheren und schneereicheren Lagen ausgebaut. Die durchschnittliche Schneesaison auf 1.500 m ü. M. hat sich seit den 1970er Jahren um mehrere Wochen verkürzt.'
     ],
     source: 'MeteoSchweiz, Homogene Klimamessreihen; IPCC Alpine Region Assessment 2022',
-    linkedinPost: '+2.2 °C seit 1900. Doppelt so schnell wie der globale Durchschnitt.\n\nDie Alpen sind der Klimacanary der Erde — und Graubünden sitzt mittendrin.\n\nWas die Daten zeigen:\n→ 1900–1960: Kaum Veränderung\n→ 1990–2024: Steiler Anstieg, jedes Jahrzehnt wärmer\n→ 2024: +2.2 °C über dem Referenzmittel\n\nDie Konsequenzen:\n→ Morteratschgletscher: −20 bis −30 m pro Jahr\n→ Schneesaisons: −3 Wochen pro Jahrzehnt in mittleren Lagen\n→ Permafrost schmilzt: Hänge werden instabiler\n\nFür Graubünden, dessen Wirtschaft auf dem Schnee gebaut ist, ist das eine Existenzfrage.\n\nDie Transformation läuft — aber reicht das Tempo?\n\nStory 17, Woche 4 «Gesellschaft & Zukunft» der Serie «Graubünden in Zahlen».\n\n#Graubünden #Datenjournalismus #Klimawandel',
-    wordpressHtml: '<h2>Die Alpen heizen sich doppelt so schnell auf wie das Flachland</h2><p class="intro">Seit der Industrialisierung ist die Temperatur in den Alpen um über 2 Grad Celsius gestiegen — doppelt so schnell wie im globalen Durchschnitt. Für Graubünden bedeutet das: Gletscher schmelzen, Permafrost taut, Schneesaisons verkürzen sich. Der Klimawandel ist hier früher und stärker als anderswo.</p><p>Der Klimawandel ist in Graubünden keine abstrakte Zukunftsgefahr — er ist Gegenwart. Die Messreihen von MeteoSchweiz zeigen einen klaren Aufwärtstrend: Über 120 Jahre hat sich die Durchschnittstemperatur im Alpenraum um mehr als 2 Grad erhöht. Das ist fast doppelt so viel wie der globale Durchschnitt, und es beschleunigt sich noch.</p><p>Die sichtbarsten Opfer sind die Gletscher. Der Morteratschgletscher — eines der Wahrzeichen des Engadins — zieht sich jährlich um 20 bis 30 Meter zurück. Der Pasterze-Gletscher in Österreich verlor in den letzten 30 Jahren fast einen Kilometer. Ohne drastische Klimamassnahmen werden die alpinen Gletscher bis 2100 zu 80 bis 90 Prozent verschwunden sein.</p><p>Für Graubündens Wirtschaft hat der Klimawandel direkte Folgen. Die Skisaison wird kürzer und unsicherer. Beschneiungsanlagen brauchen immer mehr Energie und Wasser. Gleichzeitig steigt der Sommertourismus — ein Silberstreifen, der aber die Winterverluste langfristig nicht kompensieren wird. Die Transformation ist unvermeidlich.</p><p><em>Quelle: MeteoSchweiz, Homogene Klimamessreihen; IPCC Alpine Region Assessment 2022</em></p>'
   },
 
   {
@@ -632,8 +598,6 @@ const STORIES = [
       'Ein erheblicher Teil der Berglandwirtschaftsbetriebe hat keine gesicherte Betriebsnachfolge. Die Betriebsgrössen in Graubünden liegen im schweizerischen Vergleich unterdurchschnittlich. Die Anzahl landwirtschaftlicher Betriebe im Kanton ist in den letzten 20 Jahren rückläufig.'
     ],
     source: 'Bundesamt für Statistik, Betriebsstrukturerhebung Landwirtschaft 2022',
-    linkedinPost: "2'100 Betriebe, 270'000 Hektar, 90 % mit Bundessubventionen.\n\nDie Bündner Berglandwirtschaft in drei Zahlen.\n\nWarum ist sie trotz Subventionsabhängigkeit wichtig?\n\n→ Sie pflegt 270'000 ha Kulturlandschaft\n→ Ohne Alpweiden: Verbuschung, Erosion, Lawinengefahr\n→ Sie ist die Kulisse, die 15 Mio. Touristen pro Jahr anzieht\n\nBerglandwirtschaft ist kein Wirtschaftsfaktor im Sinne von BIP-Beitrag. Sie ist Daseinsfürsorge — für Ökosystem und Tourismus.\n\nDas Paradox: Niemand kann sich die Berglandwirtschaft leisten. Niemand kann es sich leisten, auf sie zu verzichten.\n\nDas zwingt zu einer ehrlichen Diskussion über den Wert, den Gesellschaft der offenen Kulturlandschaft beimisst.\n\nStory 18, Woche 4 «Gesellschaft & Zukunft».\n\n#Graubünden #Datenjournalismus #Landwirtschaft",
-    wordpressHtml: "<h2>Berglandwirtschaft: Klein, spezialisiert, unverzichtbar</h2><p class=\"intro\">Über 2'000 Landwirtschaftsbetriebe bewirtschaften Graubündens Bergland. Sie sind klein, hart am Existenzminimum und dennoch unverzichtbar — nicht nur für die Ernährung, sondern für die Kulturlandschaft, den Tourismus und die Identität des Kantons.</p><p>Die Bündner Berglandwirtschaft ist eine Besonderheit. Wo andere Kantone Mais- und Weizenfelder haben, dominieren in Graubünden Alpweiden. Die Sömmerungswirtschaft — Vieh für drei bis vier Monate auf die Alpen treiben — ist eine jahrtausendealte Praxis, die das Landschaftsbild prägt und den Tourismus erst ermöglicht.</p><p>Wirtschaftlich steht die Berglandwirtschaft unter enormem Druck. Die Betriebe sind zu klein für moderne Effizienzstandards, die Erträge zu gering für rentables Wirtschaften ohne Subventionen. Fast alle Betriebe beziehen Direktzahlungen des Bundes — nicht als Almosen, sondern als Abgeltung für Ökosystemleistungen, die der Markt nicht bezahlt.</p><p>Die Zukunft der Berglandwirtschaft hängt auch an den Nachfolgern. Viele Betriebe haben keinen Hofnachfolger. Junge, gut ausgebildete Menschen zögern, einen Beruf zu wählen, der 60-Stunden-Wochen, hohe Investitionen und unsichere Einkommen kombiniert. Die Politik hat das Problem erkannt — einfache Lösungen gibt es keine.</p><p><em>Quelle: Bundesamt für Statistik, Betriebsstrukturerhebung Landwirtschaft 2022</em></p>"
   },
 
   {
@@ -657,8 +621,6 @@ const STORIES = [
       'Graubünden ist der flächenmässig grösste Kanton der Schweiz mit drei Amtssprachen (Deutsch, Romanisch, Italienisch). Die Bevölkerung verteilt sich auf rund 100 Gemeinden unterschiedlicher Grösse und Lage, von denen viele auf über 1\'000 m ü. M. liegen.'
     ],
     source: 'Eigene Berechnungen auf Basis: Statistik Graubünden, Bundesamt für Statistik, Graubünden Ferien 2023',
-    linkedinPost: 'Was lehren uns 20 Datenstories über Graubünden?\n\nHeute, nach 4 Wochen Daten, die Synthese in 5 Indikatoren:\n\n→ Tourismus-Intensität: 320 (CH=100) — dreimal intensiver als Durchschnitt\n→ Bevölkerungsdichte: 18 (CH=100) — einer der dünnst besiedelten Kantone\n→ Medianalter: 106 — älter als der Schnitt, mit steigendem Trend\n→ Infrastrukturkosten/Kopf: 290 — beinahe dreimal teurer\n→ Lohnniveau: 88 — unter Schweizer Durchschnitt\n\nDas Fazit: Graubünden ist ein Kanton der Extreme und der Resilienz.\n\nStark, wo Nische Stärke bedeutet. Verwundbar, wo Abhängigkeit Risiko schafft.\n\nMein persönliches Fazit dieser Datenstory-Serie: Graubünden ist einer der faszinierendsten und komplexesten Kantone der Schweiz. Und die Daten erzählen das besser als jedes Reisemagazin.\n\n#Graubünden #Datenjournalismus #Schweiz',
-    wordpressHtml: '<h2>Bevölkerung, Tourismus, Wirtschaft: Was 20 Geschichten über Graubünden lehren</h2><p class="intro">Nach drei Wochen Daten über Bevölkerung, Tourismus und Wirtschaft wird ein Bild sichtbar: Graubünden ist ein Kanton im Wandel — stark in seinen Nischen, verwundbar durch seine Abhängigkeiten. Fünf Schlüsselindikatoren im Vergleich mit dem Schweizer Durchschnitt.</p><p>Die fünf Schlüsselindikatoren erzählen die Geschichte Graubündens in komprimierter Form. Der Kanton ist beim Tourismus dreimal so intensiv wie der Schweizer Durchschnitt — das ist seine Stärke und sein grösstes Risiko zugleich. Er ist dünn besiedelt und alt — das prägt seine politischen Prioritäten. Und er liegt beim Lohnniveau unter dem Schweizer Schnitt — das erklärt die Abwanderung junger Fachleute.</p><p>Das Zusammenspiel dieser Indikatoren zeigt eine strukturelle Herausforderung: Ein tourismusintensiver Kanton mit einer alternden Bevölkerung, hohen Infrastrukturkosten und unterdurchschnittlichen Löhnen muss ausserordentlich gut darin sein, sich attraktiv zu halten — für Touristen, Unternehmen und Einwohnende gleichermassen.</p><p>Was Graubünden auszeichnet, ist seine Vielfalt und seine Resilienz. Drei Sprachen, drei Kulturen, hundert Täler — diese Diversität ist keine Schwäche, sondern eine Quelle von Innovationskraft und Anpassungsfähigkeit. Die 20 Geschichten dieser Serie zeigen einen Kanton, der sich seiner Herausforderungen bewusst ist — und aktiv an seiner Zukunft arbeitet.</p><p><em>Quelle: Eigene Berechnungen auf Basis: Statistik Graubünden, Bundesamt für Statistik, Graubünden Ferien 2023</em></p>'
   },
 
   {
@@ -682,8 +644,6 @@ const STORIES = [
       'Der Kanton Graubünden stellt auf data.gr.ch mehrere Dutzend maschinenlesbare Datensätze zur Bevölkerung, Wirtschaft und Raumplanung zur Verfügung. Die Daten dieser Serie basieren auf diesen offenen Datenquellen sowie auf Bundesstatistiken und spezialisierten kantonalen Erhebungen.'
     ],
     source: 'Datenstory-Serie «Graubünden in Zahlen», März 2026; data.gr.ch',
-    linkedinPost: "Es ist geschafft: 20 Datenstories über Graubünden in 4 Wochen.\n\nHeute die Bilanz — und ein persönliches Fazit.\n\nDie 20 Geschichten haben folgende Fragen beantwortet:\n→ Wer wohnt wo, und wie verändert sich das?\n→ Wie funktioniert der Tourismusmotor wirklich?\n→ Was exportiert, importiert und beschäftigt Graubünden?\n→ Wie heizt sich die Erde hier schneller auf als anderswo?\n\nMein Fazit:\n\nDaten erzählen nie die ganze Geschichte. Aber sie zeigen, wo man genauer hinsehen muss. Und bei Graubünden lohnt sich das Hinschauen immer.\n\nDanke für 4 Wochen mitlesen, kommentieren und teilen. Die Serie bleibt online — als interaktives Archiv.\n\n#Graubünden #Datenjournalismus #Schweiz",
-    wordpressHtml: '<h2>Die Datenstory-Bilanz: Graubünden in 20 Zahlen</h2><p class="intro">Heute endet die vierwöchige Datenstory-Serie über Graubünden. 20 Geschichten, 4 Themenblöcke, 1 Kanton. Als Abschluss: die thematische Verteilung der Serie und eine Reflexion, was datengetriebener Journalismus über einen Bergkanton leisten kann — und wo er an Grenzen stösst.</p><p>Vier Wochen, zwanzig Geschichten, ein Kanton. Was hat diese Datenstory-Serie über Graubünden geleistet? Sie hat Zahlen in Erzählungen verwandelt, Statistiken in Bedeutung. Datengetriebener Journalismus kann zeigen, was ansonsten unsichtbar bleibt: Langzeittrends, Strukturprobleme, stille Veränderungen.</p><p>Gleichzeitig hat die Serie ihre Grenzen aufgezeigt. Daten erfassen, was messbar ist. Was Graubünden ausmacht — die Stille auf einem Berggipfel, die Freude eines Bauern beim ersten Almauftrieb, die Verbundenheit einer Romanisch-Gemeinde mit ihrer Sprache — lässt sich nicht tabellieren. Datengetriebener Journalismus ergänzt traditionelle Reportage, ersetzt sie nie.</p><p>Der Kanton Graubünden hat begonnen, seine Daten systematisch zu öffnen — data.gr.ch ist ein gutes Zeichen. Je mehr Daten öffentlich und maschinenlesbar werden, desto mehr können Journalist:innen, Forschende und Bürger:innen eigenständig Fragen stellen und Antworten suchen. Das ist der eigentliche Wert des Open-Data-Prinzips.</p><p><em>Quelle: Datenstory-Serie «Graubünden in Zahlen», März 2026; data.gr.ch</em></p>'
   }
 
 ]; // end STORIES
@@ -1476,96 +1436,41 @@ function buildChart(story, data) {
 
 
 // ============================================================
-// EXPORT FUNCTIONS
+// STORY MENU
 // ============================================================
 
-function generateLinkedIn(story) {
-  return story.linkedinPost;
-}
+function renderStoryMenu() {
+  const menu = document.getElementById('story-menu');
+  if (!menu) return;
 
-function generateWordpress(story) {
-  return story.wordpressHtml;
-}
+  const categories = {};
+  STORIES.forEach(function(story, idx) {
+    if (!categories[story.category]) categories[story.category] = [];
+    categories[story.category].push({ story: story, idx: idx });
+  });
 
-// ============================================================
-// CALENDAR RENDERING
-// ============================================================
-
-function renderCalendar() {
-  const strip = document.getElementById('calendar-strip');
-  if (!strip) return;
-
-  const DAY_ABBR = ['', 'Mo', 'Di', 'Mi', 'Do', 'Fr'];
   let html = '';
+  Object.keys(categories).forEach(function(cat) {
+    html += '<div class="smenu-group">';
+    html += '<div class="smenu-cat">' + cat + '</div>';
+    categories[cat].forEach(function(item) {
+      const isActive = item.idx === currentIndex;
+      html += '<button class="smenu-item' + (isActive ? ' smenu-item--active' : '') + '" data-idx="' + item.idx + '">' +
+        item.story.title + '</button>';
+    });
+    html += '</div>';
+  });
+  menu.innerHTML = html;
 
-  for (let w = 1; w <= 4; w++) {
-    const topics = { 1: 'Bevölkerung', 2: 'Tourismus', 3: 'Wirtschaft', 4: 'Gesellschaft' };
-    html += '<div class="cal-week">';
-    html += '<div class="cal-week-label">Woche ' + w + ' — ' + (topics[w] || '') + '</div>';
-    html += '<div class="cal-days">';
-
-    for (let d = 1; d <= 5; d++) {
-      const idx = (w - 1) * 5 + (d - 1);
-      const story = STORIES[idx];
-      if (!story) continue;
-
-      const isActive = idx === currentIndex;
-      const dateObj  = workdayDate(w, d);
-      const dayNum   = dateObj.getDate();
-      const shortTitle = story.title.length > 28
-        ? story.title.substring(0, 28) + '…'
-        : story.title;
-
-      html +=
-        '<button class="cal-day' + (isActive ? ' cal-day--active' : '') + '" ' +
-        'data-idx="' + idx + '" ' +
-        'title="' + story.title.replace(/"/g, '&quot;') + '">' +
-        '<span class="cal-abbr">' + DAY_ABBR[d] + '</span>' +
-        '<span class="cal-num">' + dayNum + '</span>' +
-        '<span class="cal-short">' + shortTitle + '</span>' +
-        '</button>';
-    }
-
-    html += '</div></div>';
-  }
-
-  strip.innerHTML = '<div class="calendar-inner">' + html + '</div>';
-
-  // Attach click handlers
-  strip.querySelectorAll('.cal-day').forEach(function(btn) {
+  menu.querySelectorAll('.smenu-item').forEach(function(btn) {
     btn.addEventListener('click', function() {
       renderStory(+this.dataset.idx);
+      const nav = document.getElementById('story-menu-nav');
+      const toggle = document.getElementById('menu-toggle');
+      if (nav) nav.hidden = true;
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
     });
   });
-}
-
-function scrollActiveDayIntoView() {
-  const strip = document.getElementById('calendar-strip');
-  if (!strip) return;
-  const active = strip.querySelector('.cal-day--active');
-  if (active) {
-    active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-  }
-}
-
-// ============================================================
-// TOAST NOTIFICATION
-// ============================================================
-
-function showToast(msg) {
-  let toast = document.getElementById('copy-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'copy-toast';
-    toast.style.cssText =
-      'position:fixed;bottom:24px;right:24px;background:#161616;color:#fff;' +
-      'padding:10px 20px;border-radius:6px;font-size:14px;z-index:9999;' +
-      'opacity:0;transition:opacity 0.3s;pointer-events:none;';
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg || 'Kopiert!';
-  toast.style.opacity = '1';
-  setTimeout(function() { toast.style.opacity = '0'; }, 2000);
 }
 
 // ============================================================
@@ -1644,15 +1549,8 @@ function renderStory(index) {
     setDataBadge('loading', s.apiDatasetId ? 'Lade Daten von data.gr.ch…' : 'Keine Live-Daten verfügbar');
   }
 
-  // 4. Fill export panel
-  const liEl = document.getElementById('linkedin-output');
-  if (liEl) liEl.value = generateLinkedIn(s);
-
-  const wpEl = document.getElementById('wordpress-output');
-  if (wpEl) wpEl.value = generateWordpress(s);
-
-  // 5. Update calendar active state
-  renderCalendar();
+  // 4. Update story menu active state
+  renderStoryMenu();
 
   // 6. Update URL hash (silent)
   if (history.replaceState) {
@@ -1702,18 +1600,14 @@ function renderStory(index) {
   const headerDate = document.getElementById('header-date');
   if (headerDate) headerDate.textContent = formatDateDE();
 
-  // Calendar toggle
-  const toggle = document.getElementById('calendar-toggle');
-  const strip  = document.getElementById('calendar-strip');
-  if (toggle && strip) {
+  // Story menu toggle
+  const toggle = document.getElementById('menu-toggle');
+  const nav    = document.getElementById('story-menu-nav');
+  if (toggle && nav) {
     toggle.addEventListener('click', function() {
-      const willOpen = strip.hidden;
-      strip.hidden   = !willOpen;
+      const willOpen = nav.hidden;
+      nav.hidden     = !willOpen;
       toggle.setAttribute('aria-expanded', String(willOpen));
-      if (willOpen) {
-        // Scroll active day into view after a tick so the strip is visible
-        setTimeout(scrollActiveDayIntoView, 50);
-      }
     });
   }
 
@@ -1721,7 +1615,6 @@ function renderStory(index) {
   const hash    = window.location.hash.slice(1);
   const hashIdx = STORIES.findIndex(function(s) { return s.id === hash; });
   renderStory(hashIdx >= 0 ? hashIdx : 0);
-  renderCalendar();
 
   // Prev / Next buttons
   const prevBtn = document.getElementById('prev-btn');
@@ -1742,34 +1635,6 @@ function renderStory(index) {
     if (e.key === 'ArrowLeft')  renderStory((currentIndex - 1 + STORIES.length) % STORIES.length);
     if (e.key === 'ArrowRight') renderStory((currentIndex + 1) % STORIES.length);
   });
-
-  // Copy buttons
-  document.querySelectorAll('.copy-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      const targetId = btn.dataset.target;
-      const target   = document.getElementById(targetId);
-      if (!target) return;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(target.value).then(function() {
-          showToast('Kopiert!');
-        }).catch(function() {
-          fallbackCopy(target);
-        });
-      } else {
-        fallbackCopy(target);
-      }
-    });
-  });
-
-  function fallbackCopy(el) {
-    el.select();
-    try {
-      document.execCommand('copy');
-      showToast('Kopiert!');
-    } catch (err) {
-      showToast('Bitte manuell kopieren (Strg+C)');
-    }
-  }
 
   // Handle browser back/forward
   window.addEventListener('hashchange', function() {
