@@ -143,10 +143,10 @@ const STORIES = [
     day: 3,
     publishDate: fmtDate(workdayDate(1, 3)),
     category: 'Bevölkerung',
-    title: 'Weniger Babys im Bergkanton: 50 Jahre Geburtenrückgang',
-    lead: '1975 wurden im Kanton Graubünden noch über 3\'200 Kinder geboren. Heute sind es knapp 1\'900. Dieser Rückgang von fast 40 Prozent in fünf Jahrzehnten verändert Schulen, Gemeinden und die gesamte Bevölkerungsstruktur grundlegend.',
-    chartTitle: 'Lebendgeburten im Kanton Graubünden 1975–2023',
-    chartSubtitle: 'Anzahl Geburten pro Jahr · Statistik Graubünden (dvs_awt_soci_202505120)',
+    title: 'Weniger Babys im Bergkanton: 40 Jahre Geburtenrückgang',
+    lead: 'Im Kanton Graubünden wurden 1981 noch 2\'127 Kinder geboren. 2024 waren es noch 1\'504 — ein Rückgang von 29 Prozent. Den Höchstwert der Zeitreihe verzeichnete der Kanton 1992 mit 2\'433 Geburten; seither sinkt die Zahl mit Schwankungen.',
+    chartTitle: 'Lebendgeburten im Kanton Graubünden 1981–2024',
+    chartSubtitle: 'Lebendgeburten pro Jahr · Statistik Graubünden (dvs_awt_soci_20250508)',
     chartType: 'line',
     apiDatasetId: 'dvs_awt_soci_20250508',
     apiQuery: {
@@ -157,11 +157,11 @@ const STORIES = [
     parseData: 'parseBirths',
     keyFacts: [],
     analysis: [
-      'Von 1975 bis 2023 sind die Lebendgeburten im Kanton Graubünden von über 3\'200 auf rund 1\'880 pro Jahr gesunken — ein Rückgang von fast 40 Prozent in fünf Jahrzehnten. Dieser Rückgang verläuft nicht linear: In den 1990er Jahren verlangsamte er sich, ab 2010 beschleunigte er sich wieder.',
-      'Die Daten zeigen regionale Unterschiede: In Bergdörfern ausserhalb des Churer Raums sind die Rückgänge stärker ausgeprägt als in der Kantonshauptstadt. Zahlreiche Dorfschulen im Kanton wurden in den letzten Jahrzehnten geschlossen oder zu Mehrklassenschulen zusammengelegt.',
-      'Der Rückgang der Geburtenzahlen in Graubünden verläuft parallel zum nationalen Trend. Die aktuelle Geburtenziffer liegt in Graubünden unter dem Bestanderhaltungsniveau von 2,1 Kindern pro Frau — wie im gesamtschweizerischen und westeuropäischen Vergleich.'
+      'Die Zeitreihe umfasst die Jahre 1981 bis 2024. Den Höchstwert verzeichnete Graubünden 1992 mit 2\'433 Geburten. Seither sinkt die Zahl mit Schwankungen: 2000 waren es noch 2\'011, 2010 noch 1\'602.',
+      'Zwischen 2020 und 2021 stieg die Geburtenzahl vorübergehend von 1\'637 auf 1\'793. Danach sank sie erneut: 2022 auf 1\'641, 2023 auf 1\'538, 2024 auf 1\'504 — den tiefsten Wert der gesamten Zeitreihe.',
+      'Von 1992 bis 2024 sank die Zahl der Geburten von 2\'433 auf 1\'504, das entspricht einem Rückgang von 38 Prozent.'
     ],
-    source: 'Statistik Graubünden, Natürliche Bevölkerungsbewegung 2023',
+    source: 'Statistik Graubünden, Natürliche Bevölkerungsbewegung (dvs_awt_soci_20250508)',
   },
 
   {
@@ -170,9 +170,9 @@ const STORIES = [
     day: 4,
     publishDate: fmtDate(workdayDate(1, 4)),
     category: 'Bevölkerung',
-    title: 'Die demografische Bilanz: Wer kommt, wer geht',
-    lead: 'Geburten minus Todesfälle, Zuzüge minus Wegzüge — die demografische Bilanz Graubündens ist seit Jahrzehnten negativ aus natürlicher Bewegung. Nur Zuwanderung hält die Bevölkerungszahl stabil. Eine Analyse, die offenlegt, wie fragil das demografische Gleichgewicht ist.',
-    chartTitle: 'Demografische Bilanz Graubünden 1981–2023',
+    title: 'Geburten und Todesfälle: Die natürliche Bevölkerungsbewegung',
+    lead: 'Der Saldo aus Geburten minus Todesfällen war in Graubünden nicht immer negativ. Seit 2019 übersteigen die Todesfälle die Geburten kontinuierlich — mit zunehmender Differenz.',
+    chartTitle: 'Natürliche Bevölkerungsbewegung Graubünden 1981–2024',
     chartSubtitle: 'Natürliche + Wanderungsbilanz jährlich · Statistik Graubünden (dvs_awt_soci_20250508)',
     chartType: 'line',
     apiDatasetId: 'dvs_awt_soci_20250508',
@@ -184,11 +184,11 @@ const STORIES = [
     parseData: 'parseDemographicBalance',
     keyFacts: [],
     analysis: [
-      'Die natürliche Bevölkerungsbewegung — Geburten minus Todesfälle — ist in Graubünden seit Jahren negativ. Die Differenz beträgt jährlich rund 200 Personen. Die Bevölkerungszahl von knapp über 200\'000 wird durch Zuwanderung aus anderen Kantonen und dem Ausland ausgeglichen.',
-      'Die Zuwanderung nach Graubünden besteht überwiegend aus Personen im erwerbsfähigen Alter. Tourismus, Gesundheitswesen und der öffentliche Sektor zählen zu den wichtigsten Branchen für Zuziehende. Die natürliche Bevölkerungsbewegung und die Wanderungsbilanz entwickeln sich dabei gegenläufig.',
-      'In den Jahren 2020 und 2021 verzeichnete Graubünden eine erhöhte Zuwanderung aus städtischen Kantonen. Dieser Effekt trat in derselben Periode auf, in der schweizweit Homeoffice-Arbeit stark zunahm. Die Bevölkerungsstatistik der Folgejahre zeigt, ob sich dieses Muster verstetigt hat.'
+      'Der Saldo aus Geburten minus Todesfällen schwankte zwischen 1981 und 2018 zwischen +200 und −100 Personen pro Jahr — mal positiv, mal leicht negativ. Ab 2019 wurde der Saldo konstant negativ: 2019: −118, 2020: −163, 2021: −32.',
+      '2022 und 2023 vergrösserte sich die Differenz deutlich: 2022 wurden 1\'641 Geburten und 1\'995 Todesfälle gezählt (Saldo: −354). 2023 waren es 1\'538 Geburten und 1\'866 Todesfälle (Saldo: −328). 2024: −363.',
+      'Der Chart zeigt ausschliesslich den natürlichen Saldo (Geburten minus Todesfälle). Wanderungsbewegungen sind nicht enthalten.'
     ],
-    source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik, Zeitreihe 1981–2023',
+    source: 'Statistik Graubünden, Natürliche Bevölkerungsbewegung (dvs_awt_soci_20250508)',
   },
 
   {
@@ -231,10 +231,10 @@ const STORIES = [
     day: 1,
     publishDate: fmtDate(workdayDate(2, 1)),
     category: 'Tourismus',
-    title: '30 Jahre Tourismus: Höhen, Tiefen und ein Rekord',
-    lead: 'Seit 1992 hat Graubündens Tourismus Epidemien, Währungsschocks und eine globale Pandemie überstanden. Die Logiernächte-Kurve erzählt die Geschichte eines Sektors, der sich immer wieder neu erfindet — und 2023 einen neuen Sommerrekord verzeichnete.',
-    chartTitle: 'Logiernächte Graubünden 1992–2023',
-    chartSubtitle: 'Hotellerie, Millionen Übernachtungen pro Jahr · Statistik Graubünden (dvs_awt_econ_202502031)',
+    title: '30 Jahre Hotellerie: Logiernächte Graubünden seit 1992',
+    lead: '1992 zählte die Bündner Hotellerie 6,9 Millionen Logiernächte — der höchste Wert der gesamten Zeitreihe. Seither schwanken die Zahlen zwischen 4,6 und 5,7 Millionen. 2025 lagen sie bei 5,7 Millionen.',
+    chartTitle: 'Hotelübernachtungen Graubünden 1992–2025',
+    chartSubtitle: 'Klassifizierte Hotellerie, Mio. Logiernächte pro Jahr · Statistik Graubünden (dvs_awt_econ_202502031)',
     chartType: 'line',
     apiDatasetId: 'dvs_awt_econ_202502031',
     apiQuery: {
@@ -245,11 +245,11 @@ const STORIES = [
     parseData: 'parseTourismAnnual',
     keyFacts: [],
     analysis: [
-      'Die 30-Jahres-Kurve der Bündner Hotelübernachtungen zeigt mehrere markante Einbrüche. Im Jahr 2015 sanken die Logiernächte deutlich, nachdem die Schweizerische Nationalbank im Januar 2015 den Mindestkurs zum Euro aufgehoben hatte. Zwei Jahre nach dem Einbruch lagen die Zahlen wieder auf dem Vorjahresniveau.',
-      'Der stärkste Einbruch der Zeitreihe erfolgte 2020 mit dem Beginn der COVID-19-Pandemie: Die Logiernächte fielen von 15,7 auf 9,8 Millionen — ein Rückgang von 37 Prozent gegenüber dem Vorjahr. Während ausländische Gäste weitgehend ausblieben, stieg der Anteil der Inlandgäste messbar an.',
-      '2023 lagen die Logiernächte mit 15,4 Millionen nahe am Niveau vor der Pandemie. Der Sommertourismus verzeichnete 2023 einen neuen Höchstwert seit Beginn der Zeitreihe. Die Wintermonate blieben im langjährigen Vergleich auf einem stabilen Niveau.'
+      'Den Höchstwert der Zeitreihe verzeichnete Graubünden 1992 mit 6,88 Mio. Logiernächten. In den Folgejahren gingen die Zahlen schrittweise zurück. 2016 wurde mit 4,62 Mio. der tiefste Wert der gesamten Zeitreihe erreicht.',
+      'Im Jahr 2020 sanken die Logiernächte von 5,25 Mio. (2019) auf 4,76 Mio. — ein Rückgang von 9 Prozent. 2016 lag der Wert mit 4,62 Mio. noch tiefer als im COVID-Jahr 2020.',
+      'Seit 2021 erholen sich die Zahlen: 2021: 5,13 Mio., 2022: 5,54 Mio., 2023: 5,39 Mio., 2024: 5,49 Mio., 2025: 5,68 Mio. Das Niveau von 1992 (6,88 Mio.) wurde bisher nicht wieder erreicht.'
     ],
-    source: 'Bundesamt für Statistik, Beherbergungsstatistik HESTA; Statistik Graubünden 2023',
+    source: 'Statistik Graubünden, HESTA Hotelübernachtungen (dvs_awt_econ_202502031)',
   },
 
   {
@@ -259,24 +259,25 @@ const STORIES = [
     publishDate: fmtDate(workdayDate(2, 2)),
     category: 'Tourismus',
     title: 'Winter gegen Sommer: Die Saisonalität von Graubündens Tourismus',
-    lead: 'Januar und Februar dominieren, April und November kollabieren — Graubündens Tourismus hat eine ausgeprägte Saisonalität. Die Monatsdaten zeigen, wie extrem die Schwankungen sind, und warum das Modell eines ganzjährigen Tourismuskantons noch Wunschdenken ist.',
-    chartTitle: 'Logiernächte nach Monat (Jahresdurchschnitt)',
-    chartSubtitle: 'Durchschnittliche Hotelübernachtungen je Monat in Tsd. · Statistik Graubünden (dvs_awt_econ_202502031)',
+    lead: 'Februar ist der stärkste Monat im Bündner Tourismus, November der schwächste. 2024 lagen zwischen diesen beiden Monaten 836\'000 gegenüber 132\'000 Hotelübernachtungen — ein Verhältnis von über 6 zu 1.',
+    chartTitle: 'Hotelübernachtungen nach Monat 2024',
+    chartSubtitle: 'Logiernächte in Tsd. pro Monat · Statistik Graubünden (dvs_awt_econ_202502031)',
     chartType: 'bar',
     apiDatasetId: 'dvs_awt_econ_202502031',
     apiQuery: {
       select: 'monat,SUM(logiernachte) as total',
       group_by: 'monat',
-      order_by: 'monat ASC'
+      order_by: 'monat ASC',
+      refine: 'jahr:2024'
     },
     parseData: 'parseTourismMonthly',
     keyFacts: [],
     analysis: [
-      'Die Monatsdaten zeigen eine ausgeprägte Saisonalität. Februar ist der stärkste Monat mit rund 1\'950\'000 Übernachtungen, November der schwächste mit rund 360\'000. Das Verhältnis zwischen stärkstem und schwächstem Monat beträgt mehr als 5 zu 1.',
-      'Der Frühling — April und Mai — verzeichnet die zweitniedrigsten Werte des Jahres. Viele Hotels in Skigebieten sind in dieser Zeit geschlossen. Die Monate März und April liegen deutlich unter den Wintermonaten Januar und Februar.',
-      'Juli und August weisen die höchsten Sommerwerte auf und nähern sich den Winterspitzenwerten an. Der Abstand zwischen den Sommermonaten Juli/August und den Wintermonaten Januar/Februar hat sich in den letzten zehn Jahren verringert.'
+      '2024 war Februar der stärkste Monat mit 836\'000 Logiernächten, November der schwächste mit 132\'000. Das Verhältnis zwischen stärkstem und schwächstem Monat beträgt rund 6 zu 1.',
+      'Frühling und Herbst sind die schwächsten Perioden: April (162\'000), Mai (171\'000) und November (132\'000) liegen deutlich unter den Winter- und Sommermonaten.',
+      'Die stärksten Sommermonate Juli (582\'000) und August (628\'000) erreichen 70–75 Prozent des Februar-Wertes. Januar (716\'000) und März (619\'000) ergänzen die Winterperiode.'
     ],
-    source: 'Bundesamt für Statistik, Beherbergungsstatistik HESTA 2023; Statistik Graubünden',
+    source: 'Statistik Graubünden, HESTA Hotelübernachtungen 2024 (dvs_awt_econ_202502031)',
   },
 
   {
@@ -507,26 +508,21 @@ const STORIES = [
     day: 5,
     publishDate: fmtDate(workdayDate(3, 5)),
     category: 'Wirtschaft',
-    title: 'Infrastruktur im Bergkanton: systemrelevant und unterschätzt',
-    lead: 'Strassen, Bahnen und Energieinfrastruktur kosten in Berggebieten pro Kopf ein Vielfaches des Flachlands. Graubünden betreibt das dichteste Schmalspurbahnetz der Welt — und zahlt dafür jährlich Hunderte Millionen Franken. Eine Investition, die den Kanton erst möglich macht.',
-    chartTitle: 'Infrastrukturausgaben Graubünden nach Kategorie',
-    chartSubtitle: 'Kantonale Investitionen in Mio. CHF · Kantonsfinanzen GR (dvs_awt_regi_20251201)',
+    title: 'Infrastruktur im Bergkanton: Bahn, Strasse, Energie',
+    lead: 'Graubünden ist mit 7\'105 km² der flächengrösste Kanton der Schweiz bei einer Bevölkerung von rund 200\'000 Personen. Das bedeutet eine der niedrigsten Bevölkerungsdichten — und entsprechend hohe Infrastrukturkosten pro Kopf.',
+    chartTitle: 'Infrastrukturprojekte im Kanton Graubünden',
+    chartSubtitle: 'Geförderte Projekte nach Gemeinde · Kanton Graubünden (dvs_awt_regi_20251201)',
     chartType: 'bar',
-    apiDatasetId: 'dvs_awt_regi_20251201',
-    apiQuery: {
-      select: 'kategorie,valur',
-      where: 'onn=2023',
-      group_by: 'kategorie',
-      order_by: 'valur DESC'
-    },
-    parseData: 'parseInfrastructure',
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
     keyFacts: [],
     analysis: [
-      'Graubünden gibt pro Einwohner:in rund dreimal so viel für Infrastruktur aus wie vergleichbare städtische Kantone. Dies ist auf die Kombination aus grosser Fläche (7\'105 km²), geringer Bevölkerungsdichte und anspruchsvollem Berggelände zurückzuführen. Tunnel, Lawinenschutzbauten und Wildbachverbauungen fallen als wiederkehrende Kostenpositionen an.',
-      'Die Rhätische Bahn betreibt ein Schmalspurnetz von rund 384 Kilometer Länge, das 2008 als UNESCO-Welterbe anerkannt wurde. Die jährlichen Betriebszuschüsse von Bund und Kanton für die Rhätische Bahn übersteigen 150 Millionen Franken. Das Netz verbindet auch abgelegene Täler wie das Engadin, das Albulatal und das Prättigau.',
-      'Die Infrastrukturausgaben pro Kopf in Graubünden liegen bei rund 4\'800 Franken jährlich. Im Vergleich dazu liegen die entsprechenden Werte für dicht besiedelte Kantone bei 1\'500 bis 2\'000 Franken. Der Strassenunterhalt macht rund 310 Millionen Franken pro Jahr aus.'
+      'Die Rhätische Bahn betreibt ein Schmalspurnetz von rund 384 Kilometer Länge. Die Strecken Albula/Bernina wurden 2008 als UNESCO-Welterbe anerkannt. Das Netz verbindet Täler wie das Engadin, das Albulatal, das Prättigau und das Vorderrheintal.',
+      'Graubünden hat mit 7\'105 km² die grösste Kantonsfläche der Schweiz. Bei rund 200\'000 Einwohnern ergibt das eine Bevölkerungsdichte von etwa 28 Personen pro km² — der tiefste Wert aller Kantone.',
+      'Die Kombination aus grosser Fläche, geringer Dichte und Berggelände führt zu vergleichsweise hohen Infrastrukturkosten pro Einwohner für Strassen, Bahnen, Wildbachverbauungen und Lawinenschutz.'
     ],
-    source: 'Kanton Graubünden, Finanzverwaltung; Rhätische Bahn, Geschäftsbericht 2023',
+    source: 'Rhätische Bahn, Jahresbericht; Statistik Graubünden, Bevölkerungsstatistik',
   },
 
   // ── WOCHE 4: GESELLSCHAFT & ZUKUNFT ─────────────────────
