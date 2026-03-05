@@ -98,7 +98,7 @@ const STORIES = [
       { number: '52',     label: 'Personen Lücke',   context: 'Differenz zwischen Chur und den 60 Gemeinden' }
     ],
     analysis: [
-      'Chur zählt 2024 genau 39\'177 Einwohnerinnen und Einwohner — mehr als dreimal so viele wie Davos, die zweitgrösste Gemeinde mit rund 11\'800 Personen. Unter den 26 Schweizer Kantonshauptorten liegt Chur damit im oberen Mittelfeld; innerhalb Graubündens aber ist der Abstand zur nächstgrösseren Gemeinde aussergewöhnlich gross.',
+      'Chur zählt 2024 genau 39\'177 Einwohnerinnen und Einwohner — mehr als dreimal so viele wie Davos, die zweitgrösste Gemeinde mit 10\'774 Personen. Unter den 26 Schweizer Kantonshauptorten liegt Chur damit im oberen Mittelfeld; innerhalb Graubündens aber ist der Abstand zur nächstgrösseren Gemeinde aussergewöhnlich gross.',
       'Addiert man die 60 kleinsten Gemeinden — von Rongellen mit 59 bis Celerina/Schlarigna mit 1\'415 Einwohnern — kommt man auf 39\'125 Personen: nahezu exakt Churs Bevölkerungszahl, Differenz 52 Personen. Diese 60 Gemeinden machen über die Hälfte aller 101 Bündner Gemeinden aus.',
       'Was das zeigt: Graubünden ist kein Kanton mit mehreren annähernd gleich grossen Zentren, sondern einer mit einer dominanten Stadt und sehr vielen kleinen Gemeinden. 58 der 101 Gemeinden zählen weniger als 1\'400 Einwohnerinnen und Einwohner — für sich allein eine bescheidene Zahl, zusammen aber das Gewicht einer Kantonshauptstadt.'
     ],
