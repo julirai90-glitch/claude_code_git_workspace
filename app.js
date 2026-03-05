@@ -94,8 +94,7 @@ const STORIES = [
     },
     keyFacts: [
       { number: "39'177", label: 'Einwohner Chur',  context: 'Bevölkerung 2024, alle Nationalitäten' },
-      { number: '60',     label: 'Gemeinden',        context: 'kleinste Bündner Gemeinden zusammen' },
-      { number: '52',     label: 'Personen Lücke',   context: 'Differenz zwischen Chur und den 60 Gemeinden' }
+      { number: '60',     label: 'Gemeinden',        context: 'kleinste Bündner Gemeinden zusammen' }
     ],
     analysis: [
       'Chur zählt 2024 genau 39\'177 Einwohnerinnen und Einwohner — mehr als dreimal so viele wie Davos, die zweitgrösste Gemeinde mit 10\'774 Personen. Unter den 26 Schweizer Kantonshauptorten liegt Chur damit im oberen Mittelfeld; innerhalb Graubündens aber ist der Abstand zur nächstgrösseren Gemeinde aussergewöhnlich gross.',
