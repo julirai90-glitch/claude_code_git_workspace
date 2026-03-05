@@ -98,9 +98,9 @@ const STORIES = [
       { number: '52',     label: 'Personen Lücke',   context: 'Differenz zwischen Chur und den 60 Gemeinden' }
     ],
     analysis: [
-      'Chur zählt 2024 genau 39\'177 Einwohnerinnen und Einwohner — mehr als doppelt so viele wie Davos, die zweitgrösste Gemeinde mit rund 11\'800 Personen. Unter den 26 Schweizer Kantonshauptorten liegt Chur damit im oberen Mittelfeld; innerhalb Graubündens aber ist der Abstand zur nächstgrösseren Gemeinde aussergewöhnlich gross.',
+      'Chur zählt 2024 genau 39\'177 Einwohnerinnen und Einwohner — mehr als dreimal so viele wie Davos, die zweitgrösste Gemeinde mit rund 11\'800 Personen. Unter den 26 Schweizer Kantonshauptorten liegt Chur damit im oberen Mittelfeld; innerhalb Graubündens aber ist der Abstand zur nächstgrösseren Gemeinde aussergewöhnlich gross.',
       'Addiert man die 60 kleinsten Gemeinden — von Rongellen mit 59 bis Celerina/Schlarigna mit 1\'415 Einwohnern — kommt man auf 39\'125 Personen: nahezu exakt Churs Bevölkerungszahl, Differenz 52 Personen. Diese 60 Gemeinden machen über die Hälfte aller 101 Bündner Gemeinden aus.',
-      'Was das zeigt: Graubünden ist kein Kanton mit mehreren annähernd gleich grossen Zentren, sondern einer mit einer dominanten Stadt und sehr vielen kleinen Gemeinden. 59 der 101 Gemeinden zählen weniger als 1\'400 Einwohnerinnen und Einwohner — für sich allein eine bescheidene Zahl, zusammen aber das Gewicht einer Kantonshauptstadt.'
+      'Was das zeigt: Graubünden ist kein Kanton mit mehreren annähernd gleich grossen Zentren, sondern einer mit einer dominanten Stadt und sehr vielen kleinen Gemeinden. 58 der 101 Gemeinden zählen weniger als 1\'400 Einwohnerinnen und Einwohner — für sich allein eine bescheidene Zahl, zusammen aber das Gewicht einer Kantonshauptstadt.'
     ],
     source: 'Kanton Graubünden, DVS/AWT: Permanente Bevölkerung nach Gemeinde und Nationalität (dvs_awt_soci_20250507), Stand 2024',
   },
@@ -372,7 +372,7 @@ const STORIES = [
     keyFacts: [
       { number: '3\'394', label: 'Tsd. Parahotellerie 2024', context: 'Ferienwohnungen + Kollektivunterkünfte + Camping' },
       { number: '38 %', label: 'Anteil Parahotellerie', context: 'Anteil an allen erfassten Logiernächten 2024' },
-      { number: '+66 %', label: 'Camping-Wachstum', context: 'Campingplätze: von 276 Tsd. (2016) auf 545 Tsd. (2024)' }
+      { number: '+97 %', label: 'Camping-Wachstum', context: 'Campingplätze: von 276 Tsd. (2016) auf 545 Tsd. (2024)' }
     ],
     analysis: [
       'Die Grafik zeigt die erfassten Logiernächte in Graubünden nach Unterkunftsart von 2016 bis 2024. Die Hotellerie ist mit rund 5,5 Millionen Übernachtungen der grösste Einzelbereich. Die drei Parahotellerie-Kategorien zusammen erreichten 2024 rund 3,4 Millionen Nächte — das entspricht 38 Prozent aller erfassten Übernachtungen.',
@@ -437,11 +437,11 @@ const STORIES = [
     },
     keyFacts: [
       { number: "9'728", label: 'Jahresschnitt 2025', context: 'Durchschnittliche Grenzgänger:innen pro Quartal 2025 (Q1: 9\'980, Q2: 9\'795, Q3: 9\'808, Q4: 9\'330)' },
-      { number: '+194 %', label: 'Wachstum seit 1996', context: 'Von ~3\'100 (1996) auf ~9\'700 (2025) — knapp Verdreifachung' },
+      { number: '+194 %', label: 'Wachstum seit 1996', context: 'Von ~3\'300 (1996) auf ~9\'700 (2025) — knapp Verdreifachung' },
       { number: '–3.9 %', label: 'COVID-Einbruch', context: 'Q4 2019 (7\'186) → Q1 2020 (6\'908): tiefster Stand, rasche Erholung ab Q2 2020' }
     ],
     analysis: [
-      'Die Grafik zeigt die Zahl der Beschäftigten mit Grenzgängerbewilligung im Kanton Graubünden, quartalsweise von 1996 bis 2025. 1996 lag der Quartalswert bei rund 3\'100 Personen, 2025 bei rund 9\'700 — eine Zunahme um knapp das Dreifache in 30 Jahren.',
+      'Die Grafik zeigt die Zahl der Beschäftigten mit Grenzgängerbewilligung im Kanton Graubünden, quartalsweise von 1996 bis 2025. 1996 lag der Quartalswert bei rund 3\'300 Personen, 2025 bei rund 9\'700 — eine Zunahme um knapp das Dreifache in 30 Jahren.',
       'Der COVID-19-Einbruch im Jahr 2020 ist in der Kurve erkennbar: Im ersten Quartal 2020 sank der Wert auf 6\'908 — von 7\'186 im vierten Quartal 2019. Die Erholung setzte rasch ein; ab Q2 2020 stiegen die Werte wieder. 2024 Q1 wurde mit 10\'008 der bisherige Höchstwert erreicht.',
       'Die Daten stammen aus der Grenzgängerstatistik des Bundesamts für Statistik (BFS). Erfasst sind Personen mit Wohnsitz im Ausland, die regelmässig zur Arbeit in den Kanton einpendeln und eine Grenzgängerbewilligung (Ausweis G) besitzen.'
     ],
@@ -474,7 +474,7 @@ const STORIES = [
     ],
     analysis: [
       'Die Grafik zeigt die zehn grössten öffentlich verfügbaren Exportkategorien des Kantons Graubünden im Jahr 2024 (Aussenhandelsstatistik EZV). Chemische Erzeugnisse führen mit 764 Mio. CHF, gefolgt von Maschinen (587 Mio.) und diversen Waren (191 Mio.).',
-      'EDV- und Elektronikgeräte (190 Mio.) sowie Elektrogeräte (113 Mio.) bilden zusammen mit den Maschinen einen Technologiecluster von rund 490 Mio. CHF. Pharmazeutische Erzeugnisse (111 Mio.) folgen auf Rang 6. Nahrungsmittel belegen mit 58 Mio. CHF Rang 10.',
+      'EDV- und Elektronikgeräte (190 Mio.) sowie Elektrogeräte (113 Mio.) bilden zusammen mit den Maschinen einen Technologiecluster von rund 890 Mio. CHF. Pharmazeutische Erzeugnisse (111 Mio.) folgen auf Rang 6. Nahrungsmittel belegen mit 58 Mio. CHF Rang 10.',
       'Der Gesamtexport Graubündens betrug 2024 rund 5,1 Milliarden Franken. Davon entfallen 97 Prozent auf die Sektion C (Hergestellte Waren). Ein Teil der Exportdaten unterliegt der Geheimhaltungspflicht und ist in der Grafik nicht ausgewiesen.'
     ],
     source: 'Eidgenössische Zollverwaltung, Aussenhandelsstatistik; data.gr.ch dvs_awt_econ_20250702',
