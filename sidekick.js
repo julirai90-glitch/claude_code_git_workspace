@@ -219,19 +219,19 @@
     sidebar.id = 'somedia-sidekick';
     sidebar.innerHTML = `
       <div class="sidekick-header">
-        <h3>🪄 Somedia Sidekick</h3>
-        <button class="sidekick-close" onclick="document.getElementById('somedia-sidekick').remove()">×</button>
+        <h3>Somedia Sidekick</h3>
+        <button class="sidekick-close" onclick="document.getElementById('somedia-sidekick').remove()">x</button>
       </div>
       <div class="sidekick-body">
-        <button class="sidekick-btn" data-action="titles">🎯 Titelvorschläge</button>
-        <button class="sidekick-btn" data-action="alttext">🖼️ ALT-Texte</button>
-        <button class="sidekick-btn" data-action="check">✅ Schreibregeln prüfen</button>
-        <button class="sidekick-btn" data-action="lead">📝 Lead generieren</button>
-        <button class="sidekick-btn" data-action="social">📱 Social Media Post</button>
+        <button class="sidekick-btn" data-action="titles">Titelvorschläge</button>
+        <button class="sidekick-btn" data-action="alttext">ALT-Texte</button>
+        <button class="sidekick-btn" data-action="check">Schreibregeln prüfen</button>
+        <button class="sidekick-btn" data-action="lead">Lead generieren</button>
+        <button class="sidekick-btn" data-action="social">Social Media Post</button>
         <div class="sidekick-result" id="sidekick-result"></div>
       </div>
       <div class="sidekick-footer">
-        <small style="color: #666; text-align: center; padding: 8px;">Powered by AI</small>
+        <small>Powered by AI</small>
       </div>
     `;
 
@@ -242,12 +242,12 @@
         position: fixed;
         top: 20px;
         right: 20px;
-        width: 380px;
+        width: 360px;
         max-height: 90vh;
-        background: white;
-        border: 1px solid #000;
-        border-radius: 2px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        background: #e8e8e8;
+        border: 1px solid #bbb;
+        border-radius: 0;
+        box-shadow: none;
         z-index: 999999;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         overflow: hidden;
@@ -255,73 +255,74 @@
         flex-direction: column;
       }
       .sidekick-header {
-        background: #000;
-        color: white;
-        padding: 16px;
+        background: #d0d0d0;
+        color: #1f2937;
+        padding: 14px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        border-bottom: 1px solid #bbb;
       }
       .sidekick-header h3 {
         margin: 0;
-        font-size: 18px;
+        font-size: 15px;
         font-weight: 600;
       }
       .sidekick-close {
         background: transparent;
         border: none;
-        color: white;
-        font-size: 24px;
-        width: 32px;
-        height: 32px;
-        border-radius: 2px;
+        color: #555;
+        font-size: 18px;
+        width: 28px;
+        height: 28px;
         cursor: pointer;
-        transition: background 0.2s;
+        line-height: 1;
       }
       .sidekick-close:hover {
-        background: rgba(255,255,255,0.15);
+        color: #111;
       }
       .sidekick-body {
-        padding: 16px;
+        padding: 14px;
         overflow-y: auto;
         flex: 1;
       }
       .sidekick-btn {
         width: 100%;
-        padding: 12px 16px;
-        margin-bottom: 8px;
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 2px;
-        font-size: 14px;
+        padding: 10px 14px;
+        margin-bottom: 6px;
+        background: #e0e0e0;
+        border: 1px solid #bbb;
+        border-radius: 0;
+        font-size: 13px;
         font-weight: 400;
         cursor: pointer;
-        transition: all 0.15s;
+        transition: background 0.15s;
         text-align: left;
+        color: #1f2937;
       }
       .sidekick-btn:hover {
-        background: #f9f9f9;
-        border-color: #3b82f6;
+        background: #d0d0d0;
       }
       .sidekick-btn:active {
-        transform: scale(0.99);
+        background: #c4c4c4;
       }
       .sidekick-btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
       }
       .sidekick-result {
-        margin-top: 16px;
+        margin-top: 12px;
         padding: 12px;
-        background: #fafafa;
-        border: 1px solid #eee;
-        border-radius: 2px;
+        background: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 0;
         font-size: 13px;
         line-height: 1.6;
         white-space: pre-wrap;
         display: none;
         max-height: 400px;
         overflow-y: auto;
+        color: #1f2937;
       }
       .sidekick-result.visible {
         display: block;
@@ -329,31 +330,35 @@
       .sidekick-result.loading {
         display: block;
         text-align: center;
-        color: #6b7280;
+        color: #666;
       }
       .sidekick-result.error {
         display: block;
-        background: #fee2e2;
-        color: #991b1b;
+        background: #ddd;
+        color: #333;
+        border-color: #aaa;
       }
       .sidekick-footer {
-        padding: 12px 16px;
-        border-top: 1px solid #eee;
-        background: white;
+        padding: 10px 16px;
+        border-top: 1px solid #bbb;
+        background: #d0d0d0;
+        color: #666;
+        font-size: 11px;
+        text-align: center;
       }
       .sidekick-btn-secondary {
         width: 100%;
         padding: 8px;
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 2px;
+        background: #ddd;
+        border: 1px solid #bbb;
+        border-radius: 0;
         font-size: 12px;
         cursor: pointer;
-        transition: all 0.15s;
+        transition: background 0.15s;
+        color: #333;
       }
       .sidekick-btn-secondary:hover {
-        border-color: #3b82f6;
-        color: #3b82f6;
+        background: #ccc;
       }
     `;
 
@@ -428,7 +433,7 @@
     // Sidebar erstellen
     createSidebar();
 
-    console.log('✓ Somedia Sidekick geladen');
+    console.log('Somedia Sidekick geladen');
   }
 
   // Start
