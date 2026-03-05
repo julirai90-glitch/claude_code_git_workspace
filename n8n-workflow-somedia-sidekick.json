@@ -1,0 +1,480 @@
+{
+  "name": "Somedia Sidekick Proxy",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "somedia-sidekick",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "somedia-sidekick"
+    },
+    {
+      "parameters": {
+        "dataPropertyName": "data",
+        "rules": {
+          "rules": [
+            {
+              "conditions": {
+                "number": 1,
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "titles",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "titles"
+            },
+            {
+              "conditions": {
+                "number": 1,
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "alttext",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "alttext"
+            },
+            {
+              "conditions": {
+                "number": 1,
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "check",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "check"
+            },
+            {
+              "conditions": {
+                "number": 1,
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.type }}",
+                    "rightValue": "lead",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "lead"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "switch-routing",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.item.json.body.content;\nconst context = $input.item.json.body.context || {};\n\nconst SOMEDIA_RULES = `\nSOMEDIA-SPRACHRICHTLINIEN (Sprachrichtlinien 2022):\n\n1. GESCHLECHTERGERECHT:\n   - Neutrale Begriffe bevorzugen (Mitarbeitende, Studierende)\n   - Oder Doppelformen (Leserinnen und Leser)\n   - NICHT verwenden: *, :, /, -Innen\n\n2. ABKÜRZUNGEN:\n   - 3 Buchstaben: Komplett groß (UNO, WHO, ETH)\n   - >3 Buchstaben: Nur erster Buchstabe groß (Fifa, Nasa, Unicef)\n\n3. ZAHLEN:\n   - Bis 12: Ausgeschrieben (drei Personen, zwölf Franken)\n   - Ab 13: Als Ziffer (13 Personen, 100 Franken)\n   - Ausnahme: Prozent, Uhrzeiten, Daten immer Ziffern\n\n4. WOCHENTAGE:\n   - Statt \"gestern\", \"heute\", \"morgen\": Konkreten Wochentag nutzen\n   - Beispiel: \"Am Mittwoch\" statt \"Gestern\"\n\n5. KUPPLUNGEN (Bindestriche):\n   - Bei zusammengesetzten Begriffen mit Eigennamen\n   - Beispiel: \"Südostschweiz-Journalist\", \"Corona-Pandemie\"\n\n6. ZEITUNGSNAMEN:\n   - In Anführungszeichen (\"Südostschweiz\", \"NZZ\")\n   - Kürzel ohne Anführungszeichen (SRF, SDA)\n`;\n\nreturn {\n  json: {\n    system: `Du bist ein erfahrener Redakteur bei Somedia (Südostschweiz).\n\n${SOMEDIA_RULES}\n\nDeine Aufgabe: Erstelle prägnante, informative Titel für Artikel.\n\n- Titel sollen neugierig machen\n- Wichtigste Info zuerst\n- Keine Clickbait\n- Maximal 60-70 Zeichen\n- Vermeide Füllwörter`,\n    user: `Erstelle 5 verschiedene Titel-Varianten für folgenden Artikel.\n\n${content}\n\nFORMAT: Nur die 5 Titel, nummeriert (1. bis 5.), keine zusätzlichen Erklärungen.`,\n    model: \"claude-sonnet-4-5-20250929\"\n  }\n};"
+      },
+      "id": "function-titles",
+      "name": "Prepare Titles Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.item.json.body.content;\nconst context = $input.item.json.body.context || {};\n\nconst SOMEDIA_RULES = `\nSOMEDIA-SPRACHRICHTLINIEN (Sprachrichtlinien 2022):\n\n1. GESCHLECHTERGERECHT:\n   - Neutrale Begriffe bevorzugen (Mitarbeitende, Studierende)\n   - Oder Doppelformen (Leserinnen und Leser)\n   - NICHT verwenden: *, :, /, -Innen\n\n2. ABKÜRZUNGEN:\n   - 3 Buchstaben: Komplett groß (UNO, WHO, ETH)\n   - >3 Buchstaben: Nur erster Buchstabe groß (Fifa, Nasa, Unicef)\n\n3. ZAHLEN:\n   - Bis 12: Ausgeschrieben (drei Personen, zwölf Franken)\n   - Ab 13: Als Ziffer (13 Personen, 100 Franken)\n   - Ausnahme: Prozent, Uhrzeiten, Daten immer Ziffern\n\n4. WOCHENTAGE:\n   - Statt \"gestern\", \"heute\", \"morgen\": Konkreten Wochentag nutzen\n   - Beispiel: \"Am Mittwoch\" statt \"Gestern\"\n\n5. KUPPLUNGEN (Bindestriche):\n   - Bei zusammengesetzten Begriffen mit Eigennamen\n   - Beispiel: \"Südostschweiz-Journalist\", \"Corona-Pandemie\"\n\n6. ZEITUNGSNAMEN:\n   - In Anführungszeichen (\"Südostschweiz\", \"NZZ\")\n   - Kürzel ohne Anführungszeichen (SRF, SDA)\n`;\n\nreturn {\n  json: {\n    system: `Du bist ein Experte für barrierefreie Bildbeschreibungen.\n\nRichtlinien:\n- Maximal 125 Zeichen\n- Sachlich und informativ\n- Beschreibe was zu sehen ist, nicht interpretieren\n- Wichtigste Elemente zuerst\n- Keine Marketing-Sprache`,\n    user: `Erstelle einen ALT-Text für folgendes Bild:\n\n${content}\n\nKONTEXT:\nTitel: ${context.title || 'N/A'}\nArtikel: ${context.articleSnippet || 'N/A'}\n\nFORMAT: Nur der ALT-Text, keine Erklärungen.`,\n    model: \"claude-sonnet-4-5-20250929\"\n  }\n};"
+      },
+      "id": "function-alttext",
+      "name": "Prepare ALT-Text Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.item.json.body.content;\nconst context = $input.item.json.body.context || {};\n\nconst SOMEDIA_RULES = `\nSOMEDIA-SPRACHRICHTLINIEN (Sprachrichtlinien 2022):\n\n1. GESCHLECHTERGERECHT:\n   - Neutrale Begriffe bevorzugen (Mitarbeitende, Studierende)\n   - Oder Doppelformen (Leserinnen und Leser)\n   - NICHT verwenden: *, :, /, -Innen\n   ✗ Falsch: Lehrer*innen, Bürger:innen\n   ✓ Richtig: Lehrpersonen, Bürgerinnen und Bürger\n\n2. ABKÜRZUNGEN:\n   - 3 Buchstaben: Komplett groß (UNO, WHO, ETH)\n   - >3 Buchstaben: Nur erster Buchstabe groß (Fifa, Nasa, Unicef)\n   ✗ Falsch: FIFA, NASA\n   ✓ Richtig: Fifa, Nasa\n\n3. ZAHLEN:\n   - Bis 12: Ausgeschrieben (drei Personen, zwölf Franken)\n   - Ab 13: Als Ziffer (13 Personen, 100 Franken)\n   - Ausnahme: Prozent, Uhrzeiten, Daten immer Ziffern\n   ✗ Falsch: 5 Personen, dreizehn Franken\n   ✓ Richtig: fünf Personen, 13 Franken\n\n4. WOCHENTAGE:\n   - Statt \"gestern\", \"heute\", \"morgen\": Konkreten Wochentag nutzen\n   - Beispiel: \"Am Mittwoch\" statt \"Gestern\"\n   ✗ Falsch: \"Gestern fand die Veranstaltung statt\"\n   ✓ Richtig: \"Am Dienstag fand die Veranstaltung statt\"\n\n5. KUPPLUNGEN (Bindestriche):\n   - Bei zusammengesetzten Begriffen mit Eigennamen\n   - Beispiel: \"Südostschweiz-Journalist\", \"Corona-Pandemie\"\n\n6. ZEITUNGSNAMEN:\n   - In Anführungszeichen (\"Südostschweiz\", \"NZZ\")\n   - Kürzel ohne Anführungszeichen (SRF, SDA)\n`;\n\nreturn {\n  json: {\n    system: `Du bist ein Qualitätsprüfer für Somedia (Südostschweiz).\n\n${SOMEDIA_RULES}\n\nDeine Aufgabe: Prüfe Texte auf Einhaltung der Somedia-Sprachrichtlinien.\n\nGib Verstöße zurück als nummerierte Liste:\n- Welche Regel verletzt\n- Betroffene Textstelle\n- Korrekturvorschlag\n\nWenn keine Verstöße: \"✅ Keine Regelverstöße gefunden.\"`,\n    user: `Prüfe folgenden Text auf Somedia-Sprachrichtlinien:\n\n${content}\n\nFORMAT: Nummerierte Liste der Verstöße oder Bestätigung.`,\n    model: \"claude-sonnet-4-5-20250929\"\n  }\n};"
+      },
+      "id": "function-check",
+      "name": "Prepare Style Check Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 380]
+    },
+    {
+      "parameters": {
+        "jsCode": "const content = $input.item.json.body.content;\nconst context = $input.item.json.body.context || {};\n\nconst SOMEDIA_RULES = `\nSOMEDIA-SPRACHRICHTLINIEN (Sprachrichtlinien 2022):\n\n1. GESCHLECHTERGERECHT:\n   - Neutrale Begriffe bevorzugen (Mitarbeitende, Studierende)\n   - Oder Doppelformen (Leserinnen und Leser)\n   - NICHT verwenden: *, :, /, -Innen\n\n2. ABKÜRZUNGEN:\n   - 3 Buchstaben: Komplett groß (UNO, WHO, ETH)\n   - >3 Buchstaben: Nur erster Buchstabe groß (Fifa, Nasa, Unicef)\n\n3. ZAHLEN:\n   - Bis 12: Ausgeschrieben (drei Personen, zwölf Franken)\n   - Ab 13: Als Ziffer (13 Personen, 100 Franken)\n   - Ausnahme: Prozent, Uhrzeiten, Daten immer Ziffern\n\n4. WOCHENTAGE:\n   - Statt \"gestern\", \"heute\", \"morgen\": Konkreten Wochentag nutzen\n   - Beispiel: \"Am Mittwoch\" statt \"Gestern\"\n\n5. KUPPLUNGEN (Bindestriche):\n   - Bei zusammengesetzten Begriffen mit Eigennamen\n   - Beispiel: \"Südostschweiz-Journalist\", \"Corona-Pandemie\"\n\n6. ZEITUNGSNAMEN:\n   - In Anführungszeichen (\"Südostschweiz\", \"NZZ\")\n   - Kürzel ohne Anführungszeichen (SRF, SDA)\n`;\n\nreturn {\n  json: {\n    system: `Du bist ein erfahrener Redakteur bei Somedia (Südostschweiz).\n\n${SOMEDIA_RULES}\n\nDeine Aufgabe: Erstelle einen prägnanten Lead (Vorspann) für Artikel.\n\n- Maximal 280 Zeichen\n- Fasst Kernaussage zusammen\n- Macht neugierig auf den Artikel\n- Beantwortet die W-Fragen (Wer, Was, Wann, Wo)\n- Keine Wiederholung des Titels`,\n    user: `Erstelle einen Lead für folgenden Artikel:\n\nTitel: ${context.title || 'N/A'}\n\n${content}\n\nFORMAT: Nur der Lead-Text, keine Erklärungen.`,\n    model: \"claude-sonnet-4-5-20250929\"\n  }\n};"
+      },
+      "id": "function-lead",
+      "name": "Prepare Lead Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 520]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: $json.model,\n  max_tokens: 2000,\n  system: $json.system,\n  messages: [{ role: 'user', content: $json.user }]\n}) }}",
+        "options": {}
+      },
+      "id": "anthropic-titles",
+      "name": "Claude - Titles",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 100],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "anthropic-header-auth",
+          "name": "Anthropic Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: $json.model,\n  max_tokens: 2000,\n  system: $json.system,\n  messages: [{ role: 'user', content: $json.user }]\n}) }}",
+        "options": {}
+      },
+      "id": "anthropic-alttext",
+      "name": "Claude - ALT-Text",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 240],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "anthropic-header-auth",
+          "name": "Anthropic Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: $json.model,\n  max_tokens: 2000,\n  system: $json.system,\n  messages: [{ role: 'user', content: $json.user }]\n}) }}",
+        "options": {}
+      },
+      "id": "anthropic-check",
+      "name": "Claude - Style Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 380],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "anthropic-header-auth",
+          "name": "Anthropic Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: $json.model,\n  max_tokens: 2000,\n  system: $json.system,\n  messages: [{ role: 'user', content: $json.user }]\n}) }}",
+        "options": {}
+      },
+      "id": "anthropic-lead",
+      "name": "Claude - Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 520],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "anthropic-header-auth",
+          "name": "Anthropic Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json.content[0].text;\n\nreturn {\n  json: {\n    success: true,\n    result: response\n  }\n};"
+      },
+      "id": "function-format-response",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Prepare Titles Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare ALT-Text Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Style Check Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Lead Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Titles Prompt": {
+      "main": [
+        [
+          {
+            "node": "Claude - Titles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare ALT-Text Prompt": {
+      "main": [
+        [
+          {
+            "node": "Claude - ALT-Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Style Check Prompt": {
+      "main": [
+        [
+          {
+            "node": "Claude - Style Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Lead Prompt": {
+      "main": [
+        [
+          {
+            "node": "Claude - Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude - Titles": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude - ALT-Text": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude - Style Check": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude - Lead": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-02-09T00:00:00.000Z",
+  "versionId": "1"
+}

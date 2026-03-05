@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test - Purple Hub Editor Simulator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+
+    .test-header {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .test-header h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .test-header p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .test-actions {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    /* Purple Hub Editor Simulator */
+    .purple-hub-editor {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .editor-toolbar {
+      background: #f9fafb;
+      padding: 12px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .editor-toolbar button {
+      padding: 8px 16px;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .editor-content {
+      padding: 40px;
+    }
+
+    h1[contenteditable="true"] {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      outline: none;
+      color: #9ca3af;
+      min-height: 50px;
+    }
+
+    h1[contenteditable="true"]:empty:before {
+      content: "Titel hier eingeben";
+      color: #9ca3af;
+    }
+
+    [data-placeholder="Lead"] {
+      font-size: 18px;
+      font-style: italic;
+      color: #6b7280;
+      margin-bottom: 24px;
+      outline: none;
+      min-height: 60px;
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+
+    [data-placeholder="Lead"]:empty:before {
+      content: "Lead";
+      color: #9ca3af;
+    }
+
+    .spitzmarke {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+
+    .ProseMirror {
+      min-height: 400px;
+      outline: none;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #1f2937;
+    }
+
+    .ProseMirror:empty:before {
+      content: "Beginne hier zu schreiben...";
+      color: #9ca3af;
+    }
+
+    .ProseMirror p {
+      margin-bottom: 16px;
+    }
+
+    .image-placeholder {
+      width: 100%;
+      height: 300px;
+      background: #f3f4f6;
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-header">
+    <h1>🧪 Purple Hub Editor Simulator</h1>
+    <p>Lokale Test-Umgebung für Somedia Sidekick</p>
+  </div>
+
+  <div class="test-actions">
+    <button class="btn" onclick="loadSidekick()">🪄 Sidekick laden</button>
+    <button class="btn btn-secondary" onclick="fillSampleContent()">📝 Beispiel-Inhalt einfügen</button>
+    <button class="btn btn-secondary" onclick="clearContent()">🗑️ Inhalt löschen</button>
+    <button class="btn btn-secondary" onclick="window.location.href='index.html'">⚙️ Setup</button>
+  </div>
+
+  <div class="purple-hub-editor">
+    <div class="editor-toolbar">
+      <button>Entwurf speichern</button>
+      <button>Vorschau</button>
+      <button style="background: #2563eb; color: white; border-color: #2563eb;">Veröffentlichen</button>
+    </div>
+
+    <div class="editor-content">
+      <div class="spitzmarke" contenteditable="true">Spitzmarke</div>
+
+      <h1 contenteditable="true"></h1>
+
+      <div data-placeholder="Lead" contenteditable="true"></div>
+
+      <div class="image-placeholder">📷 Bild-Bereich (Platzhalter)</div>
+
+      <div class="ProseMirror" contenteditable="true"></div>
+    </div>
+  </div>
+
+  <script>
+    function loadSidekick() {
+      // Prüfe ob schon geladen
+      if (window.SOMEDIA_SIDEKICK_LOADED) {
+        alert('Sidekick ist bereits geladen!');
+        return;
+      }
+
+      // Lade das Script
+      const script = document.createElement('script');
+      script.src = 'sidekick.js?' + Date.now();
+      script.onerror = function() {
+        alert('Fehler beim Laden von sidekick.js\n\nStelle sicher, dass die Datei im selben Ordner liegt.');
+      };
+      document.body.appendChild(script);
+    }
+
+    function fillSampleContent() {
+      // Beispiel-Artikel für Testing
+      document.querySelector('h1[contenteditable]').textContent =
+        'Graubünden investiert 5,6 Millionen Franken in Digitalisierung';
+
+      document.querySelector('[data-placeholder="Lead"]').textContent =
+        'Die Kantonsregierung hat am Montag ein umfassendes Digitalisierungsprogramm vorgestellt. Davon profitieren sollen vor allem Schulen und kleine Unternehmen.';
+
+      document.querySelector('.ProseMirror').innerHTML = `
+        <p>Die Regierung von Graubünden hat am Montag ein ehrgeiziges Digitalisierungsprogramm vorgestellt. Insgesamt 5,6 Millionen Franken sollen in den kommenden drei Jahren in verschiedene Projekte fliessen.</p>
+
+        <p>«Wir wollen den Anschluss nicht verpassen», sagte Regierungsrat Mario Cavigelli an der Medienkonferenz in Chur. Das Programm umfasst Massnahmen in vier Bereichen: Bildung, Wirtschaft, Verwaltung und Infrastruktur.</p>
+
+        <p>Besonders die Schulen sollen profitieren. Geplant sind unter anderem die Ausstattung aller Klassenzimmer mit modernen Geräten und die Schulung von 800 Lehrpersonen. Für die Wirtschaft ist ein Förderprogramm für Start-ups geplant.</p>
+
+        <p>Die Opposition kritisiert das Projekt als zu teuer. «5,6 Mio. Franken sind viel Geld», meint SP-Grossrat Andri Perl. Die Regierung verweist auf ähnliche Programme in anderen Kantonen, die bereits 2015 gestartet wurden.</p>
+
+        <p>Der Grosse Rat wird über das Programm in der Dezembersession entscheiden.</p>
+      `;
+
+      alert('✓ Beispiel-Inhalt eingefügt!\n\nJetzt kannst du Sidekick laden und testen.');
+    }
+
+    function clearContent() {
+      document.querySelector('h1[contenteditable]').textContent = '';
+      document.querySelector('[data-placeholder="Lead"]').textContent = '';
+      document.querySelector('.ProseMirror').innerHTML = '';
+    }
+
+    // Info beim Laden
+    window.addEventListener('DOMContentLoaded', function() {
+      const hasAPIKey = localStorage.getItem('somedia_sidekick_api_key');
+      if (!hasAPIKey) {
+        setTimeout(function() {
+          if (confirm('Kein API-Key gefunden.\n\nMöchtest du zur Setup-Seite gehen?')) {
+            window.location.href = 'index.html';
+          }
+        }, 500);
+      }
+    });
+
+    // Keyboard Shortcut
+    document.addEventListener('keydown', function(e) {
+      // Ctrl+Shift+S = Load Sidekick
+      if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+        e.preventDefault();
+        loadSidekick();
+      }
+    });
+  </script>
+</body>
+</html>

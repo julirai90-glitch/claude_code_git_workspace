@@ -1,0 +1,28 @@
+{
+  "name": "somedia-sidekick",
+  "version": "1.0.0",
+  "description": "AI-gestützter Schreibassistent für Somedia-Redaktionen",
+  "main": "sidekick.js",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "test": "echo \"Open test.html in browser\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/julirai90-glitch/somedia-sidekick.git"
+  },
+  "keywords": [
+    "journalism",
+    "ai",
+    "writing-assistant",
+    "claude",
+    "bookmarklet",
+    "somedia"
+  ],
+  "author": "Julian Reich",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/julirai90-glitch/somedia-sidekick/issues"
+  },
+  "homepage": "https://github.com/julirai90-glitch/somedia-sidekick#readme"
+}

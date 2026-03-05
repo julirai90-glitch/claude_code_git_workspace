@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Somedia Sidekick - Setup</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      padding: 48px 40px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 40px;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1f2937;
+    }
+
+    .section p {
+      margin-bottom: 12px;
+      color: #4b5563;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .feature {
+      padding: 20px;
+      background: #f3f4f6;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .feature-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .steps {
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      padding-left: 60px;
+      margin-bottom: 24px;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 40px;
+      height: 40px;
+      background: #2563eb;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .step h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #1f2937;
+    }
+
+    .input-group {
+      margin: 24px 0;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #374151;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    .input-hint {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .bookmarklet-container {
+      background: #f9fafb;
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+      margin: 24px 0;
+    }
+
+    .bookmarklet {
+      display: inline-block;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: move;
+    }
+
+    .bookmarklet:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    .bookmarklet-hint {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .alert {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      color: #1e40af;
+      border-left: 4px solid #2563eb;
+    }
+
+    .alert-warning {
+      background: #fef3c7;
+      color: #92400e;
+      border-left: 4px solid #f59e0b;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .code {
+      background: #1f2937;
+      color: #10b981;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🪄 Somedia Sidekick</h1>
+      <p>AI-gestützter Schreibassistent für Somedia-Redaktionen</p>
+    </header>
+
+    <div class="content">
+      <!-- Features -->
+      <div class="section">
+        <h2>Funktionen</h2>
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-title">Titelvorschläge</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🖼️</div>
+            <div class="feature-title">ALT-Texte</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">✅</div>
+            <div class="feature-title">Schreibregeln-Check</div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">📝</div>
+            <div class="feature-title">Lead-Generierung</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Setup -->
+      <div class="section">
+        <h2>Installation</h2>
+
+        <div class="alert alert-info">
+          <strong>Hinweis:</strong> Dein Claude API-Key wird nur lokal in deinem Browser gespeichert. Keine Daten werden an Dritte weitergegeben.
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <h3>Claude API-Key holen</h3>
+            <p>Gehe zu <a href="https://console.anthropic.com/" target="_blank">console.anthropic.com</a> und erstelle einen API-Key.</p>
+          </div>
+
+          <div class="step">
+            <h3>API-Key speichern</h3>
+            <div class="input-group">
+              <label for="api-key">Claude API-Key</label>
+              <input
+                type="text"
+                id="api-key"
+                placeholder="sk-ant-api03-..."
+                value=""
+              >
+              <div class="input-hint">Der Key beginnt mit "sk-ant-api03-..."</div>
+            </div>
+            <button class="btn" onclick="saveAPIKey()">API-Key speichern</button>
+            <button class="btn btn-secondary" onclick="clearAPIKey()" style="margin-left: 8px;">Key löschen</button>
+          </div>
+
+          <div class="step">
+            <h3>Bookmarklet installieren</h3>
+            <div class="bookmarklet-container">
+              <a href="javascript:(function(){var s=document.createElement('script');s.src='https://julirai90-glitch.github.io/somedia-sidekick/sidekick.js?'+Date.now();document.body.appendChild(s);})();" class="bookmarklet">
+                🪄 Sidekick
+              </a>
+              <div class="bookmarklet-hint">
+                ↑ Ziehe diesen Button in deine Lesezeichen-Leiste
+              </div>
+            </div>
+            <div class="alert alert-warning">
+              <strong>Wichtig:</strong> Nach dem Deployment muss die URL im Bookmarklet angepasst werden.
+            </div>
+          </div>
+
+          <div class="step">
+            <h3>Im CMS verwenden</h3>
+            <p>Öffne einen Artikel im Purple Hub CMS und klicke auf das Sidekick-Bookmark.</p>
+            <p>Eine Sidebar erscheint rechts mit allen Funktionen.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lokale Verwendung -->
+      <div class="section">
+        <h2>Lokale Entwicklung</h2>
+        <p>Für lokale Tests kannst du das Script direkt laden:</p>
+
+        <div class="code">
+javascript:(function(){
+  var s=document.createElement('script');
+  s.src='file:///C:/Users/julir/Claude_Code_Workspace/somedia-sidekick/sidekick.js';
+  document.body.appendChild(s);
+})();
+        </div>
+
+        <p style="margin-top: 12px;">
+          <strong>Alternative:</strong> Script direkt in Browser-Console kopieren:
+        </p>
+        <button class="btn" onclick="copyScriptToClipboard()">📋 Script kopieren</button>
+      </div>
+
+      <!-- Privacy -->
+      <div class="section">
+        <h2>Datenschutz</h2>
+        <ul style="padding-left: 24px; color: #4b5563;">
+          <li>API-Key wird nur im lokalen Browser-Speicher (localStorage) gespeichert</li>
+          <li>Keine Datenübertragung an Dritte (nur direkt an Claude API)</li>
+          <li>Keine Logs oder Analytics</li>
+          <li>Quellcode ist Open Source und prüfbar</li>
+        </ul>
+      </div>
+
+      <!-- Troubleshooting -->
+      <div class="section">
+        <h2>Problembehebung</h2>
+        <div class="alert alert-info">
+          <strong>Sidekick lädt nicht?</strong><br>
+          1. Prüfe ob du im Purple Hub CMS bist<br>
+          2. Öffne Browser-Console (F12) und schaue nach Fehlermeldungen<br>
+          3. Stelle sicher, dass der API-Key korrekt gespeichert ist<br>
+          4. Versuche den Browser-Cache zu leeren
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>Somedia Sidekick v1.0 | Basierend auf Somedia-Sprachrichtlinien 2022</p>
+      <p>Powered by Claude (Anthropic)</p>
+    </footer>
+  </div>
+
+  <script>
+    // API-Key Management
+    function loadAPIKey() {
+      const key = localStorage.getItem('somedia_sidekick_api_key');
+      if (key) {
+        document.getElementById('api-key').value = key;
+      }
+    }
+
+    function saveAPIKey() {
+      const key = document.getElementById('api-key').value.trim();
+      if (!key) {
+        alert('Bitte gib einen API-Key ein.');
+        return;
+      }
+      if (!key.startsWith('sk-ant-api')) {
+        alert('Der API-Key scheint ungültig zu sein. Er sollte mit "sk-ant-api" beginnen.');
+        return;
+      }
+      localStorage.setItem('somedia_sidekick_api_key', key);
+      alert('✓ API-Key gespeichert!\n\nDu kannst jetzt das Bookmarklet verwenden.');
+    }
+
+    function clearAPIKey() {
+      if (confirm('API-Key wirklich löschen?')) {
+        localStorage.removeItem('somedia_sidekick_api_key');
+        document.getElementById('api-key').value = '';
+        alert('API-Key gelöscht.');
+      }
+    }
+
+    function copyScriptToClipboard() {
+      fetch('sidekick.js')
+        .then(r => r.text())
+        .then(text => {
+          navigator.clipboard.writeText(text);
+          alert('✓ Script in Zwischenablage kopiert!\n\nFüge es in die Browser-Console ein.');
+        })
+        .catch(err => {
+          alert('Fehler beim Kopieren: ' + err.message);
+        });
+    }
+
+    // Load saved API key on page load
+    window.addEventListener('DOMContentLoaded', loadAPIKey);
+  </script>
+</body>
+</html>
