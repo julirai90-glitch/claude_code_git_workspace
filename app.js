@@ -102,6 +102,12 @@ const STORIES = [
       'Was das zeigt: Graubünden ist kein Kanton mit mehreren annähernd gleich grossen Zentren, sondern einer mit einer dominanten Stadt und sehr vielen kleinen Gemeinden. 58 der 101 Gemeinden zählen weniger als 1\'400 Einwohnerinnen und Einwohner — für sich allein eine bescheidene Zahl, zusammen aber das Gewicht einer Kantonshauptstadt.'
     ],
     source: 'Kanton Graubünden, DVS/AWT: Permanente Bevölkerung nach Gemeinde und Nationalität (dvs_awt_soci_20250507), Stand 2024',
+    chartVariant: {
+      title: 'Bevölkerungsverteilung Kanton Graubünden 2024 (Total: 206'138)',
+      labels: ['Chur', '60 kleinste Gemeinden', 'Restliche 40 Gemeinden'],
+      values: [39177, 39125, 127836],
+      colors: ['#1E3A5F', '#B5001E', '#6B6763']
+    },
   },
 
   {
@@ -979,6 +985,82 @@ const MUTED   = '#6B6763';
 const GRID    = '#E0DDD7';
 
 let activeChart = null;
+let activeVariantChart = null;
+
+function destroyVariantChart() {
+  if (activeVariantChart) { activeVariantChart.destroy(); activeVariantChart = null; }
+}
+
+function buildVariantChart(variant) {
+  destroyVariantChart();
+  const card = document.getElementById('variant-card');
+  if (\!card) return;
+  if (\!variant) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  const el = document.getElementById('variant-title');
+  if (el) el.textContent = variant.title || '';
+  const canvas = document.getElementById('variantChart');
+  if (\!canvas) return;
+  const ctx = canvas.getContext('2d');
+  activeVariantChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: variant.labels,
+      datasets: [{
+        data: variant.values,
+        backgroundColor: variant.colors,
+        borderWidth: 2,
+        borderColor: '#fff',
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            font: { family: "'Inter', system-ui, sans-serif", size: 12 },
+            color: '#6B6763',
+            padding: 14,
+            usePointStyle: true,
+            pointStyleWidth: 10,
+            generateLabels: function(chart) {
+              const ds = chart.data.datasets[0];
+              const total = ds.data.reduce(function(a,b){ return a+b; }, 0);
+              return chart.data.labels.map(function(label, i) {
+                const val = ds.data[i];
+                const pct = (val/total*100).toFixed(1);
+                return {
+                  text: label + ' (' + pct + ' %)',
+                  fillStyle: ds.backgroundColor[i],
+                  strokeStyle: '#fff',
+                  lineWidth: 2,
+                  index: i
+                };
+              });
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: '#161616',
+          titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+          bodyFont:  { family: "'Inter', system-ui, sans-serif", size: 12 },
+          padding: 12,
+          callbacks: {
+            label: function(ctx) {
+              const total = ctx.dataset.data.reduce(function(a,b){ return a+b; }, 0);
+              const pct = (ctx.parsed/total*100).toFixed(1);
+              return '  ' + ctx.label + ': ' + ctx.parsed.toLocaleString('de-CH') + ' (' + pct + ' %)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
 
 function destroyChart() {
   if (activeChart) { activeChart.destroy(); activeChart = null; }
@@ -1642,6 +1724,9 @@ function renderStory(index) {
     // 3. Set badge to loading initially
     setDataBadge('loading', s.apiDatasetId ? 'Lade Daten von data.gr.ch…' : 'Keine Live-Daten verfügbar');
   }
+
+  // 3b. Variant chart
+  buildVariantChart(s.chartVariant || null);
 
   // 4. Update story menu active state
   renderStoryMenu();

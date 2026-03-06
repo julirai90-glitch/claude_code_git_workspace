@@ -271,6 +271,21 @@ a { color: inherit; }
   height: clamp(280px, 45vh, 420px);
 }
 
+.chart-variant-card {
+  margin-top: 1rem;
+}
+.chart-variant-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin-bottom: 0.3rem;
+}
+.chart-area--donut {
+  height: clamp(220px, 35vh, 340px);
+}
+
 /* ========================================
    KEY FACTS
    ======================================== */
