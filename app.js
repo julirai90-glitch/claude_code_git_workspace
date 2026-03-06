@@ -102,12 +102,29 @@ const STORIES = [
       'Was das zeigt: Graubünden ist kein Kanton mit mehreren annähernd gleich grossen Zentren, sondern einer mit einer dominanten Stadt und sehr vielen kleinen Gemeinden. 58 der 101 Gemeinden zählen weniger als 1\'400 Einwohnerinnen und Einwohner — für sich allein eine bescheidene Zahl, zusammen aber das Gewicht einer Kantonshauptstadt.'
     ],
     source: 'Kanton Graubünden, DVS/AWT: Permanente Bevölkerung nach Gemeinde und Nationalität (dvs_awt_soci_20250507), Stand 2024',
-    chartVariant: {
-      title: 'Bevölkerungsverteilung Kanton Graubünden 2024 (Total: 206.138 Einw.)',
-      labels: ['Chur', '60 kleinste Gemeinden', 'Restliche 40 Gemeinden'],
-      values: [39177, 39125, 127836],
-      colors: ['#1E3A5F', '#B5001E', '#6B6763']
-    },
+        chartVariants: [
+      {
+        type: 'doughnut',
+        title: 'Bevölkerungsverteilung GR 2024 (Total: 206.138 Einw.)',
+        labels: ['Chur', '60 kleinste Gemeinden', 'Restliche 40 Gemeinden'],
+        values: [39177, 39125, 127836],
+        colors: ['#1E3A5F', '#B5001E', '#6B6763']
+      },
+      {
+        type: 'hbar',
+        title: '13 Gemeinden = eine Hälfte, 88 Gemeinden = die andere',
+        labels: ['13 grösste Gemeinden', '88 kleinste Gemeinden'],
+        values: [104299, 101839],
+        colors: ['#1E3A5F', '#B5001E']
+      },
+      {
+        type: 'pareto',
+        title: 'Bevölkerungskonzentration: kumulativer Anteil nach Gemeindegrösse',
+        labels: ["Chur", "Davos", "Landquart", "Domat/Ems", "Ilanz/Glion", "St. Moritz", "Scuol", "Klosters", "Zizers", "Bonaduz", "Poschiavo", "Thusis", "Trimmis", "Maienfeld", "Arosa", "Schiers", "Flims", "Samedan", "Felsberg", "Vaz/Obervaz", "Untervaz", "Roveredo (GR)", "Malans", "Surses", "Cazis", "Domleschg", "Grüsch", "Churwalden", "Disentis/Mustér", "Laax", "Lumnezia", "Pontresina", "Breil/Brigels", "Luzein", "Rhäzüns", "Zernez", "Bregaglia", "Grono", "Trin", "Seewis im Prättigau", "Val Müstair", "Celerina/Schlarigna", "Mesocco", "Albula/Alvra", "Zuoz", "Tamins", "Tujetsch", "Jenaz", "Obersaxen Mundaun", "Trun", "Silvaplana", "Brusio", "Sumvitg", "Sils im Domleschg", "Jenins", "Safiental", "San Vittore", "Vals", "Andeer", "Küblis", "Bergün Filisur", "Fläsch", "Lostallo", "Scharans", "Valsot", "Sagogn", "La Punt Chamues-ch", "Samnaun", "Cama", "S-chanf", "Sils im Engadin/Segl", "Falera", "Fideris", "Bever", "Schluein", "Rheinwald", "Masein", "Lantsch/Lenz", "Zillis-Reischen", "Muntogna da Schons", "Fürstenau", "Medel (Lucmagn)", "Soazza", "Tschiertschen-Praden", "Rothenbrunnen", "Flerden", "Castaneda", "Conters im Prättigau", "Schmitten (GR)", "Calanca", "Furna", "Madulain", "Avers", "Rossa", "Urmein", "Sufers", "Tschappina", "Santa Maria in Calanca", "Buseno", "Ferrera", "Rongellen"],
+        values: [19.0, 24.2, 28.7, 32.8, 35.2, 37.7, 39.9, 42.0, 43.8, 45.6, 47.3, 48.9, 50.6, 52.2, 53.7, 55.2, 56.6, 58.0, 59.4, 60.7, 62.0, 63.3, 64.5, 65.7, 66.9, 68.0, 69.1, 70.1, 71.1, 72.1, 73.1, 74.1, 75.0, 75.8, 76.6, 77.3, 78.1, 78.9, 79.6, 80.3, 81.0, 81.7, 82.4, 83.0, 83.6, 84.2, 84.8, 85.4, 85.9, 86.5, 87.0, 87.6, 88.1, 88.6, 89.0, 89.5, 90.0, 90.4, 90.9, 91.3, 91.8, 92.2, 92.6, 93.0, 93.4, 93.8, 94.1, 94.5, 94.8, 95.2, 95.5, 95.8, 96.1, 96.4, 96.7, 97.0, 97.3, 97.5, 97.7, 97.9, 98.1, 98.2, 98.4, 98.6, 98.7, 98.8, 99.0, 99.1, 99.2, 99.3, 99.4, 99.5, 99.5, 99.6, 99.7, 99.8, 99.8, 99.9, 99.9, 100.0, 100.0],
+        pops:   [39177, 10774, 9244, 8392, 5067, 4997, 4546, 4478, 3691, 3565, 3505, 3439, 3424, 3266, 3159, 2993, 2902, 2901, 2886, 2732, 2674, 2656, 2529, 2465, 2439, 2262, 2176, 2114, 2104, 2102, 2075, 2072, 1706, 1689, 1612, 1592, 1591, 1580, 1557, 1450, 1430, 1415, 1414, 1354, 1224, 1223, 1199, 1164, 1160, 1141, 1124, 1099, 1063, 976, 964, 964, 961, 958, 923, 910, 898, 879, 866, 836, 801, 769, 750, 750, 720, 713, 708, 635, 626, 618, 616, 570, 531, 518, 426, 368, 353, 328, 324, 309, 304, 255, 254, 224, 205, 204, 203, 196, 169, 168, 163, 147, 146, 113, 91, 76, 59]
+      }
+    ],
   },
 
   {
@@ -985,11 +1002,185 @@ const MUTED   = '#6B6763';
 const GRID    = '#E0DDD7';
 
 let activeChart = null;
-let activeVariantChart = null;
+let activeVariantCharts = [];
 
-function destroyVariantChart() {
-  if (activeVariantChart) { activeVariantChart.destroy(); activeVariantChart = null; }
+function destroyVariantCharts() {
+  activeVariantCharts.forEach(function(c) { if (c) c.destroy(); });
+  activeVariantCharts = [];
 }
+
+function buildVariantCharts(variants) {
+  destroyVariantCharts();
+  var container = document.getElementById('variants-container');
+  if (!container) return;
+  container.innerHTML = '';
+  if (!variants || !variants.length) return;
+
+  variants.forEach(function(variant, idx) {
+    var isDonut = variant.type === 'doughnut';
+    var areaClass = 'chart-area' + (isDonut ? ' chart-area--donut' : '');
+    var card = document.createElement('div');
+    card.className = 'chart-card chart-variant-card';
+    card.innerHTML =
+      '<div class="chart-meta">' +
+        '<p class="chart-variant-label">Darstellungsvariante</p>' +
+        '<h2 class="chart-title">' + (variant.title || '') + '</h2>' +
+      '</div>' +
+      '<div class="' + areaClass + '">' +
+        '<canvas id="variantChart-' + idx + '"></canvas>' +
+      '</div>';
+    container.appendChild(card);
+
+    var canvas = document.getElementById('variantChart-' + idx);
+    var ctx = canvas.getContext('2d');
+    var chart = null;
+    var vBase = { family: "'Inter', system-ui, sans-serif", size: 12 };
+    var vMuted = '#6B6763';
+
+    if (variant.type === 'doughnut') {
+      chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: variant.labels,
+          datasets: [{
+            data: variant.values,
+            backgroundColor: variant.colors,
+            borderWidth: 2, borderColor: '#fff', hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                font: vBase, color: vMuted, padding: 14,
+                usePointStyle: true, pointStyleWidth: 10,
+                generateLabels: function(chart) {
+                  var ds = chart.data.datasets[0];
+                  var total = ds.data.reduce(function(a,b){return a+b;},0);
+                  return chart.data.labels.map(function(label,i) {
+                    var pct = (ds.data[i]/total*100).toFixed(1);
+                    return { text: label + ' (' + pct + ' %)', fillStyle: ds.backgroundColor[i], strokeStyle: '#fff', lineWidth: 2, index: i };
+                  });
+                }
+              }
+            },
+            tooltip: {
+              backgroundColor: '#161616', padding: 12,
+              titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+              bodyFont: vBase,
+              callbacks: {
+                label: function(ctx) {
+                  var total = ctx.dataset.data.reduce(function(a,b){return a+b;},0);
+                  var pct = (ctx.parsed/total*100).toFixed(1);
+                  return '  ' + ctx.label + ': ' + ctx.parsed.toLocaleString('de-CH') + ' (' + pct + ' %)';
+                }
+              }
+            }
+          }
+        }
+      });
+    } else if (variant.type === 'hbar') {
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: variant.labels,
+          datasets: [{
+            data: variant.values,
+            backgroundColor: variant.colors,
+            borderRadius: 4, borderSkipped: false
+          }]
+        },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#161616', padding: 12,
+              titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+              bodyFont: vBase,
+              callbacks: {
+                label: function(ctx) {
+                  var total = variant.values.reduce(function(a,b){return a+b;},0);
+                  var pct = (ctx.parsed.x/total*100).toFixed(1);
+                  return '  ' + ctx.parsed.x.toLocaleString('de-CH') + ' Einw. (' + pct + ' %)';
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: '#E8E4E0' }, ticks: { font: vBase, color: vMuted, callback: function(v){ return (v/1000).toFixed(0)+'k'; } } },
+            y: { grid: { display: false }, ticks: { font: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' }, color: '#161616' } }
+          }
+        }
+      });
+    } else if (variant.type === 'pareto') {
+      var halfLine = variant.labels.map(function(){ return 50; });
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: variant.labels,
+          datasets: [
+            {
+              label: 'Kumulativer Bevölkerungsanteil',
+              data: variant.values,
+              borderColor: '#1E3A5F', backgroundColor: 'rgba(30,58,95,0.08)',
+              borderWidth: 2.5, fill: true, tension: 0.1,
+              pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: '#1E3A5F'
+            },
+            {
+              label: '50%-Marke',
+              data: halfLine,
+              borderColor: '#B5001E', borderWidth: 1.5,
+              borderDash: [5,4], pointRadius: 0, fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#161616', padding: 12,
+              titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+              bodyFont: vBase,
+              callbacks: {
+                title: function(items) { return items[0].label + ' (Rang ' + (items[0].dataIndex+1) + ')'; },
+                label: function(ctx) {
+                  if (ctx.datasetIndex === 1) return null;
+                  var pop = variant.pops ? variant.pops[ctx.dataIndex] : '';
+                  return [
+                    '  Kumulativ: ' + ctx.parsed.y + ' %',
+                    pop ? '  Einwohner: ' + pop.toLocaleString('de-CH') : ''
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: '#E8E4E0' },
+              ticks: {
+                font: vBase, color: vMuted, maxTicksLimit: 10,
+                callback: function(val, i) {
+                  var marks = [0,4,9,12,24,49,74,99,100];
+                  return marks.indexOf(i) !== -1 ? (i+1) : '';
+                }
+              }
+            },
+            y: {
+              min: 0, max: 100, grid: { color: '#E8E4E0' },
+              ticks: { font: vBase, color: vMuted, callback: function(v){ return v+'%'; } }
+            }
+          }
+        }
+      });
+    }
+    activeVariantCharts.push(chart);
+  });
+}
+
 
 function buildVariantChart(variant) {
   destroyVariantChart();
@@ -1726,7 +1917,7 @@ function renderStory(index) {
   }
 
   // 3b. Variant chart
-  buildVariantChart(s.chartVariant || null);
+  buildVariantCharts(s.chartVariants || (s.chartVariant ? [s.chartVariant] : []));
 
   // 4. Update story menu active state
   renderStoryMenu();
