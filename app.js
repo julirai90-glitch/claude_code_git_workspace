@@ -823,6 +823,47 @@ const STORIES = [
     source: 'Statistik Graubünden, Kantonale Bevölkerungsstatistik 2023'
   }
 
+  ,
+
+  {
+    id: 'schlaf-vs-arbeitsort',
+    week: 5,
+    day: 2,
+    publishDate: fmtDate(workdayDate(5, 2)),
+    category: 'Wirtschaft',
+    title: 'Schlafdorf oder Arbeitsort? Die verborgene Ökonomie der Bündner Gemeinden',
+    lead: 'Manche Gemeinden bieten kaum Arbeitsplätze – ihre Einwohnerinnen und Einwohner pendeln täglich aus. Andere ziehen Tausende von ausserhalb an. Die Arbeitsplatzquote macht sichtbar, wo Graubünden schläft und wo es arbeitet.',
+    chartTitle: 'Arbeitsplätze pro 100 Einwohner – ausgewählte Gemeinden',
+    chartSubtitle: 'Vollzeitäquivalente je 100 Einw. · BFS STATENT 2022 · Kantonaler Schnitt: ~42 · Blau = Arbeitsort, Orange = Schlafdorf',
+    chartType: 'bar',
+    horizontal: true,
+    chartColors: [
+      '#0077BB','#0077BB','#0077BB','#0077BB','#0077BB',
+      '#6B6763',
+      '#EE7733','#EE7733','#EE7733','#EE7733','#EE7733','#EE7733','#EE7733'
+    ],
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
+    fallbackData: {
+      labels: ['St. Moritz','Davos','Domat/Ems','Chur','Arosa','Scuol','Landquart','Bonaduz','Trimmis','Felsberg','Malans','Rhäzüns','Haldenstein'],
+      values: [82, 77, 76, 63, 58, 47, 43, 25, 24, 22, 21, 18, 17],
+      unit: 'Arbeitspl. / 100 Einw.',
+      year: 2022
+    },
+    keyFacts: [
+      { number: '82', label: 'Arbeitspl. pro 100 Einw.', context: 'St. Moritz – stärkster Arbeitsmagnet' },
+      { number: '17', label: 'Arbeitspl. pro 100 Einw.', context: 'Haldenstein – typisches Schlafdorf' },
+      { number: '42', label: 'Kantonaler Schnitt', context: 'Schweizer Mittel liegt bei ~50 (BFS STATENT 2022)' }
+    ],
+    analysis: [
+      'Wer in Haldenstein oder Rhäzüns wohnt, arbeitet meistens anderswo – vor allem in Chur, das in zwanzig Fahrminuten erreichbar ist. Diese Gemeinden sind Schlafdörfer im besten Sinn: ruhig, naturnah, oft günstiger im Wohnraum – aber wirtschaftlich kaum eigenständig. Ihre Steuerbasis hängt von Pendlerinnen und Pendlern ab, nicht von lokalen Unternehmen.',
+      'Am anderen Ende der Skala stehen Domat/Ems, Davos und St. Moritz. Domat/Ems ist der versteckte Industriestandort Graubündens: EMS Chemie beschäftigt über 2\'500 Menschen direkt – bei rund 7\'900 Einwohnern ein enorm hoher Anteil. Täglich strömen Pendlerinnen und Pendler ins Domleschg. Davos zieht mit Kliniken, Kongresszentrum und Hotellerie. St. Moritz lebt von Luxustourismus mit globaler Strahlkraft.',
+      'Diese Unterschiede haben politische Konsequenzen. Schlafdörfer kassieren Einkommenssteuer von Pendlerinnen, müssen aber wenig in Gewerbeinfrastruktur investieren. Arbeitsorte tragen Lasten für viele, die anderswo steuerpflichtig sind. Der schweizweite Finanzausgleich (NFA) mildert diese Ungleichgewichte – aber die strukturelle Spannung bleibt ein Dauerthema der Bündner Regionalpolitik.'
+    ],
+    source: 'BFS, Statistik der Unternehmensstruktur (STATENT) 2022; BFS, STATPOP 2022'
+  }
+
 ]; // end STORIES
 
 
@@ -1091,6 +1132,31 @@ function parseConcentration(records) {
   };
 }
 
+/**
+ * parseArbeitsplatzquote — computes jobs-per-100-residents ratio per municipality.
+ * Expects records with fields: Gemeinde, VZAe (FTE jobs), Einwohner.
+ * Falls back gracefully if field names differ.
+ */
+function parseArbeitsplatzquote(records) {
+  if (!records || !records.length) return null;
+  const rows = records
+    .map(r => ({
+      name:  detectLabel(r, ['gemeinde', 'vischnanca', 'municipality', 'nom']),
+      jobs:  detectValue(r, ['vzae', 'vollzeitaequivalente', 'fte', 'arbeitsplaetze', 'jobs']),
+      pop:   detectValue(r, ['einwohner', 'populaziun_permanenta', 'bevoelkerung', 'population'])
+    }))
+    .filter(r => r.name && r.jobs !== null && r.pop > 0)
+    .map(r => ({ name: r.name, ratio: +(r.jobs / r.pop * 100).toFixed(1) }))
+    .sort((a, b) => b.ratio - a.ratio);
+  if (!rows.length) return null;
+  return {
+    labels: rows.map(r => r.name),
+    values: rows.map(r => r.ratio),
+    unit: 'Arbeitspl. / 100 Einw.',
+    year: new Date().getFullYear()
+  };
+}
+
 const PARSER_FNS = {
   parseTopMunicipalities,
   parseAgeStructure,
@@ -1105,7 +1171,8 @@ const PARSER_FNS = {
   parseExports,
   parseTradePartners,
   parseInfrastructure,
-  parseConcentration
+  parseConcentration,
+  parseArbeitsplatzquote
 };
 
 
@@ -1132,6 +1199,7 @@ function buildChart(story, data) {
   const type = story.chartType;
 
   const baseFont = { family: "'Inter', system-ui, sans-serif", size: 12 };
+  const isHorizontal = !!(story.horizontal);
   const tooltipCfg = {
     backgroundColor: '#161616',
     titleFont: { ...baseFont, size: 13, weight: '600' },
@@ -1139,7 +1207,9 @@ function buildChart(story, data) {
     padding: 12,
     callbacks: {
       label: function(ctx) {
-        const v = type === 'doughnut' ? ctx.parsed : ctx.parsed.y;
+        const v = type === 'doughnut'
+          ? ctx.parsed
+          : (isHorizontal ? ctx.parsed.x : ctx.parsed.y);
         return '  ' + v + ' ' + d.unit;
       }
     }
@@ -1182,15 +1252,17 @@ function buildChart(story, data) {
     return;
   }
 
-  // ---- BAR ----
+  // ---- BAR (vertical or horizontal) ----
   if (type === 'bar') {
-    // Multi-category: use PALETTE; single-series long bar: gradient opacity from accent red
+    // Per-bar colors: prefer story.chartColors array, then palette/gradient fallback
     const useMultiColor = d.labels.length <= 4;
-    const barColors = d.labels.map((_, i) => {
-      if (useMultiColor) return PALETTE[i % PALETTE.length];
-      const opacity = Math.max(0.35, 1 - i * 0.055);
-      return 'rgba(181,0,30,' + opacity + ')';
-    });
+    const barColors = story.chartColors
+      ? story.chartColors
+      : d.labels.map((_, i) => {
+          if (useMultiColor) return PALETTE[i % PALETTE.length];
+          const opacity = Math.max(0.35, 1 - i * 0.055);
+          return 'rgba(181,0,30,' + opacity + ')';
+        });
 
     activeChart = new Chart(ctx, {
       type: 'bar',
@@ -1205,6 +1277,7 @@ function buildChart(story, data) {
         }]
       },
       options: {
+        indexAxis: isHorizontal ? 'y' : 'x',
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -1214,12 +1287,13 @@ function buildChart(story, data) {
         scales: {
           x: {
             grid: { color: GRID },
-            ticks: { font: baseFont, color: MUTED, maxRotation: 45 }
+            ticks: { font: baseFont, color: MUTED, maxRotation: isHorizontal ? 0 : 45 },
+            beginAtZero: isHorizontal ? true : undefined
           },
           y: {
             grid: { color: GRID },
             ticks: { font: baseFont, color: MUTED },
-            beginAtZero: true
+            beginAtZero: isHorizontal ? undefined : true
           }
         }
       }
