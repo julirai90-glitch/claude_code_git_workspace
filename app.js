@@ -103,7 +103,7 @@ const STORIES = [
     ],
     source: 'Kanton Graubünden, DVS/AWT: Permanente Bevölkerung nach Gemeinde und Nationalität (dvs_awt_soci_20250507), Stand 2024',
     chartVariant: {
-      title: 'Bevölkerungsverteilung Kanton Graubünden 2024 (Total: 206'138)',
+      title: 'Bevölkerungsverteilung Kanton Graubünden 2024 (Total: 206.138 Einw.)',
       labels: ['Chur', '60 kleinste Gemeinden', 'Restliche 40 Gemeinden'],
       values: [39177, 39125, 127836],
       colors: ['#1E3A5F', '#B5001E', '#6B6763']
@@ -994,13 +994,13 @@ function destroyVariantChart() {
 function buildVariantChart(variant) {
   destroyVariantChart();
   const card = document.getElementById('variant-card');
-  if (\!card) return;
-  if (\!variant) { card.style.display = 'none'; return; }
+  if (!card) return;
+  if (!variant) { card.style.display = 'none'; return; }
   card.style.display = '';
   const el = document.getElementById('variant-title');
   if (el) el.textContent = variant.title || '';
   const canvas = document.getElementById('variantChart');
-  if (\!canvas) return;
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   activeVariantChart = new Chart(ctx, {
     type: 'doughnut',
