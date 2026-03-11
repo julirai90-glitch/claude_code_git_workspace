@@ -1327,7 +1327,7 @@ function buildVariantCharts(variants) {
         }
       });
     } else if (variant.type === 'half-split') {
-      function halfColor(i, n) {
+      var halfColor = function(i, n) {
         var stops = [[37,99,235],[6,182,212],[16,185,129],[234,179,8],[249,115,22],[220,38,38]];
         var t = i / Math.max(n - 1, 1);
         var seg = t * (stops.length - 1);
@@ -1371,7 +1371,7 @@ function buildVariantCharts(variants) {
       var scheme = variant.colorScheme || 'split13';
       var items = TREEMAP_101;
       var n101 = items.length;
-      function treemapColor(item) {
+      var treemapColor = function(item) {
         var i = items.indexOf(item);
         if (scheme === 'gradient') {
           var t = i / Math.max(n101 - 1, 1);
@@ -1382,7 +1382,7 @@ function buildVariantCharts(variants) {
         if (i === 0) return '#1E3A5F';
         if (i < 13)  return '#2A5A8F';
         return '#B8B4AE';
-      }
+      };
       chart = new Chart(ctx, {
         type: 'treemap',
         data: {
