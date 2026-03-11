@@ -816,6 +816,16 @@ const STORIES = [
             {name:'Albula/Alvra',x:47.0,y:12,pop:1354},{name:'Breil/Brigels',x:46.1,y:13,pop:1706},{name:'Lantsch/Lenz',x:47.4,y:12,pop:518}
           ]}
         ]
+      },
+      {
+        type: 'name-buckets',
+        title: 'Wie lang sind Graubündner Gemeindenamen? — alle 101 Gemeinden in Töpfen',
+        series: [
+          {label:'Deutschsprachig',color:'#1E3A5F',names:['St. Moritz','Samnaun','Rothenbrunnen','Arosa','Davos','Chur','Laax','Landquart','Vals','Thusis','Maienfeld','Grüsch','Zizers','Flims','Küblis','Cazis','Bonaduz','Klosters','Schiers','Fürstenau','Andeer','Zillis-Reischen','Ferrera','Seewis im Prättigau','Scharans','Fläsch','Churwalden','Untervaz','Tschappina','Furna','Conters im Prättigau','Trimmis','Malans','Sils im Domleschg','Jenaz','Tschiertschen-Praden','Fideris','Jenins','Luzein','Rhäzüns','Flerden','Urmein','Schmitten (GR)','Masein','Domleschg','Tamins','Felsberg','Rongellen']},
+          {label:'Rätoromanisch',color:'#16803A',names:['Pontresina','Samedan','Silvaplana','Zuoz','Scuol','Bregaglia','Avers','Zernez','Surses','Bever','Bergün Filisur','Muntogna da Schons','Rheinwald','Obersaxen Mundaun','Valsot','Trun','Sufers','Tujetsch','Schluein','Falera','S-chanf','Medel (Lucmagn)','Lumnezia','La Punt Chamues-ch','Sumvitg','Madulain','Safiental','Trin','Sagogn']},
+          {label:'Italienischsprachig',color:'#B5001E',names:['Brusio','Val Müstair','Grono','Poschiavo','San Vittore','Calanca','Roveredo (GR)','Mesocco','Castaneda','Lostallo','Soazza','Cama','Rossa','Buseno','Santa Maria in Calanca']},
+          {label:'Zweisprachig',color:'#8B6914',names:['Sils im Engadin/Segl','Vaz/Obervaz','Celerina/Schlarigna','Ilanz/Glion','Disentis/Mustér','Domat/Ems','Albula/Alvra','Breil/Brigels','Lantsch/Lenz']}
+        ]
       }
     ],
     source: 'Statistik Graubünden, DVS/AWT: Beschäftigte/VZÄ (dvs_awt_econ_20250812) 2023; Wohnbevölkerung (dvs_awt_soci_20250507) 2023; Durchschnittsalter: dvs_awt_soci_202502111, 2024'
@@ -1411,6 +1421,65 @@ function buildVariantCharts(variants) {
           scales: {
             x: { title: { display: true, text: variant.xLabel||'X', font: vBase, color: vMuted }, grid: { color: '#E8E4E0' }, ticks: { font: vBase, color: vMuted } },
             y: { title: { display: true, text: variant.yLabel||'Y', font: vBase, color: vMuted }, grid: { color: '#E8E4E0' }, ticks: { font: vBase, color: vMuted, stepSize: 2 }, min: 2, max: 24 }
+          }
+        }
+      });
+    } else if (variant.type === 'name-buckets') {
+      var bucketData = {};
+      var langList = [];
+      var langColorNB = {};
+      (variant.series || []).forEach(function(s) {
+        langList.push(s.label);
+        langColorNB[s.label] = s.color;
+        (s.names || []).forEach(function(nm) {
+          var len = nm.length;
+          if (!bucketData[len]) bucketData[len] = {};
+          if (!bucketData[len][s.label]) bucketData[len][s.label] = [];
+          bucketData[len][s.label].push(nm);
+        });
+      });
+      var allLens = Object.keys(bucketData).map(Number).sort(function(a, b) { return a - b; });
+      var nbLabels = allLens.map(function(l) { return l + ' Zeichen'; });
+      var nbDatasets = langList.map(function(lang) {
+        var _names = allLens.map(function(len) {
+          return (bucketData[len] && bucketData[len][lang]) ? bucketData[len][lang] : [];
+        });
+        return {
+          label: lang,
+          data: allLens.map(function(len) {
+            return (bucketData[len] && bucketData[len][lang]) ? bucketData[len][lang].length : 0;
+          }),
+          backgroundColor: langColorNB[lang] + 'CC',
+          borderColor: langColorNB[lang],
+          borderWidth: 1,
+          _names: _names
+        };
+      });
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: nbLabels, datasets: nbDatasets },
+        options: {
+          indexAxis: 'y',
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', labels: { font: vBase, color: vMuted, usePointStyle: true, pointStyleWidth: 10, padding: 16 } },
+            tooltip: {
+              backgroundColor: '#161616', padding: 12,
+              titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+              bodyFont: vBase,
+              callbacks: {
+                title: function(items) { return items[0].label; },
+                label: function(ci) {
+                  var names = ci.dataset._names[ci.dataIndex];
+                  if (!names || !names.length) return null;
+                  return [ci.dataset.label + ' (' + names.length + '):'].concat(names.map(function(n) { return '  ' + n; }));
+                }
+              }
+            }
+          },
+          scales: {
+            x: { stacked: true, title: { display: true, text: 'Anzahl Gemeinden', font: vBase, color: vMuted }, grid: { color: '#E8E4E0' }, ticks: { font: vBase, color: vMuted, stepSize: 1 } },
+            y: { stacked: true, grid: { color: '#E8E4E0' }, ticks: { font: vBase, color: vMuted } }
           }
         }
       });
