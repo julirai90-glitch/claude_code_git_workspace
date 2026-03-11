@@ -271,6 +271,28 @@ a { color: inherit; }
   height: clamp(280px, 45vh, 420px);
 }
 
+.chart-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1.5rem;
+  border-top: 1px solid var(--c-border);
+  background: var(--c-bg);
+}
+.btn-copy-data {
+  font-size: 0.72rem;
+  font-family: var(--font-body);
+  color: var(--c-muted);
+  background: none;
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-copy-data:hover { border-color: var(--c-text); color: var(--c-text); }
+.copy-confirm { font-size: 0.72rem; color: #16803A; font-weight: 500; }
+
 .chart-variant-card {
   margin-top: 1rem;
 }

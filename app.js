@@ -2,41 +2,18 @@
 
 /* ============================================================
    DATENSTORY GRAUBÜNDEN — app.js
-   20 Geschichten über Bevölkerung, Tourismus, Wirtschaft
-   und Gesellschaft im Kanton Graubünden
+   Daten-Ressource für die wöchentliche Südostschweiz-Kolumne
+   Bevölkerung, Tourismus, Wirtschaft und Gesellschaft in GR
    ============================================================ */
 
 // ============================================================
 // CONFIG
 // ============================================================
 const API_BASE = 'https://data.gr.ch/api/explore/v2.1/catalog/datasets';
-// Start date: Monday 2. März 2026 — 4 Wochen Mo-Fr = 20 Geschichten
-const PROJECT_START = new Date('2026-03-02');
 
 // ============================================================
 // HELPERS
 // ============================================================
-function addWorkdays(start, days) {
-  const d = new Date(start);
-  let added = 0;
-  while (added < days) {
-    d.setDate(d.getDate() + 1);
-    if (d.getDay() !== 0 && d.getDay() !== 6) added++;
-  }
-  return d;
-}
-
-function workdayDate(week, day) {
-  // week 1-4, day 1-5 (Mon=1)
-  const offset = (week - 1) * 5 + (day - 1);
-  if (offset === 0) return new Date(PROJECT_START);
-  return addWorkdays(PROJECT_START, offset);
-}
-
-function fmtDate(d) {
-  return d.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
-}
-
 function formatDateDE(date) {
   const d = date || new Date();
   return d.toLocaleDateString('de-CH', {
@@ -45,17 +22,14 @@ function formatDateDE(date) {
 }
 
 // ============================================================
-// STORIES ARRAY — 20 objects
+// STORIES ARRAY
 // ============================================================
 const STORIES = [
 
-  // ── WOCHE 1: BEVÖLKERUNG ─────────────────────────────────
-
   {
     id: 'chur-60-gemeinden',
-    week: 1,
-    day: 1,
-    publishDate: fmtDate(workdayDate(1, 1)),
+    ausgabe: 1,
+    status: 'ready',
     category: 'Bevölkerung',
     title: 'Eine Stadt, 60 Gemeinden — Churs verborgene Dimension',
     lead: 'Für Schweizer Verhältnisse ist Chur eine mittelgrosse Stadt — im Vergleich der 26 Kantonshauptorte liegt sie eher im oberen Mittelfeld. Aber verglichen mit dem Rest Graubündens ist sie ein Koloss: Mit 39\'177 Einwohnerinnen und Einwohnern ist die Kantonshauptstadt bevölkerungsmässig so gross wie die 60 kleinsten Bündner Gemeinden zusammen.',
@@ -123,15 +97,45 @@ const STORIES = [
         labels: ["Chur", "Davos", "Landquart", "Domat/Ems", "Ilanz/Glion", "St. Moritz", "Scuol", "Klosters", "Zizers", "Bonaduz", "Poschiavo", "Thusis", "Trimmis", "Maienfeld", "Arosa", "Schiers", "Flims", "Samedan", "Felsberg", "Vaz/Obervaz", "Untervaz", "Roveredo (GR)", "Malans", "Surses", "Cazis", "Domleschg", "Grüsch", "Churwalden", "Disentis/Mustér", "Laax", "Lumnezia", "Pontresina", "Breil/Brigels", "Luzein", "Rhäzüns", "Zernez", "Bregaglia", "Grono", "Trin", "Seewis im Prättigau", "Val Müstair", "Celerina/Schlarigna", "Mesocco", "Albula/Alvra", "Zuoz", "Tamins", "Tujetsch", "Jenaz", "Obersaxen Mundaun", "Trun", "Silvaplana", "Brusio", "Sumvitg", "Sils im Domleschg", "Jenins", "Safiental", "San Vittore", "Vals", "Andeer", "Küblis", "Bergün Filisur", "Fläsch", "Lostallo", "Scharans", "Valsot", "Sagogn", "La Punt Chamues-ch", "Samnaun", "Cama", "S-chanf", "Sils im Engadin/Segl", "Falera", "Fideris", "Bever", "Schluein", "Rheinwald", "Masein", "Lantsch/Lenz", "Zillis-Reischen", "Muntogna da Schons", "Fürstenau", "Medel (Lucmagn)", "Soazza", "Tschiertschen-Praden", "Rothenbrunnen", "Flerden", "Castaneda", "Conters im Prättigau", "Schmitten (GR)", "Calanca", "Furna", "Madulain", "Avers", "Rossa", "Urmein", "Sufers", "Tschappina", "Santa Maria in Calanca", "Buseno", "Ferrera", "Rongellen"],
         values: [19.0, 24.2, 28.7, 32.8, 35.2, 37.7, 39.9, 42.0, 43.8, 45.6, 47.3, 48.9, 50.6, 52.2, 53.7, 55.2, 56.6, 58.0, 59.4, 60.7, 62.0, 63.3, 64.5, 65.7, 66.9, 68.0, 69.1, 70.1, 71.1, 72.1, 73.1, 74.1, 75.0, 75.8, 76.6, 77.3, 78.1, 78.9, 79.6, 80.3, 81.0, 81.7, 82.4, 83.0, 83.6, 84.2, 84.8, 85.4, 85.9, 86.5, 87.0, 87.6, 88.1, 88.6, 89.0, 89.5, 90.0, 90.4, 90.9, 91.3, 91.8, 92.2, 92.6, 93.0, 93.4, 93.8, 94.1, 94.5, 94.8, 95.2, 95.5, 95.8, 96.1, 96.4, 96.7, 97.0, 97.3, 97.5, 97.7, 97.9, 98.1, 98.2, 98.4, 98.6, 98.7, 98.8, 99.0, 99.1, 99.2, 99.3, 99.4, 99.5, 99.5, 99.6, 99.7, 99.8, 99.8, 99.9, 99.9, 100.0, 100.0],
         pops:   [39177, 10774, 9244, 8392, 5067, 4997, 4546, 4478, 3691, 3565, 3505, 3439, 3424, 3266, 3159, 2993, 2902, 2901, 2886, 2732, 2674, 2656, 2529, 2465, 2439, 2262, 2176, 2114, 2104, 2102, 2075, 2072, 1706, 1689, 1612, 1592, 1591, 1580, 1557, 1450, 1430, 1415, 1414, 1354, 1224, 1223, 1199, 1164, 1160, 1141, 1124, 1099, 1063, 976, 964, 964, 961, 958, 923, 910, 898, 879, 866, 836, 801, 769, 750, 750, 720, 713, 708, 635, 626, 618, 616, 570, 531, 518, 426, 368, 353, 328, 324, 309, 304, 255, 254, 224, 205, 204, 203, 196, 169, 168, 163, 147, 146, 113, 91, 76, 59]
+      },
+      {
+        type: 'treemap',
+        title: 'Alle 101 Gemeinden: Fläche = Einwohnerzahl 2023',
+        items: [
+        {n:"Chur",v:38949,c:'#1E3A5F'},{n:"Davos",v:10800,c:'#2A5A8F'},{n:"Landquart",v:9191,c:'#2A5A8F'},{n:"Domat/Ems",v:8286,c:'#2A5A8F'},
+        {n:"Ilanz/Glion",v:5030,c:'#2A5A8F'},{n:"St. Moritz",v:4926,c:'#2A5A8F'},{n:"Scuol",v:4572,c:'#2A5A8F'},{n:"Klosters",v:4473,c:'#2A5A8F'},
+        {n:"Zizers",v:3589,c:'#2A5A8F'},{n:"Bonaduz",v:3533,c:'#2A5A8F'},{n:"Poschiavo",v:3525,c:'#B8B4AE'},{n:"Thusis",v:3459,c:'#B8B4AE'},
+        {n:"Trimmis",v:3363,c:'#B8B4AE'},{n:"Maienfeld",v:3193,c:'#B8B4AE'},{n:"Arosa",v:3143,c:'#B8B4AE'},{n:"Schiers",v:2951,c:'#B8B4AE'},
+        {n:"Flims",v:2939,c:'#B8B4AE'},{n:"Samedan",v:2913,c:'#B8B4AE'},{n:"Felsberg",v:2833,c:'#B8B4AE'},{n:"Vaz/Obervaz",v:2742,c:'#B8B4AE'},
+        {n:"Untervaz",v:2675,c:'#B8B4AE'},{n:"Roveredo (GR)",v:2625,c:'#B8B4AE'},{n:"Malans",v:2527,c:'#B8B4AE'},{n:"Surses",v:2424,c:'#B8B4AE'},
+        {n:"Cazis",v:2416,c:'#B8B4AE'},{n:"Domleschg",v:2219,c:'#B8B4AE'},{n:"Grüsch",v:2161,c:'#B8B4AE'},{n:"Churwalden",v:2147,c:'#B8B4AE'},
+        {n:"Laax",v:2112,c:'#B8B4AE'},{n:"Disentis/Mustér",v:2080,c:'#B8B4AE'},{n:"Pontresina",v:2077,c:'#B8B4AE'},{n:"Lumnezia",v:2072,c:'#B8B4AE'},
+        {n:"Breil/Brigels",v:1713,c:'#B8B4AE'},{n:"Rhäzüns",v:1633,c:'#B8B4AE'},{n:"Luzein",v:1625,c:'#B8B4AE'},{n:"Zernez",v:1579,c:'#B8B4AE'},
+        {n:"Bregaglia",v:1578,c:'#B8B4AE'},{n:"Grono",v:1556,c:'#B8B4AE'},{n:"Trin",v:1525,c:'#B8B4AE'},{n:"Seewis im Prättigau",v:1430,c:'#B8B4AE'},
+        {n:"Val Müstair",v:1422,c:'#B8B4AE'},{n:"Mesocco",v:1420,c:'#B8B4AE'},{n:"Celerina/Schlarigna",v:1411,c:'#B8B4AE'},{n:"Albula/Alvra",v:1313,c:'#B8B4AE'},
+        {n:"Zuoz",v:1218,c:'#B8B4AE'},{n:"Tamins",v:1215,c:'#B8B4AE'},{n:"Tujetsch",v:1171,c:'#B8B4AE'},{n:"Trun",v:1154,c:'#B8B4AE'},
+        {n:"Obersaxen Mundaun",v:1148,c:'#B8B4AE'},{n:"Jenaz",v:1145,c:'#B8B4AE'},{n:"Brusio",v:1105,c:'#B8B4AE'},{n:"Silvaplana",v:1089,c:'#B8B4AE'},
+        {n:"Sumvitg",v:1079,c:'#B8B4AE'},{n:"Sils im Domleschg",v:966,c:'#B8B4AE'},{n:"Safiental",v:963,c:'#B8B4AE'},{n:"Vals",v:949,c:'#B8B4AE'},
+        {n:"Jenins",v:948,c:'#B8B4AE'},{n:"Andeer",v:926,c:'#B8B4AE'},{n:"Küblis",v:920,c:'#B8B4AE'},{n:"San Vittore",v:912,c:'#B8B4AE'},
+        {n:"Bergün Filisur",v:901,c:'#B8B4AE'},{n:"Fläsch",v:868,c:'#B8B4AE'},{n:"Lostallo",v:850,c:'#B8B4AE'},{n:"Scharans",v:838,c:'#B8B4AE'},
+        {n:"Valsot",v:811,c:'#B8B4AE'},{n:"Sagogn",v:766,c:'#B8B4AE'},{n:"Samnaun",v:755,c:'#B8B4AE'},{n:"La Punt Chamues-ch",v:732,c:'#B8B4AE'},
+        {n:"Sils im Engadin/Segl",v:708,c:'#B8B4AE'},{n:"S-chanf",v:706,c:'#B8B4AE'},{n:"Cama",v:691,c:'#B8B4AE'},{n:"Falera",v:627,c:'#B8B4AE'},
+        {n:"Fideris",v:618,c:'#B8B4AE'},{n:"Schluein",v:612,c:'#B8B4AE'},{n:"Bever",v:607,c:'#B8B4AE'},{n:"Rheinwald",v:576,c:'#B8B4AE'},
+        {n:"Masein",v:532,c:'#B8B4AE'},{n:"Lantsch/Lenz",v:528,c:'#B8B4AE'},{n:"Zillis-Reischen",v:419,c:'#B8B4AE'},{n:"Muntogna da Schons",v:371,c:'#B8B4AE'},
+        {n:"Fürstenau",v:349,c:'#B8B4AE'},{n:"Soazza",v:332,c:'#B8B4AE'},{n:"Medel (Lucmagn)",v:328,c:'#B8B4AE'},{n:"Rothenbrunnen",v:312,c:'#B8B4AE'},
+        {n:"Tschiertschen-Praden",v:293,c:'#B8B4AE'},{n:"Castaneda",v:262,c:'#B8B4AE'},{n:"Flerden",v:254,c:'#B8B4AE'},{n:"Conters im Prättigau",v:228,c:'#B8B4AE'},
+        {n:"Calanca",v:211,c:'#B8B4AE'},{n:"Schmitten (GR)",v:209,c:'#B8B4AE'},{n:"Furna",v:203,c:'#B8B4AE'},{n:"Madulain",v:197,c:'#B8B4AE'},
+        {n:"Avers",v:168,c:'#B8B4AE'},{n:"Urmein",v:163,c:'#B8B4AE'},{n:"Rossa",v:161,c:'#B8B4AE'},{n:"Sufers",v:151,c:'#B8B4AE'},
+        {n:"Tschappina",v:140,c:'#B8B4AE'},{n:"Santa Maria in Calanca",v:119,c:'#B8B4AE'},{n:"Buseno",v:91,c:'#B8B4AE'},{n:"Ferrera",v:82,c:'#B8B4AE'},
+        {n:"Rongellen",v:61,c:'#B8B4AE'}
+        ]
       }
     ],
   },
 
   {
     id: 'altersstruktur',
-    week: 1,
-    day: 2,
-    publishDate: fmtDate(workdayDate(1, 2)),
+    status: 'ready',
     category: 'Bevölkerung',
     title: 'Graubünden hat einen höheren Medianalter als die Schweiz',
     lead: 'Der Medianalter in Graubünden beträgt 44,8 Jahre — 2,5 Jahre mehr als im Schweizer Durchschnitt von 42,3 Jahren. In den Altersgruppen unter 20 ist Graubünden untervertreten, in den Gruppen ab 60 übervertreten.',
@@ -161,9 +165,7 @@ const STORIES = [
 
   {
     id: 'geburtenrueckgang',
-    week: 1,
-    day: 3,
-    publishDate: fmtDate(workdayDate(1, 3)),
+    status: 'ready',
     category: 'Bevölkerung',
     title: 'Weniger Babys im Bergkanton: 40 Jahre Geburtenrückgang',
     lead: 'Im Kanton Graubünden wurden 1981 noch 2\'127 Kinder geboren. 2024 waren es noch 1\'504 — ein Rückgang von 29 Prozent. Den Höchstwert der Zeitreihe verzeichnete der Kanton 1992 mit 2\'433 Geburten; seither sinkt die Zahl mit Schwankungen.',
@@ -188,9 +190,7 @@ const STORIES = [
 
   {
     id: 'demografische-bilanz',
-    week: 1,
-    day: 4,
-    publishDate: fmtDate(workdayDate(1, 4)),
+    status: 'ready',
     category: 'Bevölkerung',
     title: 'Geburten und Todesfälle: Die natürliche Bevölkerungsbewegung',
     lead: 'Der Saldo aus Geburten minus Todesfällen war in Graubünden nicht immer negativ. Seit 2019 übersteigen die Todesfälle die Geburten kontinuierlich — mit zunehmender Differenz.',
@@ -215,9 +215,7 @@ const STORIES = [
 
   {
     id: 'bevoelkerungsszenarien',
-    week: 1,
-    day: 5,
-    publishDate: fmtDate(workdayDate(1, 5)),
+    status: 'ready',
     category: 'Bevölkerung',
     title: 'Bevölkerungsszenarien Graubünden bis 2055',
     lead: 'Das Bundesamt für Statistik projiziert drei Szenarien für Graubünden: Im Referenzszenario steigt die Bevölkerung bis etwa 2044 auf rund 215\'000 und sinkt danach leicht auf 213\'100. Im hohen Szenario wächst sie auf 243\'800, im tiefen sinkt sie auf 183\'800.',
@@ -247,9 +245,7 @@ const STORIES = [
 
   {
     id: 'geburten-alter-muetter',
-    week: 1,
-    day: 6,
-    publishDate: fmtDate(workdayDate(1, 5)),
+    status: 'ready',
     category: 'Bevölkerung',
     title: 'Wann bekommen Frauen Kinder? Das Alter der Mütter in Graubünden',
     lead: '1970 war die grösste Altersgruppe bei Geburten die unter 25-Jährigen. 2023 sind es die 30- bis 34-Jährigen. Die Verschiebung zeigt sich in jeder Altersgruppe — und erklärt teilweise den Geburtenrückgang.',
@@ -281,13 +277,9 @@ const STORIES = [
     source: 'Amt für Wirtschaft und Tourismus Graubünden, Bevölkerungsstatistik (Naschientschas vivas)',
   },
 
-  // ── WOCHE 2: TOURISMUS ───────────────────────────────────
-
   {
     id: 'tourismus-30jahre',
-    week: 2,
-    day: 1,
-    publishDate: fmtDate(workdayDate(2, 1)),
+    status: 'ready',
     category: 'Tourismus',
     title: '30 Jahre Hotellerie: Logiernächte Graubünden seit 1992',
     lead: '1992 zählte die Bündner Hotellerie 6,9 Millionen Logiernächte — der höchste Wert der gesamten Zeitreihe. Seither schwanken die Zahlen zwischen 4,6 und 5,7 Millionen. 2025 lagen sie bei 5,7 Millionen.',
@@ -312,9 +304,7 @@ const STORIES = [
 
   {
     id: 'tourismus-saisonalitaet',
-    week: 2,
-    day: 2,
-    publishDate: fmtDate(workdayDate(2, 2)),
+    status: 'ready',
     category: 'Tourismus',
     title: 'Winter gegen Sommer: Die Saisonalität von Graubündens Tourismus',
     lead: 'Februar ist der stärkste Monat im Bündner Tourismus, November der schwächste. 2024 lagen zwischen diesen beiden Monaten 836\'000 gegenüber 132\'000 Hotelübernachtungen — ein Verhältnis von über 6 zu 1.',
@@ -340,9 +330,7 @@ const STORIES = [
 
   {
     id: 'tourismus-gemeinden',
-    week: 2,
-    day: 3,
-    publishDate: fmtDate(workdayDate(2, 3)),
+    status: 'ready',
     category: 'Tourismus',
     title: 'Wo die Touristen übernachten: die Top-Gemeinden',
     lead: 'Davos und St. Moritz führen das Ranking, aber Laax und Flims überraschen mit starkem Wachstum. Die Verteilung der Logiernächte auf die Gemeinden zeigt, wie konzentriert und gleichzeitig wie divers der Bündner Tourismus ist.',
@@ -369,9 +357,7 @@ const STORIES = [
 
   {
     id: 'parahotellerie',
-    week: 2,
-    day: 4,
-    publishDate: fmtDate(workdayDate(2, 4)),
+    status: 'ready',
     category: 'Tourismus',
     title: 'Parahotellerie: Ferienwohnungen und Camping neben der Hotellerie',
     lead: 'Neben den 520 klassifizierten Hotels gibt es in Graubünden Tausende Ferienwohnungen und mehrere Dutzend Campingplätze. Die Parahotellerie ist ein unterschätzter Faktor — in manchen Tälern übernachten mehr Menschen ausserhalb von Hotels als darin.',
@@ -406,9 +392,7 @@ const STORIES = [
 
   {
     id: 'gaesteprofil',
-    week: 2,
-    day: 5,
-    publishDate: fmtDate(workdayDate(2, 5)),
+    status: 'ready',
     category: 'Tourismus',
     title: 'Woher kommen die Gäste? Herkunft der Hotelgäste in Graubünden 2025',
     lead: '66 Prozent der Hotelübernachtungen in Graubünden entfallen auf Gäste aus der Schweiz. Deutschland ist mit 14 Prozent der grösste ausländische Quellmarkt. UK und USA liegen je bei rund 3 Prozent.',
@@ -436,13 +420,9 @@ const STORIES = [
     source: 'Bundesamt für Statistik, HESTA — Ankünfte und Logiernächte nach Herkunftsland 2025; data.gr.ch dvs_awt_econ_202503260',
   },
 
-  // ── WOCHE 3: WIRTSCHAFT ──────────────────────────────────
-
   {
     id: 'grenzgaenger',
-    week: 3,
-    day: 1,
-    publishDate: fmtDate(workdayDate(3, 1)),
+    status: 'ready',
     category: 'Wirtschaft',
     title: "Grenzgänger: Rund 10'000 Menschen mit Grenzgängerbewilligung im Kanton",
     lead: 'Im Jahr 2025 verzeichnet der Kanton Graubünden rund 9\'700 Grenzgänger:innen pro Quartal — dreimal so viele wie 1996. Die Kurve zeigt das Wachstum über 30 Jahre, unterbrochen vom deutlichen Einbruch während der COVID-19-Pandemie 2020.',
@@ -472,9 +452,7 @@ const STORIES = [
 
   {
     id: 'exporte',
-    week: 3,
-    day: 2,
-    publishDate: fmtDate(workdayDate(3, 2)),
+    status: 'ready',
     category: 'Wirtschaft',
     title: 'Was Graubünden exportiert: die wichtigsten Waren',
     lead: 'Graubünden ist kein klassischer Industriekanton — und dennoch exportiert der Bergkanton für über 5 Milliarden Franken im Jahr. Chemische Erzeugnisse und Maschinen führen das Ranking an. Eine überraschende Exportstruktur für einen Bergkanton.',
@@ -504,9 +482,7 @@ const STORIES = [
 
   {
     id: 'handelspartner',
-    week: 3,
-    day: 3,
-    publishDate: fmtDate(workdayDate(3, 3)),
+    status: 'ready',
     category: 'Wirtschaft',
     title: "Graubündens Handelspartner: wer kauft, wer liefert",
     lead: 'Deutschland ist sowohl grösstes Exportziel als auch wichtigster Importlieferant Graubündens. Die USA sind trotz Distanz auf Platz 2 der Exportmärkte. Ein Blick auf die Handelspartner nach Export und Import getrennt.',
@@ -540,9 +516,7 @@ const STORIES = [
   {
     id: 'arbeitsmarkt',
     active: false,
-    week: 3,
-    day: 4,
-    publishDate: fmtDate(workdayDate(3, 4)),
+    status: 'backlog',
     category: 'Wirtschaft',
     title: "141'000 Jobs: Wer arbeitet in Graubünden wofür?",
     lead: "Graubünden hat rund 141'000 Beschäftigte — ein Drittel davon im Gastgewerbe und Tourismus. Die Wirtschaftsstruktur ist ungewöhnlich: Tourismus dominiert, Industrie spielt eine Nebenrolle. Ein Blick auf die Sektoren zeigt, was Graubündens Arbeitsmarkt antreibt und wo er verwundbar ist.",
@@ -564,9 +538,7 @@ const STORIES = [
   {
     id: 'infrastruktur',
     active: false,
-    week: 3,
-    day: 5,
-    publishDate: fmtDate(workdayDate(3, 5)),
+    status: 'backlog',
     category: 'Wirtschaft',
     title: 'Infrastruktur im Bergkanton: Bahn, Strasse, Energie',
     lead: 'Graubünden ist mit 7\'105 km² der flächengrösste Kanton der Schweiz bei einer Bevölkerung von rund 200\'000 Personen. Das bedeutet eine der niedrigsten Bevölkerungsdichten — und entsprechend hohe Infrastrukturkosten pro Kopf.',
@@ -585,14 +557,10 @@ const STORIES = [
     source: 'Rhätische Bahn, Jahresbericht; Statistik Graubünden, Bevölkerungsstatistik',
   },
 
-  // ── WOCHE 4: GESELLSCHAFT & ZUKUNFT ─────────────────────
-
   {
     id: 'romanisch',
     active: false,
-    week: 4,
-    day: 1,
-    publishDate: fmtDate(workdayDate(4, 1)),
+    status: 'backlog',
     category: 'Gesellschaft',
     title: 'Drei Sprachen, eine Identität — Romanisch unter Druck',
     lead: 'Das Romanische ist die kleinste Nationalsprache der Schweiz und das kulturelle Erbe Graubündens. Doch der Anteil der Romanischsprachigen sinkt seit Jahrzehnten. Zwischen Sprachpflege und Realismus: Was tut der Kanton, um eine der ältesten lebenden Sprachen Europas zu erhalten?',
@@ -614,9 +582,7 @@ const STORIES = [
   {
     id: 'klimaerwaermung',
     active: false,
-    week: 4,
-    day: 2,
-    publishDate: fmtDate(workdayDate(4, 2)),
+    status: 'backlog',
     category: 'Klima',
     title: 'Die Alpen heizen sich doppelt so schnell auf wie das Flachland',
     lead: 'Seit der Industrialisierung ist die Temperatur in den Alpen um über 2 Grad Celsius gestiegen — doppelt so schnell wie im globalen Durchschnitt. Für Graubünden bedeutet das: Gletscher schmelzen, Permafrost taut, Schneesaisons verkürzen sich. Der Klimawandel ist hier früher und stärker als anderswo.',
@@ -638,9 +604,7 @@ const STORIES = [
   {
     id: 'berglandwirtschaft',
     active: false,
-    week: 4,
-    day: 3,
-    publishDate: fmtDate(workdayDate(4, 3)),
+    status: 'backlog',
     category: 'Landwirtschaft',
     title: 'Berglandwirtschaft: Klein, spezialisiert, unverzichtbar',
     lead: 'Über 2\'000 Landwirtschaftsbetriebe bewirtschaften Graubündens Bergland. Sie sind klein, hart am Existenzminimum und dennoch unverzichtbar — nicht nur für die Ernährung, sondern für die Kulturlandschaft, den Tourismus und die Identität des Kantons.',
@@ -662,9 +626,7 @@ const STORIES = [
   {
     id: 'synthese-indikatoren',
     active: false,
-    week: 4,
-    day: 4,
-    publishDate: fmtDate(workdayDate(4, 4)),
+    status: 'backlog',
     category: 'Synthese',
     title: 'Bevölkerung, Tourismus, Wirtschaft: Was 20 Geschichten über Graubünden lehren',
     lead: 'Nach drei Wochen Daten über Bevölkerung, Tourismus und Wirtschaft wird ein Bild sichtbar: Graubünden ist ein Kanton im Wandel — stark in seinen Nischen, verwundbar durch seine Abhängigkeiten. Fünf Schlüsselindikatoren im Vergleich mit dem Schweizer Durchschnitt.',
@@ -686,9 +648,7 @@ const STORIES = [
   {
     id: 'datenstory-bilanz',
     active: false,
-    week: 4,
-    day: 5,
-    publishDate: fmtDate(workdayDate(4, 5)),
+    status: 'backlog',
     category: 'Synthese',
     title: 'Die Datenstory-Bilanz: Graubünden in 20 Zahlen',
     lead: 'Heute endet die vierwöchige Datenstory-Serie über Graubünden. 20 Geschichten, 4 Themenblöcke, 1 Kanton. Als Abschluss: die thematische Verteilung der Serie und eine Reflexion, was datengetriebener Journalismus über einen Bergkanton leisten kann — und wo er an Grenzen stösst.',
@@ -710,44 +670,142 @@ const STORIES = [
 
   {
     id: 'schlaf-vs-arbeitsort',
-    week: 5,
-    day: 2,
-    publishDate: fmtDate(workdayDate(5, 2)),
+    ausgabe: 2,
+    status: 'ready',
     category: 'Wirtschaft',
-    title: 'Schlafdorf oder Arbeitsort? Die verborgene Ökonomie der Bündner Gemeinden',
-    lead: 'Manche Gemeinden bieten kaum Arbeitsplätze – ihre Einwohnerinnen und Einwohner pendeln täglich aus. Andere ziehen Tausende von ausserhalb an. Die Arbeitsplatzquote macht sichtbar, wo Graubünden schläft und wo es arbeitet.',
-    chartTitle: 'Arbeitsplätze pro 100 Einwohner – ausgewählte Gemeinden',
-    chartSubtitle: 'Vollzeitäquivalente je 100 Einw. · BFS STATENT 2022 · Kantonaler Schnitt: ~42 · Blau = Arbeitsort, Orange = Schlafdorf',
+    title: 'St. Moritz schläft kaum — Santa Maria in Calanca arbeitet kaum',
+    lead: 'In St. Moritz kommen auf 100 Einwohnerinnen 144 Vollzeitäquivalente — fast dreimal mehr Arbeitsplätze als Bewohner. In Santa Maria in Calanca sind es 6. Die Arbeitsplatzquote zeigt, wo Graubünden schläft und wo es arbeitet.',
+    chartTitle: 'VZÄ pro 100 Einwohner — ausgewählte Gemeinden 2023',
+    chartSubtitle: 'Vollzeitäquivalente je 100 Einw. · Statistik GR 2023 · Kantonaler Schnitt: 52.6 · Blau = Arbeitsort/Gemischt, Grau = Wohnort, Rot = Schlafdorf',
     chartType: 'bar',
     horizontal: true,
     chartColors: [
-      '#0077BB','#0077BB','#0077BB','#0077BB','#0077BB',
-      '#6B6763',
-      '#EE7733','#EE7733','#EE7733','#EE7733','#EE7733','#EE7733','#EE7733'
+      '#1E3A5F','#1E3A5F','#1E3A5F','#1E3A5F','#1E3A5F','#1E3A5F',
+      '#6B6763','#6B6763',
+      '#B5001E','#B5001E','#B5001E','#B5001E','#B5001E','#B5001E'
     ],
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
-    fallbackData: {
-      labels: ['St. Moritz','Davos','Domat/Ems','Chur','Arosa','Scuol','Landquart','Bonaduz','Trimmis','Felsberg','Malans','Rhäzüns','Haldenstein'],
-      values: [82, 77, 76, 63, 58, 47, 43, 25, 24, 22, 21, 18, 17],
-      unit: 'Arbeitspl. / 100 Einw.',
-      year: 2022
+    staticData: {
+      labels: ['St. Moritz','Samnaun','Sils im Engadin/Segl','Arosa','Davos','Chur','Landquart','Domat/Ems','Masein','Tamins','Felsberg','Rongellen','Sagogn','Santa Maria in Calanca'],
+      values: [144, 128, 123, 74, 69, 67, 56, 40, 17, 16, 15, 10, 9, 6],
+      unit: 'VZÄ / 100 Einw.'
     },
     keyFacts: [
-      { number: '82', label: 'Arbeitspl. pro 100 Einw.', context: 'St. Moritz – stärkster Arbeitsmagnet' },
-      { number: '17', label: 'Arbeitspl. pro 100 Einw.', context: 'Haldenstein – typisches Schlafdorf' },
-      { number: '42', label: 'Kantonaler Schnitt', context: 'Schweizer Mittel liegt bei ~50 (BFS STATENT 2022)' }
+      { number: '144', label: 'VZÄ / 100 Einw.', context: 'St. Moritz — extremster Arbeitsort Graubündens' },
+      { number: '6', label: 'VZÄ / 100 Einw.', context: 'Santa Maria in Calanca — extremstes Schlafdorf' },
+      { number: '52.6', label: 'Kantonaler Schnitt', context: 'VZÄ pro 100 Einwohner, Kanton GR 2023' }
     ],
     analysis: [
-      'Wer in Haldenstein oder Rhäzüns wohnt, arbeitet meistens anderswo – vor allem in Chur, das in zwanzig Fahrminuten erreichbar ist. Diese Gemeinden sind Schlafdörfer im besten Sinn: ruhig, naturnah, oft günstiger im Wohnraum – aber wirtschaftlich kaum eigenständig. Ihre Steuerbasis hängt von Pendlerinnen und Pendlern ab, nicht von lokalen Unternehmen.',
-      'Am anderen Ende der Skala stehen Domat/Ems, Davos und St. Moritz. Domat/Ems ist der versteckte Industriestandort Graubündens: EMS Chemie beschäftigt über 2\'500 Menschen direkt – bei rund 7\'900 Einwohnern ein enorm hoher Anteil. Täglich strömen Pendlerinnen und Pendler ins Domleschg. Davos zieht mit Kliniken, Kongresszentrum und Hotellerie. St. Moritz lebt von Luxustourismus mit globaler Strahlkraft.',
-      'Diese Unterschiede haben politische Konsequenzen. Schlafdörfer kassieren Einkommenssteuer von Pendlerinnen, müssen aber wenig in Gewerbeinfrastruktur investieren. Arbeitsorte tragen Lasten für viele, die anderswo steuerpflichtig sind. Der schweizweite Finanzausgleich (NFA) mildert diese Ungleichgewichte – aber die strukturelle Spannung bleibt ein Dauerthema der Bündner Regionalpolitik.'
+      'St. Moritz hat 144 Vollzeitäquivalente pro 100 Einwohnerinnen — fast dreimal den kantonalen Schnitt von 52.6. Das ist kein Zufall: Luxushotels, Restaurants und Boutiquen beschäftigen Tausende, die ausserhalb wohnen. Ähnlich Samnaun (128) und Sils im Engadin/Segl (123): touristische Arbeitsmagnete mit einem Bruchteil an eigener Wohnbevölkerung.',
+      'Am anderen Ende der Skala liegt Santa Maria in Calanca mit 6 VZÄ pro 100 Einwohner. Von 119 Einwohnenden arbeiten die meisten ausserhalb — hauptsächlich in Roveredo oder Grono im Misox. Sagogn (9), Rongellen (10) und Buseno (11) zeigen ähnliche Muster: kleine Gemeinden ohne Wirtschaftsstruktur, wirtschaftlich vollständig von Nachbargemeinden abhängig.',
+      'Diese Unterschiede haben steuerliche Konsequenzen. Schlafdörfer kassieren Einkommenssteuern von Pendlerinnen, müssen aber kaum in Gewerbeinfrastruktur investieren. Arbeitsorte tragen Lasten für viele, die anderswo steuerpflichtig sind. Der kantonale Finanzausgleich mildert diese Ungleichgewichte — aber die strukturelle Spannung bleibt ein Dauerthema der Bündner Regionalpolitik.'
     ],
-    source: 'BFS, Statistik der Unternehmensstruktur (STATENT) 2022; BFS, STATPOP 2022'
+    source: 'Statistik Graubünden, DVS/AWT: Beschäftigte/VZÄ nach Gemeinde (dvs_awt_econ_20250812) 2023; Wohnbevölkerung (dvs_awt_soci_20250507) 2023',
+    chartVariants: [
+      {
+        type: 'hbar',
+        title: 'Top 15 Arbeitsorte: VZÄ pro 100 Einwohner 2023',
+        labels: ['St. Moritz','Samnaun','Sils im Engadin/Segl','Rothenbrunnen','Pontresina','Vaz/Obervaz','Samedan','Arosa','Silvaplana','Davos','Brusio','Chur','Val Müstair','Grono','Zuoz'],
+        values: [144, 128, 123, 97, 86, 80, 79, 74, 70, 69, 68, 67, 61, 61, 58],
+        colors: ['#0D2040','#1E3A5F','#1E3A5F','#2A5080','#2A5080','#3A6A9F','#3A6A9F','#3A6A9F','#4A7AAF','#4A7AAF','#4A7AAF','#4A7AAF','#5A8ABF','#5A8ABF','#5A8ABF']
+      },
+      {
+        type: 'hbar',
+        title: 'Top 15 Schlafdörfer: VZÄ pro 100 Einwohner 2023 (tiefste Werte)',
+        labels: ['Santa Maria in Calanca','Sagogn','Rongellen','Buseno','Rossa','Felsberg','Tamins','Domleschg','Masein','Trin','Schmitten (GR)','Urmein','Flerden','Rhäzüns','Cama'],
+        values: [6, 9, 10, 11, 11, 15, 16, 16, 17, 17, 17, 18, 18, 20, 22],
+        colors: ['#800010','#8E0018','#9C0018','#AA0020','#B5001E','#C01828','#C01828','#C01828','#CC2030','#CC2030','#CC2030','#D83038','#D83038','#E04048','#E04048']
+      }
+    ]
+  },
+
+  {
+    id: 'gemeinde-namen',
+    ausgabe: 3,
+    status: 'ready',
+    category: 'Gesellschaft',
+    title: 'Chur bleibt kurz — Santa Maria in Calanca braucht 22 Zeichen',
+    lead: 'Die Länge eines Gemeindenamens verrät viel: über Sprachgeschichte, Gemeindefusionen und geografische Lage. Alle 101 Gemeinden im Überblick — nach Arbeitsplatzquote, Bevölkerung und Sprachzugehörigkeit.',
+    chartTitle: 'Namenslänge, Bevölkerung und Wirtschaftscharakter — alle 101 Gemeinden 2023',
+    chartSubtitle: 'X: VZÄ / 100 Einw. · Y: Wohnbevölkerung (log) · Grösse: Namenslänge · Farbe: Sprachregion',
+    chartType: 'bubble',
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
+    staticData: {
+      series: [
+      {label:"Deutschsprachig",color:"#1E3A5F",points:[{name:"St. Moritz",x:144.2,y:4926,nl:10},{name:"Samnaun",x:128.2,y:755,nl:7},{name:"Rothenbrunnen",x:97.4,y:312,nl:13},{name:"Arosa",x:74.0,y:3143,nl:5},{name:"Davos",x:69.2,y:10800,nl:5},{name:"Chur",x:66.6,y:38949,nl:4},{name:"Laax",x:57.3,y:2112,nl:4},{name:"Landquart",x:55.9,y:9191,nl:9},{name:"Vals",x:55.7,y:949,nl:4},{name:"Thusis",x:53.1,y:3459,nl:6},{name:"Maienfeld",x:53.0,y:3193,nl:9},{name:"Grüsch",x:52.7,y:2161,nl:6},{name:"Zizers",x:50.4,y:3589,nl:6},{name:"Flims",x:47.8,y:2939,nl:5},{name:"Küblis",x:47.3,y:920,nl:6},{name:"Cazis",x:47.2,y:2416,nl:5},{name:"Bonaduz",x:42.6,y:3533,nl:7},{name:"Klosters",x:40.1,y:4473,nl:8},{name:"Schiers",x:39.7,y:2951,nl:7},{name:"Fürstenau",x:38.1,y:349,nl:9},{name:"Andeer",x:36.9,y:926,nl:6},{name:"Zillis-Reischen",x:36.8,y:419,nl:15},{name:"Ferrera",x:36.6,y:82,nl:7},{name:"Seewis im Prättigau",x:35.2,y:1430,nl:19},{name:"Scharans",x:35.2,y:838,nl:8},{name:"Fläsch",x:33.6,y:868,nl:6},{name:"Churwalden",x:32.0,y:2147,nl:10},{name:"Untervaz",x:31.9,y:2675,nl:8},{name:"Tschappina",x:31.4,y:140,nl:10},{name:"Furna",x:29.6,y:203,nl:5},{name:"Conters im Prättigau",x:28.9,y:228,nl:20},{name:"Trimmis",x:28.1,y:3363,nl:7},{name:"Malans",x:27.5,y:2527,nl:6},{name:"Sils im Domleschg",x:26.1,y:966,nl:17},{name:"Jenaz",x:25.5,y:1145,nl:5},{name:"Tschiertschen-Praden",x:25.3,y:293,nl:20},{name:"Fideris",x:24.4,y:618,nl:7},{name:"Jenins",x:22.2,y:948,nl:6},{name:"Luzein",x:22.1,y:1625,nl:6},{name:"Rhäzüns",x:19.8,y:1633,nl:7},{name:"Flerden",x:18.1,y:254,nl:7},{name:"Urmein",x:17.8,y:163,nl:6},{name:"Schmitten (GR)",x:17.2,y:209,nl:14},{name:"Masein",x:17.1,y:532,nl:6},{name:"Domleschg",x:16.2,y:2219,nl:9},{name:"Tamins",x:15.6,y:1215,nl:6},{name:"Felsberg",x:15.1,y:2833,nl:8},{name:"Rongellen",x:9.8,y:61,nl:9}]},
+      {label:"R\u00e4toromanisch",color:"#16803A",points:[{name:"Pontresina",x:86.4,y:2077,nl:10},{name:"Samedan",x:78.5,y:2913,nl:7},{name:"Silvaplana",x:70.1,y:1089,nl:10},{name:"Zuoz",x:57.7,y:1218,nl:4},{name:"Scuol",x:55.2,y:4572,nl:5},{name:"Bregaglia",x:52.7,y:1578,nl:9},{name:"Avers",x:52.4,y:168,nl:5},{name:"Zernez",x:48.9,y:1579,nl:6},{name:"Surses",x:47.6,y:2424,nl:6},{name:"Bever",x:46.1,y:607,nl:5},{name:"Bergün Filisur",x:45.6,y:901,nl:14},{name:"Muntogna da Schons",x:44.7,y:371,nl:18},{name:"Rheinwald",x:44.3,y:576,nl:9},{name:"Obersaxen Mundaun",x:42.4,y:1148,nl:17},{name:"Valsot",x:41.7,y:811,nl:6},{name:"Trun",x:41.0,y:1154,nl:4},{name:"Sufers",x:40.4,y:151,nl:6},{name:"Tujetsch",x:39.6,y:1171,nl:8},{name:"Schluein",x:36.8,y:612,nl:8},{name:"Falera",x:34.6,y:627,nl:6},{name:"S-chanf",x:32.7,y:706,nl:7},{name:"Medel (Lucmagn)",x:31.7,y:328,nl:15},{name:"Lumnezia",x:30.2,y:2072,nl:8},{name:"La Punt Chamues-ch",x:29.2,y:732,nl:18},{name:"Sumvitg",x:29.0,y:1079,nl:7},{name:"Madulain",x:28.4,y:197,nl:8},{name:"Safiental",x:28.0,y:963,nl:9},{name:"Trin",x:17.1,y:1525,nl:4},{name:"Sagogn",x:9.4,y:766,nl:6}]},
+      {label:"Italienischsprachig",color:"#B5001E",points:[{name:"Brusio",x:67.5,y:1105,nl:6},{name:"Val Müstair",x:61.1,y:1422,nl:11},{name:"Grono",x:60.6,y:1556,nl:5},{name:"Poschiavo",x:47.6,y:3525,nl:9},{name:"San Vittore",x:46.5,y:912,nl:11},{name:"Calanca",x:44.1,y:211,nl:7},{name:"Roveredo (GR)",x:35.2,y:2625,nl:13},{name:"Mesocco",x:34.6,y:1420,nl:7},{name:"Castaneda",x:27.9,y:262,nl:9},{name:"Lostallo",x:27.3,y:850,nl:8},{name:"Soazza",x:26.8,y:332,nl:6},{name:"Cama",x:22.1,y:691,nl:4},{name:"Rossa",x:11.2,y:161,nl:5},{name:"Buseno",x:11.0,y:91,nl:6},{name:"Santa Maria in Calanca",x:5.9,y:119,nl:22}]},
+      {label:"Zweisprachig",color:"#8B6914",points:[{name:"Sils im Engadin/Segl",x:122.9,y:708,nl:20},{name:"Vaz/Obervaz",x:80.4,y:2742,nl:11},{name:"Celerina/Schlarigna",x:52.7,y:1411,nl:19},{name:"Ilanz/Glion",x:49.6,y:5030,nl:11},{name:"Disentis/Mustér",x:44.0,y:2080,nl:15},{name:"Domat/Ems",x:39.5,y:8286,nl:9},{name:"Albula/Alvra",x:36.7,y:1313,nl:12},{name:"Breil/Brigels",x:32.5,y:1713,nl:13},{name:"Lantsch/Lenz",x:26.7,y:528,nl:12}]}
+    ],
+      xLabel: 'VZÄ / 100 Einw.',
+      yLabel: 'Wohnbevölkerung'
+    },
+    keyFacts: [
+      { number: '22', label: 'Zeichen', context: '"Santa Maria in Calanca" — längster Gemeindename GR' },
+      { number: '4', label: 'Zeichen', context: '7 Gemeinden: Cama, Chur, Laax, Trin, Trun, Vals, Zuoz' },
+      { number: '8.8', label: 'Zeichen Ø', context: 'Durchschnittliche Länge aller 101 Gemeindenamen' }
+    ],
+    analysis: [
+      'Die Blase zeigt es direkt: Chur (4 Zeichen) ist dominierend gross — aber kurz benannt. St. Moritz (10 Zeichen) ist wirtschaftlich aktiv (144 VZÄ/100 EW) und eher mittelgross. Santa Maria in Calanca (22 Zeichen) hingegen ist winzig, arm an Arbeitsplätzen und hat den längsten Namen — ein klassisches Schlafdorf in der Peripherie.',
+      'Lange Namen entstehen oft durch Fusionen: "Tschiertschen-Praden" (20 Zeichen) und "Conters im Prättigau" (20 Zeichen) tragen noch zwei Ortschaften im Namen. Zweisprachige Gemeinden führen beide Sprachversionen mit Schrägstrich — Disentis/Mustér, Breil/Brigels — und werden so automatisch länger.',
+      'Kurze Namen sind oft die ältesten Toponyme. "Chur" geht auf lateinisch "Curia" zurück, "Trun" und "Zuoz" auf vorrömische Wurzeln. Die vier rätoromanischen 4-Zeichen-Namen (Trin, Trun, Zuoz, Bever) sind sprachwissenschaftliche Fossilien — komprimiert über Jahrhunderte.'
+    ],
+    source: 'Statistik Graubünden, DVS/AWT: Beschäftigte/VZÄ (dvs_awt_econ_20250812) 2023; Wohnbevölkerung (dvs_awt_soci_20250507) 2023'
+  },
+
+  {
+    id: 'zweitwohnungen',
+    ausgabe: 4,
+    status: 'ready',
+    category: 'Gesellschaft',
+    title: '79 von 100 Gemeinden: Graubünden und die Zweitwohnungen',
+    lead: 'Die Lex Weber verbietet seit 2012 neue Zweitwohnungen in Gemeinden mit über 20% Anteil. In Graubünden liegt diese Grenze für fast alle Gemeinden weit unter der Realität: 79 von 100 Gemeinden überschreiten die 20%-Schwelle — manche wie Obersaxen Mundaun mit über 81%.',
+    chartTitle: 'Zweitwohnungsanteil März 2025 — Höchst- und Tiefstwerte (Top 10 / Bottom 10)',
+    chartSubtitle: 'Statistik Graubünden (dvs_awt_soci_20260112) · Quelle: Bundesregister Gebäude und Wohnungen (GWR)',
+    chartType: 'bar',
+    horizontal: true,
+    apiDatasetId: null,
+    apiQuery: null,
+    parseData: null,
+    staticData: {
+      labels: [
+        'Obersaxen Mundaun','Calanca','Madulain','Ferrera','Falera',
+        'Vaz/Obervaz','Tschappina','Surses','Buseno','Lantsch/Lenz',
+        'Fürstenau','Chur','Bonaduz','Fläsch','Zizers',
+        'Trimmis','Rongellen','Landquart','Domat/Ems','Felsberg'
+      ],
+      values: [
+        81.06, 79.92, 78.60, 78.53, 78.52,
+        76.44, 75.39, 74.81, 74.36, 74.25,
+        13.13, 12.04, 11.71, 11.37, 11.14,
+        10.18, 8.33, 8.30, 8.21, 7.60
+      ],
+      unit: '%'
+    },
+    chartColors: [
+      'rgba(181,0,30,0.90)','rgba(181,0,30,0.82)','rgba(181,0,30,0.75)','rgba(181,0,30,0.68)','rgba(181,0,30,0.62)',
+      'rgba(181,0,30,0.55)','rgba(181,0,30,0.50)','rgba(181,0,30,0.44)','rgba(181,0,30,0.38)','rgba(181,0,30,0.33)',
+      'rgba(30,58,95,0.33)','rgba(30,58,95,0.38)','rgba(30,58,95,0.44)','rgba(30,58,95,0.50)','rgba(30,58,95,0.55)',
+      'rgba(30,58,95,0.62)','rgba(30,58,95,0.68)','rgba(30,58,95,0.75)','rgba(30,58,95,0.82)','rgba(30,58,95,0.90)'
+    ],
+    keyFacts: [
+      { number: '79%', label: 'über Lex-Weber-Grenze', context: '79 von 100 Gemeinden liegen über 20% Zweitwohnungsanteil' },
+      { number: '81%', label: 'Höchstwert GR', context: 'Obersaxen Mundaun — 4 von 5 Wohnungen sind Ferienwohnungen' },
+      { number: '7.6%', label: 'Tiefstwert GR', context: 'Felsberg — am stärksten dauerhaft bewohnte Gemeinde GR' }
+    ],
+    analysis: [
+      'Graubünden ist der Kanton mit dem schweizweit höchsten Zweitwohnungsanteil. Die Lex Weber (Volksinitiative 2012, in Kraft 2016) begrenzt Neubauten auf Gemeinden mit unter 20% Feriendomizilen — trifft aber faktisch kaum jemanden in GR. Spitzenreiter Obersaxen Mundaun liegt bei 81%: Von knapp 2\'800 Wohneinheiten sind nur rund 530 dauerhaft bewohnt.',
+      'Die tiefsten Quoten finden sich im dicht besiedelten Rheintal: Felsberg (7.6%), Domat/Ems (8.2%), Landquart (8.3%) sind echte Wohnorte. Auch Chur liegt mit 12% deutlich unter dem Kantonsdurchschnitt — obwohl das schon bedeutet, dass jede 8. Wohnung der Kantonshauptstadt leer steht.',
+      'Die Entwicklung seit 2017 zeigt ein geteiltes Bild: Grono (Misox) ist organisch unter 20% gefallen — durch Zuzug, nicht durch Regulierung. Fürstenau (Domleschg) halbierte seinen Anteil von 21% auf 13%, vermutlich durch Post-Corona-Zuzug und Wohnsitzwechsel. Auf der anderen Seite legten Brusio (+15.8 Prozentpunkte), Soazza (+14.5 Pp.) und Zillis-Reischen (+14.3 Pp.) stark zu. Der Druck auf den Wohnungsmarkt bleibt in GR ein Dauerthema.'
+    ],
+    source: 'Statistik Graubünden, dvs_awt_soci_20260112: Zweitwohnungsanteil 2017–2025 (Erhebung März 2025). Quelle: Eidg. Gebäude- und Wohnungsregister (GWR)'
   }
 
-].filter(function(s) { return s.active !== false; }); // end STORIES (active:false = Backlog) (feat: Story #22 – Schlafdorf vs. Arbeitsort (Arbeitsplatzquote))
+].filter(function(s) { return s.active !== false; }); // end STORIES
 
 
 // ============================================================
@@ -1253,6 +1311,51 @@ function buildVariantCharts(variants) {
             y: {
               min: 0, max: 100, grid: { color: '#E8E4E0' },
               ticks: { font: vBase, color: vMuted, callback: function(v){ return v+'%'; } }
+            }
+          }
+        }
+      });
+    } else if (variant.type === 'treemap') {
+      chart = new Chart(ctx, {
+        type: 'treemap',
+        data: {
+          datasets: [{
+            label: variant.title,
+            tree: variant.items,
+            key: 'v',
+            backgroundColor: function(ctx) {
+              if (!ctx.raw || !ctx.raw._data) return '#B8B4AE';
+              return ctx.raw._data.c;
+            },
+            borderWidth: 1,
+            borderColor: '#fff',
+            captions: {
+              display: true,
+              color: '#fff',
+              font: { size: 11, family: "'Inter', system-ui, sans-serif" },
+              formatter: function(ctx) {
+                if (!ctx.raw || !ctx.raw._data) return '';
+                return ctx.raw.v > 2000 ? ctx.raw._data.n : '';
+              }
+            }
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#161616',
+              padding: 12,
+              callbacks: {
+                title: function(items) {
+                  return items[0] && items[0].raw._data ? items[0].raw._data.n : '';
+                },
+                label: function(ctx) {
+                  return '  ' + (ctx.raw.v || 0).toLocaleString('de-CH') + ' Einwohner';
+                }
+              }
             }
           }
         }
@@ -1886,6 +1989,72 @@ function buildChart(story, data) {
         }
       }
     });
+    return;
+  }
+
+  // ---- BUBBLE ----
+  if (type === 'bubble') {
+    const series = (d.series || []).map(function(s) {
+      return {
+        label: s.label,
+        data: s.points.map(function(p) {
+          return { x: p.x, y: p.y, r: Math.max(3, Math.sqrt(p.nl) * 2.8), name: p.name, nl: p.nl };
+        }),
+        backgroundColor: s.color + '99',
+        borderColor: s.color,
+        borderWidth: 1.5,
+        hoverRadius: 4
+      };
+    });
+    activeChart = new Chart(ctx, {
+      type: 'bubble',
+      data: { datasets: series },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: { font: baseFont, color: MUTED, usePointStyle: true, pointStyleWidth: 10, padding: 16 }
+          },
+          tooltip: {
+            backgroundColor: '#161616',
+            titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+            bodyFont: baseFont,
+            padding: 12,
+            callbacks: {
+              title: function(items) { return items[0].raw.name; },
+              label: function(ctx) {
+                return [
+                  '  Name: ' + ctx.raw.nl + ' Zeichen',
+                  '  VZÄ/100 EW: ' + ctx.raw.x,
+                  '  Einwohner: ' + ctx.raw.y.toLocaleString('de-CH')
+                ];
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: d.xLabel || 'X', font: baseFont, color: MUTED },
+            grid: { color: GRID },
+            ticks: { font: baseFont, color: MUTED },
+            beginAtZero: true
+          },
+          y: {
+            type: 'logarithmic',
+            title: { display: true, text: d.yLabel || 'Y', font: baseFont, color: MUTED },
+            grid: { color: GRID },
+            ticks: {
+              font: baseFont, color: MUTED,
+              callback: function(v) { return v >= 1000 ? (v/1000).toFixed(0)+'k' : v; }
+            }
+          }
+        }
+      }
+    });
+    return;
   }
 }
 
@@ -1962,12 +2131,8 @@ function renderStory(index) {
   setEl('story-lead',       s.lead);
   setEl('chart-title',      s.chartTitle);
   setEl('chart-subtitle',   s.chartSubtitle);
-  setEl('story-date',       s.publishDate || '');
-  setEl('story-week-label', 'Woche ' + s.week);
+  setEl('story-publish-date', s.ausgabe ? 'Ausgabe ' + s.ausgabe : '');
 
-  // Week badge
-  const weekBadgeEl = document.getElementById('story-week-badge');
-  if (weekBadgeEl) weekBadgeEl.textContent = 'Woche ' + s.week;
 
   // Key Facts (only render if present and non-empty)
   const factsEl = document.getElementById('facts-grid');
@@ -2093,6 +2258,25 @@ function renderStory(index) {
     if (e.key === 'ArrowLeft')  renderStory((currentIndex - 1 + STORIES.length) % STORIES.length);
     if (e.key === 'ArrowRight') renderStory((currentIndex + 1) % STORIES.length);
   });
+
+  // Copy chart data as TSV (for Datawrapper)
+  const copyBtn = document.getElementById('copy-data-btn');
+  const copyConfirm = document.getElementById('copy-confirm');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
+      const s = STORIES[currentIndex];
+      const d = s.staticData;
+      if (!d || !d.labels || !d.values) return;
+      const tsv = 'Gemeinde\t' + (d.unit || 'Wert') + '\n' +
+        d.labels.map(function(l, i) { return l + '\t' + d.values[i]; }).join('\n');
+      navigator.clipboard.writeText(tsv).then(function() {
+        if (copyConfirm) {
+          copyConfirm.hidden = false;
+          setTimeout(function() { copyConfirm.hidden = true; }, 2000);
+        }
+      });
+    });
+  }
 
   // Handle browser back/forward
   window.addEventListener('hashchange', function() {
