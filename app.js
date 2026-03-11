@@ -765,7 +765,60 @@ const STORIES = [
       'Lange Namen entstehen oft durch Fusionen: "Tschiertschen-Praden" (20 Zeichen) und "Conters im Prättigau" (20 Zeichen) tragen noch zwei Ortschaften im Namen. Zweisprachige Gemeinden führen beide Sprachversionen mit Schrägstrich — Disentis/Mustér, Breil/Brigels — und werden so automatisch länger.',
       'Kurze Namen sind oft die ältesten Toponyme. "Chur" geht auf lateinisch "Curia" zurück, "Trun" und "Zuoz" auf vorrömische Wurzeln. Die vier rätoromanischen 4-Zeichen-Namen (Trin, Trun, Zuoz, Bever) sind sprachwissenschaftliche Fossilien — komprimiert über Jahrhunderte.'
     ],
-    source: 'Statistik Graubünden, DVS/AWT: Beschäftigte/VZÄ (dvs_awt_econ_20250812) 2023; Wohnbevölkerung (dvs_awt_soci_20250507) 2023'
+    chartVariants: [
+      {
+        type: 'bubble',
+        title: 'Namenslänge × Durchschnittsalter — Blasengrösse = Bevölkerung 2024',
+        xLabel: 'Durchschnittsalter (Jahre)',
+        yLabel: 'Namenslänge (Zeichen)',
+        series: [
+          {label:'Deutschsprachig',color:'#1E3A5F',points:[
+            {name:'St. Moritz',x:43.6,y:10,pop:4997},{name:'Samnaun',x:43.7,y:7,pop:750},{name:'Rothenbrunnen',x:43.7,y:13,pop:304},
+            {name:'Arosa',x:44.2,y:5,pop:3159},{name:'Davos',x:43.8,y:5,pop:10774},{name:'Chur',x:44.3,y:4,pop:39177},
+            {name:'Laax',x:45.3,y:4,pop:2102},{name:'Landquart',x:43.0,y:9,pop:9244},{name:'Vals',x:45.2,y:4,pop:964},
+            {name:'Thusis',x:44.4,y:6,pop:3439},{name:'Maienfeld',x:44.2,y:9,pop:3266},{name:'Grüsch',x:45.5,y:6,pop:2176},
+            {name:'Zizers',x:43.7,y:6,pop:3691},{name:'Flims',x:46.0,y:5,pop:2902},{name:'Küblis',x:45.5,y:6,pop:923},
+            {name:'Cazis',x:43.7,y:5,pop:2439},{name:'Bonaduz',x:41.6,y:7,pop:3565},{name:'Klosters',x:47.6,y:8,pop:4478},
+            {name:'Schiers',x:41.6,y:7,pop:2993},{name:'Fürstenau',x:46.5,y:9,pop:353},{name:'Andeer',x:46.9,y:6,pop:958},
+            {name:'Zillis-Reischen',x:45.7,y:15,pop:426},{name:'Ferrera',x:40.3,y:7,pop:76},{name:'Seewis im Prättigau',x:43.0,y:19,pop:1450},
+            {name:'Scharans',x:44.3,y:8,pop:836},{name:'Fläsch',x:43.3,y:6,pop:879},{name:'Churwalden',x:42.7,y:10,pop:2114},
+            {name:'Untervaz',x:42.0,y:8,pop:2674},{name:'Tschappina',x:48.9,y:10,pop:146},{name:'Furna',x:43.6,y:5,pop:203},
+            {name:'Conters im Prättigau',x:45.2,y:20,pop:224},{name:'Trimmis',x:42.9,y:7,pop:3424},{name:'Malans',x:43.9,y:6,pop:2529},
+            {name:'Sils im Domleschg',x:44.1,y:17,pop:976},{name:'Jenaz',x:46.4,y:5,pop:1164},{name:'Tschiertschen-Praden',x:47.1,y:20,pop:309},
+            {name:'Fideris',x:44.8,y:7,pop:626},{name:'Jenins',x:43.3,y:6,pop:961},{name:'Luzein',x:44.7,y:6,pop:1689},
+            {name:'Rhäzüns',x:41.8,y:7,pop:1612},{name:'Flerden',x:42.9,y:7,pop:255},{name:'Urmein',x:52.1,y:6,pop:163},
+            {name:'Schmitten (GR)',x:51.6,y:14,pop:205},{name:'Masein',x:41.2,y:6,pop:531},{name:'Domleschg',x:43.9,y:9,pop:2262},
+            {name:'Tamins',x:45.0,y:6,pop:1223},{name:'Felsberg',x:40.1,y:8,pop:2886},{name:'Rongellen',x:45.6,y:9,pop:59}
+          ]},
+          {label:'Rätoromanisch',color:'#16803A',points:[
+            {name:'Pontresina',x:45.3,y:10,pop:2072},{name:'Samedan',x:44.7,y:7,pop:2901},{name:'Silvaplana',x:47.5,y:10,pop:1124},
+            {name:'Zuoz',x:42.7,y:4,pop:1224},{name:'Scuol',x:47.0,y:5,pop:4546},{name:'Bregaglia',x:48.3,y:9,pop:1591},
+            {name:'Avers',x:44.4,y:5,pop:169},{name:'Zernez',x:46.2,y:6,pop:1592},{name:'Surses',x:48.8,y:6,pop:2465},
+            {name:'Bever',x:45.8,y:5,pop:618},{name:'Bergün Filisur',x:47.5,y:14,pop:898},{name:'Muntogna da Schons',x:45.4,y:18,pop:368},
+            {name:'Rheinwald',x:48.3,y:9,pop:570},{name:'Obersaxen Mundaun',x:48.3,y:17,pop:1160},{name:'Valsot',x:47.5,y:6,pop:801},
+            {name:'Trun',x:47.8,y:4,pop:1141},{name:'Sufers',x:44.7,y:6,pop:147},{name:'Tujetsch',x:49.3,y:8,pop:1199},
+            {name:'Schluein',x:44.5,y:8,pop:616},{name:'Falera',x:47.0,y:6,pop:635},{name:'S-chanf',x:44.9,y:7,pop:713},
+            {name:'Medel (Lucmagn)',x:51.6,y:15,pop:328},{name:'Lumnezia',x:49.7,y:8,pop:2075},{name:'La Punt Chamues-ch',x:47.8,y:18,pop:750},
+            {name:'Sumvitg',x:50.0,y:7,pop:1063},{name:'Madulain',x:49.8,y:8,pop:196},{name:'Safiental',x:45.8,y:9,pop:964},
+            {name:'Trin',x:43.8,y:4,pop:1557},{name:'Sagogn',x:45.8,y:6,pop:769}
+          ]},
+          {label:'Italienischsprachig',color:'#B5001E',points:[
+            {name:'Brusio',x:49.7,y:6,pop:1099},{name:'Val Müstair',x:51.7,y:11,pop:1430},{name:'Grono',x:44.7,y:5,pop:1580},
+            {name:'Poschiavo',x:46.8,y:9,pop:3505},{name:'San Vittore',x:44.9,y:11,pop:910},{name:'Calanca',x:54.1,y:7,pop:204},
+            {name:'Roveredo (GR)',x:44.9,y:13,pop:2656},{name:'Mesocco',x:48.6,y:7,pop:1414},{name:'Castaneda',x:53.3,y:9,pop:254},
+            {name:'Lostallo',x:45.4,y:8,pop:866},{name:'Soazza',x:53.3,y:6,pop:324},{name:'Cama',x:43.9,y:4,pop:720},
+            {name:'Rossa',x:55.6,y:5,pop:168},{name:'Buseno',x:57.4,y:6,pop:91},{name:'Santa Maria in Calanca',x:57.2,y:22,pop:113}
+          ]},
+          {label:'Zweisprachig',color:'#8B6914',points:[
+            {name:'Sils im Engadin/Segl',x:44.0,y:20,pop:708},{name:'Vaz/Obervaz',x:44.7,y:11,pop:2732},
+            {name:'Celerina/Schlarigna',x:47.2,y:19,pop:1415},{name:'Ilanz/Glion',x:45.8,y:11,pop:5067},
+            {name:'Disentis/Mustér',x:47.1,y:15,pop:2104},{name:'Domat/Ems',x:42.5,y:9,pop:8392},
+            {name:'Albula/Alvra',x:47.0,y:12,pop:1354},{name:'Breil/Brigels',x:46.1,y:13,pop:1706},{name:'Lantsch/Lenz',x:47.4,y:12,pop:518}
+          ]}
+        ]
+      }
+    ],
+    source: 'Statistik Graubünden, DVS/AWT: Beschäftigte/VZÄ (dvs_awt_econ_20250812) 2023; Wohnbevölkerung (dvs_awt_soci_20250507) 2023; Durchschnittsalter: dvs_awt_soci_202502111, 2024'
   },
 
   {
@@ -1323,6 +1376,41 @@ function buildVariantCharts(variants) {
               min: 0, max: 100, grid: { color: '#E8E4E0' },
               ticks: { font: vBase, color: vMuted, callback: function(v){ return v+'%'; } }
             }
+          }
+        }
+      });
+    } else if (variant.type === 'bubble') {
+      var bSeries = (variant.series || []).map(function(s) {
+        return {
+          label: s.label,
+          data: s.points.map(function(p) {
+            return { x: p.x, y: p.y, r: Math.max(3, Math.sqrt(p.pop) * 0.1), name: p.name, pop: p.pop };
+          }),
+          backgroundColor: s.color + '99', borderColor: s.color, borderWidth: 1.5
+        };
+      });
+      chart = new Chart(ctx, {
+        type: 'bubble',
+        data: { datasets: bSeries },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'top', labels: { font: vBase, color: vMuted, usePointStyle: true, pointStyleWidth: 10, padding: 16 } },
+            tooltip: {
+              backgroundColor: '#161616', padding: 12,
+              titleFont: { family: "'Inter', system-ui, sans-serif", size: 13, weight: '600' },
+              bodyFont: vBase,
+              callbacks: {
+                title: function(items) { return items[0].raw.name; },
+                label: function(ctx) {
+                  return ['  Namenslänge: '+ctx.raw.y+' Zeichen', '  Ø Alter: '+ctx.raw.x+' Jahre', '  Bevölkerung: '+ctx.raw.pop.toLocaleString('de-CH')];
+                }
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: variant.xLabel||'X', font: vBase, color: vMuted }, grid: { color: '#E8E4E0' }, ticks: { font: vBase, color: vMuted } },
+            y: { title: { display: true, text: variant.yLabel||'Y', font: vBase, color: vMuted }, grid: { color: '#E8E4E0' }, ticks: { font: vBase, color: vMuted, stepSize: 2 }, min: 2, max: 24 }
           }
         }
       });
