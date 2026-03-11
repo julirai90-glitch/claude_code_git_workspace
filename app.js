@@ -22,6 +22,39 @@ function formatDateDE(date) {
 }
 
 // ============================================================
+// GEMEINDEN TREEMAP — 101 Gemeinden, Bevölkerung 2024
+// (sortiert absteigend; wird von mehreren Varianten verwendet)
+// ============================================================
+const TREEMAP_101 = [
+  {n:"Chur",v:39177},{n:"Davos",v:10774},{n:"Landquart",v:9244},{n:"Domat/Ems",v:8392},
+  {n:"Ilanz/Glion",v:5067},{n:"St. Moritz",v:4997},{n:"Scuol",v:4546},{n:"Klosters",v:4478},
+  {n:"Zizers",v:3691},{n:"Bonaduz",v:3565},{n:"Poschiavo",v:3505},{n:"Thusis",v:3439},
+  {n:"Trimmis",v:3424},{n:"Maienfeld",v:3266},{n:"Arosa",v:3159},{n:"Schiers",v:2993},
+  {n:"Flims",v:2902},{n:"Samedan",v:2901},{n:"Felsberg",v:2886},{n:"Vaz/Obervaz",v:2732},
+  {n:"Untervaz",v:2674},{n:"Roveredo (GR)",v:2656},{n:"Malans",v:2529},{n:"Surses",v:2465},
+  {n:"Cazis",v:2439},{n:"Domleschg",v:2262},{n:"Grüsch",v:2176},{n:"Churwalden",v:2114},
+  {n:"Disentis/Mustér",v:2104},{n:"Laax",v:2102},{n:"Lumnezia",v:2075},{n:"Pontresina",v:2072},
+  {n:"Breil/Brigels",v:1706},{n:"Luzein",v:1689},{n:"Rhäzüns",v:1612},{n:"Zernez",v:1592},
+  {n:"Bregaglia",v:1591},{n:"Grono",v:1580},{n:"Trin",v:1557},{n:"Seewis im Prättigau",v:1450},
+  {n:"Val Müstair",v:1430},{n:"Celerina/Schlarigna",v:1415},{n:"Mesocco",v:1414},{n:"Albula/Alvra",v:1354},
+  {n:"Zuoz",v:1224},{n:"Tamins",v:1223},{n:"Tujetsch",v:1199},{n:"Jenaz",v:1164},
+  {n:"Obersaxen Mundaun",v:1160},{n:"Trun",v:1141},{n:"Silvaplana",v:1124},{n:"Brusio",v:1099},
+  {n:"Sumvitg",v:1063},{n:"Sils im Domleschg",v:976},{n:"Safiental",v:964},{n:"Vals",v:964},
+  {n:"Jenins",v:961},{n:"Andeer",v:958},{n:"Küblis",v:923},{n:"San Vittore",v:910},
+  {n:"Bergün Filisur",v:898},{n:"Fläsch",v:879},{n:"Lostallo",v:866},{n:"Scharans",v:836},
+  {n:"Valsot",v:801},{n:"Sagogn",v:769},{n:"La Punt Chamues-ch",v:750},{n:"Samnaun",v:750},
+  {n:"Cama",v:720},{n:"S-chanf",v:713},{n:"Sils im Engadin/Segl",v:708},{n:"Falera",v:635},
+  {n:"Fideris",v:626},{n:"Bever",v:618},{n:"Schluein",v:616},{n:"Rheinwald",v:570},
+  {n:"Masein",v:531},{n:"Lantsch/Lenz",v:518},{n:"Zillis-Reischen",v:426},{n:"Muntogna da Schons",v:368},
+  {n:"Fürstenau",v:353},{n:"Medel (Lucmagn)",v:328},{n:"Soazza",v:324},{n:"Tschiertschen-Praden",v:309},
+  {n:"Rothenbrunnen",v:304},{n:"Flerden",v:255},{n:"Castaneda",v:254},{n:"Conters im Prättigau",v:224},
+  {n:"Schmitten (GR)",v:205},{n:"Calanca",v:204},{n:"Furna",v:203},{n:"Madulain",v:196},
+  {n:"Avers",v:169},{n:"Rossa",v:168},{n:"Urmein",v:163},{n:"Sufers",v:147},
+  {n:"Tschappina",v:146},{n:"Santa Maria in Calanca",v:113},{n:"Buseno",v:91},{n:"Ferrera",v:76},
+  {n:"Rongellen",v:59}
+];
+
+// ============================================================
 // STORIES ARRAY
 // ============================================================
 const STORIES = [
@@ -97,36 +130,16 @@ const STORIES = [
         rest: 101839
       },
       {
-        type: 'treemap',
-        title: 'Alle 101 Gemeinden: Fläche = Einwohnerzahl 2024',
-        items: [
-        {n:"Chur",v:39177,c:'#1E3A5F'},{n:"Davos",v:10774,c:'#2A5A8F'},{n:"Landquart",v:9244,c:'#2A5A8F'},{n:"Domat/Ems",v:8392,c:'#2A5A8F'},
-        {n:"Ilanz/Glion",v:5067,c:'#2A5A8F'},{n:"St. Moritz",v:4997,c:'#2A5A8F'},{n:"Scuol",v:4546,c:'#2A5A8F'},{n:"Klosters",v:4478,c:'#2A5A8F'},
-        {n:"Zizers",v:3691,c:'#2A5A8F'},{n:"Bonaduz",v:3565,c:'#2A5A8F'},{n:"Poschiavo",v:3505,c:'#B8B4AE'},{n:"Thusis",v:3439,c:'#B8B4AE'},
-        {n:"Trimmis",v:3424,c:'#B8B4AE'},{n:"Maienfeld",v:3266,c:'#B8B4AE'},{n:"Arosa",v:3159,c:'#B8B4AE'},{n:"Schiers",v:2993,c:'#B8B4AE'},
-        {n:"Flims",v:2902,c:'#B8B4AE'},{n:"Samedan",v:2901,c:'#B8B4AE'},{n:"Felsberg",v:2886,c:'#B8B4AE'},{n:"Vaz/Obervaz",v:2732,c:'#B8B4AE'},
-        {n:"Untervaz",v:2674,c:'#B8B4AE'},{n:"Roveredo (GR)",v:2656,c:'#B8B4AE'},{n:"Malans",v:2529,c:'#B8B4AE'},{n:"Surses",v:2465,c:'#B8B4AE'},
-        {n:"Cazis",v:2439,c:'#B8B4AE'},{n:"Domleschg",v:2262,c:'#B8B4AE'},{n:"Grüsch",v:2176,c:'#B8B4AE'},{n:"Churwalden",v:2114,c:'#B8B4AE'},
-        {n:"Disentis/Mustér",v:2104,c:'#B8B4AE'},{n:"Laax",v:2102,c:'#B8B4AE'},{n:"Lumnezia",v:2075,c:'#B8B4AE'},{n:"Pontresina",v:2072,c:'#B8B4AE'},
-        {n:"Breil/Brigels",v:1706,c:'#B8B4AE'},{n:"Luzein",v:1689,c:'#B8B4AE'},{n:"Rhäzüns",v:1612,c:'#B8B4AE'},{n:"Zernez",v:1592,c:'#B8B4AE'},
-        {n:"Bregaglia",v:1591,c:'#B8B4AE'},{n:"Grono",v:1580,c:'#B8B4AE'},{n:"Trin",v:1557,c:'#B8B4AE'},{n:"Seewis im Prättigau",v:1450,c:'#B8B4AE'},
-        {n:"Val Müstair",v:1430,c:'#B8B4AE'},{n:"Celerina/Schlarigna",v:1415,c:'#B8B4AE'},{n:"Mesocco",v:1414,c:'#B8B4AE'},{n:"Albula/Alvra",v:1354,c:'#B8B4AE'},
-        {n:"Zuoz",v:1224,c:'#B8B4AE'},{n:"Tamins",v:1223,c:'#B8B4AE'},{n:"Tujetsch",v:1199,c:'#B8B4AE'},{n:"Jenaz",v:1164,c:'#B8B4AE'},
-        {n:"Obersaxen Mundaun",v:1160,c:'#B8B4AE'},{n:"Trun",v:1141,c:'#B8B4AE'},{n:"Silvaplana",v:1124,c:'#B8B4AE'},{n:"Brusio",v:1099,c:'#B8B4AE'},
-        {n:"Sumvitg",v:1063,c:'#B8B4AE'},{n:"Sils im Domleschg",v:976,c:'#B8B4AE'},{n:"Safiental",v:964,c:'#B8B4AE'},{n:"Vals",v:964,c:'#B8B4AE'},
-        {n:"Jenins",v:961,c:'#B8B4AE'},{n:"Andeer",v:958,c:'#B8B4AE'},{n:"Küblis",v:923,c:'#B8B4AE'},{n:"San Vittore",v:910,c:'#B8B4AE'},
-        {n:"Bergün Filisur",v:898,c:'#B8B4AE'},{n:"Fläsch",v:879,c:'#B8B4AE'},{n:"Lostallo",v:866,c:'#B8B4AE'},{n:"Scharans",v:836,c:'#B8B4AE'},
-        {n:"Valsot",v:801,c:'#B8B4AE'},{n:"Sagogn",v:769,c:'#B8B4AE'},{n:"La Punt Chamues-ch",v:750,c:'#B8B4AE'},{n:"Samnaun",v:750,c:'#B8B4AE'},
-        {n:"Cama",v:720,c:'#B8B4AE'},{n:"S-chanf",v:713,c:'#B8B4AE'},{n:"Sils im Engadin/Segl",v:708,c:'#B8B4AE'},{n:"Falera",v:635,c:'#B8B4AE'},
-        {n:"Fideris",v:626,c:'#B8B4AE'},{n:"Bever",v:618,c:'#B8B4AE'},{n:"Schluein",v:616,c:'#B8B4AE'},{n:"Rheinwald",v:570,c:'#B8B4AE'},
-        {n:"Masein",v:531,c:'#B8B4AE'},{n:"Lantsch/Lenz",v:518,c:'#B8B4AE'},{n:"Zillis-Reischen",v:426,c:'#B8B4AE'},{n:"Muntogna da Schons",v:368,c:'#B8B4AE'},
-        {n:"Fürstenau",v:353,c:'#B8B4AE'},{n:"Medel (Lucmagn)",v:328,c:'#B8B4AE'},{n:"Soazza",v:324,c:'#B8B4AE'},{n:"Tschiertschen-Praden",v:309,c:'#B8B4AE'},
-        {n:"Rothenbrunnen",v:304,c:'#B8B4AE'},{n:"Flerden",v:255,c:'#B8B4AE'},{n:"Castaneda",v:254,c:'#B8B4AE'},{n:"Conters im Prättigau",v:224,c:'#B8B4AE'},
-        {n:"Schmitten (GR)",v:205,c:'#B8B4AE'},{n:"Calanca",v:204,c:'#B8B4AE'},{n:"Furna",v:203,c:'#B8B4AE'},{n:"Madulain",v:196,c:'#B8B4AE'},
-        {n:"Avers",v:169,c:'#B8B4AE'},{n:"Rossa",v:168,c:'#B8B4AE'},{n:"Urmein",v:163,c:'#B8B4AE'},{n:"Sufers",v:147,c:'#B8B4AE'},
-        {n:"Tschappina",v:146,c:'#B8B4AE'},{n:"Santa Maria in Calanca",v:113,c:'#B8B4AE'},{n:"Buseno",v:91,c:'#B8B4AE'},{n:"Ferrera",v:76,c:'#B8B4AE'},
-        {n:"Rongellen",v:59,c:'#B8B4AE'}
-        ]
+        type: 'treemap', colorScheme: 'split13',
+        title: 'Variante A: 13 grösste hervorgehoben (13/88-Logik)'
+      },
+      {
+        type: 'treemap', colorScheme: 'gradient',
+        title: 'Variante B: kontinuierlicher Gradient (gross = dunkel)'
+      },
+      {
+        type: 'treemap', colorScheme: 'mono',
+        title: 'Variante C: einfarbig — Grösse spricht für sich'
       }
     ],
   },
@@ -1355,22 +1368,37 @@ function buildVariantCharts(variants) {
         }
       });
     } else if (variant.type === 'treemap') {
+      var scheme = variant.colorScheme || 'split13';
+      var items = TREEMAP_101;
+      var n101 = items.length;
+      function treemapColor(item) {
+        var i = items.indexOf(item);
+        if (scheme === 'gradient') {
+          var t = i / Math.max(n101 - 1, 1);
+          return 'rgb(' + Math.round(30+t*163) + ',' + Math.round(58+t*155) + ',' + Math.round(95+t*138) + ')';
+        }
+        if (scheme === 'mono') { return '#1E3A5F'; }
+        // split13: Chur dark, top 13 medium, rest gray
+        if (i === 0) return '#1E3A5F';
+        if (i < 13)  return '#2A5A8F';
+        return '#B8B4AE';
+      }
       chart = new Chart(ctx, {
         type: 'treemap',
         data: {
           datasets: [{
             label: variant.title,
-            tree: variant.items,
+            tree: items,
             key: 'v',
             backgroundColor: function(ctx) {
               if (!ctx.raw || !ctx.raw._data) return '#B8B4AE';
-              return ctx.raw._data.c;
+              return treemapColor(ctx.raw._data);
             },
             borderWidth: 1,
             borderColor: '#fff',
             captions: {
               display: true,
-              color: '#fff',
+              color: scheme === 'gradient' ? '#fff' : (scheme === 'mono' ? '#fff' : '#fff'),
               font: { size: 11, family: "'Inter', system-ui, sans-serif" },
               formatter: function(ctx) {
                 if (!ctx.raw || !ctx.raw._data) return '';
@@ -1380,20 +1408,14 @@ function buildVariantCharts(variants) {
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#161616',
-              padding: 12,
+              backgroundColor: '#161616', padding: 12,
               callbacks: {
-                title: function(items) {
-                  return items[0] && items[0].raw._data ? items[0].raw._data.n : '';
-                },
-                label: function(ctx) {
-                  return '  ' + (ctx.raw.v || 0).toLocaleString('de-CH') + ' Einwohner';
-                }
+                title: function(items) { return items[0] && items[0].raw._data ? items[0].raw._data.n : ''; },
+                label: function(ctx) { return '  ' + (ctx.raw.v || 0).toLocaleString('de-CH') + ' Einwohner'; }
               }
             }
           }
