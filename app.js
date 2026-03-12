@@ -877,6 +877,24 @@ const STORIES = [
       'Die Entwicklung seit 2017 zeigt ein geteiltes Bild: Grono (Misox) ist organisch unter 20% gefallen — durch Zuzug, nicht durch Regulierung. Fürstenau (Domleschg) halbierte seinen Anteil von 21% auf 13%, vermutlich durch Post-Corona-Zuzug und Wohnsitzwechsel. Auf der anderen Seite legten Brusio (+15.8 Prozentpunkte), Soazza (+14.5 Pp.) und Zillis-Reischen (+14.3 Pp.) stark zu. Der Druck auf den Wohnungsmarkt bleibt in GR ein Dauerthema.'
     ],
     source: 'Statistik Graubünden, dvs_awt_soci_20260112: Zweitwohnungsanteil 2017–2025 (Erhebung März 2025). Quelle: Eidg. Gebäude- und Wohnungsregister (GWR)'
+  },
+
+  {
+    id: 'schlafdoerfer-arbeitsorte',
+    ausgabe: 13,
+    status: 'ready',
+    category: 'Arbeit',
+    title: 'Schlafadorfer & Arbeitsorte — wer pendelt, wer bleibt?',
+    lead: 'In 101 Graubündner Gemeinden verteilen sich die Vollzeitäquivalente unterschiedlich über Wohnen und Arbeiten. Manche sind reine Arbeitsorte (höhere Quote), manche Schlafadorfer (tiefe Quote). Die interaktive Grafik zeigt die geografische und ökonomische Gliederung des Kantons 2023.',
+    chartTitle: 'Schlafadorfer & Arbeitsorte in Graubünden 2023',
+    chartSubtitle: 'Vollzeitäquivalente (VZÄ) pro Einwohner:in · Filterbar und sortierbar · Quelle: Somedia/Kanton GR',
+    chartType: 'embedded',
+    source: 'Somedia / Kanton Graubünden',
+    embedUrl: 'schlafdoerfer_arbeitsorte_gr.html',
+    keyFacts: [],
+    analysis: [
+      'Die interaktive Visualisierung zeigt alle 101 Graubündner Gemeinden, geordnet nach ihrer Quote von Vollzeitäquivalenten pro Einwohner. Gemeinden mit hoher Quote (≥0.8) sind Arbeitsorte — mehr Jobs als Einwohner, Menschen pendeln zu. Gemeinden mit tieferer Quote (<0.3) sind Schlafadorfer — die Menschen arbeiten anderswo.'
+    ]
   }
 
 ].filter(function(s) { return s.active !== false; }); // end STORIES
@@ -2378,7 +2396,14 @@ function renderStory(index) {
   setEl('story-source', 'Quelle: ' + s.source);
 
   // 2. Build chart — static data or live fetch
-  if (s.staticData) {
+  // Special case: embedded visualizations
+  if (s.chartType === 'embedded' && s.embedUrl) {
+    const chartArea = document.querySelector('.chart-area');
+    if (chartArea) {
+      chartArea.innerHTML = '<iframe src="' + s.embedUrl + '" style="width:100%;height:600px;border:0;border-radius:8px;background:#fff;" title="' + s.chartTitle + '"></iframe>';
+    }
+    setDataBadge('live', 'Interaktive Visualisierung');
+  } else if (s.staticData) {
     buildChart(s, s.staticData);
     setDataBadge('live', 'Daten: Statistik Graubünden 2024');
   } else {
