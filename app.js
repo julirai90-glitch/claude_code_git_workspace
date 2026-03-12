@@ -2396,11 +2396,11 @@ function renderStory(index) {
   setEl('story-source', 'Quelle: ' + s.source);
 
   // 2. Build chart — static data or live fetch
-  // Special case: embedded visualizations
+  // Special case: embedded visualizations (links to external pages)
   if (s.chartType === 'embedded' && s.embedUrl) {
     const chartArea = document.querySelector('.chart-area');
     if (chartArea) {
-      chartArea.innerHTML = '<iframe src="' + s.embedUrl + '" style="width:100%;height:600px;border:0;border-radius:8px;background:#fff;" title="' + s.chartTitle + '"></iframe>';
+      chartArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:400px;background:#f5f5f0;border-radius:8px;flex-direction:column;gap:20px;"><p style="font-size:16px;color:#666;text-align:center;">Interaktive Visualisierung</p><a href="' + s.embedUrl + '" target="_blank" style="padding:12px 24px;background:#1E3A5F;color:#fff;text-decoration:none;border-radius:6px;font-weight:600;">Zur vollständigen Visualisierung →</a></div>';
     }
     setDataBadge('live', 'Interaktive Visualisierung');
   } else if (s.staticData) {
