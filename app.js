@@ -884,16 +884,16 @@ const STORIES = [
     ausgabe: 13,
     status: 'ready',
     category: 'Arbeit',
-    title: 'Schlafadorfer & Arbeitsorte — wer pendelt, wer bleibt?',
-    lead: 'In 101 Graubündner Gemeinden verteilen sich die Vollzeitäquivalente unterschiedlich über Wohnen und Arbeiten. Manche sind reine Arbeitsorte (höhere Quote), manche Schlafadorfer (tiefe Quote). Die interaktive Grafik zeigt die geografische und ökonomische Gliederung des Kantons 2023.',
-    chartTitle: 'Schlafadorfer & Arbeitsorte in Graubünden 2023',
+    title: 'Schlafadörfer & Arbeitsorte — wer pendelt, wer bleibt?',
+    lead: 'In 101 Graubündner Gemeinden verteilen sich die Vollzeitäquivalente unterschiedlich über Wohnen und Arbeiten. Manche sind reine Arbeitsorte (höhere Quote), manche Schlafadörfer (tiefe Quote). Die interaktive Grafik zeigt die geografische und ökonomische Gliederung des Kantons 2023.',
+    chartTitle: 'Schlafadörfer & Arbeitsorte in Graubünden 2023',
     chartSubtitle: 'Vollzeitäquivalente (VZÄ) pro Einwohner:in · Filterbar und sortierbar · Quelle: Somedia/Kanton GR',
     chartType: 'embedded',
     source: 'Somedia / Kanton Graubünden',
     embedUrl: 'schlafdoerfer_arbeitsorte_gr.html',
     keyFacts: [],
     analysis: [
-      'Die interaktive Visualisierung zeigt alle 101 Graubündner Gemeinden, geordnet nach ihrer Quote von Vollzeitäquivalenten pro Einwohner. Gemeinden mit hoher Quote (≥0.8) sind Arbeitsorte — mehr Jobs als Einwohner, Menschen pendeln zu. Gemeinden mit tieferer Quote (<0.3) sind Schlafadorfer — die Menschen arbeiten anderswo.'
+      'Die interaktive Visualisierung zeigt alle 101 Graubündner Gemeinden, geordnet nach ihrer Quote von Vollzeitäquivalenten pro Einwohner. Gemeinden mit hoher Quote (≥0.8) sind Arbeitsorte — mehr Jobs als Einwohner, Menschen pendeln zu. Gemeinden mit tieferer Quote (<0.3) sind Schlafadörfer — die Menschen arbeiten anderswo.'
     ]
   }
 
