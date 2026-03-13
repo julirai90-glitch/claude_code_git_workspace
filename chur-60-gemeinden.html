@@ -73,6 +73,7 @@ new Chart(document.getElementById('chart'), {
   data: { labels: ['Chur', '60 kleinste Gemeinden'], datasets: datasets },
   options: {
     responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'nearest', axis: 'y', intersect: false },
     plugins: {
       legend: { display: false },
       tooltip: {

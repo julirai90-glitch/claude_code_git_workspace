@@ -90,6 +90,7 @@ new Chart(document.getElementById('chart'), {
   data: { labels: ['13 grösste Gemeinden', '88 übrige Gemeinden'], datasets: datasets },
   options: {
     indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'nearest', axis: 'x', intersect: false },
     plugins: {
       legend: { display: false },
       tooltip: {
