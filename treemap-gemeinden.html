@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gemeindegrössen Graubünden 2024</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2.3.0/dist/chartjs-chart-treemap.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; padding: 24px; }
+  .wrap { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 28px 32px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .lead { font-size: 14px; color: #555; margin-bottom: 16px; line-height: 1.5; }
+  .search-wrap { margin-bottom: 16px; }
+  .search-wrap input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; outline: none; }
+  .search-wrap input:focus { border-color: #1E3A5F; }
+  .chart-wrap { height: 420px; }
+  .highlight-info { font-size: 12px; color: #1E3A5F; margin-top: 8px; min-height: 18px; font-weight: 600; }
+  .source { font-size: 11px; color: #aaa; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2>Alle 101 Bündner Gemeinden nach Bevölkerungsgrösse</h2>
+  <p class="lead">Jedes Rechteck entspricht einer Gemeinde — die Fläche zeigt die Bevölkerungsgrösse. Hover für Details, Suche zum Hervorheben.</p>
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Gemeinde suchen…" autocomplete="off">
+  </div>
+  <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  <div class="highlight-info" id="highlight-info"></div>
+  <p class="source">Bevölkerung 2024 · Statistik Graubünden (dvs_awt_soci_20250507)</p>
+</div>
+<script>
+const DATA = [
+  {n:"Chur",v:39177},{n:"Davos",v:10774},{n:"Landquart",v:9244},{n:"Domat/Ems",v:8392},
+  {n:"Ilanz/Glion",v:5067},{n:"St. Moritz",v:4997},{n:"Scuol",v:4546},{n:"Klosters",v:4478},
+  {n:"Zizers",v:3691},{n:"Bonaduz",v:3565},{n:"Poschiavo",v:3505},{n:"Thusis",v:3439},
+  {n:"Trimmis",v:3424},{n:"Maienfeld",v:3266},{n:"Arosa",v:3159},{n:"Schiers",v:2993},
+  {n:"Flims",v:2902},{n:"Samedan",v:2901},{n:"Felsberg",v:2886},{n:"Vaz/Obervaz",v:2732},
+  {n:"Untervaz",v:2674},{n:"Roveredo (GR)",v:2656},{n:"Malans",v:2529},{n:"Surses",v:2465},
+  {n:"Cazis",v:2439},{n:"Domleschg",v:2262},{n:"Grüsch",v:2176},{n:"Churwalden",v:2114},
+  {n:"Disentis/Mustér",v:2104},{n:"Laax",v:2102},{n:"Lumnezia",v:2075},{n:"Pontresina",v:2072},
+  {n:"Breil/Brigels",v:1706},{n:"Luzein",v:1689},{n:"Rhäzüns",v:1612},{n:"Zernez",v:1592},
+  {n:"Bregaglia",v:1591},{n:"Grono",v:1580},{n:"Trin",v:1557},{n:"Seewis im Prättigau",v:1450},
+  {n:"Val Müstair",v:1430},{n:"Celerina/Schlarigna",v:1415},{n:"Mesocco",v:1414},{n:"Albula/Alvra",v:1354},
+  {n:"Zuoz",v:1224},{n:"Tamins",v:1223},{n:"Tujetsch",v:1199},{n:"Jenaz",v:1164},
+  {n:"Obersaxen Mundaun",v:1160},{n:"Trun",v:1141},{n:"Silvaplana",v:1124},{n:"Brusio",v:1099},
+  {n:"Sumvitg",v:1063},{n:"Sils im Domleschg",v:976},{n:"Safiental",v:964},{n:"Vals",v:964},
+  {n:"Jenins",v:961},{n:"Andeer",v:958},{n:"Küblis",v:923},{n:"San Vittore",v:910},
+  {n:"Bergün Filisur",v:898},{n:"Fläsch",v:879},{n:"Lostallo",v:866},{n:"Scharans",v:836},
+  {n:"Valsot",v:801},{n:"Sagogn",v:769},{n:"La Punt Chamues-ch",v:750},{n:"Samnaun",v:750},
+  {n:"Cama",v:720},{n:"S-chanf",v:713},{n:"Sils im Engadin/Segl",v:708},{n:"Falera",v:635},
+  {n:"Fideris",v:626},{n:"Bever",v:618},{n:"Schluein",v:616},{n:"Rheinwald",v:570},
+  {n:"Masein",v:531},{n:"Lantsch/Lenz",v:518},{n:"Zillis-Reischen",v:426},{n:"Muntogna da Schons",v:368},
+  {n:"Fürstenau",v:353},{n:"Medel (Lucmagn)",v:328},{n:"Soazza",v:324},{n:"Tschiertschen-Praden",v:309},
+  {n:"Rothenbrunnen",v:304},{n:"Flerden",v:255},{n:"Castaneda",v:254},{n:"Conters im Prättigau",v:224},
+  {n:"Schmitten (GR)",v:205},{n:"Calanca",v:204},{n:"Furna",v:203},{n:"Madulain",v:196},
+  {n:"Avers",v:169},{n:"Rossa",v:168},{n:"Urmein",v:163},{n:"Sufers",v:147},
+  {n:"Tschappina",v:146},{n:"Santa Maria in Calanca",v:113},{n:"Buseno",v:91},{n:"Ferrera",v:76},
+  {n:"Rongellen",v:59}
+];
+
+let searchTerm = '';
+
+function getColor(item) {
+  if (!item || !item._data) return '#1E3A5F';
+  const name = item._data.n;
+  if (searchTerm && name.toLowerCase().includes(searchTerm)) return '#B5001E';
+  return '#1E3A5F';
+}
+
+function getBorder(item) {
+  if (!item || !item._data) return '#fff';
+  const name = item._data.n;
+  if (searchTerm && name.toLowerCase().includes(searchTerm)) return '#fff';
+  return '#fff';
+}
+
+const chart = new Chart(document.getElementById('chart'), {
+  type: 'treemap',
+  data: {
+    datasets: [{
+      label: 'Gemeinden',
+      tree: DATA,
+      key: 'v',
+      backgroundColor: function(ctx) { return getColor(ctx.raw); },
+      borderWidth: 1,
+      borderColor: function(ctx) { return getBorder(ctx.raw); },
+      captions: {
+        display: true,
+        color: '#fff',
+        font: { size: 11, family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
+        formatter: function(ctx) {
+          if (!ctx.raw || !ctx.raw._data) return '';
+          return ctx.raw.v > 1500 ? ctx.raw._data.n : '';
+        }
+      }
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#161616', padding: 12,
+        titleFont: { size: 13, weight: '600' },
+        bodyFont: { size: 12 },
+        callbacks: {
+          title: function(items) { return items[0]?.raw?._data?.n || ''; },
+          label: function(ctx) { return '  ' + (ctx.raw.v || 0).toLocaleString('de-CH') + ' Einwohner:innen'; }
+        }
+      }
+    }
+  }
+});
+
+document.getElementById('search').addEventListener('input', function() {
+  searchTerm = this.value.toLowerCase().trim();
+  const matches = DATA.filter(d => d.n.toLowerCase().includes(searchTerm) && searchTerm);
+  const info = document.getElementById('highlight-info');
+  if (matches.length === 1) {
+    info.textContent = matches[0].n + ': ' + matches[0].v.toLocaleString('de-CH') + ' Einwohner:innen';
+  } else if (matches.length > 1) {
+    info.textContent = matches.length + ' Gemeinden gefunden';
+  } else {
+    info.textContent = '';
+  }
+  chart.update();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chur vs. die 60 kleinsten Bündner Gemeinden</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; padding: 24px; }
+  .wrap { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 28px 32px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .lead { font-size: 14px; color: #555; margin-bottom: 24px; line-height: 1.5; }
+  .chart-wrap { height: 200px; }
+  .source { font-size: 11px; color: #aaa; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2>Chur vs. die 60 kleinsten Bündner Gemeinden</h2>
+  <p class="lead">Chur zählt 39'177 Einwohner:innen — fast genau so viele wie die 60 kleinsten Bündner Gemeinden zusammen (39'125).</p>
+  <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  <p class="source">Bevölkerung 2024 · Statistik Graubünden (dvs_awt_soci_20250507)</p>
+</div>
+<script>
+const segments = [
+  {name:'Rongellen',pop:59},{name:'Ferrera',pop:76},{name:'Buseno',pop:91},
+  {name:'Santa Maria in Calanca',pop:113},{name:'Tschappina',pop:146},{name:'Sufers',pop:147},
+  {name:'Urmein',pop:163},{name:'Rossa',pop:168},{name:'Avers',pop:169},
+  {name:'Madulain',pop:196},{name:'Furna',pop:203},{name:'Calanca',pop:204},
+  {name:'Schmitten (GR)',pop:205},{name:'Conters im Prättigau',pop:224},{name:'Castaneda',pop:254},
+  {name:'Flerden',pop:255},{name:'Rothenbrunnen',pop:304},{name:'Tschiertschen-Praden',pop:309},
+  {name:'Soazza',pop:324},{name:'Medel (Lucmagn)',pop:328},{name:'Fürstenau',pop:353},
+  {name:'Muntogna da Schons',pop:368},{name:'Zillis-Reischen',pop:426},{name:'Lantsch/Lenz',pop:518},
+  {name:'Masein',pop:531},{name:'Rheinwald',pop:570},{name:'Schluein',pop:616},
+  {name:'Bever',pop:618},{name:'Fideris',pop:626},{name:'Falera',pop:635},
+  {name:'Sils im Engadin/Segl',pop:708},{name:'S-chanf',pop:713},{name:'Cama',pop:720},
+  {name:'Samnaun',pop:750},{name:'La Punt Chamues-ch',pop:750},{name:'Sagogn',pop:769},
+  {name:'Valsot',pop:801},{name:'Scharans',pop:836},{name:'Lostallo',pop:866},
+  {name:'Fläsch',pop:879},{name:'Bergün Filisur',pop:898},{name:'Küblis',pop:923},
+  {name:'Andeer',pop:958},{name:'Vals',pop:964},{name:'San Vittore',pop:910},
+  {name:'Jenins',pop:961},{name:'Safiental',pop:964},{name:'Sils im Domleschg',pop:976},
+  {name:'Sumvitg',pop:1063},{name:'Brusio',pop:1099},{name:'Silvaplana',pop:1124},
+  {name:'Trun',pop:1141},{name:'Obersaxen Mundaun',pop:1160},{name:'Jenaz',pop:1164},
+  {name:'Tujetsch',pop:1199},{name:'Tamins',pop:1223},{name:'Zuoz',pop:1224},
+  {name:'Albula/Alvra',pop:1354},{name:'Mesocco',pop:1414},{name:'Celerina/Schlarigna',pop:1415}
+];
+
+function stackColor(i, n) {
+  const stops = [[37,99,235],[6,182,212],[16,185,129],[234,179,8],[249,115,22],[220,38,38]];
+  const t = i / Math.max(n - 1, 1);
+  const seg = t * (stops.length - 1);
+  const si = Math.floor(seg), f = seg - si;
+  const a = stops[Math.min(si, stops.length-1)];
+  const b = stops[Math.min(si+1, stops.length-1)];
+  return 'rgb('+Math.round(a[0]+(b[0]-a[0])*f)+','+Math.round(a[1]+(b[1]-a[1])*f)+','+Math.round(a[2]+(b[2]-a[2])*f)+')';
+}
+
+const datasets = [{
+  label: 'Chur', data: [39177, null],
+  backgroundColor: '#1E3A5F', borderRadius: 3, borderSkipped: false
+}];
+segments.forEach(function(seg, i) {
+  datasets.push({
+    label: seg.name, data: [null, seg.pop],
+    backgroundColor: stackColor(i, segments.length), borderWidth: 0, borderSkipped: false
+  });
+});
+
+new Chart(document.getElementById('chart'), {
+  type: 'bar',
+  data: { labels: ['Chur', '60 kleinste Gemeinden'], datasets: datasets },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#161616', padding: 12,
+        titleFont: { size: 13, weight: '600' },
+        bodyFont: { size: 12 },
+        callbacks: {
+          label: function(ctx) {
+            if (ctx.parsed.y == null) return null;
+            return '  ' + ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('de-CH') + ' Einw.';
+          }
+        }
+      }
+    },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { font: { size: 13, weight: '600' }, color: '#161616' } },
+      y: { stacked: true, grid: { color: '#E8E4E0' }, beginAtZero: true, max: 42000,
+        ticks: { color: '#999', callback: function(v) { return (v/1000).toFixed(0)+'k'; } } }
+    }
+  }
+});
+</script>
+</body>
+</html>

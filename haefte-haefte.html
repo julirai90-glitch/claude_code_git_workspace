@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13 Gemeinden = eine Hälfte, 88 Gemeinden = die andere</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; padding: 24px; }
+  .wrap { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 28px 32px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .lead { font-size: 14px; color: #555; margin-bottom: 24px; line-height: 1.5; }
+  .chart-wrap { height: 160px; }
+  .source { font-size: 11px; color: #aaa; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2>13 Gemeinden = eine Hälfte, 88 Gemeinden = die andere</h2>
+  <p class="lead">Die 13 grössten Bündner Gemeinden zählen zusammen gleich viele Einwohner:innen wie die restlichen 88 — je rund die Hälfte der kantonalen Bevölkerung.</p>
+  <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  <p class="source">Bevölkerung 2024 · Statistik Graubünden (dvs_awt_soci_20250507)</p>
+</div>
+<script>
+const top13 = [
+  {name:'Chur',pop:39177},{name:'Davos',pop:10774},{name:'Landquart',pop:9244},
+  {name:'Domat/Ems',pop:8392},{name:'Ilanz/Glion',pop:5067},{name:'St. Moritz',pop:4997},
+  {name:'Scuol',pop:4546},{name:'Klosters',pop:4478},{name:'Zizers',pop:3691},
+  {name:'Bonaduz',pop:3565},{name:'Poschiavo',pop:3505},{name:'Thusis',pop:3439},
+  {name:'Trimmis',pop:3424}
+];
+
+const rest88 = [
+  {name:'Maienfeld',pop:3266},{name:'Arosa',pop:3159},{name:'Schiers',pop:2993},
+  {name:'Flims',pop:2902},{name:'Samedan',pop:2901},{name:'Felsberg',pop:2886},
+  {name:'Vaz/Obervaz',pop:2732},{name:'Untervaz',pop:2674},{name:'Roveredo (GR)',pop:2656},
+  {name:'Malans',pop:2529},{name:'Surses',pop:2465},{name:'Cazis',pop:2439},
+  {name:'Domleschg',pop:2262},{name:'Grüsch',pop:2176},{name:'Churwalden',pop:2114},
+  {name:'Disentis/Mustér',pop:2104},{name:'Laax',pop:2102},{name:'Lumnezia',pop:2075},
+  {name:'Pontresina',pop:2072},{name:'Breil/Brigels',pop:1706},{name:'Luzein',pop:1689},
+  {name:'Rhäzüns',pop:1612},{name:'Zernez',pop:1592},{name:'Bregaglia',pop:1591},
+  {name:'Grono',pop:1580},{name:'Trin',pop:1557},{name:'Seewis im Prättigau',pop:1450},
+  {name:'Val Müstair',pop:1430},{name:'Celerina/Schlarigna',pop:1415},{name:'Mesocco',pop:1414},
+  {name:'Albula/Alvra',pop:1354},{name:'Zuoz',pop:1224},{name:'Tamins',pop:1223},
+  {name:'Tujetsch',pop:1199},{name:'Jenaz',pop:1164},{name:'Obersaxen Mundaun',pop:1160},
+  {name:'Trun',pop:1141},{name:'Silvaplana',pop:1124},{name:'Brusio',pop:1099},
+  {name:'Sumvitg',pop:1063},{name:'Sils im Domleschg',pop:976},{name:'Safiental',pop:964},
+  {name:'Vals',pop:964},{name:'Jenins',pop:961},{name:'Andeer',pop:958},
+  {name:'Küblis',pop:923},{name:'San Vittore',pop:910},{name:'Bergün Filisur',pop:898},
+  {name:'Fläsch',pop:879},{name:'Lostallo',pop:866},{name:'Scharans',pop:836},
+  {name:'Valsot',pop:801},{name:'Sagogn',pop:769},{name:'La Punt Chamues-ch',pop:750},
+  {name:'Samnaun',pop:750},{name:'Cama',pop:720},{name:'S-chanf',pop:713},
+  {name:'Sils im Engadin/Segl',pop:708},{name:'Falera',pop:635},{name:'Fideris',pop:626},
+  {name:'Bever',pop:618},{name:'Schluein',pop:616},{name:'Rheinwald',pop:570},
+  {name:'Masein',pop:531},{name:'Lantsch/Lenz',pop:518},{name:'Zillis-Reischen',pop:426},
+  {name:'Muntogna da Schons',pop:368},{name:'Fürstenau',pop:353},{name:'Medel (Lucmagn)',pop:328},
+  {name:'Soazza',pop:324},{name:'Tschiertschen-Praden',pop:309},{name:'Rothenbrunnen',pop:304},
+  {name:'Flerden',pop:255},{name:'Castaneda',pop:254},{name:'Conters im Prättigau',pop:224},
+  {name:'Schmitten (GR)',pop:205},{name:'Calanca',pop:204},{name:'Furna',pop:203},
+  {name:'Madulain',pop:196},{name:'Avers',pop:169},{name:'Rossa',pop:168},
+  {name:'Urmein',pop:163},{name:'Sufers',pop:147},{name:'Tschappina',pop:146},
+  {name:'Santa Maria in Calanca',pop:113},{name:'Buseno',pop:91},{name:'Ferrera',pop:76},
+  {name:'Rongellen',pop:59}
+];
+
+const total = top13.reduce((s,m) => s+m.pop, 0) + rest88.reduce((s,m) => s+m.pop, 0);
+
+function gradColor(i, n) {
+  const stops = [[37,99,235],[6,182,212],[16,185,129],[234,179,8],[249,115,22],[220,38,38]];
+  const t = i / Math.max(n-1, 1);
+  const seg = t * (stops.length-1);
+  const si = Math.floor(seg), f = seg-si;
+  const a = stops[Math.min(si, stops.length-1)];
+  const b = stops[Math.min(si+1, stops.length-1)];
+  return 'rgb('+Math.round(a[0]+(b[0]-a[0])*f)+','+Math.round(a[1]+(b[1]-a[1])*f)+','+Math.round(a[2]+(b[2]-a[2])*f)+')';
+}
+
+const datasets = [];
+top13.forEach(function(m, i) {
+  datasets.push({ label: m.name, data: [m.pop, null], backgroundColor: gradColor(i, top13.length), borderWidth: 0, borderSkipped: false });
+});
+rest88.forEach(function(m, i) {
+  datasets.push({ label: m.name, data: [null, m.pop], backgroundColor: gradColor(i, rest88.length), borderWidth: 0, borderSkipped: false });
+});
+
+new Chart(document.getElementById('chart'), {
+  type: 'bar',
+  data: { labels: ['13 grösste Gemeinden', '88 übrige Gemeinden'], datasets: datasets },
+  options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#161616', padding: 12,
+        titleFont: { size: 13, weight: '600' },
+        bodyFont: { size: 12 },
+        callbacks: {
+          title: function() { return ''; },
+          label: function(ctx) {
+            if (ctx.raw == null) return null;
+            return '  ' + ctx.dataset.label + ': ' + ctx.raw.toLocaleString('de-CH') + ' (' + (ctx.raw/total*100).toFixed(1) + ' %)';
+          }
+        }
+      }
+    },
+    scales: {
+      x: { stacked: true, grid: { color: '#E8E4E0' }, ticks: { color: '#999', callback: function(v) { return (v/1000).toFixed(0)+'k'; } } },
+      y: { stacked: true, grid: { display: false }, ticks: { font: { size: 13, weight: '600' }, color: '#161616' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
