@@ -64,11 +64,16 @@ const DATA = [
 
 let searchTerm = '';
 
+function isMatch(name) {
+  if (!searchTerm) return false;
+  const nameL = name.toLowerCase();
+  const hasExact = DATA.some(d => d.n.toLowerCase() === searchTerm);
+  return hasExact ? nameL === searchTerm : nameL.includes(searchTerm);
+}
+
 function getColor(item) {
   if (!item || !item._data) return '#1E3A5F';
-  const name = item._data.n;
-  if (searchTerm && name.toLowerCase().includes(searchTerm)) return '#B5001E';
-  return '#1E3A5F';
+  return isMatch(item._data.n) ? '#B5001E' : '#1E3A5F';
 }
 
 function getBorder(item) {
@@ -118,7 +123,8 @@ const chart = new Chart(document.getElementById('chart'), {
 
 document.getElementById('search').addEventListener('input', function() {
   searchTerm = this.value.toLowerCase().trim();
-  const matches = DATA.filter(d => d.n.toLowerCase().includes(searchTerm) && searchTerm);
+  const hasExact = DATA.some(d => d.n.toLowerCase() === searchTerm);
+  const matches = searchTerm ? (hasExact ? DATA.filter(d => d.n.toLowerCase() === searchTerm) : DATA.filter(d => d.n.toLowerCase().includes(searchTerm))) : [];
   const info = document.getElementById('highlight-info');
   if (matches.length === 1) {
     info.textContent = matches[0].n + ': ' + matches[0].v.toLocaleString('de-CH') + ' Einwohner:innen';
