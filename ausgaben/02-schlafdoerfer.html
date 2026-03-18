@@ -164,7 +164,7 @@ function render() {
 }
 
 function renderStats() {
-  const counts = { Arbeitsort:0, Gemischt:0, Wohnort:0, Schlafdorf:0 };
+  const counts = { Arbeitsort:0, Ausgeglichen:0, Wohnort:0, Schlafdorf:0 };
   filtered.forEach(d => counts[d.Kategorie]++);
   const n = filtered.length;
   const avgQ = n ? (filtered.reduce((s,d) => s + d.Quote_VZAe_pro_EW, 0) / n).toFixed(2) : '–';
