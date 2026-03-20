@@ -31,6 +31,7 @@
   .bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
   .bar-value { position: absolute; right: -36px; top: 0; font-size: 10px; color: #666; line-height: 14px; width: 34px; text-align: right; }
   .ref-line { position: absolute; top: 0; height: 100%; border-left: 2px dashed rgba(0,0,0,0.2); pointer-events: none; }
+  .ref-mid { position: absolute; top: 0; height: 100%; border-left: 2px dashed rgba(0,0,0,0.45); pointer-events: none; }
   .sidebar { background: #f9f9f7; border-left: 1px solid #e5e5e5; padding: 16px; }
   .sidebar h2 { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
   .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
@@ -62,7 +63,7 @@
 <div class="wrap">
   <div class="title-bar">
     <h2>Schlafdörfer & Arbeitsorte – Graubünden 2023</h2>
-    <p>Vollzeitäquivalente (VZÄ) pro Einwohner:in nach Gemeinde</p>
+    <p>Vollzeitäquivalente (VZÄ) pro Einwohner/Einwohnerin nach Gemeinde</p>
   </div>
   <div class="controls">
     <div><label>Suche:</label><input class="search" type="text" id="search" placeholder="Gemeinde..."></div>
@@ -106,7 +107,7 @@
       <p class="hint">Quote ≥0.66 = Arbeitsort (mehr Jobs als Erwerbstätige), 0.33–0.66 = Wohnort, &lt;0.33 = Schlafdorf (wenige lokale Jobs). Quote = VZÄ / Wohnbevölkerung.</p>
     </div>
   </div>
-  <p class="source">Daten 2023: Statistik Graubünden (STATATLAS) · Grafik: Julian Reich</p>
+  <p class="source">Quelle: Statistik Graubünden 2023; Grafik: Julian Reich</p>
 </div>
 
 <script>
@@ -137,6 +138,14 @@ function applyFilters() {
   else if (sort === 'name') filtered.sort((a,b) => a.Gemeinde.localeCompare(b.Gemeinde, 'de'));
   else if (sort === 'ew-desc') filtered.sort((a,b) => b.Wohnbevoelkerung - a.Wohnbevoelkerung);
 
+  if (search) {
+    filtered.sort((a,b) => {
+      const aExact = a.Gemeinde.toLowerCase() === search ? -1 : 0;
+      const bExact = b.Gemeinde.toLowerCase() === search ? -1 : 0;
+      return aExact - bExact;
+    });
+  }
+
   render();
 }
 
@@ -148,12 +157,14 @@ function render() {
   chart.innerHTML = filtered.map(d => {
     const pct = (d.Quote_VZAe_pro_EW / maxQ * 100).toFixed(1);
     const refPcts = THRESHOLDS.map(t => (t / maxQ * 100).toFixed(1));
+    const midPct = (0.5 / maxQ * 100).toFixed(1);
     const isHL = highlighted === d.Gemeinde;
     return `<div class="bar-row${isHL ? ' highlighted' : ''}" onclick="selectGemeinde('${d.Gemeinde.replace(/'/g, "\\'")}')">
       <div class="bar-label" title="${d.Gemeinde}">${d.Gemeinde}</div>
       <div class="bar-wrap">
         <div class="bar-fill" style="width:${pct}%;background:${getColor(getKategorie(d.Quote_VZAe_pro_EW))}"></div>
         ${refPcts.map(p => `<div class="ref-line" style="left:${p}%"></div>`).join('')}
+        <div class="ref-mid" style="left:${midPct}%"></div>
         <div class="bar-value">${d.Quote_VZAe_pro_EW.toFixed(2)}</div>
       </div>
     </div>`;
