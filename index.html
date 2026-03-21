@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#e63946" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LG 2026" />
+  <title>Landsgemeinde 2026</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== AUFNAHME SCREEN ===== -->
+    <section id="screen-record" class="screen active">
+      <header>
+        <h1>Landsgemeinde 2026</h1>
+        <span id="record-status" class="status-badge">Bereit</span>
+      </header>
+
+      <main class="record-main">
+        <button id="btn-record" class="btn-record" aria-label="Aufnahme starten">
+          <span class="rec-icon"></span>
+        </button>
+        <p id="record-label">Tippen zum Aufnehmen</p>
+        <p id="record-timer" class="timer" hidden>0:00</p>
+
+        <div id="upload-feedback" class="upload-feedback" hidden>
+          <div class="spinner"></div>
+          <span>Wird gesendet…</span>
+        </div>
+
+        <div id="upload-success" class="upload-success" hidden>
+          ✓ Gesendet
+        </div>
+      </main>
+    </section>
+
+    <!-- ===== TICKER SCREEN ===== -->
+    <section id="screen-ticker" class="screen">
+      <header>
+        <h1>Live-Ticker</h1>
+        <span id="ticker-status" class="status-badge">Lädt…</span>
+      </header>
+
+      <main class="ticker-main">
+        <ul id="ticker-list" class="ticker-list">
+          <li class="ticker-placeholder">Noch keine Einträge</li>
+        </ul>
+      </main>
+    </section>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-screen="record">
+        <span class="nav-icon">🎙️</span>
+        <span>Aufnahme</span>
+      </button>
+      <button class="nav-btn" data-screen="ticker">
+        <span class="nav-icon">📋</span>
+        <span>Ticker</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
