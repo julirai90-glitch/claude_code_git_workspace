@@ -1,7 +1,7 @@
 {
-  "name": "Landsgemeinde 2026",
-  "short_name": "LG 2026",
-  "description": "Aufnahme & Live-Ticker für die Landsgemeinde Glarus 2026",
+  "name": "Ticker-Transkriptor",
+  "short_name": "Ticker",
+  "description": "Aufnahme & Live-Ticker für Transkriptionen",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
