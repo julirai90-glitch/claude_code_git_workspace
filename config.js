@@ -1,13 +1,12 @@
 // =============================================================
 //  Landsgemeinde 2026 – Konfiguration
-//  Diesen Block vor dem Einsatz anpassen:
 // =============================================================
 const config = {
   // n8n Webhook-URL für Audio-Upload (POST, multipart/form-data)
-  WEBHOOK_URL: 'https://your-n8n-host/webhook/landsgemeinde-audio',
+  WEBHOOK_URL: 'https://n8n.julianreich.ch/webhook/45725b38-c799-4334-991a-4e9081f9042c',
 
   // n8n Webhook-URL für Ticker (GET, liefert JSON)
-  TICKER_URL: 'https://your-n8n-host/webhook/ticker',
+  TICKER_URL: 'https://n8n.julianreich.ch/webhook/ticker-landsgemeinde',
 
   // Polling-Intervall für Live-Ticker (ms)
   POLL_INTERVAL_MS: 5000,
