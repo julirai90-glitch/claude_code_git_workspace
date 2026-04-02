@@ -21,8 +21,8 @@
   .scrolly__sticky { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 1; overflow: hidden; }
   .scrolly__steps { position: relative; z-index: 2; pointer-events: none; }
   .scrolly__step { min-height: 55vh; display: flex; align-items: center; padding: 20px 5vw; }
-  .scrolly__step:nth-child(odd) { justify-content: flex-start; }
-  .scrolly__step:nth-child(even) { justify-content: flex-end; }
+  .scrolly__step:nth-child(odd) { justify-content: flex-end; }
+  .scrolly__step:nth-child(even) { justify-content: flex-start; }
   .scrolly__step:first-child { min-height: 40vh; }
   .scrolly__step:last-child { min-height: 50vh; }
   .text-box { background: none; color: #e8e8e8; padding: 24px 28px; max-width: 340px; font-size: 15px; line-height: 1.6; text-shadow: 0 1px 6px rgba(0,0,0,0.8); opacity: 0; transform: translateY(12px); transition: all 0.4s ease; pointer-events: auto; }
