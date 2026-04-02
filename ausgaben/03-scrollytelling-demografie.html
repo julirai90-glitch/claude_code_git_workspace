@@ -374,7 +374,6 @@ function showPyramid(gemeindeName) {
 }
 
 function showDualPyramid(name1, name2) {
-  // Show two pyramids side by side via separate title
   const container = document.getElementById('pyramid-container');
   container.classList.add('visible');
   const el = document.getElementById('pyramid');
@@ -386,28 +385,26 @@ function showDualPyramid(name1, name2) {
 
   const pyr1 = g1.pyramid;
   const pyr2 = g2.pyramid;
-  const maxVal = Math.max(
-    ...pyr1.map(p => Math.max(p.m, p.f)),
-    ...pyr2.map(p => Math.max(p.m, p.f))
-  );
+  // Each pyramid gets its OWN scale so shapes are comparable
+  const max1 = Math.max(...pyr1.map(p => Math.max(p.m, p.f)));
+  const max2 = Math.max(...pyr2.map(p => Math.max(p.m, p.f)));
+
+  function renderPyr(pyr, maxV, name, total) {
+    let h = `<div><div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:6px">${name} (${total.toLocaleString('de-CH')} EW)</div>`;
+    pyr.forEach(p => {
+      const wm = (p.m / maxV * 100).toFixed(1);
+      const wf = (p.f / maxV * 100).toFixed(1);
+      h += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label" style="font-size:8px">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div></div></div>`;
+    });
+    h += `</div>`;
+    return h;
+  }
 
   let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">`;
-  // Left: name1
-  html += `<div><div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:6px">${name1} (${g1.total.toLocaleString('de-CH')} EW)</div>`;
-  pyr1.forEach(p => {
-    const wm = (p.m / maxVal * 100).toFixed(1);
-    const wf = (p.f / maxVal * 100).toFixed(1);
-    html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label" style="font-size:8px">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div></div></div>`;
-  });
+  html += renderPyr(pyr1, max1, name1, g1.total);
+  html += renderPyr(pyr2, max2, name2, g2.total);
   html += `</div>`;
-  // Right: name2
-  html += `<div><div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:6px">${name2} (${g2.total.toLocaleString('de-CH')} EW)</div>`;
-  pyr2.forEach(p => {
-    const wm = (p.m / maxVal * 100).toFixed(1);
-    const wf = (p.f / maxVal * 100).toFixed(1);
-    html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label" style="font-size:8px">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div></div></div>`;
-  });
-  html += `</div></div>`;
+  html += `<div style="text-align:center;font-size:10px;color:#555;margin-top:8px">Balken relativ zum jeweiligen Maximum — Form vergleichen, nicht Grösse</div>`;
   el.innerHTML = html;
 }
 
