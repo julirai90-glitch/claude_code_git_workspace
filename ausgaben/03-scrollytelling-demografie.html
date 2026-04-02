@@ -29,8 +29,8 @@
   .text-box.active { opacity: 1; transform: translateY(0); }
   .text-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #ccc; }
   .text-box .highlight { font-size: 28px; font-weight: 800; color: #5cd68f; display: block; margin: 4px 0 8px; }
-  .text-box .highlight.red { color: #e06060; }
-  .text-box .highlight.blue { color: #6aafe0; }
+  .text-box .highlight.red { color: #EE7733; }
+  .text-box .highlight.blue { color: #0068A4; }
 
   /* ── Viz Canvas ── */
   #viz { width: 90vw; max-width: 900px; padding: 10px; position: relative; }
@@ -59,8 +59,8 @@
   .pyr-side-m { justify-content: flex-end; }
   .pyr-side-f { justify-content: flex-start; }
   .pyr-bar { height: 14px; transition: width 0.5s ease; }
-  .pyr-bar-m { background: #5b8db8; border-radius: 3px 0 0 3px; }
-  .pyr-bar-f { background: #c46b6b; border-radius: 0 3px 3px 0; }
+  .pyr-bar-m { background: #0068A4; border-radius: 3px 0 0 3px; }
+  .pyr-bar-f { background: #EE7733; border-radius: 0 3px 3px 0; }
   .pyr-val { font-size: 9px; color: #777; width: 28px; flex-shrink: 0; }
   .pyr-val-m { text-align: right; padding-right: 4px; }
   .pyr-val-f { text-align: left; padding-left: 4px; }
@@ -142,8 +142,8 @@
       <button id="pyr-back" style="display:none; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#ccc; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; margin-bottom:8px;" onclick="document.getElementById('pyramid-container').classList.remove('visible'); document.getElementById('viz').style.display='block'; this.style.display='none'; updateViz(activeStep);">← Zurück zur Karte</button>
       <div class="pyr-title" id="pyr-title">Kanton Graubünden</div>
       <div class="pyr-legend">
-        <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#5b8db8"></div> Männer</div>
-        <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#c46b6b"></div> Frauen</div>
+        <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#0068A4"></div> Männer</div>
+        <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#EE7733"></div> Frauen</div>
       </div>
       <div id="pyramid"></div>
     </div>
@@ -187,7 +187,7 @@
       <div class="text-box">
         <h3>Geschlechterverhältnis</h3>
         <span class="highlight">50,4% Männer</span>
-        Graubünden hat einen leichten Männerüberschuss. Aber die Verteilung variiert stark: Kleine Gemeinden schwanken zwischen 42% und 60%.
+        Graubünden hat einen leichten Männerüberschuss. <span style="color:#0068A4">Blau</span> = Männerüberschuss, <span style="color:#EE7733">Orange</span> = Frauenüberschuss. Die Bandbreite reicht von 44% bis 57%.
       </div>
     </div>
     <div class="scrolly__step" data-step="5">
@@ -320,7 +320,7 @@ function drawBubbles(highlights = [], dim = false, colorFn = null) {
     const r = scaleR(g.total);
     const isHighlight = highlights.includes(g.gemeinde);
     let opacity = dim ? (isHighlight ? 0.95 : 0.12) : 0.55;
-    let fill = '#5a82b4';
+    let fill = '#0068A4';
     if (colorFn) fill = colorFn(g);
     if (isHighlight) fill = colorFn ? colorFn(g) : '#ff9e2c';
     svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#fff' : 'none'}" stroke-width="${isHighlight ? 1.5 : 0}" data-gemeinde="${g.gemeinde}" data-age="${g.avg_age}" data-male="${g.male_pct}" data-pop="${g.total}"/>`;
@@ -472,13 +472,13 @@ function showDualRanking(field, n) {
   const youngest = sorted.slice(-n).reverse();
 
   let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
-  html += `<div><div class="rank-title" style="color:#e06060">Die ${n} ältesten</div>${renderRankList(field, oldest, '#e04040')}</div>`;
-  html += `<div><div class="rank-title" style="color:#6aafe0">Die ${n} jüngsten</div>${renderRankList(field, youngest, '#5b8db8')}</div>`;
+  html += `<div><div class="rank-title" style="color:#EE7733">Die ${n} ältesten</div>${renderRankList(field, oldest, '#EE7733')}</div>`;
+  html += `<div><div class="rank-title" style="color:#0068A4">Die ${n} jüngsten</div>${renderRankList(field, youngest, '#0068A4')}</div>`;
   html += `</div>`;
   barsEl.innerHTML = html;
 }
 
-function showRanking(field, label, top = 10, color = '#5b8db8', reverse = false) {
+function showRanking(field, label, top = 10, color = '#0068A4', reverse = false) {
   const container = document.getElementById('ranking-container');
   const barsEl = document.getElementById('ranking-bars');
   const titleEl = document.getElementById('rank-title');
@@ -523,14 +523,14 @@ function updateViz(step) {
     case 3: // Oldest: Calancatal
       showViz();
       drawBubbles(['Buseno', 'Santa Maria in Calanca', 'Rossa', 'Calanca'], true, g => {
-        return g.avg_age > 53 ? '#e04040' : '#5a82b4';
+        return g.avg_age > 53 ? '#EE7733' : '#0068A4';
       });
       break;
 
     case 4: // Gender ratio
       showViz();
       drawBubbles([], false, g => {
-        return g.male_pct > 52 ? '#5b8db8' : g.male_pct < 48 ? '#c46b6b' : '#888';
+        return g.male_pct > 50 ? '#0068A4' : '#EE7733';
       });
       break;
 
@@ -627,8 +627,8 @@ function setupSearch() {
     const popRank = byPop.findIndex(x => x.gemeinde === name) + 1;
     const total = DATA.gemeinden.length;
 
-    let ageColor = g.avg_age < 44 ? '#6aafe0' : g.avg_age > 50 ? '#e06060' : '#ccc';
-    let maleColor = g.male_pct > 52 ? '#5b8db8' : g.male_pct < 48 ? '#c46b6b' : '#ccc';
+    let ageColor = g.avg_age < 44 ? '#0068A4' : g.avg_age > 50 ? '#EE7733' : '#ccc';
+    let maleColor = g.male_pct > 50 ? '#0068A4' : '#EE7733';
 
     let html = `<div class="gc-name">${g.gemeinde}</div>`;
     html += `<div class="gc-stats">`;
@@ -642,7 +642,7 @@ function setupSearch() {
       const maxVal = Math.max(...g.pyramid.map(p => Math.max(p.m, p.f)));
       html += `<div class="gc-pyr">`;
       html += `<div style="font-size:13px;color:#aaa;margin-bottom:8px;font-weight:600">Alterspyramide</div>`;
-      html += `<div class="pyr-legend"><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#5b8db8"></div> Männer</div><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#c46b6b"></div> Frauen</div></div>`;
+            html += `<div class="pyr-legend"><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#0068A4"></div> Männer</div><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#EE7733"></div> Frauen</div></div>`;
       g.pyramid.forEach(p => {
         const wm = (p.m / maxVal * 100).toFixed(1);
         const wf = (p.f / maxVal * 100).toFixed(1);
