@@ -83,6 +83,26 @@
   .rank-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
   .rank-val { width: 50px; text-align: right; color: #aaa; font-weight: 600; }
 
+  /* ── Search Section ── */
+  .search-section { max-width: 720px; margin: 0 auto; padding: 80px 24px 40px; }
+  .search-section h2 { font-size: 24px; margin-bottom: 8px; }
+  .search-wrap { position: relative; max-width: 400px; }
+  #search-input { width: 100%; padding: 12px 16px; font-size: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; outline: none; }
+  #search-input:focus { border-color: rgba(255,255,255,0.4); }
+  .search-results { position: absolute; top: 100%; left: 0; right: 0; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15); border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; display: none; z-index: 10; }
+  .search-results.open { display: block; }
+  .search-item { padding: 10px 16px; cursor: pointer; font-size: 14px; color: #ccc; }
+  .search-item:hover, .search-item.selected { background: rgba(255,255,255,0.1); color: #fff; }
+  .gemeinde-card { display: none; margin-top: 24px; padding: 28px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+  .gemeinde-card.visible { display: block; }
+  .gc-name { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .gc-stats { display: flex; gap: 24px; margin: 16px 0; flex-wrap: wrap; }
+  .gc-stat { text-align: center; }
+  .gc-stat .val { font-size: 28px; font-weight: 800; }
+  .gc-stat .lbl { font-size: 11px; color: #888; margin-top: 2px; }
+  .gc-rank { font-size: 12px; color: #666; margin-top: 12px; }
+  .gc-pyr { margin-top: 20px; max-width: 500px; }
+
   /* ── Outro ── */
   .outro { max-width: 720px; margin: 0 auto; padding: 80px 24px 120px; }
   .outro h2 { font-size: 24px; margin-bottom: 16px; }
@@ -188,11 +208,21 @@
   </div>
 </div>
 
+<!-- Gemeinde-Suche -->
+<div class="search-section" id="search-section">
+  <h2>Finde deine Gemeinde</h2>
+  <p style="color:#888;margin-bottom:16px;">Wie sieht es in deiner Gemeinde aus? Tippe den Namen ein.</p>
+  <div class="search-wrap">
+    <input type="text" id="search-input" placeholder="Gemeinde eingeben…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+  <div class="gemeinde-card" id="gemeinde-card"></div>
+</div>
+
 <!-- Outro -->
 <div class="outro">
   <h2>Was die Zahlen erzählen</h2>
   <p>Graubünden altert — aber nicht überall gleich. Während die Zentren jung bleiben, verlieren die peripheren Täler ihre junge Bevölkerung. Das Calancatal ist das Extrem: Durchschnittsalter über 55, Männerüberschuss, schrumpfende Gemeinden.</p>
-  <p>Die interaktive Version dieser Grafik mit allen 101 Gemeinden finden Sie in der Datenbank der Südostschweiz.</p>
   <p class="source">Quelle: Kanton Graubünden, Amt für Wirtschaft und Tourismus, Ständige Wohnbevölkerung 2024. Analyse: Julian Reich.</p>
 </div>
 
@@ -216,6 +246,7 @@ let activeStep = -1;
 function init() {
   setupViz();
   setupObserver();
+  setupSearch();
   updateViz(0);
   window.addEventListener('resize', () => { setupViz(); updateViz(activeStep); });
 }
@@ -538,6 +569,86 @@ function setupObserver() {
   });
 
   steps.forEach(s => observer.observe(s));
+}
+
+// ── Gemeinde Search ──
+function setupSearch() {
+  const input = document.getElementById('search-input');
+  const results = document.getElementById('search-results');
+  const card = document.getElementById('gemeinde-card');
+  const names = DATA.gemeinden.map(g => g.gemeinde).sort();
+
+  // Sorted by age for rank calculation
+  const byAge = [...DATA.gemeinden].sort((a, b) => a.avg_age - b.avg_age);
+  const byPop = [...DATA.gemeinden].sort((a, b) => b.total - a.total);
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 1) { results.classList.remove('open'); return; }
+    const matches = names.filter(n => n.toLowerCase().includes(q)).slice(0, 8);
+    if (!matches.length) { results.classList.remove('open'); return; }
+    results.innerHTML = matches.map(n => `<div class="search-item" data-name="${n}">${n}</div>`).join('');
+    results.classList.add('open');
+  });
+
+  results.addEventListener('click', e => {
+    const item = e.target.closest('.search-item');
+    if (!item) return;
+    const name = item.dataset.name;
+    input.value = name;
+    results.classList.remove('open');
+    showGemeindeCard(name);
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const first = results.querySelector('.search-item');
+      if (first) { input.value = first.dataset.name; results.classList.remove('open'); showGemeindeCard(first.dataset.name); }
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrap')) results.classList.remove('open');
+  });
+
+  function showGemeindeCard(name) {
+    const g = DATA.gemeinden.find(x => x.gemeinde === name);
+    if (!g) return;
+
+    const ageRank = byAge.findIndex(x => x.gemeinde === name) + 1;
+    const popRank = byPop.findIndex(x => x.gemeinde === name) + 1;
+    const total = DATA.gemeinden.length;
+
+    let ageColor = g.avg_age < 44 ? '#6aafe0' : g.avg_age > 50 ? '#e06060' : '#ccc';
+    let maleColor = g.male_pct > 52 ? '#5b8db8' : g.male_pct < 48 ? '#c46b6b' : '#ccc';
+
+    let html = `<div class="gc-name">${g.gemeinde}</div>`;
+    html += `<div class="gc-stats">`;
+    html += `<div class="gc-stat"><div class="val">${g.total.toLocaleString('de-CH')}</div><div class="lbl">Einwohner</div></div>`;
+    html += `<div class="gc-stat"><div class="val" style="color:${ageColor}">${g.avg_age.toFixed(1)}</div><div class="lbl">Ø Alter</div></div>`;
+    html += `<div class="gc-stat"><div class="val" style="color:${maleColor}">${g.male_pct.toFixed(1)}%</div><div class="lbl">Männeranteil</div></div>`;
+    html += `</div>`;
+    html += `<div class="gc-rank">Rang ${ageRank} von ${total} (jüngste zuerst) · ${popRank}. grösste Gemeinde</div>`;
+
+    if (g.pyramid) {
+      const maxVal = Math.max(...g.pyramid.map(p => Math.max(p.m, p.f)));
+      html += `<div class="gc-pyr">`;
+      html += `<div style="font-size:13px;color:#aaa;margin-bottom:8px;font-weight:600">Alterspyramide</div>`;
+      html += `<div class="pyr-legend"><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#5b8db8"></div> Männer</div><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#c46b6b"></div> Frauen</div></div>`;
+      g.pyramid.forEach(p => {
+        const wm = (p.m / maxVal * 100).toFixed(1);
+        const wf = (p.f / maxVal * 100).toFixed(1);
+        html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div></div></div>`;
+      });
+      html += `</div>`;
+    } else {
+      html += `<div style="font-size:12px;color:#555;margin-top:16px">Detaillierte Alterspyramide für diese Gemeinde nicht verfügbar.</div>`;
+    }
+
+    card.innerHTML = html;
+    card.classList.add('visible');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 init();
