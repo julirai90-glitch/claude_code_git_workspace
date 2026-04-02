@@ -500,7 +500,8 @@ function setupObserver() {
       const step = parseInt(entry.target.dataset.step);
       const box = entry.target.querySelector('.text-box');
 
-      if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
+      if (entry.isIntersecting) {
+        // Switch viz as soon as the step enters the trigger zone
         if (step !== activeStep) {
           activeStep = step;
           updateViz(step);
@@ -512,7 +513,9 @@ function setupObserver() {
     });
   }, {
     root: null,
-    threshold: [0, 0.4, 0.6, 1]
+    // Trigger when step crosses a line 40% down from the top of the viewport
+    rootMargin: '-40% 0px -55% 0px',
+    threshold: 0
   });
 
   steps.forEach(s => observer.observe(s));
