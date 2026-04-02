@@ -20,10 +20,12 @@
   .scrolly { position: relative; }
   .scrolly__sticky { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 1; overflow: hidden; }
   .scrolly__steps { position: relative; z-index: 2; pointer-events: none; }
-  .scrolly__step { min-height: 55vh; display: flex; align-items: center; justify-content: flex-start; padding: 20px 20px 20px 5vw; }
+  .scrolly__step { min-height: 55vh; display: flex; align-items: center; padding: 20px 5vw; }
+  .scrolly__step:nth-child(odd) { justify-content: flex-start; }
+  .scrolly__step:nth-child(even) { justify-content: flex-end; }
   .scrolly__step:first-child { min-height: 40vh; }
   .scrolly__step:last-child { min-height: 50vh; }
-  .text-box { background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); color: #1a1a1a; border-radius: 10px; padding: 24px 28px; max-width: 380px; font-size: 15px; line-height: 1.6; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transform: translateY(12px); transition: all 0.4s ease; pointer-events: auto; }
+  .text-box { background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); color: #1a1a1a; border-radius: 10px; padding: 24px 28px; max-width: 340px; font-size: 15px; line-height: 1.6; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transform: translateY(12px); transition: all 0.4s ease; pointer-events: auto; }
   .text-box.active { opacity: 1; transform: translateY(0); }
   .text-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #333; }
   .text-box .highlight { font-size: 28px; font-weight: 800; color: #1a6b3c; display: block; margin: 4px 0 8px; }
@@ -31,17 +33,25 @@
   .text-box .highlight.blue { color: #2d6da3; }
 
   /* ── Viz Canvas ── */
-  #viz { width: 100%; max-width: 700px; padding: 20px; }
+  #viz { width: 90vw; max-width: 900px; padding: 10px; position: relative; }
   #bubble-svg { width: 100%; height: auto; }
-  .bubble { transition: all 0.6s ease; }
-  .axis text { fill: #666; font-size: 10px; }
+  .bubble { transition: all 0.6s ease; cursor: pointer; }
+  .bubble:hover { filter: brightness(1.3); }
+  .axis text { fill: #666; font-size: 11px; }
   .axis line, .axis path { stroke: #333; }
   .ref-line { stroke: #444; stroke-width: 1; stroke-dasharray: 4 3; }
-  .ref-label { fill: #555; font-size: 9px; }
-  .bubble-label { fill: #fff; font-size: 8px; font-weight: 600; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
+  .ref-label { fill: #555; font-size: 10px; }
+  .bubble-label { fill: #fff; font-size: 9px; font-weight: 600; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
+
+  /* ── Tooltip ── */
+  .tooltip { position: absolute; background: rgba(255,255,255,0.95); backdrop-filter: blur(6px); color: #1a1a1a; border-radius: 8px; padding: 12px 14px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.4); pointer-events: none; z-index: 20; display: none; max-width: 220px; }
+  .tooltip .tt-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .tooltip .tt-row { display: flex; justify-content: space-between; gap: 10px; }
+  .tooltip .tt-k { color: #888; }
+  .tooltip .tt-v { font-weight: 600; }
 
   /* ── Pyramid (shown in step) ── */
-  #pyramid-container { display: none; width: 100%; max-width: 500px; }
+  #pyramid-container { display: none; width: 90vw; max-width: 700px; }
   #pyramid-container.visible { display: block; }
   .pyr-row { display: flex; align-items: center; margin-bottom: 2px; height: 18px; }
   .pyr-label { width: 80px; font-size: 10px; text-align: center; color: #999; flex-shrink: 0; }
@@ -64,7 +74,7 @@
   .stat-card .lbl { font-size: 11px; color: #888; margin-top: 4px; }
 
   /* ── Ranking bars ── */
-  #ranking-container { display: none; width: 100%; max-width: 500px; }
+  #ranking-container { display: none; width: 90vw; max-width: 700px; }
   #ranking-container.visible { display: block; }
   .rank-title { font-size: 13px; color: #aaa; margin-bottom: 8px; font-weight: 600; }
   .rank-item { display: flex; align-items: center; margin-bottom: 4px; font-size: 12px; }
@@ -103,8 +113,10 @@
   <div class="scrolly__sticky">
     <div id="viz">
       <svg id="bubble-svg"></svg>
+      <div class="tooltip" id="tooltip"></div>
     </div>
     <div id="pyramid-container">
+      <button id="pyr-back" style="display:none; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#ccc; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; margin-bottom:8px;" onclick="document.getElementById('pyramid-container').classList.remove('visible'); document.getElementById('viz').style.display='block'; this.style.display='none'; updateViz(activeStep);">← Zurück zur Karte</button>
       <div class="pyr-title" id="pyr-title">Kanton Graubünden</div>
       <div class="pyr-legend">
         <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#5b8db8"></div> Männer</div>
@@ -212,7 +224,7 @@ function setupViz() {
   svgEl = document.getElementById('bubble-svg');
   const container = document.getElementById('viz');
   width = container.clientWidth;
-  height = Math.min(width * 0.75, window.innerHeight * 0.7);
+  height = Math.min(width * 0.85, window.innerHeight * 0.8);
   svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
   svgEl.setAttribute('width', width);
   svgEl.setAttribute('height', height);
@@ -272,12 +284,62 @@ function drawBubbles(highlights = [], dim = false, colorFn = null) {
     let fill = '#5a82b4';
     if (colorFn) fill = colorFn(g);
     if (isHighlight) fill = colorFn ? colorFn(g) : '#ff9e2c';
-    svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#fff' : 'none'}" stroke-width="${isHighlight ? 1.5 : 0}"/>`;
-    if (isHighlight || (!dim && g.total > 4000)) {
+    svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#fff' : 'none'}" stroke-width="${isHighlight ? 1.5 : 0}" data-gemeinde="${g.gemeinde}" data-age="${g.avg_age}" data-male="${g.male_pct}" data-pop="${g.total}"/>`;
+    if (isHighlight || (!dim && g.total > 3000)) {
       svg += `<text x="${x}" y="${y + 3}" text-anchor="middle" class="bubble-label">${g.gemeinde}</text>`;
     }
   });
   svgEl.innerHTML = svg;
+  setupBubbleInteraction();
+}
+
+// ── Bubble interactivity: tooltip + click ──
+function setupBubbleInteraction() {
+  const svgEl = document.getElementById('bubble-svg');
+  const tooltip = document.getElementById('tooltip');
+  if (!svgEl || !tooltip) return;
+
+  svgEl.addEventListener('mousemove', e => {
+    const bubble = e.target.closest('.bubble');
+    if (!bubble) { tooltip.style.display = 'none'; return; }
+
+    const name = bubble.getAttribute('data-gemeinde');
+    const age = parseFloat(bubble.getAttribute('data-age')).toFixed(1);
+    const male = parseFloat(bubble.getAttribute('data-male')).toFixed(1);
+    const pop = parseInt(bubble.getAttribute('data-pop')).toLocaleString('de-CH');
+
+    tooltip.innerHTML = `
+      <div class="tt-name">${name}</div>
+      <div class="tt-row"><span class="tt-k">Einwohner</span><span class="tt-v">${pop}</span></div>
+      <div class="tt-row"><span class="tt-k">Ø Alter</span><span class="tt-v">${age}</span></div>
+      <div class="tt-row"><span class="tt-k">Männeranteil</span><span class="tt-v">${male}%</span></div>`;
+    tooltip.style.display = 'block';
+
+    const vizRect = document.getElementById('viz').getBoundingClientRect();
+    let left = e.clientX - vizRect.left + 12;
+    let top = e.clientY - vizRect.top - 10;
+    if (left + 220 > vizRect.width) left = left - 240;
+    if (top < 0) top = 10;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  });
+
+  svgEl.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+  });
+
+  svgEl.addEventListener('click', e => {
+    const bubble = e.target.closest('.bubble');
+    if (!bubble) return;
+    const name = bubble.getAttribute('data-gemeinde');
+    const g = DATA.gemeinden.find(x => x.gemeinde === name);
+    if (g && g.pyramid) {
+      hideAll();
+      showPyramid(name);
+      document.getElementById('viz').style.display = 'none';
+      document.getElementById('pyr-back').style.display = 'block';
+    }
+  });
 }
 
 function showPyramid(gemeindeName) {
