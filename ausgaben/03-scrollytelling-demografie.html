@@ -408,6 +408,37 @@ function showDualPyramid(name1, name2) {
   el.innerHTML = html;
 }
 
+function renderRankList(field, data, color) {
+  const maxVal = Math.max(...data.map(g => g[field]));
+  return data.map(g => {
+    const w = (g[field] / maxVal * 100).toFixed(1);
+    const fmt = field.includes('pct') ? g[field].toFixed(1) + '%' : g[field].toFixed(1);
+    return `<div class="rank-item">
+      <div class="rank-name">${g.gemeinde}</div>
+      <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${w}%;background:${color}"></div></div>
+      <div class="rank-val">${fmt}</div>
+    </div>`;
+  }).join('');
+}
+
+function showDualRanking(field, n) {
+  const container = document.getElementById('ranking-container');
+  const barsEl = document.getElementById('ranking-bars');
+  const titleEl = document.getElementById('rank-title');
+  container.classList.add('visible');
+  titleEl.textContent = '';
+
+  const sorted = [...DATA.gemeinden].sort((a, b) => b[field] - a[field]);
+  const oldest = sorted.slice(0, n);
+  const youngest = sorted.slice(-n).reverse();
+
+  let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
+  html += `<div><div class="rank-title" style="color:#e06060">Die ${n} ältesten</div>${renderRankList(field, oldest, '#e04040')}</div>`;
+  html += `<div><div class="rank-title" style="color:#6aafe0">Die ${n} jüngsten</div>${renderRankList(field, youngest, '#5b8db8')}</div>`;
+  html += `</div>`;
+  barsEl.innerHTML = html;
+}
+
 function showRanking(field, label, top = 10, color = '#5b8db8', reverse = false) {
   const container = document.getElementById('ranking-container');
   const barsEl = document.getElementById('ranking-bars');
@@ -417,19 +448,7 @@ function showRanking(field, label, top = 10, color = '#5b8db8', reverse = false)
 
   const sorted = [...DATA.gemeinden].sort((a, b) => reverse ? a[field] - b[field] : b[field] - a[field]);
   const top10 = sorted.slice(0, top);
-  const maxVal = Math.max(...top10.map(g => g[field]));
-
-  let html = '';
-  top10.forEach(g => {
-    const w = (g[field] / maxVal * 100).toFixed(1);
-    const fmt = field.includes('pct') ? g[field].toFixed(1) + '%' : g[field].toFixed(1);
-    html += `<div class="rank-item">
-      <div class="rank-name">${g.gemeinde}</div>
-      <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${w}%;background:${color}"></div></div>
-      <div class="rank-val">${fmt}</div>
-    </div>`;
-  });
-  barsEl.innerHTML = html;
+  barsEl.innerHTML = renderRankList(field, top10, color);
 }
 
 function hideAll() {
@@ -485,7 +504,7 @@ function updateViz(step) {
       break;
 
     case 7: // Ranking
-      showRanking('avg_age', 'Die 10 ältesten Gemeinden', 10, '#e04040');
+      showDualRanking('avg_age', 10);
       break;
   }
 }
