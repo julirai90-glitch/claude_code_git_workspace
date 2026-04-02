@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jung oder alt, Mann oder Frau? — Graubünden 2024</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e8e8e8; }
+
+  /* ── Hero ── */
+  .hero { height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; padding: 0 24px 15vh; max-width: 720px; margin: 0 auto; }
+  .hero h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 800; line-height: 1.15; margin-bottom: 12px; }
+  .hero .lead { font-size: 17px; color: #aaa; line-height: 1.5; max-width: 540px; }
+  .hero .scroll-hint { margin-top: 24px; font-size: 13px; color: #555; }
+  .hero .scroll-hint span { display: inline-block; animation: bounce 2s infinite; }
+  @keyframes bounce { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(6px) } }
+
+  /* ── Scrolly Section ── */
+  .scrolly { position: relative; }
+  .scrolly__sticky { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 1; overflow: hidden; }
+  .scrolly__steps { position: relative; z-index: 2; pointer-events: none; }
+  .scrolly__step { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .scrolly__step:first-child { min-height: 50vh; }
+  .scrolly__step:last-child { min-height: 60vh; }
+  .text-box { background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); color: #1a1a1a; border-radius: 10px; padding: 24px 28px; max-width: 380px; font-size: 15px; line-height: 1.6; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transform: translateY(12px); transition: all 0.4s ease; pointer-events: auto; }
+  .text-box.active { opacity: 1; transform: translateY(0); }
+  .text-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #333; }
+  .text-box .highlight { font-size: 28px; font-weight: 800; color: #1a6b3c; display: block; margin: 4px 0 8px; }
+  .text-box .highlight.red { color: #b53535; }
+  .text-box .highlight.blue { color: #2d6da3; }
+
+  /* ── Viz Canvas ── */
+  #viz { width: 100%; max-width: 700px; padding: 20px; }
+  #bubble-svg { width: 100%; height: auto; }
+  .bubble { transition: all 0.6s ease; }
+  .axis text { fill: #666; font-size: 10px; }
+  .axis line, .axis path { stroke: #333; }
+  .ref-line { stroke: #444; stroke-width: 1; stroke-dasharray: 4 3; }
+  .ref-label { fill: #555; font-size: 9px; }
+  .bubble-label { fill: #fff; font-size: 8px; font-weight: 600; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
+
+  /* ── Pyramid (shown in step) ── */
+  #pyramid-container { display: none; width: 100%; max-width: 500px; }
+  #pyramid-container.visible { display: block; }
+  .pyr-row { display: flex; align-items: center; margin-bottom: 2px; height: 18px; }
+  .pyr-label { width: 80px; font-size: 10px; text-align: center; color: #999; flex-shrink: 0; }
+  .pyr-side { flex: 1; display: flex; }
+  .pyr-side-m { justify-content: flex-end; }
+  .pyr-side-f { justify-content: flex-start; }
+  .pyr-bar { height: 14px; transition: width 0.5s ease; }
+  .pyr-bar-m { background: #5b8db8; border-radius: 3px 0 0 3px; }
+  .pyr-bar-f { background: #c46b6b; border-radius: 0 3px 3px 0; }
+  .pyr-legend { display: flex; gap: 16px; margin-bottom: 10px; justify-content: center; }
+  .pyr-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #aaa; }
+  .pyr-legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .pyr-title { font-size: 14px; color: #ccc; text-align: center; margin-bottom: 8px; font-weight: 600; }
+
+  /* ── Stat cards ── */
+  .stat-cards { display: none; gap: 12px; justify-content: center; flex-wrap: wrap; max-width: 500px; }
+  .stat-cards.visible { display: flex; }
+  .stat-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; min-width: 120px; text-align: center; }
+  .stat-card .val { font-size: 26px; font-weight: 800; }
+  .stat-card .lbl { font-size: 11px; color: #888; margin-top: 4px; }
+
+  /* ── Ranking bars ── */
+  #ranking-container { display: none; width: 100%; max-width: 500px; }
+  #ranking-container.visible { display: block; }
+  .rank-title { font-size: 13px; color: #aaa; margin-bottom: 8px; font-weight: 600; }
+  .rank-item { display: flex; align-items: center; margin-bottom: 4px; font-size: 12px; }
+  .rank-name { width: 140px; color: #ccc; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-bar-wrap { flex: 1; height: 16px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin: 0 8px; }
+  .rank-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .rank-val { width: 50px; text-align: right; color: #aaa; font-weight: 600; }
+
+  /* ── Outro ── */
+  .outro { max-width: 720px; margin: 0 auto; padding: 80px 24px 120px; }
+  .outro h2 { font-size: 24px; margin-bottom: 16px; }
+  .outro p { font-size: 15px; color: #aaa; line-height: 1.6; margin-bottom: 12px; }
+  .outro .source { font-size: 12px; color: #555; margin-top: 24px; }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .text-box { max-width: 300px; padding: 18px 20px; font-size: 14px; }
+    .text-box .highlight { font-size: 24px; }
+    .stat-card { min-width: 90px; padding: 12px; }
+    .stat-card .val { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>Jung oder alt, Mann oder Frau?</h1>
+  <p class="lead">101 Gemeinden, 206'138 Menschen. Eine Scroll-Reise durch die demografische Landschaft Graubündens.</p>
+  <p class="scroll-hint"><span>&#x2193;</span> Scrollen zum Starten</p>
+</div>
+
+<!-- Scrolly Section -->
+<div class="scrolly" id="scrolly">
+  <!-- Sticky Visualization -->
+  <div class="scrolly__sticky">
+    <div id="viz">
+      <svg id="bubble-svg"></svg>
+    </div>
+    <div id="pyramid-container">
+      <div class="pyr-title" id="pyr-title">Kanton Graubünden</div>
+      <div class="pyr-legend">
+        <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#5b8db8"></div> Männer</div>
+        <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#c46b6b"></div> Frauen</div>
+      </div>
+      <div id="pyramid"></div>
+    </div>
+    <div class="stat-cards" id="stat-cards"></div>
+    <div id="ranking-container">
+      <div class="rank-title" id="rank-title"></div>
+      <div id="ranking-bars"></div>
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div class="scrolly__steps" id="steps">
+    <div class="scrolly__step" data-step="0">
+      <div class="text-box">
+        <h3>Der Überblick</h3>
+        Jede Blase ist eine Gemeinde. Je weiter rechts, desto älter die Bevölkerung. Je höher, desto mehr Männer. Die Grösse zeigt die Einwohnerzahl.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="1">
+      <div class="text-box">
+        <h3>Das Durchschnittsalter</h3>
+        <span class="highlight">45,2 Jahre</span>
+        So alt ist Graubünden im Schnitt. Die gestrichelte Linie markiert diesen Wert. Links davon: die jungen Gemeinden. Rechts: die alten.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="2">
+      <div class="text-box">
+        <h3>Die jüngste Gemeinde</h3>
+        <span class="highlight blue">Felsberg: 40,1 Jahre</span>
+        Nahe an Chur, jung und wachsend. Familien mit Kindern prägen das Bild.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="3">
+      <div class="text-box">
+        <h3>Die ältesten Gemeinden</h3>
+        <span class="highlight red">Buseno: 57,4 Jahre</span>
+        Das Calancatal dominiert: Buseno, Santa Maria i.C., Rossa — alle über 55 Jahre. Kleine Berggemeinden, in denen die Jungen fehlen.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="4">
+      <div class="text-box">
+        <h3>Geschlechterverhältnis</h3>
+        <span class="highlight">50,4% Männer</span>
+        Graubünden hat einen leichten Männerüberschuss. Aber die Verteilung variiert stark: Kleine Gemeinden schwanken zwischen 42% und 60%.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="5">
+      <div class="text-box">
+        <h3>Bevölkerungspyramide</h3>
+        Die Altersstruktur des Kantons zeigt den typischen «Tannenbaum»: Geburtenstarke Jahrgänge um die 55–65, schmaler Nachwuchs. In den Bergen ist der Effekt noch stärker.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="6">
+      <div class="text-box">
+        <h3>Chur vs. Buseno</h3>
+        Die Kantonshauptstadt mit 39'177 Einwohnern neben Buseno mit 73. Zwei Pyramiden, zwei Welten — die eine breit und ausgeglichen, die andere schmal und kopflastig.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="7">
+      <div class="text-box">
+        <h3>Die 10 ältesten & jüngsten</h3>
+        Ein Muster: Die ältesten Gemeinden liegen fast alle in alpinen Seitentälern. Die jüngsten in der Agglomeration Chur oder in touristischen Hotspots.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Outro -->
+<div class="outro">
+  <h2>Was die Zahlen erzählen</h2>
+  <p>Graubünden altert — aber nicht überall gleich. Während die Zentren jung bleiben, verlieren die peripheren Täler ihre junge Bevölkerung. Das Calancatal ist das Extrem: Durchschnittsalter über 55, Männerüberschuss, schrumpfende Gemeinden.</p>
+  <p>Die interaktive Version dieser Grafik mit allen 101 Gemeinden finden Sie in der Datenbank der Südostschweiz.</p>
+  <p class="source">Quelle: Kanton Graubünden, Amt für Wirtschaft und Tourismus, Ständige Wohnbevölkerung 2024. Analyse: Julian Reich.</p>
+</div>
+
+<script>
+// ── Data (inline) ──
+const DATA_RAW = {"meta":{"gr_total":206138,"gr_avg_age":45.19,"gr_male_pct":50.36,"n_gemeinden":101},"gr_pyramid":[{"klasse":"0-4 Jahre","m":4313,"f":3881},{"klasse":"5-9 Jahre","m":4718,"f":4434},{"klasse":"10-14 Jahre","m":4731,"f":4517},{"klasse":"15-19 Jahre","m":4856,"f":4298},{"klasse":"20-24 Jahre","m":5376,"f":4694},{"klasse":"25-29 Jahre","m":6155,"f":5608},{"klasse":"30-34 Jahre","m":6577,"f":6225},{"klasse":"35-39 Jahre","m":7138,"f":6713},{"klasse":"40-44 Jahre","m":7117,"f":6750},{"klasse":"45-49 Jahre","m":6665,"f":6474},{"klasse":"50-54 Jahre","m":7373,"f":7160},{"klasse":"55-59 Jahre","m":8265,"f":7947},{"klasse":"60-64 Jahre","m":7794,"f":7819},{"klasse":"65-69 Jahre","m":6639,"f":6795},{"klasse":"70-74 Jahre","m":5666,"f":5805},{"klasse":"75-79 Jahre","m":4722,"f":5240},{"klasse":"80-84 Jahre","m":3280,"f":3920},{"klasse":"85-89 Jahre","m":1706,"f":2520},{"klasse":"90-94 Jahre","m":588,"f":1210},{"klasse":"95-99 Jahre","m":114,"f":299},{"klasse":"100 Jahre und mehr","m":8,"f":28}],"gemeinden":[{"g":"Chur","t":39177,"a":44.43,"m":49.03,"p":[{"klasse":"0-4 Jahre","m":809,"f":754},{"klasse":"5-9 Jahre","m":853,"f":832},{"klasse":"10-14 Jahre","m":836,"f":800},{"klasse":"15-19 Jahre","m":864,"f":789},{"klasse":"20-24 Jahre","m":1056,"f":962},{"klasse":"25-29 Jahre","m":1423,"f":1355},{"klasse":"30-34 Jahre","m":1510,"f":1437},{"klasse":"35-39 Jahre","m":1496,"f":1398},{"klasse":"40-44 Jahre","m":1340,"f":1309},{"klasse":"45-49 Jahre","m":1210,"f":1225},{"klasse":"50-54 Jahre","m":1321,"f":1335},{"klasse":"55-59 Jahre","m":1395,"f":1461},{"klasse":"60-64 Jahre","m":1279,"f":1343},{"klasse":"65-69 Jahre","m":1074,"f":1165},{"klasse":"70-74 Jahre","m":923,"f":1058},{"klasse":"75-79 Jahre","m":752,"f":1026},{"klasse":"80-84 Jahre","m":578,"f":822},{"klasse":"85-89 Jahre","m":333,"f":565},{"klasse":"90-94 Jahre","m":127,"f":260},{"klasse":"95-99 Jahre","m":28,"f":66},{"klasse":"100 Jahre und mehr","m":2,"f":6}]},{"g":"Davos","t":10774,"a":44.9,"m":50.21},{"g":"Landquart","t":9244,"a":43.01,"m":50.41},{"g":"Domat/Ems","t":8392,"a":42.5,"m":50.46},{"g":"Ilanz/Glion","t":5067,"a":45.93,"m":49.06},{"g":"St. Moritz","t":4997,"a":46.74,"m":50.41},{"g":"Scuol","t":4546,"a":47.32,"m":49.54},{"g":"Klosters","t":4478,"a":48.29,"m":50.45},{"g":"Zizers","t":3691,"a":43.71,"m":49.88},{"g":"Bonaduz","t":3565,"a":41.64,"m":49.85},{"g":"Poschiavo","t":3505,"a":46.84,"m":49.61},{"g":"Thusis","t":3439,"a":44.47,"m":51.18},{"g":"Trimmis","t":3424,"a":43.05,"m":50.88},{"g":"Maienfeld","t":3266,"a":44.18,"m":50.15},{"g":"Arosa","t":3159,"a":47.44,"m":53.24},{"g":"Schiers","t":2993,"a":41.65,"m":50.38},{"g":"Flims","t":2902,"a":46.38,"m":50.34},{"g":"Samedan","t":2901,"a":44.96,"m":49.81},{"g":"Felsberg","t":2886,"a":40.15,"m":49.76,"p":[{"klasse":"0-4 Jahre","m":78,"f":78},{"klasse":"5-9 Jahre","m":87,"f":92},{"klasse":"10-14 Jahre","m":89,"f":98},{"klasse":"15-19 Jahre","m":83,"f":66},{"klasse":"20-24 Jahre","m":83,"f":63},{"klasse":"25-29 Jahre","m":74,"f":83},{"klasse":"30-34 Jahre","m":87,"f":91},{"klasse":"35-39 Jahre","m":119,"f":118},{"klasse":"40-44 Jahre","m":126,"f":120},{"klasse":"45-49 Jahre","m":94,"f":112},{"klasse":"50-54 Jahre","m":99,"f":100},{"klasse":"55-59 Jahre","m":95,"f":93},{"klasse":"60-64 Jahre","m":87,"f":102},{"klasse":"65-69 Jahre","m":71,"f":79},{"klasse":"70-74 Jahre","m":57,"f":54},{"klasse":"75-79 Jahre","m":55,"f":49},{"klasse":"80-84 Jahre","m":37,"f":31},{"klasse":"85-89 Jahre","m":9,"f":16},{"klasse":"90-94 Jahre","m":5,"f":5},{"klasse":"95-99 Jahre","m":1,"f":0},{"klasse":"100 Jahre und mehr","m":0,"f":0}]},{"g":"Vaz/Obervaz","t":2732,"a":46.08,"m":51.35},{"g":"Untervaz","t":2674,"a":41.99,"m":50.49},{"g":"Roveredo (GR)","t":2656,"a":44.99,"m":49.36},{"g":"Malans","t":2529,"a":43.92,"m":49.27},{"g":"Surses","t":2465,"a":49.17,"m":51.28},{"g":"Cazis","t":2439,"a":43.73,"m":51.82},{"g":"Domleschg","t":2262,"a":43.86,"m":48.54},{"g":"Grüsch","t":2176,"a":45.48,"m":51.01},{"g":"Churwalden","t":2114,"a":43.97,"m":52.65},{"g":"Disentis/Mustér","t":2104,"a":47.38,"m":51.95},{"g":"Laax","t":2102,"a":46.1,"m":54.47},{"g":"Lumnezia","t":2075,"a":49.8,"m":52.72},{"g":"Pontresina","t":2072,"a":46.4,"m":48.79},{"g":"Breil/Brigels","t":1706,"a":46.48,"m":51.11},{"g":"Luzein","t":1689,"a":44.94,"m":52.4},{"g":"Rhäzüns","t":1612,"a":41.83,"m":52.3},{"g":"Zernez","t":1592,"a":46.46,"m":50.38},{"g":"Bregaglia","t":1591,"a":48.39,"m":49.03},{"g":"Grono","t":1580,"a":44.71,"m":53.1},{"g":"Trin","t":1557,"a":43.91,"m":49.84},{"g":"Seewis im Prättigau","t":1450,"a":43.06,"m":51.1},{"g":"Val Müstair","t":1430,"a":51.8,"m":48.67},{"g":"Celerina/Schlarigna","t":1415,"a":48.18,"m":50.74},{"g":"Mesocco","t":1414,"a":48.68,"m":52.48},{"g":"Albula/Alvra","t":1354,"a":47.13,"m":51.33},{"g":"Zuoz","t":1224,"a":44.12,"m":50.82},{"g":"Tamins","t":1223,"a":45.03,"m":50.61},{"g":"Tujetsch","t":1199,"a":49.9,"m":51.96},{"g":"Jenaz","t":1164,"a":46.49,"m":51.12},{"g":"Obersaxen Mundaun","t":1160,"a":48.53,"m":51.29},{"g":"Trun","t":1141,"a":47.88,"m":49.78},{"g":"Silvaplana","t":1124,"a":48.87,"m":52.31},{"g":"Brusio","t":1099,"a":49.83,"m":52.68},{"g":"Sumvitg","t":1063,"a":50.17,"m":49.48},{"g":"Sils im Domleschg","t":976,"a":44.11,"m":49.9},{"g":"Jenins","t":964,"a":43.36,"m":51.04},{"g":"Safiental","t":964,"a":45.8,"m":52.07},{"g":"San Vittore","t":961,"a":44.94,"m":51.61},{"g":"Vals","t":958,"a":45.83,"m":52.92},{"g":"Andeer","t":923,"a":46.96,"m":47.13},{"g":"Küblis","t":910,"a":45.64,"m":49.89},{"g":"Bergün Filisur","t":898,"a":47.63,"m":49.44},{"g":"Fläsch","t":879,"a":43.33,"m":49.94},{"g":"Lostallo","t":866,"a":45.37,"m":52.54},{"g":"Scharans","t":836,"a":44.25,"m":48.21},{"g":"Valsot","t":801,"a":48.04,"m":50.81},{"g":"Sagogn","t":769,"a":45.99,"m":52.15},{"g":"Samnaun","t":750,"a":46.73,"m":54.53},{"g":"La Punt Chamues-ch","t":750,"a":47.89,"m":50.0},{"g":"Cama","t":720,"a":44.0,"m":52.92},{"g":"S-chanf","t":713,"a":44.89,"m":52.59},{"g":"Sils im Engadin/Segl","t":708,"a":44.87,"m":51.55},{"g":"Falera","t":635,"a":48.1,"m":53.39},{"g":"Fideris","t":626,"a":44.92,"m":49.2},{"g":"Bever","t":618,"a":47.42,"m":47.57},{"g":"Schluein","t":616,"a":44.57,"m":54.87},{"g":"Rheinwald","t":570,"a":48.63,"m":52.11},{"g":"Masein","t":531,"a":41.37,"m":48.4},{"g":"Lantsch/Lenz","t":518,"a":47.89,"m":50.19},{"g":"Zillis-Reischen","t":426,"a":45.99,"m":54.93},{"g":"Muntogna da Schons","t":368,"a":45.49,"m":51.09},{"g":"Fürstenau","t":353,"a":46.53,"m":45.89},{"g":"Medel (Lucmagn)","t":328,"a":51.7,"m":50.3},{"g":"Soazza","t":324,"a":53.28,"m":52.78},{"g":"Tschiertschen-Praden","t":309,"a":47.13,"m":51.46},{"g":"Rothenbrunnen","t":304,"a":43.92,"m":53.95},{"g":"Flerden","t":255,"a":42.96,"m":49.41},{"g":"Castaneda","t":254,"a":53.4,"m":46.85},{"g":"Conters im Prättigau","t":224,"a":46.89,"m":50.89},{"g":"Schmitten (GR)","t":205,"a":52.71,"m":55.61},{"g":"Calanca","t":204,"a":54.06,"m":51.96,"p":[{"klasse":"0-4 Jahre","m":7,"f":4},{"klasse":"5-9 Jahre","m":3,"f":2},{"klasse":"10-14 Jahre","m":2,"f":0},{"klasse":"15-19 Jahre","m":2,"f":1},{"klasse":"20-24 Jahre","m":2,"f":2},{"klasse":"25-29 Jahre","m":3,"f":2},{"klasse":"30-34 Jahre","m":4,"f":7},{"klasse":"35-39 Jahre","m":5,"f":4},{"klasse":"40-44 Jahre","m":4,"f":3},{"klasse":"45-49 Jahre","m":6,"f":6},{"klasse":"50-54 Jahre","m":12,"f":6},{"klasse":"55-59 Jahre","m":11,"f":11},{"klasse":"60-64 Jahre","m":10,"f":7},{"klasse":"65-69 Jahre","m":9,"f":11},{"klasse":"70-74 Jahre","m":12,"f":11},{"klasse":"75-79 Jahre","m":6,"f":8},{"klasse":"80-84 Jahre","m":4,"f":7},{"klasse":"85-89 Jahre","m":2,"f":3},{"klasse":"90-94 Jahre","m":1,"f":1},{"klasse":"95-99 Jahre","m":1,"f":2},{"klasse":"100 Jahre und mehr","m":0,"f":0}]},{"g":"Furna","t":203,"a":43.55,"m":50.25},{"g":"Madulain","t":196,"a":50.34,"m":51.53},{"g":"Avers","t":169,"a":44.75,"m":46.75},{"g":"Rossa","t":168,"a":55.6,"m":55.95,"p":[{"klasse":"0-4 Jahre","m":3,"f":0},{"klasse":"5-9 Jahre","m":1,"f":2},{"klasse":"10-14 Jahre","m":0,"f":2},{"klasse":"15-19 Jahre","m":3,"f":0},{"klasse":"20-24 Jahre","m":3,"f":2},{"klasse":"25-29 Jahre","m":4,"f":0},{"klasse":"30-34 Jahre","m":6,"f":3},{"klasse":"35-39 Jahre","m":4,"f":2},{"klasse":"40-44 Jahre","m":6,"f":3},{"klasse":"45-49 Jahre","m":5,"f":1},{"klasse":"50-54 Jahre","m":8,"f":7},{"klasse":"55-59 Jahre","m":9,"f":8},{"klasse":"60-64 Jahre","m":8,"f":11},{"klasse":"65-69 Jahre","m":12,"f":9},{"klasse":"70-74 Jahre","m":13,"f":10},{"klasse":"75-79 Jahre","m":6,"f":6},{"klasse":"80-84 Jahre","m":1,"f":4},{"klasse":"85-89 Jahre","m":2,"f":3},{"klasse":"90-94 Jahre","m":0,"f":1},{"klasse":"95-99 Jahre","m":0,"f":0},{"klasse":"100 Jahre und mehr","m":0,"f":0}]},{"g":"Urmein","t":163,"a":52.06,"m":50.31},{"g":"Sufers","t":147,"a":44.62,"m":53.06},{"g":"Tschappina","t":146,"a":49.43,"m":53.42},{"g":"Santa Maria in Calanca","t":113,"a":57.18,"m":53.98},{"g":"Buseno","t":91,"a":57.44,"m":47.25,"p":[{"klasse":"0-4 Jahre","m":0,"f":1},{"klasse":"5-9 Jahre","m":0,"f":0},{"klasse":"10-14 Jahre","m":0,"f":0},{"klasse":"15-19 Jahre","m":3,"f":1},{"klasse":"20-24 Jahre","m":2,"f":2},{"klasse":"25-29 Jahre","m":1,"f":3},{"klasse":"30-34 Jahre","m":2,"f":3},{"klasse":"35-39 Jahre","m":1,"f":1},{"klasse":"40-44 Jahre","m":1,"f":0},{"klasse":"45-49 Jahre","m":2,"f":3},{"klasse":"50-54 Jahre","m":1,"f":2},{"klasse":"55-59 Jahre","m":5,"f":6},{"klasse":"60-64 Jahre","m":9,"f":7},{"klasse":"65-69 Jahre","m":6,"f":4},{"klasse":"70-74 Jahre","m":5,"f":3},{"klasse":"75-79 Jahre","m":1,"f":3},{"klasse":"80-84 Jahre","m":3,"f":3},{"klasse":"85-89 Jahre","m":1,"f":2},{"klasse":"90-94 Jahre","m":0,"f":4},{"klasse":"95-99 Jahre","m":0,"f":0},{"klasse":"100 Jahre und mehr","m":0,"f":0}]},{"g":"Ferrera","t":76,"a":41.01,"m":56.58},{"g":"Rongellen","t":59,"a":45.64,"m":55.93}]};
+
+// Expand compact field names
+const DATA = {
+  meta: DATA_RAW.meta,
+  gr_pyramid: DATA_RAW.gr_pyramid,
+  gemeinden: DATA_RAW.gemeinden.map(g => ({
+    gemeinde: g.g, total: g.t, avg_age: g.a, male_pct: g.m, pyramid: g.p || null
+  }))
+};
+
+let svgEl, width, height;
+const margin = { top: 20, right: 20, bottom: 40, left: 50 };
+let activeStep = -1;
+
+function init() {
+  setupViz();
+  setupObserver();
+  updateViz(0);
+  window.addEventListener('resize', () => { setupViz(); updateViz(activeStep); });
+}
+
+function setupViz() {
+  svgEl = document.getElementById('bubble-svg');
+  const container = document.getElementById('viz');
+  width = container.clientWidth;
+  height = Math.min(width * 0.75, window.innerHeight * 0.7);
+  svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svgEl.setAttribute('width', width);
+  svgEl.setAttribute('height', height);
+}
+
+function scaleX(val) {
+  const ages = DATA.gemeinden.map(g => g.avg_age);
+  const min = Math.floor(Math.min(...ages)) - 1;
+  const max = Math.ceil(Math.max(...ages)) + 1;
+  return margin.left + ((val - min) / (max - min)) * (width - margin.left - margin.right);
+}
+function scaleY(val) {
+  return margin.top + ((60 - val) / (60 - 40)) * (height - margin.top - margin.bottom);
+}
+function scaleR(pop) {
+  const maxPop = Math.max(...DATA.gemeinden.map(g => g.total));
+  return 3 + Math.sqrt(pop / maxPop) * 28;
+}
+
+function drawBubbles(highlights = [], dim = false, colorFn = null) {
+  const ages = DATA.gemeinden.map(g => g.avg_age);
+  const minAge = Math.floor(Math.min(...ages)) - 1;
+  const maxAge = Math.ceil(Math.max(...ages)) + 1;
+
+  let svg = '';
+  // Grid
+  for (let a = Math.ceil(minAge); a <= Math.floor(maxAge); a += 2) {
+    const x = scaleX(a);
+    svg += `<line x1="${x}" y1="${margin.top}" x2="${x}" y2="${height - margin.bottom}" stroke="#222" stroke-width="1"/>`;
+    svg += `<text x="${x}" y="${height - margin.bottom + 14}" text-anchor="middle" class="axis text" fill="#666" font-size="10">${a}</text>`;
+  }
+  for (let p = 42; p <= 58; p += 2) {
+    const y = scaleY(p);
+    svg += `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#222" stroke-width="1"/>`;
+    svg += `<text x="${margin.left - 6}" y="${y + 3}" text-anchor="end" fill="#666" font-size="10">${p}%</text>`;
+  }
+  // Axis labels
+  svg += `<text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="#555" font-size="11">Durchschnittsalter →</text>`;
+  svg += `<text x="12" y="${height / 2}" text-anchor="middle" fill="#555" font-size="11" transform="rotate(-90, 12, ${height / 2})">Männeranteil →</text>`;
+
+  // Reference lines
+  const refX = scaleX(DATA.meta.gr_avg_age);
+  const refY = scaleY(DATA.meta.gr_male_pct);
+  svg += `<line x1="${refX}" y1="${margin.top}" x2="${refX}" y2="${height - margin.bottom}" class="ref-line"/>`;
+  svg += `<text x="${refX + 4}" y="${margin.top + 12}" class="ref-label">⌀ ${DATA.meta.gr_avg_age.toFixed(1)} J.</text>`;
+  svg += `<line x1="${margin.left}" y1="${refY}" x2="${width - margin.right}" y2="${refY}" class="ref-line"/>`;
+  svg += `<text x="${width - margin.right - 4}" y="${refY - 4}" class="ref-label" text-anchor="end">${DATA.meta.gr_male_pct.toFixed(1)}%</text>`;
+
+  // Bubbles
+  const sorted = [...DATA.gemeinden].sort((a, b) => b.total - a.total);
+  sorted.forEach(g => {
+    const x = scaleX(g.avg_age);
+    const y = scaleY(g.male_pct);
+    const r = scaleR(g.total);
+    const isHighlight = highlights.includes(g.gemeinde);
+    let opacity = dim ? (isHighlight ? 0.95 : 0.12) : 0.55;
+    let fill = '#5a82b4';
+    if (colorFn) fill = colorFn(g);
+    if (isHighlight) fill = colorFn ? colorFn(g) : '#ff9e2c';
+    svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#fff' : 'none'}" stroke-width="${isHighlight ? 1.5 : 0}"/>`;
+    if (isHighlight || (!dim && g.total > 4000)) {
+      svg += `<text x="${x}" y="${y + 3}" text-anchor="middle" class="bubble-label">${g.gemeinde}</text>`;
+    }
+  });
+  svgEl.innerHTML = svg;
+}
+
+function showPyramid(gemeindeName) {
+  const container = document.getElementById('pyramid-container');
+  const el = document.getElementById('pyramid');
+  const title = document.getElementById('pyr-title');
+  container.classList.add('visible');
+
+  let pyr, label;
+  if (!gemeindeName) {
+    pyr = DATA.gr_pyramid;
+    label = 'Kanton Graubünden';
+  } else {
+    const g = DATA.gemeinden.find(x => x.gemeinde === gemeindeName);
+    pyr = (g && g.pyramid) ? g.pyramid : DATA.gr_pyramid;
+    label = g ? `${g.gemeinde} (${g.total.toLocaleString('de-CH')} EW)` : 'Kanton Graubünden';
+  }
+  title.textContent = label;
+
+  const maxVal = Math.max(...pyr.map(p => Math.max(p.m, p.f)));
+  let html = '';
+  pyr.forEach(p => {
+    const wm = (p.m / maxVal * 100).toFixed(1);
+    const wf = (p.f / maxVal * 100).toFixed(1);
+    html += `<div class="pyr-row">
+      <div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div>
+      <div class="pyr-label">${p.klasse.replace(' Jahre', '').replace(' und mehr', '+')}</div>
+      <div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div></div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function showDualPyramid(name1, name2) {
+  // Show two pyramids side by side via separate title
+  const container = document.getElementById('pyramid-container');
+  container.classList.add('visible');
+  const el = document.getElementById('pyramid');
+  const title = document.getElementById('pyr-title');
+
+  const g1 = DATA.gemeinden.find(x => x.gemeinde === name1);
+  const g2 = DATA.gemeinden.find(x => x.gemeinde === name2);
+  title.textContent = `${name1} vs. ${name2}`;
+
+  const pyr1 = g1.pyramid;
+  const pyr2 = g2.pyramid;
+  const maxVal = Math.max(
+    ...pyr1.map(p => Math.max(p.m, p.f)),
+    ...pyr2.map(p => Math.max(p.m, p.f))
+  );
+
+  let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">`;
+  // Left: name1
+  html += `<div><div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:6px">${name1} (${g1.total.toLocaleString('de-CH')} EW)</div>`;
+  pyr1.forEach(p => {
+    const wm = (p.m / maxVal * 100).toFixed(1);
+    const wf = (p.f / maxVal * 100).toFixed(1);
+    html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label" style="font-size:8px">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div></div></div>`;
+  });
+  html += `</div>`;
+  // Right: name2
+  html += `<div><div style="text-align:center;font-size:12px;color:#aaa;margin-bottom:6px">${name2} (${g2.total.toLocaleString('de-CH')} EW)</div>`;
+  pyr2.forEach(p => {
+    const wm = (p.m / maxVal * 100).toFixed(1);
+    const wf = (p.f / maxVal * 100).toFixed(1);
+    html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label" style="font-size:8px">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div></div></div>`;
+  });
+  html += `</div></div>`;
+  el.innerHTML = html;
+}
+
+function showRanking(field, label, top = 10, color = '#5b8db8', reverse = false) {
+  const container = document.getElementById('ranking-container');
+  const barsEl = document.getElementById('ranking-bars');
+  const titleEl = document.getElementById('rank-title');
+  container.classList.add('visible');
+  titleEl.textContent = label;
+
+  const sorted = [...DATA.gemeinden].sort((a, b) => reverse ? a[field] - b[field] : b[field] - a[field]);
+  const top10 = sorted.slice(0, top);
+  const maxVal = Math.max(...top10.map(g => g[field]));
+
+  let html = '';
+  top10.forEach(g => {
+    const w = (g[field] / maxVal * 100).toFixed(1);
+    const fmt = field.includes('pct') ? g[field].toFixed(1) + '%' : g[field].toFixed(1);
+    html += `<div class="rank-item">
+      <div class="rank-name">${g.gemeinde}</div>
+      <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${w}%;background:${color}"></div></div>
+      <div class="rank-val">${fmt}</div>
+    </div>`;
+  });
+  barsEl.innerHTML = html;
+}
+
+function hideAll() {
+  document.getElementById('viz').style.display = 'none';
+  document.getElementById('pyramid-container').classList.remove('visible');
+  document.getElementById('stat-cards').classList.remove('visible');
+  document.getElementById('ranking-container').classList.remove('visible');
+}
+
+function showViz() {
+  document.getElementById('viz').style.display = 'block';
+}
+
+function updateViz(step) {
+  hideAll();
+
+  switch(step) {
+    case 0: // Overview
+      showViz();
+      drawBubbles([], false);
+      break;
+
+    case 1: // Average age
+      showViz();
+      drawBubbles([], false);
+      break;
+
+    case 2: // Youngest: Felsberg
+      showViz();
+      drawBubbles(['Felsberg'], true);
+      break;
+
+    case 3: // Oldest: Calancatal
+      showViz();
+      drawBubbles(['Buseno', 'Santa Maria in Calanca', 'Rossa', 'Calanca'], true, g => {
+        return g.avg_age > 53 ? '#e04040' : '#5a82b4';
+      });
+      break;
+
+    case 4: // Gender ratio
+      showViz();
+      drawBubbles([], false, g => {
+        return g.male_pct > 52 ? '#5b8db8' : g.male_pct < 48 ? '#c46b6b' : '#888';
+      });
+      break;
+
+    case 5: // Pyramid canton
+      showPyramid(null);
+      break;
+
+    case 6: // Chur vs Buseno
+      showDualPyramid('Chur', 'Buseno');
+      break;
+
+    case 7: // Ranking
+      showRanking('avg_age', 'Die 10 ältesten Gemeinden', 10, '#e04040');
+      break;
+  }
+}
+
+// ── Intersection Observer for scroll-driven steps ──
+function setupObserver() {
+  const steps = document.querySelectorAll('.scrolly__step');
+  const boxes = document.querySelectorAll('.text-box');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const step = parseInt(entry.target.dataset.step);
+      const box = entry.target.querySelector('.text-box');
+
+      if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
+        if (step !== activeStep) {
+          activeStep = step;
+          updateViz(step);
+        }
+        box.classList.add('active');
+      } else {
+        box.classList.remove('active');
+      }
+    });
+  }, {
+    root: null,
+    threshold: [0, 0.4, 0.6, 1]
+  });
+
+  steps.forEach(s => observer.observe(s));
+}
+
+init();
+</script>
+</body>
+</html>
