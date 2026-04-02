@@ -55,12 +55,15 @@
   #pyramid-container.visible { display: block; }
   .pyr-row { display: flex; align-items: center; margin-bottom: 2px; height: 18px; }
   .pyr-label { width: 80px; font-size: 10px; text-align: center; color: #999; flex-shrink: 0; }
-  .pyr-side { flex: 1; display: flex; }
+  .pyr-side { flex: 1; display: flex; align-items: center; }
   .pyr-side-m { justify-content: flex-end; }
   .pyr-side-f { justify-content: flex-start; }
-  .pyr-bar { height: 14px; transition: width 0.5s ease; font-size: 9px; line-height: 14px; color: rgba(255,255,255,0.85); padding: 0 3px; white-space: nowrap; overflow: hidden; }
-  .pyr-bar-m { background: #5b8db8; border-radius: 3px 0 0 3px; text-align: left; }
-  .pyr-bar-f { background: #c46b6b; border-radius: 0 3px 3px 0; text-align: right; }
+  .pyr-bar { height: 14px; transition: width 0.5s ease; }
+  .pyr-bar-m { background: #5b8db8; border-radius: 3px 0 0 3px; }
+  .pyr-bar-f { background: #c46b6b; border-radius: 0 3px 3px 0; }
+  .pyr-val { font-size: 9px; color: #777; width: 28px; flex-shrink: 0; }
+  .pyr-val-m { text-align: right; padding-right: 4px; }
+  .pyr-val-f { text-align: left; padding-left: 4px; }
   .pyr-legend { display: flex; gap: 16px; margin-bottom: 10px; justify-content: center; }
   .pyr-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #aaa; }
   .pyr-legend-dot { width: 12px; height: 12px; border-radius: 3px; }
@@ -401,9 +404,9 @@ function showPyramid(gemeindeName) {
     const wm = (p.m / maxVal * 100).toFixed(1);
     const wf = (p.f / maxVal * 100).toFixed(1);
     html += `<div class="pyr-row">
-      <div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%">${p.m}</div></div>
+      <div class="pyr-side pyr-side-m"><span class="pyr-val pyr-val-m">${p.m}</span><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div>
       <div class="pyr-label">${p.klasse.replace(' Jahre', '').replace(' und mehr', '+')}</div>
-      <div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%">${p.f}</div></div>
+      <div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div><span class="pyr-val pyr-val-f">${p.f}</span></div>
     </div>`;
   });
   el.innerHTML = html;
@@ -430,7 +433,7 @@ function showDualPyramid(name1, name2) {
     pyr.forEach(p => {
       const wm = (p.m / maxV * 100).toFixed(1);
       const wf = (p.f / maxV * 100).toFixed(1);
-      h += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%">${p.m}</div></div><div class="pyr-label" style="font-size:8px">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%">${p.f}</div></div></div>`;
+      h += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><span class="pyr-val pyr-val-m">${p.m}</span><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label" style="font-size:8px">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div><span class="pyr-val pyr-val-f">${p.f}</span></div></div>`;
     });
     h += `</div>`;
     return h;
@@ -643,7 +646,7 @@ function setupSearch() {
       g.pyramid.forEach(p => {
         const wm = (p.m / maxVal * 100).toFixed(1);
         const wf = (p.f / maxVal * 100).toFixed(1);
-        html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><div class="pyr-bar pyr-bar-m" style="width:${wm}%">${p.m}</div></div><div class="pyr-label">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%">${p.f}</div></div></div>`;
+        html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><span class="pyr-val pyr-val-m">${p.m}</span><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div><span class="pyr-val pyr-val-f">${p.f}</span></div></div>`;
       });
       html += `</div>`;
     } else {
