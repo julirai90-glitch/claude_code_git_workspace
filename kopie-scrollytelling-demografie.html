@@ -136,7 +136,7 @@
   .sparkline-item .spark-range { font-size: 9px; color: #555; display: flex; justify-content: space-between; margin-top: 2px; }
 
   /* ── Viz Transitions ── */
-  .scrolly__sticky { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; z-index: 1; overflow: hidden; }
+  .scrolly__sticky { position: sticky; top: 0; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; z-index: 1; overflow: hidden; }
   #viz, #pyramid-container, #ranking-container { position: absolute; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s 0.4s; }
   #viz.visible, #pyramid-container.visible, #ranking-container.visible { opacity: 1; visibility: visible; transition: opacity 0.4s ease, visibility 0s 0s; }
   .stat-cards { position: absolute; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s 0.4s; }
@@ -145,13 +145,20 @@
 
   /* ── Mobile ── */
   @media (max-width: 600px) {
-    .text-box { max-width: 300px; padding: 18px 20px; font-size: 14px; }
-    .text-box .highlight { font-size: 24px; }
+    .text-box { max-width: 280px; padding: 16px 18px; font-size: 13px; }
+    .text-box .highlight { font-size: 22px; }
     .stat-card { min-width: 90px; padding: 12px; }
     .stat-card .val { font-size: 22px; }
     .progress-dots { right: 8px; gap: 10px; }
     .progress-dot { width: 8px; height: 8px; }
     .dot-label { display: none; }
+    .rank-name { width: 100px; font-size: 11px; }
+    .rank-val { width: 40px; font-size: 11px; }
+    .rank-bar-wrap { margin: 0 4px; }
+    #ranking-container { width: 95vw; padding: 0 4px; }
+    .dual-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    #time-slider { width: 120px; }
+    .time-slider-year { font-size: 16px; }
   }
 </style>
 </head>
@@ -561,7 +568,7 @@ function showDualPyramid(name1, name2) {
     return h;
   }
 
-  let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">`;
+  let html = `<div class="dual-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">`;
   html += renderPyr(pyr1, max1, name1, g1.total);
   html += renderPyr(pyr2, max2, name2, g2.total);
   html += `</div>`;
@@ -593,7 +600,7 @@ function showDualRanking(field, n) {
   const oldest = sorted.slice(0, n);
   const youngest = sorted.slice(-n).reverse();
 
-  let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
+  let html = `<div class="dual-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
   html += `<div><div class="rank-title" style="color:#EE7733">Die ${n} ältesten</div>${renderRankList(field, oldest, '#EE7733')}</div>`;
   html += `<div><div class="rank-title" style="color:#0068A4">Die ${n} jüngsten</div>${renderRankList(field, youngest, '#0068A4')}</div>`;
   html += `</div>`;
@@ -704,7 +711,7 @@ function showAgingRanking() {
     }).join('');
   }
 
-  let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
+  let html = `<div class="dual-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
   html += `<div><div class="rank-title" style="color:#EE7733">Am stärksten gealtert</div>${renderAgingList(fastest, '#EE7733')}</div>`;
   html += `<div><div class="rank-title" style="color:#0068A4">Am wenigsten / verjüngt</div>${renderAgingList(slowest, '#0068A4')}</div>`;
   html += `</div>`;
