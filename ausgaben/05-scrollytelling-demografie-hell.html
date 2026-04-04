@@ -221,14 +221,14 @@
     <div class="scrolly__step" data-step="0">
       <div class="text-box">
         <h3>Der Überblick</h3>
-        Jede Blase ist eine Gemeinde. Je weiter rechts, desto älter die Bevölkerung. Je höher, desto mehr Männer. Die Grösse zeigt die Einwohnerzahl.
+        Jede Blase ist eine Gemeinde. Je höher, desto älter. Je weiter rechts, desto mehr Männer. Die Grösse zeigt die Einwohnerzahl.
       </div>
     </div>
     <div class="scrolly__step" data-step="1">
       <div class="text-box">
         <h3>Das Durchschnittsalter</h3>
         <span class="highlight">45,2 Jahre</span>
-        So alt ist Graubünden im Schnitt. Die gestrichelte Linie markiert diesen Wert. Links davon: die jungen Gemeinden. Rechts: die alten.
+        So alt ist Graubünden im Schnitt. Die gestrichelte Linie markiert diesen Wert. Darunter: die jungen Gemeinden. Darüber: die alten.
       </div>
     </div>
     <div class="scrolly__step" data-step="2">
@@ -248,8 +248,8 @@
     <div class="scrolly__step" data-step="4">
       <div class="text-box">
         <h3>Geschlechterverhältnis</h3>
-        <span class="highlight">69 vs. 32</span>
-        69 Gemeinden haben <span style="color:#0068A4">Männerüberschuss</span>, nur 32 einen <span style="color:#EE7733">Frauenüberschuss</span>. Aber: Die grössten Gemeinden — darunter Chur (49,0%) — haben mehr Frauen. Der kantonale Schnitt von 50,4% Männern kommt durch die vielen kleinen Berggemeinden zustande.
+        <span style="font-size:28px;font-weight:800;display:block;margin:4px 0 8px"><span style="color:#0068A4">69</span> vs. <span style="color:#EE7733">32</span></span>
+        <span style="color:#0068A4">69 Gemeinden</span> haben mehr Männer als Frauen, <span style="color:#EE7733">32 Gemeinden</span> mehr Frauen. In Chur leben 51% Frauen — aber der kantonale Schnitt liegt bei 50,4% Männern, weil die vielen kleinen Berggemeinden durchwegs Männerüberschuss haben.
       </div>
     </div>
     <div class="scrolly__step" data-step="5">
@@ -409,12 +409,15 @@ function setupViz() {
   svgEl.setAttribute('height', height);
 }
 
+// X = Männeranteil (links Frauen, rechts Männer)
 function scaleX(val) {
-  const min = 39, max = 59;
+  const min = 44, max = 58;
   return margin.left + ((val - min) / (max - min)) * (width - margin.left - margin.right);
 }
+// Y = Durchschnittsalter (unten jung, oben alt)
 function scaleY(val) {
-  return margin.top + ((60 - val) / (60 - 40)) * (height - margin.top - margin.bottom);
+  const min = 39, max = 59;
+  return margin.top + ((max - val) / (max - min)) * (height - margin.top - margin.bottom);
 }
 function scaleR(pop) {
   const maxPop = Math.max(...DATA.gemeinden.map(g => g.total));
@@ -424,39 +427,35 @@ function scaleR(pop) {
 function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) {
   const gemeinden = year ? getDataForYear(year) : DATA.gemeinden;
 
-  // Use fixed axis range across all years for comparability
-  const minAge = 39;
-  const maxAge = 59;
-
   let svg = '';
-  // Grid
-  for (let a = minAge; a <= maxAge; a += 2) {
-    const x = scaleX(a);
+  // Grid: X = Männeranteil, Y = Alter
+  for (let p = 44; p <= 58; p += 2) {
+    const x = scaleX(p);
     svg += `<line x1="${x}" y1="${margin.top}" x2="${x}" y2="${height - margin.bottom}" stroke="#e8e8e8" stroke-width="1"/>`;
-    svg += `<text x="${x}" y="${height - margin.bottom + 14}" text-anchor="middle" class="axis text" fill="#aaa" font-size="10">${a}</text>`;
+    svg += `<text x="${x}" y="${height - margin.bottom + 14}" text-anchor="middle" class="axis text" fill="#aaa" font-size="10">${p}%</text>`;
   }
-  for (let p = 42; p <= 58; p += 2) {
-    const y = scaleY(p);
+  for (let a = 40; a <= 58; a += 2) {
+    const y = scaleY(a);
     svg += `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#e8e8e8" stroke-width="1"/>`;
-    svg += `<text x="${margin.left - 6}" y="${y + 3}" text-anchor="end" fill="#aaa" font-size="10">${p}%</text>`;
+    svg += `<text x="${margin.left - 6}" y="${y + 3}" text-anchor="end" fill="#aaa" font-size="10">${a}</text>`;
   }
   // Axis labels
-  svg += `<text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="#999" font-size="11">Durchschnittsalter →</text>`;
-  svg += `<text x="12" y="${height / 2}" text-anchor="middle" fill="#999" font-size="11" transform="rotate(-90, 12, ${height / 2})">Männeranteil →</text>`;
+  svg += `<text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="#999" font-size="11">← mehr Frauen · Männeranteil · mehr Männer →</text>`;
+  svg += `<text x="12" y="${height / 2}" text-anchor="middle" fill="#999" font-size="11" transform="rotate(-90, 12, ${height / 2})">← jung · Durchschnittsalter · alt →</text>`;
 
-  // Reference lines (always show 2024 canton average for orientation)
-  const refX = scaleX(DATA.meta.gr_avg_age);
-  const refY = scaleY(DATA.meta.gr_male_pct);
+  // Reference lines (2024 canton averages)
+  const refX = scaleX(DATA.meta.gr_male_pct);
+  const refY = scaleY(DATA.meta.gr_avg_age);
   svg += `<line x1="${refX}" y1="${margin.top}" x2="${refX}" y2="${height - margin.bottom}" class="ref-line"/>`;
-  svg += `<text x="${refX + 4}" y="${margin.top + 12}" class="ref-label">⌀ ${DATA.meta.gr_avg_age.toFixed(1)} J. (2024)</text>`;
+  svg += `<text x="${refX + 4}" y="${margin.top + 12}" class="ref-label">${DATA.meta.gr_male_pct.toFixed(1)}%</text>`;
   svg += `<line x1="${margin.left}" y1="${refY}" x2="${width - margin.right}" y2="${refY}" class="ref-line"/>`;
-  svg += `<text x="${width - margin.right - 4}" y="${refY - 4}" class="ref-label" text-anchor="end">${DATA.meta.gr_male_pct.toFixed(1)}%</text>`;
+  svg += `<text x="${width - margin.right - 4}" y="${refY - 4}" class="ref-label" text-anchor="end">⌀ ${DATA.meta.gr_avg_age.toFixed(1)} J.</text>`;
 
-  // Bubbles
+  // Bubbles: X = male_pct, Y = avg_age
   const sorted = [...gemeinden].sort((a, b) => b.total - a.total);
   sorted.forEach(g => {
-    const x = scaleX(g.avg_age);
-    const y = scaleY(g.male_pct);
+    const x = scaleX(g.male_pct);
+    const y = scaleY(g.avg_age);
     const r = scaleR(g.total);
     const isHighlight = highlights.includes(g.gemeinde);
     let opacity = dim ? (isHighlight ? 0.95 : 0.12) : 0.55;
