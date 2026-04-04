@@ -359,7 +359,7 @@ function init() {
   setupObserver();
   setupSearch();
   updateViz(0);
-  window.addEventListener('resize', () => { setupViz(); updateViz(activeStep); });
+  window.addEventListener('resize', () => { if (isProfileView) return; setupViz(); updateViz(activeStep); });
 }
 
 // ── Progress Dots ──
