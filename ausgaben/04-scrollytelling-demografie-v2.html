@@ -145,12 +145,19 @@
 
   /* ── Mobile ── */
   @media (max-width: 600px) {
-    .text-box { max-width: 280px; padding: 16px 18px; font-size: 13px; }
-    .text-box .highlight { font-size: 22px; }
+    /* Text-Boxen: unten fixiert mit dunklem Hintergrund */
+    .scrolly__step { align-items: flex-end; padding-bottom: 10px; min-height: 80vh; }
+    .scrolly__step:first-child { min-height: 60vh; }
+    .scrolly__step:last-child { min-height: 60vh; }
+    .scrolly__step:nth-child(odd),
+    .scrolly__step:nth-child(even) { justify-content: center; }
+    .text-box { max-width: 92vw; padding: 14px 16px; font-size: 13px; line-height: 1.5; background: rgba(10,10,10,0.88); backdrop-filter: blur(6px); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); text-shadow: none; }
+    .text-box h3 { font-size: 12px; }
+    .text-box .highlight { font-size: 20px; }
     .stat-card { min-width: 90px; padding: 12px; }
     .stat-card .val { font-size: 22px; }
-    .progress-dots { right: 8px; gap: 10px; }
-    .progress-dot { width: 8px; height: 8px; }
+    .progress-dots { right: 6px; gap: 8px; }
+    .progress-dot { width: 7px; height: 7px; }
     .dot-label { display: none; }
     .rank-name { width: 100px; font-size: 11px; }
     .rank-val { width: 40px; font-size: 11px; }
@@ -159,6 +166,10 @@
     .dual-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
     #time-slider { width: 120px; }
     .time-slider-year { font-size: 16px; }
+    .time-slider-wrap { top: 6px; }
+    /* Pyramide und Viz etwas höher positionieren */
+    #pyramid-container { max-height: 60vh; overflow-y: auto; }
+    #viz { max-height: 65vh; }
   }
 </style>
 </head>
@@ -248,24 +259,18 @@
     </div>
     <div class="scrolly__step" data-step="6">
       <div class="text-box">
-        <h3>Chur vs. Buseno</h3>
-        Die Kantonshauptstadt mit 39'177 Einwohnern neben Buseno mit 73. Zwei Pyramiden, zwei Welten — die eine breit und ausgeglichen, die andere schmal und kopflastig.
-      </div>
-    </div>
-    <div class="scrolly__step" data-step="7">
-      <div class="text-box">
         <h3>Die 10 ältesten & jüngsten</h3>
         Ein Muster: Die ältesten Gemeinden liegen fast alle in alpinen Seitentälern. Die jüngsten in der Agglomeration Chur oder in touristischen Hotspots.
       </div>
     </div>
-    <div class="scrolly__step" data-step="8">
+    <div class="scrolly__step" data-step="7">
       <div class="text-box">
         <h3>15 Jahre Wandel</h3>
         <span class="highlight">2010 → 2024</span>
         Wie hat sich die Landkarte verändert? Benutze den Slider oben, um durch die Jahre zu reisen. Die Blasen verschieben sich — manche Gemeinden altern dramatisch, andere kaum.
       </div>
     </div>
-    <div class="scrolly__step" data-step="9">
+    <div class="scrolly__step" data-step="8">
       <div class="text-box">
         <h3>Wer altert am schnellsten?</h3>
         <span class="highlight red">Celerina: +7,8 Jahre</span>
@@ -632,9 +637,9 @@ function showViz() {
 
 function getContainerForStep(step) {
   if (step <= 4) return 'viz';
-  if (step <= 6) return 'pyramid';
-  if (step === 7 || step === 9) return 'ranking';
-  return 'viz'; // step 8 = time slider on bubble chart
+  if (step === 5) return 'pyramid';
+  if (step === 6 || step === 8) return 'ranking';
+  return 'viz'; // step 7 = time slider on bubble chart
 }
 
 function fadeBubbles(fn) {
@@ -724,8 +729,8 @@ function updateViz(step) {
   const nextContainer = getContainerForStep(step);
   const sameContainer = prevContainer === nextContainer;
 
-  // Stop time animation when leaving step 8
-  if (activeStep === 8 && step !== 8 && timePlayInterval) {
+  // Stop time animation when leaving step 7
+  if (activeStep === 7 && step !== 7 && timePlayInterval) {
     clearInterval(timePlayInterval);
     timePlayInterval = null;
     document.getElementById('time-play-btn').innerHTML = '&#9654;';
@@ -734,8 +739,7 @@ function updateViz(step) {
   if (!sameContainer) {
     hideAll();
   }
-  // Hide time slider except on step 8
-  showTimeSlider(step === 8);
+  showTimeSlider(step === 7);
   prevContainer = nextContainer;
 
   switch(step) {
@@ -774,14 +778,10 @@ function updateViz(step) {
       break;
 
     case 6:
-      showDualPyramid('Chur', 'Buseno');
-      break;
-
-    case 7:
       showDualRanking('avg_age', 10);
       break;
 
-    case 8: // Time slider
+    case 7: // Time slider
       showViz();
       currentYear = 2024;
       document.getElementById('time-slider').value = 2024;
@@ -789,7 +789,7 @@ function updateViz(step) {
       drawBubbles([], false, null, currentYear);
       break;
 
-    case 9: // Aging speed ranking
+    case 8: // Aging speed ranking
       showAgingRanking();
       break;
   }
