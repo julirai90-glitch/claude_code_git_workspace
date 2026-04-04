@@ -260,7 +260,7 @@
     </div>
     <div class="scrolly__step" data-step="6">
       <div class="text-box">
-        <h3>Die 10 ältesten & jüngsten</h3>
+        <h3>Die zehn ältesten & jüngsten</h3>
         Ein Muster: Die ältesten Gemeinden liegen fast alle in alpinen Seitentälern. Die jüngsten in der Agglomeration Chur oder in touristischen Hotspots.
       </div>
     </div>
@@ -550,7 +550,7 @@ function buildGemeindeProfileHTML(name) {
     html += `<div class="gc-pyr">`;
     html += `<div style="font-size:13px;color:#888;margin-bottom:8px;font-weight:600">Alterspyramide</div>`;
     html += `<div class="pyr-legend"><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#0068A4"></div> Männer</div><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#EE7733"></div> Frauen</div></div>`;
-    g.pyramid.forEach(p => {
+    g.pyramid.slice().reverse().forEach(p => {
       const wm = (p.m / maxVal * 100).toFixed(1);
       const wf = (p.f / maxVal * 100).toFixed(1);
       html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><span class="pyr-val pyr-val-m">${p.m}</span><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div><span class="pyr-val pyr-val-f">${p.f}</span></div></div>`;
@@ -618,7 +618,7 @@ function showPyramid(gemeindeName) {
 
   const maxVal = Math.max(...pyr.map(p => Math.max(p.m, p.f)));
   let html = '';
-  pyr.forEach(p => {
+  pyr.slice().reverse().forEach(p => {
     const wm = (p.m / maxVal * 100).toFixed(1);
     const wf = (p.f / maxVal * 100).toFixed(1);
     html += `<div class="pyr-row">
@@ -648,7 +648,7 @@ function showDualPyramid(name1, name2) {
 
   function renderPyr(pyr, maxV, name, total) {
     let h = `<div><div style="text-align:center;font-size:12px;color:#555;margin-bottom:6px">${name} (${total.toLocaleString('de-CH')} EW)</div>`;
-    pyr.forEach(p => {
+    pyr.slice().reverse().forEach(p => {
       const wm = (p.m / maxV * 100).toFixed(1);
       const wf = (p.f / maxV * 100).toFixed(1);
       h += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><span class="pyr-val pyr-val-m">${p.m}</span><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label" style="font-size:8px">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div><span class="pyr-val pyr-val-f">${p.f}</span></div></div>`;
@@ -690,8 +690,8 @@ function showDualRanking(field, n) {
   const youngest = sorted.slice(-n).reverse();
 
   let html = `<div class="dual-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
-  html += `<div><div class="rank-title" style="color:#EE7733">Die ${n} ältesten</div>${renderRankList(field, oldest, '#EE7733')}</div>`;
-  html += `<div><div class="rank-title" style="color:#0068A4">Die ${n} jüngsten</div>${renderRankList(field, youngest, '#0068A4')}</div>`;
+  html += `<div><div class="rank-title" style="color:#EE7733">Die zehn ältesten</div>${renderRankList(field, oldest, '#EE7733')}</div>`;
+  html += `<div><div class="rank-title" style="color:#0068A4">Die zehn jüngsten</div>${renderRankList(field, youngest, '#0068A4')}</div>`;
   html += `</div>`;
   barsEl.innerHTML = html;
 }
