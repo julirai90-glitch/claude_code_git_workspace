@@ -168,7 +168,7 @@
     .time-slider-year { font-size: 16px; }
     .time-slider-wrap { top: 6px; }
     /* Pyramide und Viz etwas höher positionieren */
-    #pyramid-container { max-height: 60vh; overflow-y: auto; }
+    #pyramid-container { max-height: 85vh; overflow-y: auto; padding-top: 8px; }
     #viz { width: 96vw; }
   }
 </style>
@@ -200,7 +200,7 @@
       <div class="tooltip" id="tooltip"></div>
     </div>
     <div id="pyramid-container">
-      <button id="pyr-back" style="display:none; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.15); color:#333; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; margin-bottom:8px;" onclick="document.getElementById('pyramid-container').classList.remove('visible'); document.getElementById('viz').classList.add('visible'); this.style.display='none'; updateViz(activeStep);">← Zurück zur Karte</button>
+      <button id="pyr-back" style="display:none; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.15); color:#333; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; margin-bottom:8px;" onclick="document.getElementById('pyramid-container').classList.remove('visible'); document.getElementById('pyramid-container').querySelector('.pyr-legend').style.display=''; document.getElementById('viz').classList.add('visible'); this.style.display='none'; updateViz(activeStep);">← Zurück zur Karte</button>
       <div class="pyr-title" id="pyr-title">Kanton Graubünden</div>
       <div id="pyr-stats"></div>
       <div class="pyr-legend">
@@ -513,11 +513,69 @@ function setupBubbleInteraction() {
     const g = DATA.gemeinden.find(x => x.gemeinde === name);
     if (g && g.pyramid) {
       hideAll();
-      showPyramid(name);
-      document.getElementById('viz').classList.remove('visible');
-      document.getElementById('pyr-back').style.display = 'block';
+      showGemeindeProfile(name);
     }
   });
+}
+
+// ── Full Gemeinde profile (reused by bubble click and search) ──
+function buildGemeindeProfileHTML(name) {
+  const g = DATA.gemeinden.find(x => x.gemeinde === name);
+  if (!g) return '';
+
+  const byAge = [...DATA.gemeinden].sort((a, b) => a.avg_age - b.avg_age);
+  const byPop = [...DATA.gemeinden].sort((a, b) => b.total - a.total);
+  const ageRank = byAge.findIndex(x => x.gemeinde === name) + 1;
+  const popRank = byPop.findIndex(x => x.gemeinde === name) + 1;
+  const total = DATA.gemeinden.length;
+
+  let ageColor = g.avg_age < 44 ? '#0068A4' : g.avg_age > 50 ? '#EE7733' : '#333';
+  let maleColor = g.male_pct > 50 ? '#0068A4' : '#EE7733';
+
+  let html = `<div class="gc-name">${g.gemeinde}</div>`;
+  html += `<div class="gc-stats">`;
+  html += `<div class="gc-stat"><div class="val">${g.total.toLocaleString('de-CH')}</div><div class="lbl">Einwohner</div></div>`;
+  html += `<div class="gc-stat"><div class="val" style="color:${ageColor}">${g.avg_age.toFixed(1)}</div><div class="lbl">Ø Alter</div></div>`;
+  html += `<div class="gc-stat"><div class="val" style="color:${maleColor}">${g.male_pct.toFixed(1)}%</div><div class="lbl">Männeranteil</div></div>`;
+  html += `</div>`;
+  html += `<div class="gc-rank">Rang ${ageRank} von ${total} (jüngste zuerst) · ${popRank}. grösste Gemeinde</div>`;
+
+  const ts = TIMESERIES[name];
+  if (ts && ts.length > 1) {
+    html += buildSparklines(ts);
+  }
+
+  if (g.pyramid) {
+    const maxVal = Math.max(...g.pyramid.map(p => Math.max(p.m, p.f)));
+    html += `<div class="gc-pyr">`;
+    html += `<div style="font-size:13px;color:#888;margin-bottom:8px;font-weight:600">Alterspyramide</div>`;
+    html += `<div class="pyr-legend"><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#0068A4"></div> Männer</div><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#EE7733"></div> Frauen</div></div>`;
+    g.pyramid.forEach(p => {
+      const wm = (p.m / maxVal * 100).toFixed(1);
+      const wf = (p.f / maxVal * 100).toFixed(1);
+      html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><span class="pyr-val pyr-val-m">${p.m}</span><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div><span class="pyr-val pyr-val-f">${p.f}</span></div></div>`;
+    });
+    html += `</div>`;
+  }
+  return html;
+}
+
+function showGemeindeProfile(name) {
+  const container = document.getElementById('pyramid-container');
+  const el = document.getElementById('pyramid');
+  const title = document.getElementById('pyr-title');
+  const statsEl = document.getElementById('pyr-stats');
+
+  container.classList.add('visible');
+  title.textContent = '';
+  if (statsEl) statsEl.innerHTML = '';
+  document.getElementById('viz').classList.remove('visible');
+  document.getElementById('pyr-back').style.display = 'block';
+
+  // Hide the legend (profile has its own)
+  container.querySelector('.pyr-legend').style.display = 'none';
+
+  el.innerHTML = `<div style="max-width:500px;margin:0 auto">${buildGemeindeProfileHTML(name)}</div>`;
 }
 
 function showPyramid(gemeindeName) {
@@ -934,45 +992,8 @@ function setupSearch() {
   });
 
   function showGemeindeCard(name) {
-    const g = DATA.gemeinden.find(x => x.gemeinde === name);
-    if (!g) return;
-
-    const ageRank = byAge.findIndex(x => x.gemeinde === name) + 1;
-    const popRank = byPop.findIndex(x => x.gemeinde === name) + 1;
-    const total = DATA.gemeinden.length;
-
-    let ageColor = g.avg_age < 44 ? '#0068A4' : g.avg_age > 50 ? '#EE7733' : '#333';
-    let maleColor = g.male_pct > 50 ? '#0068A4' : '#EE7733';
-
-    let html = `<div class="gc-name">${g.gemeinde}</div>`;
-    html += `<div class="gc-stats">`;
-    html += `<div class="gc-stat"><div class="val">${g.total.toLocaleString('de-CH')}</div><div class="lbl">Einwohner</div></div>`;
-    html += `<div class="gc-stat"><div class="val" style="color:${ageColor}">${g.avg_age.toFixed(1)}</div><div class="lbl">Ø Alter</div></div>`;
-    html += `<div class="gc-stat"><div class="val" style="color:${maleColor}">${g.male_pct.toFixed(1)}%</div><div class="lbl">Männeranteil</div></div>`;
-    html += `</div>`;
-    html += `<div class="gc-rank">Rang ${ageRank} von ${total} (jüngste zuerst) · ${popRank}. grösste Gemeinde</div>`;
-
-    // Sparklines (2010-2024)
-    const ts = TIMESERIES[name];
-    if (ts && ts.length > 1) {
-      html += buildSparklines(ts);
-    }
-
-    if (g.pyramid) {
-      const maxVal = Math.max(...g.pyramid.map(p => Math.max(p.m, p.f)));
-      html += `<div class="gc-pyr">`;
-      html += `<div style="font-size:13px;color:#aaa;margin-bottom:8px;font-weight:600">Alterspyramide</div>`;
-            html += `<div class="pyr-legend"><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#0068A4"></div> Männer</div><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#EE7733"></div> Frauen</div></div>`;
-      g.pyramid.forEach(p => {
-        const wm = (p.m / maxVal * 100).toFixed(1);
-        const wf = (p.f / maxVal * 100).toFixed(1);
-        html += `<div class="pyr-row"><div class="pyr-side pyr-side-m"><span class="pyr-val pyr-val-m">${p.m}</span><div class="pyr-bar pyr-bar-m" style="width:${wm}%"></div></div><div class="pyr-label">${p.klasse.replace(' Jahre','').replace(' und mehr','+')}</div><div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:${wf}%"></div><span class="pyr-val pyr-val-f">${p.f}</span></div></div>`;
-      });
-      html += `</div>`;
-    } else {
-      html += `<div style="font-size:12px;color:#555;margin-top:16px">Detaillierte Alterspyramide für diese Gemeinde nicht verfügbar.</div>`;
-    }
-
+    const html = buildGemeindeProfileHTML(name);
+    if (!html) return;
     card.innerHTML = html;
     card.classList.add('visible');
     card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
