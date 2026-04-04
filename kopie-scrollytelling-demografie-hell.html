@@ -200,7 +200,7 @@
       <div class="tooltip" id="tooltip"></div>
     </div>
     <div id="pyramid-container">
-      <button id="pyr-back" style="display:none; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.15); color:#333; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; margin-bottom:8px;" onclick="document.getElementById('pyramid-container').classList.remove('visible'); document.getElementById('pyramid-container').querySelector('.pyr-legend').style.display=''; document.getElementById('viz').classList.add('visible'); this.style.display='none'; updateViz(activeStep);">← Zurück zur Karte</button>
+      <button id="pyr-back" style="display:none; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.15); color:#333; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; margin-bottom:8px;" onclick="isProfileView=false; document.getElementById('pyramid-container').classList.remove('visible'); document.getElementById('pyramid-container').querySelector('.pyr-legend').style.display=''; this.style.display='none'; prevContainer=null; updateViz(activeStep);">← Zurück zur Karte</button>
       <div class="pyr-title" id="pyr-title">Kanton Graubünden</div>
       <div id="pyr-stats"></div>
       <div class="pyr-legend">
@@ -349,6 +349,7 @@ const margin = { top: isMobileMargin ? 30 : 50, right: 20, bottom: isMobileMargi
 let activeStep = -1;
 let prevContainer = null;
 let currentYear = 2024;
+let isProfileView = false;
 let timePlayInterval = null;
 
 function init() {
@@ -561,15 +562,16 @@ function buildGemeindeProfileHTML(name) {
 }
 
 function showGemeindeProfile(name) {
+  isProfileView = true;
   const container = document.getElementById('pyramid-container');
   const el = document.getElementById('pyramid');
   const title = document.getElementById('pyr-title');
   const statsEl = document.getElementById('pyr-stats');
 
+  hideAll();
   container.classList.add('visible');
   title.textContent = '';
   if (statsEl) statsEl.innerHTML = '';
-  document.getElementById('viz').classList.remove('visible');
   document.getElementById('pyr-back').style.display = 'block';
 
   // Hide the legend (profile has its own)
@@ -884,12 +886,12 @@ function setupObserver() {
   const boxes = document.querySelectorAll('.text-box');
 
   const observer = new IntersectionObserver(entries => {
+    if (isProfileView) return; // Block step changes while profile is open
     entries.forEach(entry => {
       const step = parseInt(entry.target.dataset.step);
       const box = entry.target.querySelector('.text-box');
 
       if (entry.isIntersecting) {
-        // Switch viz as soon as the step enters the trigger zone
         if (step !== activeStep) {
           activeStep = step;
           updateViz(step);
