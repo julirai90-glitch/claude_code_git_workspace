@@ -202,6 +202,7 @@
     <div id="pyramid-container">
       <button id="pyr-back" style="display:none; background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.15); color:#333; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; margin-bottom:8px;" onclick="document.getElementById('pyramid-container').classList.remove('visible'); document.getElementById('viz').classList.add('visible'); this.style.display='none'; updateViz(activeStep);">← Zurück zur Karte</button>
       <div class="pyr-title" id="pyr-title">Kanton Graubünden</div>
+      <div id="pyr-stats"></div>
       <div class="pyr-legend">
         <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#0068A4"></div> Männer</div>
         <div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#EE7733"></div> Frauen</div>
@@ -400,7 +401,7 @@ function setupViz() {
   width = container.clientWidth;
   const isMobile = window.innerWidth <= 600;
   height = isMobile
-    ? Math.min(width * 1.5, window.innerHeight * 0.6)
+    ? window.innerHeight * 0.7
     : Math.min(width * 0.85, window.innerHeight * 0.8);
   svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
   svgEl.setAttribute('width', width);
@@ -408,7 +409,7 @@ function setupViz() {
 }
 
 function scaleX(val) {
-  const min = 38, max = 60;
+  const min = 39, max = 59;
   return margin.left + ((val - min) / (max - min)) * (width - margin.left - margin.right);
 }
 function scaleY(val) {
@@ -423,8 +424,8 @@ function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) 
   const gemeinden = year ? getDataForYear(year) : DATA.gemeinden;
 
   // Use fixed axis range across all years for comparability
-  const minAge = 38;
-  const maxAge = 60;
+  const minAge = 39;
+  const maxAge = 59;
 
   let svg = '';
   // Grid
@@ -525,16 +526,36 @@ function showPyramid(gemeindeName) {
   const title = document.getElementById('pyr-title');
   container.classList.add('visible');
 
-  let pyr, label;
+  let pyr, label, statsHtml = '';
   if (!gemeindeName) {
     pyr = DATA.gr_pyramid;
     label = 'Kanton Graubünden';
+    statsHtml = `<div style="display:flex;gap:16px;justify-content:center;margin:8px 0 12px;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-size:20px;font-weight:800">${DATA.meta.gr_total.toLocaleString('de-CH')}</div><div style="font-size:10px;color:#888">Einwohner</div></div>
+      <div style="text-align:center"><div style="font-size:20px;font-weight:800">${DATA.meta.gr_avg_age.toFixed(1)}</div><div style="font-size:10px;color:#888">&Oslash; Alter</div></div>
+      <div style="text-align:center"><div style="font-size:20px;font-weight:800;color:#0068A4">${DATA.meta.gr_male_pct.toFixed(1)}%</div><div style="font-size:10px;color:#888">Männer</div></div>
+      <div style="text-align:center"><div style="font-size:20px;font-weight:800;color:#EE7733">${(100 - DATA.meta.gr_male_pct).toFixed(1)}%</div><div style="font-size:10px;color:#888">Frauen</div></div>
+    </div>`;
   } else {
     const g = DATA.gemeinden.find(x => x.gemeinde === gemeindeName);
     pyr = (g && g.pyramid) ? g.pyramid : DATA.gr_pyramid;
-    label = g ? `${g.gemeinde} (${g.total.toLocaleString('de-CH')} EW)` : 'Kanton Graubünden';
+    label = g ? g.gemeinde : 'Kanton Graubünden';
+    if (g) {
+      const byAge = [...DATA.gemeinden].sort((a, b) => a.avg_age - b.avg_age);
+      const ageRank = byAge.findIndex(x => x.gemeinde === g.gemeinde) + 1;
+      statsHtml = `<div style="display:flex;gap:16px;justify-content:center;margin:8px 0 12px;flex-wrap:wrap">
+        <div style="text-align:center"><div style="font-size:20px;font-weight:800">${g.total.toLocaleString('de-CH')}</div><div style="font-size:10px;color:#888">Einwohner</div></div>
+        <div style="text-align:center"><div style="font-size:20px;font-weight:800">${g.avg_age.toFixed(1)}</div><div style="font-size:10px;color:#888">&Oslash; Alter</div></div>
+        <div style="text-align:center"><div style="font-size:20px;font-weight:800;color:#0068A4">${g.male_pct.toFixed(1)}%</div><div style="font-size:10px;color:#888">Männer</div></div>
+        <div style="text-align:center"><div style="font-size:20px;font-weight:800;color:#EE7733">${(100 - g.male_pct).toFixed(1)}%</div><div style="font-size:10px;color:#888">Frauen</div></div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:#999;margin-bottom:8px">Rang ${ageRank} von ${DATA.gemeinden.length} (jüngste zuerst)</div>`;
+    }
   }
   title.textContent = label;
+  // Insert stats before pyramid
+  const statsEl = document.getElementById('pyr-stats');
+  if (statsEl) statsEl.innerHTML = statsHtml;
 
   const maxVal = Math.max(...pyr.map(p => Math.max(p.m, p.f)));
   let html = '';
