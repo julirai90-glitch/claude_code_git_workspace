@@ -19,7 +19,7 @@
   /* ── Scrolly Section ── */
   .scrolly { position: relative; }
   .scrolly__steps { position: relative; z-index: 2; pointer-events: none; }
-  .scrolly__step { min-height: 55vh; display: flex; align-items: center; padding: 20px 5vw; }
+  .scrolly__step { min-height: 70vh; display: flex; align-items: center; padding: 20px 5vw; }
   .scrolly__step:nth-child(odd) { justify-content: flex-end; }
   .scrolly__step:nth-child(even) { justify-content: flex-start; }
   .scrolly__step:first-child { min-height: 40vh; }
@@ -146,7 +146,7 @@
   /* ── Mobile ── */
   @media (max-width: 600px) {
     /* Text-Boxen: unten fixiert mit dunklem Hintergrund */
-    .scrolly__step { align-items: flex-end; padding-bottom: 10px; min-height: 80vh; }
+    .scrolly__step { align-items: flex-end; padding-bottom: 10px; min-height: 90vh; }
     .scrolly__step:first-child { min-height: 60vh; }
     .scrolly__step:last-child { min-height: 60vh; }
     .scrolly__step:nth-child(odd),
@@ -255,7 +255,7 @@
     <div class="scrolly__step" data-step="5">
       <div class="text-box">
         <h3>Bevölkerungspyramide</h3>
-        Die Altersstruktur des Kantons zeigt den typischen «Tannenbaum»: Geburtenstarke Jahrgänge um die 55–65, schmaler Nachwuchs. In den Bergen ist der Effekt noch stärker.
+        Die Altersstruktur des Kantons zeigt den typischen «Tannenbaum»: Geburtenstarke Jahrgänge um die 55–65, schmaler Nachwuchs. Ganz oben: <span style="color:#1a9e5a;font-weight:700">36 Personen</span> sind über 100 Jahre alt — 28 Frauen, 8 Männer.
       </div>
     </div>
     <div class="scrolly__step" data-step="6">
@@ -537,6 +537,14 @@ function buildGemeindeProfileHTML(name) {
   html += `<div class="gc-stat"><div class="val">${g.total.toLocaleString('de-CH')}</div><div class="lbl">Einwohner</div></div>`;
   html += `<div class="gc-stat"><div class="val" style="color:${ageColor}">${g.avg_age.toFixed(1)}</div><div class="lbl">Ø Alter</div></div>`;
   html += `<div class="gc-stat"><div class="val" style="color:${maleColor}">${g.male_pct.toFixed(1)}%</div><div class="lbl">Männeranteil</div></div>`;
+  // 100+ year olds from pyramid data (last entry)
+  if (g.pyramid) {
+    const over100 = g.pyramid[g.pyramid.length - 1];
+    const n100 = over100.m + over100.f;
+    if (n100 > 0) {
+      html += `<div class="gc-stat"><div class="val" style="color:#1a9e5a">${n100}</div><div class="lbl">100+ Jahre</div></div>`;
+    }
+  }
   html += `</div>`;
   html += `<div class="gc-rank">Rang ${ageRank} von ${total} (jüngste zuerst) · ${popRank}. grösste Gemeinde</div>`;
 
@@ -903,7 +911,7 @@ function setupObserver() {
   }, {
     root: null,
     // Trigger when step crosses a line 40% down from the top of the viewport
-    rootMargin: '-40% 0px -55% 0px',
+    rootMargin: '-30% 0px -60% 0px',
     threshold: 0
   });
 
