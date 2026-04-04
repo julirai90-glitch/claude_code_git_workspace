@@ -169,7 +169,7 @@
     .time-slider-wrap { top: 6px; }
     /* Pyramide und Viz etwas höher positionieren */
     #pyramid-container { max-height: 60vh; overflow-y: auto; }
-    #viz { max-height: 65vh; }
+    #viz { width: 96vw; }
   }
 </style>
 </head>
@@ -397,7 +397,10 @@ function setupViz() {
   svgEl = document.getElementById('bubble-svg');
   const container = document.getElementById('viz');
   width = container.clientWidth;
-  height = Math.min(width * 0.85, window.innerHeight * 0.8);
+  const isMobile = window.innerWidth <= 600;
+  height = isMobile
+    ? Math.min(width * 1.3, window.innerHeight * 0.65)
+    : Math.min(width * 0.85, window.innerHeight * 0.8);
   svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
   svgEl.setAttribute('width', width);
   svgEl.setAttribute('height', height);
