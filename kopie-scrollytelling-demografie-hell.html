@@ -19,11 +19,11 @@
   /* ── Scrolly Section ── */
   .scrolly { position: relative; }
   .scrolly__steps { position: relative; z-index: 2; pointer-events: none; }
-  .scrolly__step { min-height: 70vh; display: flex; align-items: center; padding: 20px 5vw; }
+  .scrolly__step { min-height: 85vh; display: flex; align-items: center; padding: 20px 5vw; }
   .scrolly__step:nth-child(odd) { justify-content: flex-end; }
   .scrolly__step:nth-child(even) { justify-content: flex-start; }
   .scrolly__step:first-child { min-height: 5vh; }
-  .scrolly__step:last-child { min-height: 50vh; }
+  .scrolly__step:last-child { min-height: 90vh; }
   .text-box { background: none; color: #1a1a1a; padding: 24px 28px; max-width: 340px; font-size: 15px; line-height: 1.6; text-shadow: none; opacity: 0; transform: translateY(12px); transition: all 0.4s ease; pointer-events: auto; }
   .text-box.active { opacity: 1; transform: translateY(0); }
   .text-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #444; }
@@ -149,7 +149,7 @@
     /* Text-Boxen: unten fixiert mit dunklem Hintergrund */
     .scrolly__step { align-items: flex-end; padding-bottom: 10px; min-height: 90vh; }
     .scrolly__step:first-child { min-height: 10vh; }
-    .scrolly__step:last-child { min-height: 60vh; }
+    .scrolly__step:last-child { min-height: 100vh; }
     .scrolly__step:nth-child(odd),
     .scrolly__step:nth-child(even) { justify-content: center; }
     .text-box { max-width: 92vw; padding: 14px 16px; font-size: 13px; line-height: 1.5; background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); text-shadow: none; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
@@ -346,6 +346,7 @@ let activeStep = -1;
 let prevContainer = null;
 let currentYear = 2024;
 let isProfileView = false;
+const timeHighlights = ['Felsberg', 'Buseno', 'Celerina/Schlarigna'];
 let timePlayInterval = null;
 
 function init() {
@@ -454,13 +455,15 @@ function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) 
     const y = scaleY(g.avg_age);
     const r = scaleR(g.total);
     const isHighlight = highlights.includes(g.gemeinde);
-    let opacity = dim ? (isHighlight ? 0.95 : 0.12) : 0.55;
+    let opacity = dim ? (isHighlight ? 0.95 : 0.12) : (isHighlight ? 0.9 : 0.55);
     let fill = '#0068A4';
     if (colorFn) fill = colorFn(g);
     if (isHighlight) fill = colorFn ? colorFn(g) : '#ff9e2c';
-    svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#333' : 'none'}" stroke-width="${isHighlight ? 1.5 : 0}" data-gemeinde="${g.gemeinde}" data-age="${g.avg_age}" data-male="${g.male_pct}" data-pop="${g.total}"/>`;
+    const hr = isHighlight ? Math.max(r, 8) : r;
+    svg += `<circle cx="${x}" cy="${y}" r="${hr}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#333' : 'none'}" stroke-width="${isHighlight ? 2 : 0}" data-gemeinde="${g.gemeinde}" data-age="${g.avg_age}" data-male="${g.male_pct}" data-pop="${g.total}"/>`;
     if (isHighlight || (!dim && g.total > 3000)) {
-      svg += `<text x="${x}" y="${y + 3}" text-anchor="middle" class="bubble-label">${g.gemeinde}</text>`;
+      const labelY = isHighlight ? y - hr - 3 : y + 3;
+      svg += `<text x="${x}" y="${labelY}" text-anchor="middle" class="bubble-label">${g.gemeinde}</text>`;
     }
   });
   svgEl.innerHTML = svg;
@@ -751,7 +754,7 @@ function setupTimeSlider() {
   slider.addEventListener('input', () => {
     currentYear = parseInt(slider.value);
     yearLabel.textContent = currentYear;
-    drawBubbles([], false, null, currentYear);
+    drawBubbles(timeHighlights, false, null, currentYear);
   });
 
   playBtn.addEventListener('click', () => {
@@ -765,7 +768,7 @@ function setupTimeSlider() {
     currentYear = 2010;
     slider.value = currentYear;
     yearLabel.textContent = currentYear;
-    drawBubbles([], false, null, currentYear);
+    drawBubbles(timeHighlights, false, null, currentYear);
 
     timePlayInterval = setInterval(() => {
       currentYear++;
@@ -777,7 +780,7 @@ function setupTimeSlider() {
       }
       slider.value = currentYear;
       yearLabel.textContent = currentYear;
-      drawBubbles([], false, null, currentYear);
+      drawBubbles(timeHighlights, false, null, currentYear);
     }, 800);
   });
 }
@@ -874,7 +877,7 @@ function updateViz(step) {
       currentYear = 2024;
       document.getElementById('time-slider').value = 2024;
       document.getElementById('time-slider-year').textContent = '2024';
-      drawBubbles([], false, null, currentYear);
+      drawBubbles(timeHighlights, false, null, currentYear);
       break;
 
     case 8: // Aging speed ranking
