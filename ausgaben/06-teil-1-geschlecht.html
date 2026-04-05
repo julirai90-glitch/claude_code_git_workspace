@@ -237,56 +237,34 @@
     </div>
     <div class="scrolly__step" data-step="3">
       <div class="text-box">
-        <h3>Die ältesten Gemeinden</h3>
-        <span class="highlight red">Buseno: 57,4 Jahre</span>
-        Das Calancatal dominiert: Buseno, Santa Maria i.C., Rossa — alle über 55 Jahre. Kleine Berggemeinden, in denen die Jungen fehlen.
-      </div>
-    </div>
-    <div class="scrolly__step" data-step="4">
-      <div class="text-box">
         <h3>Geschlechterverhältnis</h3>
         <span style="font-size:28px;font-weight:800;display:block;margin:4px 0 8px"><span style="color:#0068A4">69</span> vs. <span style="color:#EE7733">32</span></span>
         <span style="color:#0068A4">69 Gemeinden</span> haben mehr Männer als Frauen, <span style="color:#EE7733">32 Gemeinden</span> mehr Frauen. In Chur leben 51% Frauen — aber der kantonale Schnitt liegt bei 50,4% Männern, weil die vielen kleinen Berggemeinden durchwegs Männerüberschuss haben.
       </div>
     </div>
-    <div class="scrolly__step" data-step="5">
+    <div class="scrolly__step" data-step="4">
       <div class="text-box">
         <h3>Der Geschlechter-Flip</h3>
         <span style="font-size:28px;font-weight:800;display:block;margin:4px 0 8px"><span style="color:#0068A4">24</span> ↔ <span style="color:#EE7733">8</span></span>
         32 Gemeinden haben zwischen 2010 und 2024 die 50%-Grenze überschritten. 24 wurden männlicher, nur 8 weiblicher. Die Linien zeigen die Verschiebung.
       </div>
     </div>
-    <div class="scrolly__step" data-step="6">
+    <div class="scrolly__step" data-step="5">
       <div class="text-box">
         <h3>Der Kipp-Punkt</h3>
         <span class="highlight">2016</span>
         2016 kippte auch der gesamte Kanton: von 49,7% auf 50,05% Männeranteil. 2024 sind es 50,4%. Die Zahl der Gemeinden mit Männerüberschuss stieg von 53 auf 69.
       </div>
     </div>
-    <div class="scrolly__step" data-step="7">
-      <div class="text-box">
-        <h3>Bevölkerungspyramide</h3>
-        Die Altersstruktur des Kantons zeigt den typischen «Tannenbaum»: Geburtenstarke Jahrgänge um die 55–65, schmaler Nachwuchs. Ganz oben: <span style="color:#1a9e5a;font-weight:700">36 Personen</span> sind über 100 Jahre alt — 28 Frauen, 8 Männer.
-      </div>
-    </div>
-    <div class="scrolly__step" data-step="8">
-      <div class="text-box">
-        <h3>Die zehn ältesten & jüngsten</h3>
-        Ein Muster: Die ältesten Gemeinden liegen fast alle in alpinen Seitentälern. Die jüngsten in der Agglomeration Chur oder in touristischen Hotspots.
-      </div>
-    </div>
-    <div class="scrolly__step" data-step="9">
+    <div class="scrolly__step" data-step="6">
       <div class="text-box">
         <h3>15 Jahre Wandel</h3>
         <span class="highlight">2010 → 2024</span>
         Wie hat sich die Landkarte verändert? Benutze den Slider oben, um durch die Jahre zu reisen. Die Blasen verschieben sich — manche Gemeinden altern dramatisch, andere kaum.
       </div>
     </div>
-    <div class="scrolly__step" data-step="10">
+    <div class="scrolly__step" data-step="7">
       <div class="text-box">
-        <h3>Wer altert am schnellsten?</h3>
-        <span class="highlight red">Celerina: +7,8 Jahre</span>
-        In 14 Jahren stieg das Durchschnittsalter um fast 8 Jahre. Auch Val Müstair (+7,2), Tujetsch (+7,1) und Samnaun (+7,0) altern rasant. Ferrera dagegen verjüngte sich um 5 Jahre.
       </div>
     </div>
   </div>
@@ -306,8 +284,8 @@
 <!-- Outro -->
 <div class="outro">
   <h2>Was die Zahlen zeigen</h2>
-  <p>Das Durchschnittsalter der 101 Bündner Gemeinden variiert um fast 20 Jahre — von 40 in Felsberg bis 57 in Buseno. Die jüngsten Gemeinden liegen in der Agglomeration Chur, die ältesten in den Südtälern. Im Calancatal liegt das Durchschnittsalter in jeder Gemeinde über 54 Jahren.</p>
-  <p>Zwischen 2010 und 2024 ist das Durchschnittsalter in fast allen Gemeinden gestiegen. Tourismusgemeinden wie Celerina (+7,8 Jahre) und Samnaun (+7,0) altern besonders schnell. Nur wenige Gemeinden wie Ferrera (−5,0) oder Cama (−0,9) konnten den Trend umkehren.</p>
+  <p>69 der 101 Bündner Gemeinden haben heute mehr Männer als Frauen. 2010 waren es erst 53. Seit 2016 hat auch der gesamte Kanton eine Männermehrheit — ein Kipp-Punkt, der vor allem von den vielen kleinen Berggemeinden mit chronischem Männerüberschuss getrieben wird.</p>
+  <p>32 Gemeinden haben zwischen 2010 und 2024 die 50%-Grenze überschritten. 24 davon wurden männlicher, nur 8 weiblicher. Einzig in den grösseren Gemeinden wie Chur dominieren nach wie vor die Frauen.</p>
   <p class="source">Quelle: Kanton Graubünden, Amt für Wirtschaft und Tourismus, Ständige Wohnbevölkerung 2024. Analyse: Julian Reich.</p>
 </div>
 
@@ -343,16 +321,6 @@ function getDataForYear(year) {
     return { gemeinde: g.gemeinde, total: entry[1], avg_age: entry[2], male_pct: entry[3], pyramid: g.pyramid };
   });
 }
-
-// Compute aging speed (2010→2024)
-const AGING_SPEED = DATA.gemeinden.map(g => {
-  const ts = TIMESERIES[g.gemeinde];
-  if (!ts) return null;
-  const y2010 = ts.find(e => e[0] === 2010);
-  const y2024 = ts.find(e => e[0] === 2024);
-  if (!y2010 || !y2024) return null;
-  return { gemeinde: g.gemeinde, change: +(y2024[2] - y2010[2]).toFixed(1), from: y2010[2], to: y2024[2] };
-}).filter(Boolean).sort((a, b) => b.change - a.change);
 
 let svgEl, width, height;
 const isMobileMargin = window.innerWidth <= 600;
@@ -702,24 +670,6 @@ function renderRankList(field, data, color) {
   }).join('');
 }
 
-function showDualRanking(field, n) {
-  const container = document.getElementById('ranking-container');
-  const barsEl = document.getElementById('ranking-bars');
-  const titleEl = document.getElementById('rank-title');
-  container.classList.add('visible');
-  titleEl.textContent = '';
-
-  const sorted = [...DATA.gemeinden].sort((a, b) => b[field] - a[field]);
-  const oldest = sorted.slice(0, n);
-  const youngest = sorted.slice(-n).reverse();
-
-  let html = `<div class="dual-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
-  html += `<div><div class="rank-title" style="color:#EE7733">Die zehn ältesten</div>${renderRankList(field, oldest, '#EE7733')}</div>`;
-  html += `<div><div class="rank-title" style="color:#0068A4">Die zehn jüngsten</div>${renderRankList(field, youngest, '#0068A4')}</div>`;
-  html += `</div>`;
-  barsEl.innerHTML = html;
-}
-
 function showRanking(field, label, top = 10, color = '#0068A4', reverse = false) {
   const container = document.getElementById('ranking-container');
   const barsEl = document.getElementById('ranking-bars');
@@ -744,10 +694,7 @@ function showViz() {
 }
 
 function getContainerForStep(step) {
-  if (step <= 6) return 'viz';     // 1-4 bubbles, 5 slopegraph, 6 canton line
-  if (step === 7) return 'pyramid';
-  if (step === 8 || step === 10) return 'ranking';
-  return 'viz';                    // 9 = time slider
+  return 'viz';  // all steps use viz container
 }
 
 function fadeBubbles(fn) {
@@ -956,43 +903,13 @@ function setupTimeSlider() {
   });
 }
 
-function showAgingRanking() {
-  const container = document.getElementById('ranking-container');
-  const barsEl = document.getElementById('ranking-bars');
-  const titleEl = document.getElementById('rank-title');
-  container.classList.add('visible');
-  titleEl.textContent = '';
-
-  const fastest = AGING_SPEED.slice(0, 10);
-  const slowest = AGING_SPEED.slice(-5).reverse();
-
-  function renderAgingList(data, color) {
-    const maxVal = Math.max(...data.map(g => Math.abs(g.change)));
-    return data.map(g => {
-      const w = (Math.abs(g.change) / maxVal * 100).toFixed(1);
-      return `<div class="rank-item">
-        <div class="rank-name">${g.gemeinde}</div>
-        <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${w}%;background:${color}"></div></div>
-        <div class="rank-val">${g.change > 0 ? '+' : ''}${g.change}</div>
-      </div>`;
-    }).join('');
-  }
-
-  let html = `<div class="dual-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
-  html += `<div><div class="rank-title" style="color:#EE7733">Am stärksten gealtert</div>${renderAgingList(fastest, '#EE7733')}</div>`;
-  html += `<div><div class="rank-title" style="color:#0068A4">Am wenigsten / verjüngt</div>${renderAgingList(slowest, '#0068A4')}</div>`;
-  html += `</div>`;
-  html += `<div style="text-align:center;font-size:10px;color:#888;margin-top:8px">Veränderung Durchschnittsalter 2010 → 2024 in Jahren</div>`;
-  barsEl.innerHTML = html;
-}
-
 function updateViz(step) {
   updateProgressDots(step);
   const nextContainer = getContainerForStep(step);
   const sameContainer = prevContainer === nextContainer;
 
-  // Stop time animation when leaving step 7
-  if (activeStep === 9 && step !== 9 && timePlayInterval) {
+  // Stop time animation when leaving step 6
+  if (activeStep === 6 && step !== 6 && timePlayInterval) {
     clearInterval(timePlayInterval);
     timePlayInterval = null;
     document.getElementById('time-play-btn').innerHTML = '&#9654;';
@@ -1001,7 +918,7 @@ function updateViz(step) {
   if (!sameContainer) {
     hideAll();
   }
-  showTimeSlider(step === 9);
+  showTimeSlider(step === 6 || step === 7);
   prevContainer = nextContainer;
 
   switch(step) {
@@ -1025,33 +942,19 @@ function updateViz(step) {
 
     case 3:
       showViz();
-      if (sameContainer) fadeBubbles(() => drawBubbles(['Buseno', 'Santa Maria in Calanca', 'Rossa', 'Calanca'], true, g => g.avg_age > 53 ? '#EE7733' : '#0068A4'));
-      else drawBubbles(['Buseno', 'Santa Maria in Calanca', 'Rossa', 'Calanca'], true, g => g.avg_age > 53 ? '#EE7733' : '#0068A4');
-      break;
-
-    case 4:
-      showViz();
       if (sameContainer) fadeBubbles(() => drawBubbles([], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733'));
       else drawBubbles([], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733');
       break;
 
-    case 5: // Slopegraph
+    case 4: // Slopegraph
       drawSlopegraph();
       break;
 
-    case 6: // Flip stats
+    case 5: // Flip stats — canton line chart
       showFlipStats();
       break;
 
-    case 7:
-      showPyramid(null);
-      break;
-
-    case 8:
-      showDualRanking('avg_age', 10);
-      break;
-
-    case 9: // Time slider
+    case 6: // Time slider
       showViz();
       currentYear = 2024;
       document.getElementById('time-slider').value = 2024;
@@ -1059,8 +962,9 @@ function updateViz(step) {
       drawBubbles(timeHighlights, false, null, currentYear);
       break;
 
-    case 10: // Aging speed ranking
-      showAgingRanking();
+    case 7: // scroll-out, same as step 6
+      showViz();
+      drawBubbles(timeHighlights, false, null, currentYear);
       break;
   }
 }
