@@ -67,12 +67,6 @@
   .pyr-legend-dot { width: 12px; height: 12px; border-radius: 3px; }
   .pyr-title { font-size: 14px; color: #333; text-align: center; margin-bottom: 8px; font-weight: 600; }
 
-  /* ── Stat cards ── */
-  .stat-cards { gap: 12px; justify-content: center; flex-wrap: wrap; max-width: 500px; }
-  .stat-card { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 16px; min-width: 120px; text-align: center; }
-  .stat-card .val { font-size: 26px; font-weight: 800; }
-  .stat-card .lbl { font-size: 11px; color: #888; margin-top: 4px; }
-
   /* ── Ranking bars ── */
   #ranking-container { width: 90vw; max-width: 700px; }
   .rank-title { font-size: 13px; color: #aaa; margin-bottom: 8px; font-weight: 600; }
@@ -139,8 +133,6 @@
   .scrolly__sticky { position: sticky; top: 0; height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; z-index: 1; overflow: hidden; }
   #viz, #pyramid-container, #ranking-container { position: absolute; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s 0.4s; }
   #viz.visible, #pyramid-container.visible, #ranking-container.visible { opacity: 1; visibility: visible; transition: opacity 0.4s ease, visibility 0s 0s; }
-  .stat-cards { position: absolute; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s 0.4s; }
-  .stat-cards.visible { opacity: 1; visibility: visible; transition: opacity 0.4s ease, visibility 0s 0s; display: flex; }
   #bubble-svg { transition: opacity 0.25s ease; }
 
   /* ── Mobile ── */
@@ -155,8 +147,6 @@
     .text-box { max-width: 92vw; padding: 14px 16px; font-size: 13px; line-height: 1.5; background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); text-shadow: none; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
     .text-box h3 { font-size: 12px; }
     .text-box .highlight { font-size: 20px; }
-    .stat-card { min-width: 90px; padding: 12px; }
-    .stat-card .val { font-size: 22px; }
     .progress-dots { right: 6px; gap: 8px; }
     .progress-dot { width: 7px; height: 7px; }
     .dot-label { display: none; }
@@ -211,7 +201,6 @@
       </div>
       <div id="pyramid"></div>
     </div>
-    <div class="stat-cards" id="stat-cards"></div>
     <div id="ranking-container">
       <div class="rank-title" id="rank-title"></div>
       <div id="ranking-bars"></div>
@@ -814,8 +803,8 @@ function updateViz(step) {
   const nextContainer = getContainerForStep(step);
   const sameContainer = prevContainer === nextContainer;
 
-  // Stop time animation when leaving step 7
-  if (activeStep === 9 && step !== 9 && timePlayInterval) {
+  // Stop time animation when leaving step 6
+  if (activeStep === 6 && step !== 6 && timePlayInterval) {
     clearInterval(timePlayInterval);
     timePlayInterval = null;
     document.getElementById('time-play-btn').innerHTML = '&#9654;';
@@ -824,7 +813,7 @@ function updateViz(step) {
   if (!sameContainer) {
     hideAll();
   }
-  showTimeSlider(step === 9);
+  showTimeSlider(step === 6);
   prevContainer = nextContainer;
 
   switch(step) {
@@ -853,28 +842,14 @@ function updateViz(step) {
       break;
 
     case 4:
-      showViz();
-      if (sameContainer) fadeBubbles(() => drawBubbles([], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733'));
-      else drawBubbles([], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733');
-      break;
-
-    case 5: // Slopegraph
-      drawSlopegraph();
-      break;
-
-    case 6: // Flip stats
-      showFlipStats();
-      break;
-
-    case 7:
       showPyramid(null);
       break;
 
-    case 8:
+    case 5:
       showDualRanking('avg_age', 10);
       break;
 
-    case 9: // Time slider
+    case 6: // Time slider
       showViz();
       currentYear = 2024;
       document.getElementById('time-slider').value = 2024;
@@ -882,7 +857,7 @@ function updateViz(step) {
       drawBubbles(timeHighlights, false, null, currentYear);
       break;
 
-    case 10: // Aging speed ranking
+    case 7: // Aging speed ranking
       showAgingRanking();
       break;
   }
