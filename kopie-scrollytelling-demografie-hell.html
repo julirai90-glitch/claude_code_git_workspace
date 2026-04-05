@@ -343,6 +343,10 @@ function getDataForYear(year) {
   });
 }
 
+// Gender flip data: gemeinden that crossed 50% between 2010 and 2024
+const FLIP_DATA = [{"g":"Santa Maria in Calanca","y10":46.7,"y24":54.0,"d":"fm"},{"g":"Rothenbrunnen","y10":47.1,"y24":53.9,"d":"fm"},{"g":"Silvaplana","y10":46.8,"y24":52.3,"d":"fm"},{"g":"Fürstenau","y10":50.9,"y24":45.9,"d":"mf"},{"g":"Brusio","y10":49.0,"y24":52.7,"d":"fm"},{"g":"Masein","y10":51.8,"y24":48.4,"d":"mf"},{"g":"Bever","y10":50.9,"y24":47.6,"d":"mf"},{"g":"Jenins","y10":47.8,"y24":51.0,"d":"fm"},{"g":"Bergün Filisur","y10":52.5,"y24":49.4,"d":"mf"},{"g":"Celerina/Schlarigna","y10":47.7,"y24":50.7,"d":"fm"},{"g":"Madulain","y10":48.5,"y24":51.5,"d":"fm"},{"g":"Muntogna da Schons","y10":48.2,"y24":51.1,"d":"fm"},{"g":"Vals","y10":50.0,"y24":52.9,"d":"fm"},{"g":"Seewis im Prättigau","y10":48.6,"y24":51.1,"d":"fm"},{"g":"Furna","y10":47.8,"y24":50.2,"d":"fm"},{"g":"San Vittore","y10":49.4,"y24":51.6,"d":"fm"},{"g":"Medel (Lucmagn)","y10":48.3,"y24":50.3,"d":"fm"},{"g":"Cazis","y10":49.9,"y24":51.8,"d":"fm"},{"g":"Sils im Engadin/Segl","y10":49.7,"y24":51.6,"d":"fm"},{"g":"Conters im Prättigau","y10":49.2,"y24":50.9,"d":"fm"},{"g":"Pontresina","y10":50.4,"y24":48.8,"d":"mf"},{"g":"Jenaz","y10":49.8,"y24":51.1,"d":"fm"},{"g":"Valsot","y10":49.5,"y24":50.8,"d":"fm"},{"g":"Grüsch","y10":49.9,"y24":51.0,"d":"fm"},{"g":"Trin","y10":50.9,"y24":49.8,"d":"mf"},{"g":"Klosters","y10":49.4,"y24":50.4,"d":"fm"},{"g":"Landquart","y10":49.6,"y24":50.4,"d":"fm"},{"g":"Davos","y10":49.6,"y24":50.2,"d":"fm"},{"g":"Untervaz","y10":49.9,"y24":50.5,"d":"fm"},{"g":"Domat/Ems","y10":50.0,"y24":50.5,"d":"fm"},{"g":"Flims","y10":50.0,"y24":50.3,"d":"fm"}];
+const FLIP_HIGHLIGHTS = ['Santa Maria in Calanca', 'Silvaplana', 'Fürstenau', 'Bever'];
+
 // Compute aging speed (2010→2024)
 const AGING_SPEED = DATA.gemeinden.map(g => {
   const ts = TIMESERIES[g.gemeinde];
@@ -743,8 +747,7 @@ function showViz() {
 }
 
 function getContainerForStep(step) {
-  if (step <= 5) return 'viz';     // 1-4 bubbles, 5 slopegraph
-  if (step === 6) return 'stat';   // flip stats
+  if (step <= 6) return 'viz';     // 1-4 bubbles, 5 slopegraph, 6 canton line
   if (step === 7) return 'pyramid';
   if (step === 8 || step === 10) return 'ranking';
   return 'viz';                    // 9 = time slider
@@ -829,16 +832,87 @@ function drawSlopegraph() {
 }
 
 function showFlipStats() {
-  const el = document.getElementById('stat-cards');
-  el.classList.add('visible');
-  el.innerHTML = `
-    <div class="stat-card"><div class="val" style="color:#0068A4">53</div><div class="lbl">Männerüberschuss 2010</div></div>
-    <div class="stat-card"><div class="val" style="font-size:22px">→</div><div class="lbl"></div></div>
-    <div class="stat-card"><div class="val" style="color:#0068A4">69</div><div class="lbl">Männerüberschuss 2024</div></div>
-    <div class="stat-card"><div class="val" style="color:#EE7733">48</div><div class="lbl">Frauenüberschuss 2010</div></div>
-    <div class="stat-card"><div class="val" style="font-size:22px">→</div><div class="lbl"></div></div>
-    <div class="stat-card"><div class="val" style="color:#EE7733">32</div><div class="lbl">Frauenüberschuss 2024</div></div>
-  `;
+  // Draw canton-wide male_pct line 2010-2024 into the viz SVG
+  showViz();
+  const cantonYears = [];
+  for (let year = 2010; year <= 2024; year++) {
+    let totalM = 0, totalAll = 0;
+    DATA.gemeinden.forEach(g => {
+      const ts = TIMESERIES[g.gemeinde];
+      if (!ts) return;
+      const entry = ts.find(e => e[0] === year);
+      if (entry) {
+        totalM += Math.round(entry[1] * entry[3] / 100);
+        totalAll += entry[1];
+      }
+    });
+    cantonYears.push({ year, pct: totalM / totalAll * 100 });
+  }
+
+  const w = width, h = height;
+  const pad = { top: 50, bottom: 50, left: 60, right: 30 };
+  const minP = 49.5, maxP = 50.5;
+
+  function xPos(year) { return pad.left + ((year - 2010) / 14) * (w - pad.left - pad.right); }
+  function yPos(pct) { return pad.top + ((maxP - pct) / (maxP - minP)) * (h - pad.top - pad.bottom); }
+
+  let svg = '';
+
+  // Background zones
+  const y50 = yPos(50);
+  svg += `<rect x="${pad.left}" y="${pad.top}" width="${w - pad.left - pad.right}" height="${y50 - pad.top}" fill="#0068A4" opacity="0.04"/>`;
+  svg += `<rect x="${pad.left}" y="${y50}" width="${w - pad.left - pad.right}" height="${h - pad.bottom - y50}" fill="#EE7733" opacity="0.04"/>`;
+
+  // Zone labels
+  svg += `<text x="${w - pad.right - 4}" y="${pad.top + 16}" text-anchor="end" fill="#0068A4" font-size="11" opacity="0.6">♂ Männermehrheit</text>`;
+  svg += `<text x="${w - pad.right - 4}" y="${h - pad.bottom - 6}" text-anchor="end" fill="#EE7733" font-size="11" opacity="0.6">♀ Frauenmehrheit</text>`;
+
+  // 50% line
+  svg += `<line x1="${pad.left}" y1="${y50}" x2="${w - pad.right}" y2="${y50}" stroke="#999" stroke-width="1.5" stroke-dasharray="6 3"/>`;
+  svg += `<text x="${pad.left - 6}" y="${y50 + 4}" text-anchor="end" fill="#999" font-size="11" font-weight="600">50%</text>`;
+
+  // Y grid
+  for (let p = 49.6; p <= 50.4; p += 0.2) {
+    if (Math.abs(p - 50) < 0.05) continue;
+    const y = yPos(p);
+    svg += `<line x1="${pad.left}" y1="${y}" x2="${w - pad.right}" y2="${y}" stroke="#eee" stroke-width="1"/>`;
+    svg += `<text x="${pad.left - 6}" y="${y + 3}" text-anchor="end" fill="#ccc" font-size="9">${p.toFixed(1)}%</text>`;
+  }
+
+  // X axis years
+  cantonYears.forEach(d => {
+    const x = xPos(d.year);
+    if (d.year % 2 === 0 || d.year === 2015) {
+      svg += `<text x="${x}" y="${h - pad.bottom + 18}" text-anchor="middle" fill="#999" font-size="10">${d.year}</text>`;
+    }
+    svg += `<line x1="${x}" y1="${h - pad.bottom}" x2="${x}" y2="${h - pad.bottom + 4}" stroke="#ccc" stroke-width="1"/>`;
+  });
+
+  // The line
+  const points = cantonYears.map(d => `${xPos(d.year).toFixed(1)},${yPos(d.pct).toFixed(1)}`).join(' ');
+  svg += `<polyline points="${points}" fill="none" stroke="#1a1a1a" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+  // Dots at each year
+  cantonYears.forEach(d => {
+    const x = xPos(d.year), y = yPos(d.pct);
+    svg += `<circle cx="${x}" cy="${y}" r="3.5" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>`;
+  });
+
+  // Highlight 2016 crossing point
+  const d2016 = cantonYears.find(d => d.year === 2016);
+  const x2016 = xPos(2016), y2016 = yPos(d2016.pct);
+  svg += `<circle cx="${x2016}" cy="${y2016}" r="6" fill="#1a9e5a" stroke="#fff" stroke-width="2"/>`;
+  svg += `<text x="${x2016}" y="${y2016 - 14}" text-anchor="middle" fill="#1a9e5a" font-size="12" font-weight="800">2016: Kipp-Punkt</text>`;
+
+  // Start and end labels
+  const dFirst = cantonYears[0], dLast = cantonYears[cantonYears.length - 1];
+  svg += `<text x="${xPos(2010)}" y="${yPos(dFirst.pct) + 18}" text-anchor="start" fill="#555" font-size="11" font-weight="600">${dFirst.pct.toFixed(2)}%</text>`;
+  svg += `<text x="${xPos(2024)}" y="${yPos(dLast.pct) - 10}" text-anchor="end" fill="#555" font-size="11" font-weight="600">${dLast.pct.toFixed(2)}%</text>`;
+
+  // Title
+  svg += `<text x="${w / 2}" y="${pad.top - 20}" text-anchor="middle" fill="#333" font-size="13" font-weight="700">Männeranteil Kanton Graubünden</text>`;
+
+  svgEl.innerHTML = svg;
 }
 
 function showTimeSlider(show) {
