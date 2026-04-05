@@ -856,7 +856,7 @@ function showFlipStats() {
   function xPos(year) { return pad.left + ((year - 2010) / 14) * (w - pad.left - pad.right); }
   function yPos(pct) { return pad.top + ((maxP - pct) / (maxP - minP)) * (h - pad.top - pad.bottom); }
 
-  let svg = '';
+  let svg = `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" style="font-family:-apple-system,sans-serif">`;
 
   // Background zones
   const y50 = yPos(50);
@@ -912,6 +912,7 @@ function showFlipStats() {
   // Title
   svg += `<text x="${w / 2}" y="${pad.top - 20}" text-anchor="middle" fill="#333" font-size="13" font-weight="700">Männeranteil Kanton Graubünden</text>`;
 
+  svg += `</svg>`;
   svgEl.innerHTML = svg;
 }
 
