@@ -250,24 +250,38 @@
     </div>
     <div class="scrolly__step" data-step="5">
       <div class="text-box">
+        <h3>Der Geschlechter-Flip</h3>
+        <span style="font-size:28px;font-weight:800;display:block;margin:4px 0 8px"><span style="color:#0068A4">24</span> ↔ <span style="color:#EE7733">8</span></span>
+        32 Gemeinden haben zwischen 2010 und 2024 die 50%-Grenze überschritten. 24 wurden männlicher, nur 8 weiblicher. Die Linien zeigen die Verschiebung.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="6">
+      <div class="text-box">
+        <h3>Der Kipp-Punkt</h3>
+        <span class="highlight">2016</span>
+        2016 kippte auch der gesamte Kanton: von 49,7% auf 50,05% Männeranteil. 2024 sind es 50,4%. Die Zahl der Gemeinden mit Männerüberschuss stieg von 53 auf 69.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="7">
+      <div class="text-box">
         <h3>Bevölkerungspyramide</h3>
         Die Altersstruktur des Kantons zeigt den typischen «Tannenbaum»: Geburtenstarke Jahrgänge um die 55–65, schmaler Nachwuchs. Ganz oben: <span style="color:#1a9e5a;font-weight:700">36 Personen</span> sind über 100 Jahre alt — 28 Frauen, 8 Männer.
       </div>
     </div>
-    <div class="scrolly__step" data-step="6">
+    <div class="scrolly__step" data-step="8">
       <div class="text-box">
         <h3>Die zehn ältesten & jüngsten</h3>
         Ein Muster: Die ältesten Gemeinden liegen fast alle in alpinen Seitentälern. Die jüngsten in der Agglomeration Chur oder in touristischen Hotspots.
       </div>
     </div>
-    <div class="scrolly__step" data-step="7">
+    <div class="scrolly__step" data-step="9">
       <div class="text-box">
         <h3>15 Jahre Wandel</h3>
         <span class="highlight">2010 → 2024</span>
         Wie hat sich die Landkarte verändert? Benutze den Slider oben, um durch die Jahre zu reisen. Die Blasen verschieben sich — manche Gemeinden altern dramatisch, andere kaum.
       </div>
     </div>
-    <div class="scrolly__step" data-step="8">
+    <div class="scrolly__step" data-step="10">
       <div class="text-box">
         <h3>Wer altert am schnellsten?</h3>
         <span class="highlight red">Celerina: +7,8 Jahre</span>
@@ -347,6 +361,8 @@ let prevContainer = null;
 let currentYear = 2024;
 let isProfileView = false;
 const timeHighlights = ['Felsberg', 'Buseno', 'Celerina/Schlarigna'];
+const FLIP_DATA = [{"g":"Santa Maria in Calanca","y10":46.7,"y24":54.0,"d":"fm"},{"g":"Rothenbrunnen","y10":47.1,"y24":53.9,"d":"fm"},{"g":"Silvaplana","y10":46.8,"y24":52.3,"d":"fm"},{"g":"Fürstenau","y10":50.9,"y24":45.9,"d":"mf"},{"g":"Brusio","y10":49.0,"y24":52.7,"d":"fm"},{"g":"Masein","y10":51.8,"y24":48.4,"d":"mf"},{"g":"Bever","y10":50.9,"y24":47.6,"d":"mf"},{"g":"Jenins","y10":47.8,"y24":51.0,"d":"fm"},{"g":"Bergün Filisur","y10":52.5,"y24":49.4,"d":"mf"},{"g":"Celerina/Schlarigna","y10":47.7,"y24":50.7,"d":"fm"},{"g":"Madulain","y10":48.5,"y24":51.5,"d":"fm"},{"g":"Muntogna da Schons","y10":48.2,"y24":51.1,"d":"fm"},{"g":"Vals","y10":50.0,"y24":52.9,"d":"fm"},{"g":"Seewis im Prättigau","y10":48.6,"y24":51.1,"d":"fm"},{"g":"Furna","y10":47.8,"y24":50.2,"d":"fm"},{"g":"San Vittore","y10":49.4,"y24":51.6,"d":"fm"},{"g":"Medel (Lucmagn)","y10":48.3,"y24":50.3,"d":"fm"},{"g":"Cazis","y10":49.9,"y24":51.8,"d":"fm"},{"g":"Sils im Engadin/Segl","y10":49.7,"y24":51.6,"d":"fm"},{"g":"Conters im Prättigau","y10":49.2,"y24":50.9,"d":"fm"},{"g":"Pontresina","y10":50.4,"y24":48.8,"d":"mf"},{"g":"Jenaz","y10":49.8,"y24":51.1,"d":"fm"},{"g":"Valsot","y10":49.5,"y24":50.8,"d":"fm"},{"g":"Grüsch","y10":49.9,"y24":51.0,"d":"fm"},{"g":"Trin","y10":50.9,"y24":49.8,"d":"mf"},{"g":"Klosters","y10":49.4,"y24":50.4,"d":"fm"},{"g":"Landquart","y10":49.6,"y24":50.4,"d":"fm"},{"g":"Davos","y10":49.6,"y24":50.2,"d":"fm"},{"g":"Roveredo (GR)","y10":50.0,"y24":49.4,"d":"mf"},{"g":"Untervaz","y10":49.9,"y24":50.5,"d":"fm"},{"g":"Domat/Ems","y10":50.0,"y24":50.5,"d":"fm"},{"g":"Felsberg","y10":50.0,"y24":49.8,"d":"mf"}];
+const FLIP_HIGHLIGHTS = ['Santa Maria in Calanca', 'Silvaplana', 'Fürstenau', 'Bever'];
 let timePlayInterval = null;
 
 function init() {
@@ -727,10 +743,11 @@ function showViz() {
 }
 
 function getContainerForStep(step) {
-  if (step <= 4) return 'viz';
-  if (step === 5) return 'pyramid';
-  if (step === 6 || step === 8) return 'ranking';
-  return 'viz'; // step 7 = time slider on bubble chart
+  if (step <= 5) return 'viz';     // 1-4 bubbles, 5 slopegraph
+  if (step === 6) return 'stat';   // flip stats
+  if (step === 7) return 'pyramid';
+  if (step === 8 || step === 10) return 'ranking';
+  return 'viz';                    // 9 = time slider
 }
 
 function fadeBubbles(fn) {
@@ -740,6 +757,88 @@ function fadeBubbles(fn) {
     fn();
     requestAnimationFrame(() => { svgEl.style.opacity = '1'; });
   });
+}
+
+// ── Slopegraph: Geschlechter-Flip ──
+function drawSlopegraph() {
+  showViz();
+  const w = width;
+  const h = height;
+  const pad = { top: 40, bottom: 30, left: 80, right: 80 };
+  const minP = 44, maxP = 56;
+  const colL = pad.left;
+  const colR = w - pad.right;
+
+  function yPos(pct) {
+    return pad.top + ((maxP - pct) / (maxP - minP)) * (h - pad.top - pad.bottom);
+  }
+
+  let svg = `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" style="font-family:-apple-system,sans-serif">`;
+
+  // Grid lines
+  for (let p = 44; p <= 56; p += 2) {
+    const y = yPos(p);
+    svg += `<line x1="${colL}" y1="${y}" x2="${colR}" y2="${y}" stroke="#eee" stroke-width="1"/>`;
+    svg += `<text x="${colL - 6}" y="${y + 3}" text-anchor="end" fill="#bbb" font-size="10">${p}%</text>`;
+  }
+
+  // 50% line (prominent)
+  const y50 = yPos(50);
+  svg += `<line x1="${colL - 10}" y1="${y50}" x2="${colR + 10}" y2="${y50}" stroke="#999" stroke-width="1.5" stroke-dasharray="6 3"/>`;
+  svg += `<text x="${w / 2}" y="${y50 - 8}" text-anchor="middle" fill="#999" font-size="11" font-weight="600">50% — Gleichgewicht</text>`;
+
+  // Column headers
+  svg += `<text x="${colL}" y="${pad.top - 16}" text-anchor="middle" fill="#555" font-size="13" font-weight="700">2010</text>`;
+  svg += `<text x="${colR}" y="${pad.top - 16}" text-anchor="middle" fill="#555" font-size="13" font-weight="700">2024</text>`;
+
+  // Zone labels
+  svg += `<text x="${colL - 6}" y="${pad.top + 10}" text-anchor="end" fill="#0068A4" font-size="9">♂ Männer</text>`;
+  svg += `<text x="${colL - 6}" y="${h - pad.bottom}" text-anchor="end" fill="#EE7733" font-size="9">♀ Frauen</text>`;
+
+  // Lines (non-highlighted first, then highlighted on top)
+  FLIP_DATA.forEach(f => {
+    if (FLIP_HIGHLIGHTS.includes(f.g)) return;
+    const y1 = yPos(f.y10), y2 = yPos(f.y24);
+    const color = f.d === 'fm' ? '#0068A4' : '#EE7733';
+    const cx1 = colL + (colR - colL) * 0.3;
+    const cx2 = colL + (colR - colL) * 0.7;
+    svg += `<path d="M${colL},${y1} C${cx1},${y1} ${cx2},${y2} ${colR},${y2}" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.25"/>`;
+    svg += `<circle cx="${colL}" cy="${y1}" r="3" fill="${color}" opacity="0.3"/>`;
+    svg += `<circle cx="${colR}" cy="${y2}" r="3" fill="${color}" opacity="0.3"/>`;
+  });
+
+  // Highlighted lines on top
+  FLIP_DATA.forEach(f => {
+    if (!FLIP_HIGHLIGHTS.includes(f.g)) return;
+    const y1 = yPos(f.y10), y2 = yPos(f.y24);
+    const color = f.d === 'fm' ? '#0068A4' : '#EE7733';
+    const cx1 = colL + (colR - colL) * 0.3;
+    const cx2 = colL + (colR - colL) * 0.7;
+    svg += `<path d="M${colL},${y1} C${cx1},${y1} ${cx2},${y2} ${colR},${y2}" fill="none" stroke="${color}" stroke-width="3" opacity="0.85"/>`;
+    svg += `<circle cx="${colL}" cy="${y1}" r="4" fill="${color}"/>`;
+    svg += `<circle cx="${colR}" cy="${y2}" r="4" fill="${color}"/>`;
+    // Labels
+    const nameShort = f.g.length > 18 ? f.g.substring(0, 16) + '…' : f.g;
+    svg += `<text x="${colR + 6}" y="${y2 + 4}" fill="${color}" font-size="10" font-weight="600">${nameShort}</text>`;
+    svg += `<text x="${colL - 6}" y="${y1 + 4}" text-anchor="end" fill="${color}" font-size="10" font-weight="600">${f.y10}%</text>`;
+    svg += `<text x="${colR + 6}" y="${y2 + 15}" fill="#999" font-size="9">${f.y24}%</text>`;
+  });
+
+  svg += `</svg>`;
+  svgEl.innerHTML = svg;
+}
+
+function showFlipStats() {
+  const el = document.getElementById('stat-cards');
+  el.classList.add('visible');
+  el.innerHTML = `
+    <div class="stat-card"><div class="val" style="color:#0068A4">53</div><div class="lbl">Männerüberschuss 2010</div></div>
+    <div class="stat-card"><div class="val" style="font-size:22px">→</div><div class="lbl"></div></div>
+    <div class="stat-card"><div class="val" style="color:#0068A4">69</div><div class="lbl">Männerüberschuss 2024</div></div>
+    <div class="stat-card"><div class="val" style="color:#EE7733">48</div><div class="lbl">Frauenüberschuss 2010</div></div>
+    <div class="stat-card"><div class="val" style="font-size:22px">→</div><div class="lbl"></div></div>
+    <div class="stat-card"><div class="val" style="color:#EE7733">32</div><div class="lbl">Frauenüberschuss 2024</div></div>
+  `;
 }
 
 function showTimeSlider(show) {
@@ -821,7 +920,7 @@ function updateViz(step) {
   const sameContainer = prevContainer === nextContainer;
 
   // Stop time animation when leaving step 7
-  if (activeStep === 7 && step !== 7 && timePlayInterval) {
+  if (activeStep === 9 && step !== 9 && timePlayInterval) {
     clearInterval(timePlayInterval);
     timePlayInterval = null;
     document.getElementById('time-play-btn').innerHTML = '&#9654;';
@@ -830,7 +929,7 @@ function updateViz(step) {
   if (!sameContainer) {
     hideAll();
   }
-  showTimeSlider(step === 7);
+  showTimeSlider(step === 9);
   prevContainer = nextContainer;
 
   switch(step) {
@@ -864,15 +963,23 @@ function updateViz(step) {
       else drawBubbles([], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733');
       break;
 
-    case 5:
+    case 5: // Slopegraph
+      drawSlopegraph();
+      break;
+
+    case 6: // Flip stats
+      showFlipStats();
+      break;
+
+    case 7:
       showPyramid(null);
       break;
 
-    case 6:
+    case 8:
       showDualRanking('avg_age', 10);
       break;
 
-    case 7: // Time slider
+    case 9: // Time slider
       showViz();
       currentYear = 2024;
       document.getElementById('time-slider').value = 2024;
@@ -880,7 +987,7 @@ function updateViz(step) {
       drawBubbles(timeHighlights, false, null, currentYear);
       break;
 
-    case 8: // Aging speed ranking
+    case 10: // Aging speed ranking
       showAgingRanking();
       break;
   }
