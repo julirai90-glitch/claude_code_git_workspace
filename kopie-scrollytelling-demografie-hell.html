@@ -343,10 +343,6 @@ function getDataForYear(year) {
   });
 }
 
-// Gender flip data: gemeinden that crossed 50% between 2010 and 2024
-const FLIP_DATA = [{"g":"Santa Maria in Calanca","y10":46.7,"y24":54.0,"d":"fm"},{"g":"Rothenbrunnen","y10":47.1,"y24":53.9,"d":"fm"},{"g":"Silvaplana","y10":46.8,"y24":52.3,"d":"fm"},{"g":"Fürstenau","y10":50.9,"y24":45.9,"d":"mf"},{"g":"Brusio","y10":49.0,"y24":52.7,"d":"fm"},{"g":"Masein","y10":51.8,"y24":48.4,"d":"mf"},{"g":"Bever","y10":50.9,"y24":47.6,"d":"mf"},{"g":"Jenins","y10":47.8,"y24":51.0,"d":"fm"},{"g":"Bergün Filisur","y10":52.5,"y24":49.4,"d":"mf"},{"g":"Celerina/Schlarigna","y10":47.7,"y24":50.7,"d":"fm"},{"g":"Madulain","y10":48.5,"y24":51.5,"d":"fm"},{"g":"Muntogna da Schons","y10":48.2,"y24":51.1,"d":"fm"},{"g":"Vals","y10":50.0,"y24":52.9,"d":"fm"},{"g":"Seewis im Prättigau","y10":48.6,"y24":51.1,"d":"fm"},{"g":"Furna","y10":47.8,"y24":50.2,"d":"fm"},{"g":"San Vittore","y10":49.4,"y24":51.6,"d":"fm"},{"g":"Medel (Lucmagn)","y10":48.3,"y24":50.3,"d":"fm"},{"g":"Cazis","y10":49.9,"y24":51.8,"d":"fm"},{"g":"Sils im Engadin/Segl","y10":49.7,"y24":51.6,"d":"fm"},{"g":"Conters im Prättigau","y10":49.2,"y24":50.9,"d":"fm"},{"g":"Pontresina","y10":50.4,"y24":48.8,"d":"mf"},{"g":"Jenaz","y10":49.8,"y24":51.1,"d":"fm"},{"g":"Valsot","y10":49.5,"y24":50.8,"d":"fm"},{"g":"Grüsch","y10":49.9,"y24":51.0,"d":"fm"},{"g":"Trin","y10":50.9,"y24":49.8,"d":"mf"},{"g":"Klosters","y10":49.4,"y24":50.4,"d":"fm"},{"g":"Landquart","y10":49.6,"y24":50.4,"d":"fm"},{"g":"Davos","y10":49.6,"y24":50.2,"d":"fm"},{"g":"Untervaz","y10":49.9,"y24":50.5,"d":"fm"},{"g":"Domat/Ems","y10":50.0,"y24":50.5,"d":"fm"},{"g":"Flims","y10":50.0,"y24":50.3,"d":"fm"}];
-const FLIP_HIGHLIGHTS = ['Santa Maria in Calanca', 'Silvaplana', 'Fürstenau', 'Bever'];
-
 // Compute aging speed (2010→2024)
 const AGING_SPEED = DATA.gemeinden.map(g => {
   const ts = TIMESERIES[g.gemeinde];
