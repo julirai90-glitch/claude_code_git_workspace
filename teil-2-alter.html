@@ -851,10 +851,12 @@ function updateViz(step) {
 
     case 6: // Time slider
       showViz();
-      currentYear = 2024;
-      document.getElementById('time-slider').value = 2024;
-      document.getElementById('time-slider-year').textContent = '2024';
-      drawBubbles(timeHighlights, false, null, currentYear);
+      if (!timePlayInterval) {
+        currentYear = 2024;
+        document.getElementById('time-slider').value = 2024;
+        document.getElementById('time-slider-year').textContent = '2024';
+        drawBubbles(timeHighlights, false, null, currentYear);
+      }
       break;
 
     case 7: // Aging speed ranking

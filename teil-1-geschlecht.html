@@ -962,10 +962,12 @@ function updateViz(step) {
 
     case 7: // 15 Jahre Wandel — Time slider
       showViz();
-      currentYear = 2024;
-      document.getElementById('time-slider').value = 2024;
-      document.getElementById('time-slider-year').textContent = '2024';
-      drawBubbles(timeHighlights, false, null, currentYear);
+      if (!timePlayInterval) {
+        currentYear = 2024;
+        document.getElementById('time-slider').value = 2024;
+        document.getElementById('time-slider-year').textContent = '2024';
+        drawBubbles(timeHighlights, false, null, currentYear);
+      }
       break;
 
     case 8: // scroll-out
