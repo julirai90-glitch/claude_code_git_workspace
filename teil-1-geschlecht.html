@@ -223,47 +223,53 @@
   <div class="scrolly__steps" id="steps">
     <div class="scrolly__step" data-step="1">
       <div class="text-box">
-        <h3>Das Durchschnittsalter</h3>
-        <span class="highlight">45,2 Jahre</span>
-        So alt ist Graubünden im Schnitt. Die gestrichelte Linie markiert diesen Wert. Darunter: die jungen Gemeinden. Darüber: die alten.
+        <h3>Der Überblick</h3>
+        101 Gemeinden, jede eine Blase. Je weiter links, desto mehr Männer. Die vertikale Linie bei 50% trennt die Geschlechter.
       </div>
     </div>
     <div class="scrolly__step" data-step="2">
       <div class="text-box">
-        <h3>Die jüngste Gemeinde</h3>
-        <span class="highlight blue">Felsberg: 40,1 Jahre</span>
-        Nahe an Chur, jung und wachsend. Familien mit Kindern prägen das Bild.
+        <h3>Wo die Frauen sind</h3>
+        <span style="font-size:28px;font-weight:800;display:block;margin:4px 0 8px"><span style="color:#EE7733">32</span> von 101</span>
+        Nur <span style="color:#EE7733">32 Gemeinden</span> haben mehr Frauen als Männer. Fast alle davon sind grössere Orte. <strong>Chur</strong> mit 51% Frauen ist die grösste — <strong>Fürstenau</strong> mit 54% die weiblichste.
       </div>
     </div>
     <div class="scrolly__step" data-step="3">
       <div class="text-box">
-        <h3>Geschlechterverhältnis</h3>
-        <span style="font-size:28px;font-weight:800;display:block;margin:4px 0 8px"><span style="color:#0068A4">69</span> vs. <span style="color:#EE7733">32</span></span>
-        <span style="color:#0068A4">69 Gemeinden</span> haben mehr Männer als Frauen, <span style="color:#EE7733">32 Gemeinden</span> mehr Frauen. In Chur leben 51% Frauen — aber der kantonale Schnitt liegt bei 50,4% Männern, weil die vielen kleinen Berggemeinden durchwegs Männerüberschuss haben.
+        <h3>Wo die Männer sind</h3>
+        <span class="highlight blue">57%</span>
+        Die männlichsten Gemeinden sind winzig: <strong>Ferrera</strong> (57%), <strong>Rossa</strong> (56%), <strong>Rongellen</strong> (56%). Je kleiner die Gemeinde, desto mehr Männer — die 20 kleinsten haben im Schnitt 52% Männer.
       </div>
     </div>
     <div class="scrolly__step" data-step="4">
+      <div class="text-box">
+        <h3>Ab 60 kippt es</h3>
+        <span class="highlight red">67% Frauen</span>
+        Bis 59 dominieren die Männer. Ab 60 die Frauen. Bei den über 90-Jährigen sind 67% weiblich, bei den über 100-Jährigen sogar 78%. 28 der 36 Hundertjährigen sind Frauen.
+      </div>
+    </div>
+    <div class="scrolly__step" data-step="5">
       <div class="text-box">
         <h3>Der Geschlechter-Flip</h3>
         <span style="font-size:28px;font-weight:800;display:block;margin:4px 0 8px"><span style="color:#0068A4">24</span> ↔ <span style="color:#EE7733">8</span></span>
         32 Gemeinden haben zwischen 2010 und 2024 die 50%-Grenze überschritten. 24 wurden männlicher, nur 8 weiblicher. Die Linien zeigen die Verschiebung.
       </div>
     </div>
-    <div class="scrolly__step" data-step="5">
+    <div class="scrolly__step" data-step="6">
       <div class="text-box">
         <h3>Der Kipp-Punkt</h3>
         <span class="highlight">2016</span>
         2016 kippte auch der gesamte Kanton: von 49,7% auf 50,05% Männeranteil. 2024 sind es 50,4%. Die Zahl der Gemeinden mit Männerüberschuss stieg von 53 auf 69.
       </div>
     </div>
-    <div class="scrolly__step" data-step="6">
+    <div class="scrolly__step" data-step="7">
       <div class="text-box">
         <h3>15 Jahre Wandel</h3>
         <span class="highlight">2010 → 2024</span>
-        Wie hat sich die Landkarte verändert? Benutze den Slider oben, um durch die Jahre zu reisen. Die Blasen verschieben sich — manche Gemeinden altern dramatisch, andere kaum.
+        Benutze den Slider, um durch die Jahre zu reisen. Die Blasen wandern nach links (männlicher) oder rechts (weiblicher). Beobachte <strong>Santa Maria in Calanca</strong> — 2010 noch mehrheitlich weiblich, heute die drittmännlichste Gemeinde.
       </div>
     </div>
-    <div class="scrolly__step" data-step="7">
+    <div class="scrolly__step" data-step="8">
       <div class="text-box">
       </div>
     </div>
@@ -329,7 +335,7 @@ let activeStep = -1;
 let prevContainer = null;
 let currentYear = 2024;
 let isProfileView = false;
-const timeHighlights = ['Felsberg', 'Buseno', 'Celerina/Schlarigna'];
+const timeHighlights = ['Santa Maria in Calanca', 'Fürstenau', 'Chur'];
 const FLIP_DATA = [{"g":"Santa Maria in Calanca","y10":46.7,"y24":54.0,"d":"fm"},{"g":"Rothenbrunnen","y10":47.1,"y24":53.9,"d":"fm"},{"g":"Silvaplana","y10":46.8,"y24":52.3,"d":"fm"},{"g":"Fürstenau","y10":50.9,"y24":45.9,"d":"mf"},{"g":"Brusio","y10":49.0,"y24":52.7,"d":"fm"},{"g":"Masein","y10":51.8,"y24":48.4,"d":"mf"},{"g":"Bever","y10":50.9,"y24":47.6,"d":"mf"},{"g":"Jenins","y10":47.8,"y24":51.0,"d":"fm"},{"g":"Bergün Filisur","y10":52.5,"y24":49.4,"d":"mf"},{"g":"Celerina/Schlarigna","y10":47.7,"y24":50.7,"d":"fm"},{"g":"Madulain","y10":48.5,"y24":51.5,"d":"fm"},{"g":"Muntogna da Schons","y10":48.2,"y24":51.1,"d":"fm"},{"g":"Vals","y10":50.0,"y24":52.9,"d":"fm"},{"g":"Seewis im Prättigau","y10":48.6,"y24":51.1,"d":"fm"},{"g":"Furna","y10":47.8,"y24":50.2,"d":"fm"},{"g":"San Vittore","y10":49.4,"y24":51.6,"d":"fm"},{"g":"Medel (Lucmagn)","y10":48.3,"y24":50.3,"d":"fm"},{"g":"Cazis","y10":49.9,"y24":51.8,"d":"fm"},{"g":"Sils im Engadin/Segl","y10":49.7,"y24":51.6,"d":"fm"},{"g":"Conters im Prättigau","y10":49.2,"y24":50.9,"d":"fm"},{"g":"Pontresina","y10":50.4,"y24":48.8,"d":"mf"},{"g":"Jenaz","y10":49.8,"y24":51.1,"d":"fm"},{"g":"Valsot","y10":49.5,"y24":50.8,"d":"fm"},{"g":"Grüsch","y10":49.9,"y24":51.0,"d":"fm"},{"g":"Trin","y10":50.9,"y24":49.8,"d":"mf"},{"g":"Klosters","y10":49.4,"y24":50.4,"d":"fm"},{"g":"Landquart","y10":49.6,"y24":50.4,"d":"fm"},{"g":"Davos","y10":49.6,"y24":50.2,"d":"fm"},{"g":"Roveredo (GR)","y10":50.0,"y24":49.4,"d":"mf"},{"g":"Untervaz","y10":49.9,"y24":50.5,"d":"fm"},{"g":"Domat/Ems","y10":50.0,"y24":50.5,"d":"fm"},{"g":"Felsberg","y10":50.0,"y24":49.8,"d":"mf"}];
 const FLIP_HIGHLIGHTS = ['Santa Maria in Calanca', 'Silvaplana', 'Fürstenau', 'Bever'];
 let timePlayInterval = null;
@@ -694,7 +700,8 @@ function showViz() {
 }
 
 function getContainerForStep(step) {
-  return 'viz';  // all steps use viz container
+  if (step === 4) return 'pyramid';
+  return 'viz';
 }
 
 function fadeBubbles(fn) {
@@ -908,8 +915,8 @@ function updateViz(step) {
   const nextContainer = getContainerForStep(step);
   const sameContainer = prevContainer === nextContainer;
 
-  // Stop time animation when leaving step 6
-  if (activeStep === 6 && step !== 6 && timePlayInterval) {
+  // Stop time animation when leaving step 7
+  if (activeStep === 7 && step !== 7 && timePlayInterval) {
     clearInterval(timePlayInterval);
     timePlayInterval = null;
     document.getElementById('time-play-btn').innerHTML = '&#9654;';
@@ -918,43 +925,42 @@ function updateViz(step) {
   if (!sameContainer) {
     hideAll();
   }
-  showTimeSlider(step === 6 || step === 7);
+  showTimeSlider(step === 7 || step === 8);
   prevContainer = nextContainer;
 
   switch(step) {
     case 0:
+    case 1: // Überblick — graue Bubbles
       showViz();
       if (sameContainer) fadeBubbles(() => drawBubbles([], false));
       else drawBubbles([], false);
       break;
 
-    case 1:
+    case 2: // Wo die Frauen sind
       showViz();
-      if (sameContainer) fadeBubbles(() => drawBubbles([], false));
-      else drawBubbles([], false);
+      if (sameContainer) fadeBubbles(() => drawBubbles(['Chur', 'Fürstenau', 'Andeer'], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733'));
+      else drawBubbles(['Chur', 'Fürstenau', 'Andeer'], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733');
       break;
 
-    case 2:
+    case 3: // Wo die Männer sind
       showViz();
-      if (sameContainer) fadeBubbles(() => drawBubbles(['Felsberg'], true));
-      else drawBubbles(['Felsberg'], true);
+      if (sameContainer) fadeBubbles(() => drawBubbles(['Ferrera', 'Rossa', 'Rongellen', 'Schmitten (GR)'], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733'));
+      else drawBubbles(['Ferrera', 'Rossa', 'Rongellen', 'Schmitten (GR)'], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733');
       break;
 
-    case 3:
-      showViz();
-      if (sameContainer) fadeBubbles(() => drawBubbles([], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733'));
-      else drawBubbles([], false, g => g.male_pct > 50 ? '#0068A4' : '#EE7733');
+    case 4: // Ab 60 kippt es — Pyramide
+      showPyramid(null);
       break;
 
-    case 4: // Slopegraph
+    case 5: // Geschlechter-Flip — Slopegraph
       drawSlopegraph();
       break;
 
-    case 5: // Flip stats — canton line chart
+    case 6: // Kipp-Punkt — canton line chart
       showFlipStats();
       break;
 
-    case 6: // Time slider
+    case 7: // 15 Jahre Wandel — Time slider
       showViz();
       currentYear = 2024;
       document.getElementById('time-slider').value = 2024;
@@ -962,7 +968,7 @@ function updateViz(step) {
       drawBubbles(timeHighlights, false, null, currentYear);
       break;
 
-    case 7: // scroll-out, same as step 6
+    case 8: // scroll-out
       showViz();
       drawBubbles(timeHighlights, false, null, currentYear);
       break;
