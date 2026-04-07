@@ -963,7 +963,7 @@ init();
   var names = DATA.gemeinden.map(function(g){ return g.gemeinde; }).sort();
   slot.innerHTML = '<div class="embed-controls">' +
     '<label for="pyr-select">Gemeinde wählen:</label>' +
-    '<select id="pyr-select"><option value="">Kanton Graubünden (gesamt)</option>' +
+    '<select id="pyr-select"><option value="">Kanton Graubünden</option>' +
     names.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('') +
     '</select></div>';
 
