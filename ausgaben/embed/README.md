@@ -56,7 +56,7 @@ Dropdown wählt Gemeinde, Default = Kanton Graubünden gesamt.
 ```html
 <iframe
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/alter-pyramide.html"
-  style="width:100%;border:0;height:1200px"
+  style="width:100%;border:0;height:700px"
   loading="lazy"
   title="Bevölkerungspyramide Graubünden">
 </iframe>
