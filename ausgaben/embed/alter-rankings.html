@@ -170,7 +170,7 @@
   body { background: #fff; }
   .hero, .scrolly__steps, .search-section, .outro, .progress-dots { display:none !important; }
   .scrolly { position: static; }
-  .scrolly__sticky { position: relative; height: 620px; top: auto; align-items: flex-start; padding-top: 12px; }
+  .scrolly__sticky { position: relative; height: 620px; top: auto; align-items: flex-start; padding-top: 12px; overflow: visible; }
   #viz, #pyramid-container, #ranking-container { position: relative; }
   #viz { display:none !important; }
   #pyramid-container { display:none !important; }
@@ -629,8 +629,8 @@ function showDualRanking(field, n) {
   const youngest = sorted.slice(-n).reverse();
 
   let html = `<div class="dual-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
-  html += `<div><div class="rank-title" style="color:#EE7733">Die zehn ältesten</div>${renderRankList(field, oldest, '#EE7733')}</div>`;
-  html += `<div><div class="rank-title" style="color:#0068A4">Die zehn jüngsten</div>${renderRankList(field, youngest, '#0068A4')}</div>`;
+  html += `<div><div class="rank-title" style="color:#EE7733">Die zehn ältesten</div>${renderRankList(field, oldest, '#1a9e5a')}</div>`;
+  html += `<div><div class="rank-title" style="color:#0068A4">Die zehn jüngsten</div>${renderRankList(field, youngest, '#1a9e5a')}</div>`;
   html += `</div>`;
   barsEl.innerHTML = html;
 }
@@ -741,8 +741,8 @@ function showAgingRanking() {
   }
 
   let html = `<div class="dual-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px">`;
-  html += `<div><div class="rank-title" style="color:#EE7733">Am stärksten gealtert</div>${renderAgingList(fastest, '#EE7733')}</div>`;
-  html += `<div><div class="rank-title" style="color:#0068A4">Am wenigsten / verjüngt</div>${renderAgingList(slowest, '#0068A4')}</div>`;
+  html += `<div><div class="rank-title" style="color:#EE7733">Am stärksten gealterte Gemeinden</div>${renderAgingList(fastest, '#1a9e5a')}</div>`;
+  html += `<div><div class="rank-title" style="color:#0068A4">Am wenigsten gealterte oder sogar verjüngte Gemeinden</div>${renderAgingList(slowest, '#1a9e5a')}</div>`;
   html += `</div>`;
   html += `<div style="text-align:center;font-size:10px;color:#888;margin-top:8px">Veränderung Durchschnittsalter 2010 → 2024 in Jahren</div>`;
   barsEl.innerHTML = html;

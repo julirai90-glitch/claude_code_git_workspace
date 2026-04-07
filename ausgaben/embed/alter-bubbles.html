@@ -170,7 +170,7 @@
   body { background: #fff; }
   .hero, .scrolly__steps, .search-section, .outro, .progress-dots { display:none !important; }
   .scrolly { position: static; }
-  .scrolly__sticky { position: relative; height: 720px; top: auto; align-items: flex-start; padding-top: 12px; }
+  .scrolly__sticky { position: relative; height: 720px; top: auto; align-items: flex-start; padding-top: 12px; overflow: visible; }
   #viz, #pyramid-container, #ranking-container { position: relative; }
   #pyramid-container { display:none !important; }
   #ranking-container { display:none !important; }
@@ -956,7 +956,11 @@ init();
       b.classList.toggle('active', b.dataset.mode===mode);
     });
     if (mode==='overview')  updateViz(1);
-    if (mode==='youngest')  updateViz(2);
+    if (mode==='youngest') {
+      var young = DATA.gemeinden.filter(function(g){ return g.avg_age < 42; })
+                                .map(function(g){ return g.gemeinde; });
+      showViz(); drawBubbles(young, true);
+    }
     if (mode==='oldest')    updateViz(3);
     if (mode==='change')    updateViz(6);
   }
