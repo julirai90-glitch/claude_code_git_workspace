@@ -172,8 +172,8 @@
   .scrolly { position: static; }
   .scrolly__sticky { position: relative; height: auto; min-height: 420px; top: auto; align-items: flex-start; padding-top: 12px; overflow: visible; }
   #viz, #pyramid-container, #ranking-container { position: relative; }
-  #viz { display:none !important; }
-  #ranking-container { display:none !important; }
+  #viz:not(.visible) { display:none !important; }
+  #ranking-container:not(.visible) { display:none !important; }
   .embed-tabs { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; padding:14px 12px 4px; max-width:900px; margin:0 auto; }
   .embed-tab { background:#f3f3f3; border:1px solid #ddd; color:#333; padding:8px 14px; border-radius:20px; font-size:13px; cursor:pointer; font-family:inherit; }
   .embed-tab.active { background:#1a9e5a; border-color:#1a9e5a; color:#fff; }
