@@ -389,7 +389,7 @@ function setupViz() {
   svgEl.setAttribute('height', height);
 }
 
-// X = Geschlechteranteil (links Männer, rechts Frauen — wie bei Pyramide)
+// X = Männeranteil (links Männer, rechts Frauen — wie bei Pyramide)
 function scaleX(val) {
   const min = 44, max = 58;
   return margin.left + ((max - val) / (max - min)) * (width - margin.left - margin.right);
@@ -408,7 +408,7 @@ function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) 
   const gemeinden = year ? getDataForYear(year) : DATA.gemeinden;
 
   let svg = '';
-  // Grid: X = Geschlechteranteil, Y = Alter
+  // Grid: X = Männeranteil, Y = Alter
   for (let p = 44; p <= 58; p += 2) {
     const x = scaleX(p);
     svg += `<line x1="${x}" y1="${margin.top}" x2="${x}" y2="${height - margin.bottom}" stroke="#e8e8e8" stroke-width="1"/>`;
@@ -420,7 +420,7 @@ function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) 
     svg += `<text x="${margin.left - 6}" y="${y + 3}" text-anchor="end" fill="#aaa" font-size="10">${a}</text>`;
   }
   // Axis labels
-  svg += `<text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="#999" font-size="11">← mehr Männer · Geschlechteranteil · mehr Frauen →</text>`;
+  svg += `<text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="#999" font-size="11">← mehr Männer · Männeranteil · mehr Frauen →</text>`;
   svg += `<text x="12" y="${height / 2}" text-anchor="middle" fill="#999" font-size="11" transform="rotate(-90, 12, ${height / 2})">← jung · Durchschnittsalter · alt →</text>`;
 
   // Reference lines (2024 canton averages)
@@ -472,7 +472,7 @@ function setupBubbleInteraction() {
       <div class="tt-name">${name}</div>
       <div class="tt-row"><span class="tt-k">Einwohner</span><span class="tt-v">${pop}</span></div>
       <div class="tt-row"><span class="tt-k">Ø Alter</span><span class="tt-v">${age}</span></div>
-      <div class="tt-row"><span class="tt-k">Geschlechteranteil</span><span class="tt-v">${male}%</span></div>`;
+      <div class="tt-row"><span class="tt-k">Männeranteil</span><span class="tt-v">${male}%</span></div>`;
     tooltip.style.display = 'block';
 
     const vizRect = document.getElementById('viz').getBoundingClientRect();
@@ -518,7 +518,7 @@ function buildGemeindeProfileHTML(name) {
   html += `<div class="gc-stats">`;
   html += `<div class="gc-stat"><div class="val">${g.total.toLocaleString('de-CH')}</div><div class="lbl">Einwohner</div></div>`;
   html += `<div class="gc-stat"><div class="val" style="color:${ageColor}">${g.avg_age.toFixed(1)}</div><div class="lbl">Ø Alter</div></div>`;
-  html += `<div class="gc-stat"><div class="val" style="color:${maleColor}">${g.male_pct.toFixed(1)}%</div><div class="lbl">Geschlechteranteil</div></div>`;
+  html += `<div class="gc-stat"><div class="val" style="color:${maleColor}">${g.male_pct.toFixed(1)}%</div><div class="lbl">Männeranteil</div></div>`;
   // 100+ year olds from pyramid data (last entry)
   if (g.pyramid) {
     const over100 = g.pyramid[g.pyramid.length - 1];
@@ -927,7 +927,7 @@ function buildSparklines(ts) {
     <div class="spark-range"><span>${firstYear}: ${ages[0]}</span><span>${lastYear}: ${ages[ages.length-1]}</span></div>
   </div>`;
   html += `<div class="sparkline-item">
-    <div class="spark-label">Geschlechteranteil %</div>
+    <div class="spark-label">Männeranteil %</div>
     ${sparkSVG(males, '#0068A4')}
     <div class="spark-range"><span>${firstYear}: ${males[0]}%</span><span>${lastYear}: ${males[males.length-1]}%</span></div>
   </div>`;
