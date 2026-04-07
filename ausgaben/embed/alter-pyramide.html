@@ -170,7 +170,7 @@
   body { background: #fff; }
   .hero, .scrolly__steps, .search-section, .outro, .progress-dots { display:none !important; }
   .scrolly { position: static; }
-  .scrolly__sticky { position: relative; height: auto; min-height: 500px; top: auto; align-items: flex-start; padding-top: 12px; overflow: visible; }
+  .scrolly__sticky { position: relative; height: auto; min-height: 650px; top: auto; align-items: flex-start; padding-top: 12px; overflow: visible; }
   #viz, #pyramid-container, #ranking-container { position: relative; }
   #viz { display:none !important; }
   #ranking-container { display:none !important; }
@@ -180,7 +180,18 @@
   .embed-tab:hover:not(.active) { background:#e8e8e8; }
   .embed-controls { display:flex; gap:10px; align-items:center; justify-content:center; padding:10px 12px; max-width:900px; margin:0 auto; flex-wrap:wrap; font-size:13px; color:#555; }
   .embed-controls select { padding:8px 12px; border:1px solid #ccc; border-radius:6px; font-size:13px; background:#fff; font-family:inherit; }
-  /* progress dots stub — keep in DOM but invisible */
+
+  /* compact layout for pyramide block */
+  .pyr-row { height: 14px !important; margin-bottom: 1px !important; }
+  .sparkline-item svg { height: 28px !important; }
+  .gc-stat .val { font-size: 22px !important; }
+  .sparkline-wrap { gap: 14px !important; margin-top: 10px !important; }
+  .gc-pyr { margin-top: 12px !important; }
+  .gc-name { font-size: 22px; font-weight: 800; text-align:center; margin-bottom: 4px; }
+  .gc-stats { display:flex; gap:24px; justify-content:center; margin: 12px 0; flex-wrap:wrap; }
+  .gc-stat { text-align:center; }
+  .gc-stat .lbl { font-size: 11px; color:#888; margin-top:2px; }
+
 </style>
 </head>
 <body>
@@ -950,14 +961,68 @@ init();
     '<select id="pyr-select"><option value="">Kanton Graubünden (gesamt)</option>' +
     names.map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join('') +
     '</select></div>';
+
+  // Aggregate kanton-level timeseries from all Gemeinden (weighted by population)
+  function buildKantonTs() {
+    var sample = TIMESERIES[Object.keys(TIMESERIES)[0]];
+    return sample.map(function(_, i) {
+      var year = sample[i][0];
+      var totalPop = 0, weightedAge = 0, weightedMale = 0;
+      DATA.gemeinden.forEach(function(g) {
+        var ts = TIMESERIES[g.gemeinde];
+        if (!ts || !ts[i]) return;
+        var pop = ts[i][1];
+        totalPop += pop;
+        weightedAge += ts[i][2] * pop;
+        weightedMale += ts[i][3] * pop;
+      });
+      return [year, totalPop, +(weightedAge/totalPop).toFixed(2), +(weightedMale/totalPop).toFixed(2)];
+    });
+  }
+  var kantonTs = buildKantonTs();
+
+  function showKantonView() {
+    isProfileView = false;
+    hideAll();
+    var c = document.getElementById('pyramid-container');
+    c.classList.add('visible');
+    c.querySelector('.pyr-legend').style.display = 'none';
+    document.getElementById('pyr-title').textContent = '';
+    document.getElementById('pyr-stats').innerHTML = '';
+    document.getElementById('pyr-back').style.display = 'none';
+
+    var meta = DATA.meta;
+    var html = '<div style="max-width:540px;margin:0 auto">';
+    html += '<div class="gc-name">Kanton Graubünden</div>';
+    html += '<div class="gc-stats">';
+    html += '<div class="gc-stat"><div class="val">' + meta.gr_total.toLocaleString('de-CH') + '</div><div class="lbl">Einwohner</div></div>';
+    html += '<div class="gc-stat"><div class="val">' + meta.gr_avg_age.toFixed(1) + '</div><div class="lbl">Ø Alter</div></div>';
+    html += '<div class="gc-stat"><div class="val">' + meta.gr_male_pct.toFixed(1) + '%</div><div class="lbl">Geschlechteranteil</div></div>';
+    html += '</div>';
+    html += buildSparklines(kantonTs);
+    html += '<div class="gc-pyr">';
+    html += '<div style="font-size:13px;color:#888;margin-bottom:8px;font-weight:600">Alterspyramide</div>';
+    html += '<div class="pyr-legend"><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#0068A4"></div> Männer</div><div class="pyr-legend-item"><div class="pyr-legend-dot" style="background:#EE7733"></div> Frauen</div></div>';
+    var pyr = DATA.gr_pyramid;
+    var maxVal = Math.max.apply(null, pyr.map(function(p){ return Math.max(p.m, p.f); }));
+    pyr.slice().reverse().forEach(function(p){
+      var wm = (p.m/maxVal*100).toFixed(1);
+      var wf = (p.f/maxVal*100).toFixed(1);
+      html += '<div class="pyr-row">' +
+        '<div class="pyr-side pyr-side-m"><span class="pyr-val pyr-val-m">'+p.m+'</span><div class="pyr-bar pyr-bar-m" style="width:'+wm+'%"></div></div>' +
+        '<div class="pyr-label">'+p.klasse.replace(' Jahre','').replace(' und mehr','+')+'</div>' +
+        '<div class="pyr-side pyr-side-f"><div class="pyr-bar pyr-bar-f" style="width:'+wf+'%"></div><span class="pyr-val pyr-val-f">'+p.f+'</span></div>' +
+        '</div>';
+    });
+    html += '</div></div>';
+    document.getElementById('pyramid').innerHTML = html;
+  }
+
   function show(name){
     if (!name) {
-      isProfileView = false;
-      updateViz(4);
-      document.getElementById('pyr-back').style.display = 'none';
+      showKantonView();
     } else {
       showGemeindeProfile(name);
-      // hide back button (no scrolly to return to)
       document.getElementById('pyr-back').style.display = 'none';
     }
   }
