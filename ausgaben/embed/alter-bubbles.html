@@ -967,6 +967,8 @@ init();
   document.querySelectorAll('.embed-tab').forEach(function(b){
     b.addEventListener('click', function(){ setMode(b.dataset.mode); });
   });
+  // Disable bubble click — hover tooltip is enough; profile lives in Block 2
+  window.showGemeindeProfile = function(){};
   // Force viz visible regardless of step transitions
   setTimeout(function(){ setMode('overview'); }, 50);
 })();
