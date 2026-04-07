@@ -950,6 +950,13 @@ init();
     '<button class="embed-tab" data-mode="youngest">Jüngste</button>' +
     '<button class="embed-tab" data-mode="oldest">Älteste</button>' +
     '<button class="embed-tab" data-mode="change">Wandel 2010–2024</button>' +
+    '</div>' +
+    '<div class="embed-controls">' +
+      '<input list="bubble-gemeinde-list" id="bubble-search" placeholder="Gemeinde suchen…" autocomplete="off" />' +
+      '<datalist id="bubble-gemeinde-list">' +
+        DATA.gemeinden.map(function(g){ return '<option value="'+g.gemeinde+'">'; }).join('') +
+      '</datalist>' +
+      '<button id="bubble-search-clear" class="embed-tab" type="button">zurücksetzen</button>' +
     '</div>';
   function setMode(mode){
     document.querySelectorAll('.embed-tab').forEach(function(b){
@@ -964,8 +971,23 @@ init();
     if (mode==='oldest')    updateViz(3);
     if (mode==='change')    updateViz(6);
   }
-  document.querySelectorAll('.embed-tab').forEach(function(b){
+  document.querySelectorAll('.embed-tabs .embed-tab').forEach(function(b){
     b.addEventListener('click', function(){ setMode(b.dataset.mode); });
+  });
+  var searchInput = document.getElementById('bubble-search');
+  var allNames = DATA.gemeinden.map(function(g){ return g.gemeinde; });
+  function applySearch(){
+    var v = searchInput.value.trim();
+    if (allNames.indexOf(v) !== -1) {
+      document.querySelectorAll('.embed-tabs .embed-tab').forEach(function(b){ b.classList.remove('active'); });
+      showViz(); drawBubbles([v], true);
+    }
+  }
+  searchInput.addEventListener('change', applySearch);
+  searchInput.addEventListener('input', function(){ if (allNames.indexOf(searchInput.value.trim())!==-1) applySearch(); });
+  document.getElementById('bubble-search-clear').addEventListener('click', function(){
+    searchInput.value = '';
+    setMode('overview');
   });
   // Disable bubble click — hover tooltip is enough; profile lives in Block 2
   window.showGemeindeProfile = function(){ showViz(); };
