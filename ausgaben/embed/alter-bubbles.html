@@ -968,7 +968,7 @@ init();
     b.addEventListener('click', function(){ setMode(b.dataset.mode); });
   });
   // Disable bubble click — hover tooltip is enough; profile lives in Block 2
-  window.showGemeindeProfile = function(){};
+  window.showGemeindeProfile = function(){ showViz(); };
   // Force viz visible regardless of step transitions
   setTimeout(function(){ setMode('overview'); }, 50);
 })();
