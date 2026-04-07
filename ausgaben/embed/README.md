@@ -42,7 +42,7 @@ Tabs: *Übersicht · Jüngste · Älteste · Wandel 2010–2024* (Time-Slider).
 ```html
 <iframe
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/alter-bubbles.html"
-  style="width:100%;border:0;height:780px"
+  style="width:100%;border:0;height:820px"
   loading="lazy"
   title="Bündner Gemeinden — Alter & Geschlecht">
 </iframe>
@@ -56,7 +56,7 @@ Dropdown wählt Gemeinde, Default = Kanton Graubünden gesamt.
 ```html
 <iframe
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/alter-pyramide.html"
-  style="width:100%;border:0;height:700px"
+  style="width:100%;border:0;height:820px"
   loading="lazy"
   title="Bevölkerungspyramide Graubünden">
 </iframe>
@@ -70,7 +70,7 @@ Tabs: *Heute (älteste & jüngste)* · *Veränderung 2010–2024*.
 ```html
 <iframe
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/alter-rankings.html"
-  style="width:100%;border:0;height:680px"
+  style="width:100%;border:0;height:720px"
   loading="lazy"
   title="Rangliste Altersstruktur Graubünden">
 </iframe>
