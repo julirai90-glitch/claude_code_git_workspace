@@ -979,9 +979,10 @@ init();
   var searchedGemeinde = null;
   var origDraw = window.drawBubbles;
   window.drawBubbles = function(highlights, dim, colorFn, year){
-    var hl = highlights ? highlights.slice() : [];
-    if (searchedGemeinde && hl.indexOf(searchedGemeinde) === -1) hl.push(searchedGemeinde);
-    return origDraw(hl, dim, colorFn, year);
+    if (searchedGemeinde) {
+      return origDraw([searchedGemeinde], true, colorFn, year);
+    }
+    return origDraw(highlights, dim, colorFn, year);
   };
   function applySearch(){
     var v = searchInput.value.trim();
