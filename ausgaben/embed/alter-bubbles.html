@@ -976,17 +976,26 @@ init();
   });
   var searchInput = document.getElementById('bubble-search');
   var allNames = DATA.gemeinden.map(function(g){ return g.gemeinde; });
+  var searchedGemeinde = null;
+  var origDraw = window.drawBubbles;
+  window.drawBubbles = function(highlights, dim, colorFn, year){
+    var hl = highlights ? highlights.slice() : [];
+    if (searchedGemeinde && hl.indexOf(searchedGemeinde) === -1) hl.push(searchedGemeinde);
+    return origDraw(hl, dim, colorFn, year);
+  };
   function applySearch(){
     var v = searchInput.value.trim();
     if (allNames.indexOf(v) !== -1) {
+      searchedGemeinde = v;
       document.querySelectorAll('.embed-tabs .embed-tab').forEach(function(b){ b.classList.remove('active'); });
-      showViz(); drawBubbles([v], true);
+      showViz(); origDraw([v], true);
     }
   }
   searchInput.addEventListener('change', applySearch);
   searchInput.addEventListener('input', function(){ if (allNames.indexOf(searchInput.value.trim())!==-1) applySearch(); });
   document.getElementById('bubble-search-clear').addEventListener('click', function(){
     searchInput.value = '';
+    searchedGemeinde = null;
     setMode('overview');
   });
   // Disable bubble click — hover tooltip is enough; profile lives in Block 2
