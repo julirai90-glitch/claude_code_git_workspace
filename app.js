@@ -1685,6 +1685,12 @@ function buildChart(story, data) {
   const d    = data;
   const type = story.chartType;
 
+  // Set chart-type class on chart-area for CSS height overrides
+  var chartArea = canvas.closest('.chart-area');
+  if (chartArea) {
+    chartArea.className = 'chart-area' + (type === 'butterfly' ? ' chart-area--butterfly' : '');
+  }
+
   // No data: show placeholder message
   if (!d) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1913,6 +1919,9 @@ function buildChart(story, data) {
     const chVals = d.chValues || [];
     const maxVal = Math.max(...(d.grValues || []), ...(d.chValues || []));
     const axisMax = Math.ceil(maxVal * 10) / 10 + 0.5;
+    const isMobile = window.innerWidth < 640;
+    const tickSize = isMobile ? 9 : 11;
+    const xTickSize = isMobile ? 9 : 12;
 
     activeChart = new Chart(ctx, {
       type: 'bar',
@@ -1946,15 +1955,18 @@ function buildChart(story, data) {
         grouped: false,
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: { left: isMobile ? 2 : 0, right: isMobile ? 2 : 0 }
+        },
         plugins: {
           legend: {
             display: true,
             position: 'top',
             labels: {
-              font: { family: "'Inter', system-ui, sans-serif", size: 12 },
+              font: { family: "'Inter', system-ui, sans-serif", size: isMobile ? 10 : 12 },
               color: '#161616',
-              boxWidth: 14,
-              padding: 16
+              boxWidth: isMobile ? 10 : 14,
+              padding: isMobile ? 8 : 16
             }
           },
           tooltip: {
@@ -1976,15 +1988,16 @@ function buildChart(story, data) {
             max:  axisMax,
             grid: { color: GRID },
             ticks: {
-              font: baseFont,
+              font: { family: "'Inter', system-ui, sans-serif", size: xTickSize },
               color: MUTED,
+              maxTicksLimit: isMobile ? 5 : 10,
               callback: function(v) { return Math.abs(v).toFixed(1) + '%'; }
             }
           },
           y: {
             grid: { display: false },
             ticks: {
-              font: { family: "'Inter', system-ui, sans-serif", size: 11 },
+              font: { family: "'Inter', system-ui, sans-serif", size: tickSize },
               color: '#161616',
               autoSkip: false
             }

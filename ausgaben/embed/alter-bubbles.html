@@ -181,7 +181,18 @@
   .embed-tab:hover:not(.active) { background:#e8e8e8; }
   .embed-controls { display:flex; gap:10px; align-items:center; justify-content:center; padding:10px 12px; max-width:900px; margin:0 auto; flex-wrap:wrap; font-size:13px; color:#555; }
   .embed-controls select { padding:8px 12px; border:1px solid #ccc; border-radius:6px; font-size:13px; background:#fff; font-family:inherit; }
+  .embed-controls input { padding:8px 12px; border:1px solid #ccc; border-radius:6px; font-size:16px; background:#fff; font-family:inherit; max-width:200px; width:100%; }
 
+  /* ── Embed Mobile ── */
+  @media (max-width: 600px) {
+    .embed-tabs { gap:4px; padding:10px 8px 4px; }
+    .embed-tab { padding:6px 10px; font-size:11px; }
+    .embed-controls { gap:6px; padding:8px 8px; font-size:12px; }
+    .embed-controls input { max-width:160px; font-size:14px; padding:6px 10px; }
+    #viz { width: 100vw; padding: 0 2px; }
+    .scrolly__sticky { padding-top: 4px; }
+    .embed-credit { font-size:10px; margin:8px 8px; }
+  }
 </style>
 <style>.embed-credit{font-size:11px;color:#666;margin:14px 16px 12px;line-height:1.4;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:right;}</style></head>
 <body>
@@ -331,9 +342,17 @@ function setupViz() {
   const container = document.getElementById('viz');
   width = container.clientWidth;
   const isMobile = window.innerWidth <= 600;
-  height = isMobile
-    ? window.innerHeight * 0.7
-    : Math.min(width * 0.85, window.innerHeight * 0.8);
+  // In embed mode (no scrolly steps visible), use a taller ratio for readability
+  const isEmbed = !document.querySelector('.scrolly__steps') || getComputedStyle(document.querySelector('.scrolly__steps')).display === 'none';
+  if (isEmbed) {
+    height = isMobile
+      ? Math.max(width * 1.1, 360)
+      : Math.min(width * 0.75, 650);
+  } else {
+    height = isMobile
+      ? window.innerHeight * 0.7
+      : Math.min(width * 0.85, window.innerHeight * 0.8);
+  }
   svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
   svgEl.setAttribute('width', width);
   svgEl.setAttribute('height', height);
@@ -351,27 +370,31 @@ function scaleY(val) {
 }
 function scaleR(pop) {
   const maxPop = Math.max(...DATA.gemeinden.map(g => g.total));
-  return 3 + Math.sqrt(pop / maxPop) * 28;
+  const maxR = window.innerWidth <= 600 ? 20 : 28;
+  return 3 + Math.sqrt(pop / maxPop) * maxR;
 }
 
 function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) {
   const gemeinden = year ? getDataForYear(year) : DATA.gemeinden;
+  const mob = window.innerWidth <= 600;
+  const axisFontSize = mob ? 8 : 10;
+  const labelFontSize = mob ? 9 : 11;
 
   let svg = '';
   // Grid: X = Männeranteil, Y = Alter
   for (let p = 44; p <= 58; p += 2) {
     const x = scaleX(p);
     svg += `<line x1="${x}" y1="${margin.top}" x2="${x}" y2="${height - margin.bottom}" stroke="#e8e8e8" stroke-width="1"/>`;
-    svg += `<text x="${x}" y="${height - margin.bottom + 14}" text-anchor="middle" class="axis text" fill="#aaa" font-size="10">${p}%</text>`;
+    svg += `<text x="${x}" y="${height - margin.bottom + 14}" text-anchor="middle" class="axis text" fill="#aaa" font-size="${axisFontSize}">${p}%</text>`;
   }
   for (let a = 40; a <= 58; a += 2) {
     const y = scaleY(a);
     svg += `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#e8e8e8" stroke-width="1"/>`;
-    svg += `<text x="${margin.left - 6}" y="${y + 3}" text-anchor="end" fill="#aaa" font-size="10">${a}</text>`;
+    svg += `<text x="${margin.left - 6}" y="${y + 3}" text-anchor="end" fill="#aaa" font-size="${axisFontSize}">${a}</text>`;
   }
   // Axis labels
-  svg += `<text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="#999" font-size="11">← mehr Männer · Männeranteil · mehr Frauen →</text>`;
-  svg += `<text x="12" y="${height / 2}" text-anchor="middle" fill="#999" font-size="11" transform="rotate(-90, 12, ${height / 2})">← jung · Durchschnittsalter · alt →</text>`;
+  svg += `<text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="#999" font-size="${labelFontSize}">${mob ? '← Männer · Männeranteil · Frauen →' : '← mehr Männer · Männeranteil · mehr Frauen →'}</text>`;
+  svg += `<text x="12" y="${height / 2}" text-anchor="middle" fill="#999" font-size="${labelFontSize}" transform="rotate(-90, 12, ${height / 2})">${mob ? '← jung · Alter · alt →' : '← jung · Durchschnittsalter · alt →'}</text>`;
 
   // Reference lines (2024 canton averages)
   const refX = scaleX(DATA.meta.gr_male_pct);
@@ -394,9 +417,11 @@ function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) 
     if (isHighlight) fill = colorFn ? colorFn(g) : '#ff9e2c';
     const hr = isHighlight ? Math.max(r, 8) : r;
     svg += `<circle cx="${x}" cy="${y}" r="${hr}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#333' : 'none'}" stroke-width="${isHighlight ? 2 : 0}" data-gemeinde="${g.gemeinde}" data-age="${g.avg_age}" data-male="${g.male_pct}" data-pop="${g.total}"/>`;
-    if (isHighlight || (!dim && g.total > 3000)) {
+    const labelThreshold = mob ? 5000 : 3000;
+    const bubbleLabelSize = mob ? 7 : 9;
+    if (isHighlight || (!dim && g.total > labelThreshold)) {
       const labelY = isHighlight ? y - hr - 3 : y + 3;
-      svg += `<text x="${x}" y="${labelY}" text-anchor="middle" class="bubble-label">${g.gemeinde}</text>`;
+      svg += `<text x="${x}" y="${labelY}" text-anchor="middle" class="bubble-label" font-size="${bubbleLabelSize}">${g.gemeinde}</text>`;
     }
   });
   svgEl.innerHTML = svg;
@@ -1003,7 +1028,7 @@ init();
   // Disable bubble click — hover tooltip is enough; profile lives in Block 2
   window.showGemeindeProfile = function(){ showViz(); };
   // Force viz visible regardless of step transitions
-  setTimeout(function(){ setMode('overview'); }, 50);
+  setTimeout(function(){ setupViz(); setMode('overview'); }, 50);
 })();
 </script>
 
