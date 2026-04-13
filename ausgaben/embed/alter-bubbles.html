@@ -285,7 +285,7 @@ const AGING_SPEED = DATA.gemeinden.map(g => {
 
 let svgEl, width, height;
 const isMobileMargin = window.innerWidth <= 600;
-const margin = { top: isMobileMargin ? 30 : 50, right: 20, bottom: isMobileMargin ? 30 : 40, left: isMobileMargin ? 40 : 50 };
+const margin = { top: isMobileMargin ? 24 : 50, right: isMobileMargin ? 10 : 20, bottom: isMobileMargin ? 36 : 40, left: isMobileMargin ? 28 : 50 };
 let activeStep = -1;
 let prevContainer = null;
 let currentYear = 2024;
@@ -370,39 +370,45 @@ function scaleY(val) {
 }
 function scaleR(pop) {
   const maxPop = Math.max(...DATA.gemeinden.map(g => g.total));
-  const maxR = window.innerWidth <= 600 ? 20 : 28;
-  return 3 + Math.sqrt(pop / maxPop) * maxR;
+  const maxR = window.innerWidth <= 600 ? 16 : 28;
+  const minR = window.innerWidth <= 600 ? 2 : 3;
+  return minR + Math.sqrt(pop / maxPop) * maxR;
 }
 
 function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) {
   const gemeinden = year ? getDataForYear(year) : DATA.gemeinden;
   const mob = window.innerWidth <= 600;
   const axisFontSize = mob ? 8 : 10;
-  const labelFontSize = mob ? 9 : 11;
+  const labelFontSize = mob ? 8 : 11;
 
   let svg = '';
   // Grid: X = Männeranteil, Y = Alter
-  for (let p = 44; p <= 58; p += 2) {
+  const xStep = mob ? 4 : 2;
+  for (let p = 44; p <= 58; p += xStep) {
     const x = scaleX(p);
     svg += `<line x1="${x}" y1="${margin.top}" x2="${x}" y2="${height - margin.bottom}" stroke="#e8e8e8" stroke-width="1"/>`;
-    svg += `<text x="${x}" y="${height - margin.bottom + 14}" text-anchor="middle" class="axis text" fill="#aaa" font-size="${axisFontSize}">${p}%</text>`;
+    svg += `<text x="${x}" y="${height - margin.bottom + 12}" text-anchor="middle" class="axis text" fill="#aaa" font-size="${axisFontSize}">${p}%</text>`;
   }
-  for (let a = 40; a <= 58; a += 2) {
+  const yStep = mob ? 4 : 2;
+  for (let a = 40; a <= 58; a += yStep) {
     const y = scaleY(a);
     svg += `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#e8e8e8" stroke-width="1"/>`;
-    svg += `<text x="${margin.left - 6}" y="${y + 3}" text-anchor="end" fill="#aaa" font-size="${axisFontSize}">${a}</text>`;
+    svg += `<text x="${margin.left - 4}" y="${y + 3}" text-anchor="end" fill="#aaa" font-size="${axisFontSize}">${a}</text>`;
   }
-  // Axis labels
-  svg += `<text x="${width / 2}" y="${height - 4}" text-anchor="middle" fill="#999" font-size="${labelFontSize}">${mob ? '← Männer · Männeranteil · Frauen →' : '← mehr Männer · Männeranteil · mehr Frauen →'}</text>`;
-  svg += `<text x="12" y="${height / 2}" text-anchor="middle" fill="#999" font-size="${labelFontSize}" transform="rotate(-90, 12, ${height / 2})">${mob ? '← jung · Alter · alt →' : '← jung · Durchschnittsalter · alt →'}</text>`;
+  // Axis labels — hide rotated Y-axis label on mobile (takes too much space)
+  svg += `<text x="${width / 2}" y="${height - 2}" text-anchor="middle" fill="#999" font-size="${labelFontSize}">${mob ? 'Männeranteil in %' : '← mehr Männer · Männeranteil · mehr Frauen →'}</text>`;
+  if (!mob) {
+    svg += `<text x="12" y="${height / 2}" text-anchor="middle" fill="#999" font-size="${labelFontSize}" transform="rotate(-90, 12, ${height / 2})">← jung · Durchschnittsalter · alt →</text>`;
+  }
 
   // Reference lines (2024 canton averages)
   const refX = scaleX(DATA.meta.gr_male_pct);
   const refY = scaleY(DATA.meta.gr_avg_age);
+  const refFontSize = mob ? 8 : 10;
   svg += `<line x1="${refX}" y1="${margin.top}" x2="${refX}" y2="${height - margin.bottom}" class="ref-line"/>`;
-  svg += `<text x="${refX + 4}" y="${margin.top + 12}" class="ref-label">${DATA.meta.gr_male_pct.toFixed(1)}%</text>`;
+  svg += `<text x="${refX + 3}" y="${margin.top + 10}" class="ref-label" font-size="${refFontSize}">${DATA.meta.gr_male_pct.toFixed(1)}%</text>`;
   svg += `<line x1="${margin.left}" y1="${refY}" x2="${width - margin.right}" y2="${refY}" class="ref-line"/>`;
-  svg += `<text x="${width - margin.right - 4}" y="${refY - 4}" class="ref-label" text-anchor="end">⌀ ${DATA.meta.gr_avg_age.toFixed(1)} J.</text>`;
+  svg += `<text x="${width - margin.right - 3}" y="${refY - 3}" class="ref-label" text-anchor="end" font-size="${refFontSize}">⌀ ${DATA.meta.gr_avg_age.toFixed(1)}</text>`;
 
   // Bubbles: X = male_pct, Y = avg_age
   const sorted = [...gemeinden].sort((a, b) => b.total - a.total);
@@ -415,12 +421,15 @@ function drawBubbles(highlights = [], dim = false, colorFn = null, year = null) 
     let fill = '#0068A4';
     if (colorFn) fill = colorFn(g);
     if (isHighlight) fill = colorFn ? colorFn(g) : '#ff9e2c';
-    const hr = isHighlight ? Math.max(r, 8) : r;
-    svg += `<circle cx="${x}" cy="${y}" r="${hr}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#333' : 'none'}" stroke-width="${isHighlight ? 2 : 0}" data-gemeinde="${g.gemeinde}" data-age="${g.avg_age}" data-male="${g.male_pct}" data-pop="${g.total}"/>`;
-    const labelThreshold = mob ? 5000 : 3000;
+    const hr = isHighlight ? Math.max(r, mob ? 6 : 8) : r;
+    svg += `<circle cx="${x}" cy="${y}" r="${hr}" fill="${fill}" opacity="${opacity}" class="bubble" stroke="${isHighlight ? '#333' : 'none'}" stroke-width="${isHighlight ? 1.5 : 0}" data-gemeinde="${g.gemeinde}" data-age="${g.avg_age}" data-male="${g.male_pct}" data-pop="${g.total}"/>`;
+    // On mobile: only label highlighted bubbles and Chur
+    const showLabel = mob
+      ? (isHighlight || (!dim && g.gemeinde === 'Chur'))
+      : (isHighlight || (!dim && g.total > 3000));
     const bubbleLabelSize = mob ? 7 : 9;
-    if (isHighlight || (!dim && g.total > labelThreshold)) {
-      const labelY = isHighlight ? y - hr - 3 : y + 3;
+    if (showLabel) {
+      const labelY = isHighlight ? y - hr - 2 : y + 3;
       svg += `<text x="${x}" y="${labelY}" text-anchor="middle" class="bubble-label" font-size="${bubbleLabelSize}">${g.gemeinde}</text>`;
     }
   });
@@ -434,10 +443,7 @@ function setupBubbleInteraction() {
   const tooltip = document.getElementById('tooltip');
   if (!svgEl || !tooltip) return;
 
-  svgEl.addEventListener('mousemove', e => {
-    const bubble = e.target.closest('.bubble');
-    if (!bubble) { tooltip.style.display = 'none'; return; }
-
+  function showTooltip(bubble, clientX, clientY) {
     const name = bubble.getAttribute('data-gemeinde');
     const age = parseFloat(bubble.getAttribute('data-age')).toFixed(1);
     const male = parseFloat(bubble.getAttribute('data-male')).toFixed(1);
@@ -451,17 +457,36 @@ function setupBubbleInteraction() {
     tooltip.style.display = 'block';
 
     const vizRect = document.getElementById('viz').getBoundingClientRect();
-    let left = e.clientX - vizRect.left + 12;
-    let top = e.clientY - vizRect.top - 10;
-    if (left + 220 > vizRect.width) left = left - 240;
+    let left = clientX - vizRect.left + 12;
+    let top = clientY - vizRect.top - 10;
+    // Keep tooltip within viewport
+    const ttWidth = 200;
+    if (left + ttWidth > vizRect.width) left = Math.max(4, left - ttWidth - 24);
     if (top < 0) top = 10;
     tooltip.style.left = left + 'px';
     tooltip.style.top = top + 'px';
-  });
+  }
 
-  svgEl.addEventListener('mouseleave', () => {
-    tooltip.style.display = 'none';
+  function hideTooltip() { tooltip.style.display = 'none'; }
+
+  // Desktop: mouse events
+  svgEl.addEventListener('mousemove', e => {
+    const bubble = e.target.closest('.bubble');
+    if (!bubble) { hideTooltip(); return; }
+    showTooltip(bubble, e.clientX, e.clientY);
   });
+  svgEl.addEventListener('mouseleave', hideTooltip);
+
+  // Mobile: touch events — tap to show, tap elsewhere to hide
+  svgEl.addEventListener('touchstart', e => {
+    const bubble = e.target.closest('.bubble');
+    if (!bubble) { hideTooltip(); return; }
+    const touch = e.touches[0];
+    showTooltip(bubble, touch.clientX, touch.clientY);
+  }, { passive: true });
+  document.addEventListener('touchstart', e => {
+    if (!e.target.closest('#viz')) hideTooltip();
+  }, { passive: true });
 
   svgEl.addEventListener('click', e => {
     const bubble = e.target.closest('.bubble');
