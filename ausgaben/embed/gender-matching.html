@@ -155,7 +155,7 @@ function render(a, b) {
   if (a.male_pct_2025p < b.male_pct_2025p) { left = b; right = a; }
   const c = combine(left, right);
   const deviation = Math.abs(c.male_pct - 50);
-  const qualitaet = deviation < 0.5 ? 'perfekt' : deviation < 1.5 ? 'sehr ausgeglichen' : 'deutlich ausgewogener';
+  const qualitaet = deviation < 0.5 ? 'perfekt ausgeglichene' : deviation < 1.5 ? 'sehr ausgeglichene' : 'weitgehend ausgeglichene';
 
   const html = `
     <div class="pair">
@@ -182,7 +182,7 @@ function render(a, b) {
     <div class="result">
       <div class="result-head">Ergebnis</div>
       <div class="result-body">
-        Zusammen ergeben <b>${left.name}</b> und <b>${right.name}</b> ein kleines, ${qualitaet}es Mini-Graubünden:
+        Zusammen ergeben <b>${left.name}</b> und <b>${right.name}</b> eine ${qualitaet} Gesellschaft:
         <b>${c.total.toLocaleString('de-CH')} Einwohnerinnen und Einwohner</b>, davon <b>${c.male_pct.toFixed(2)}% Männer</b> und <b>${(100-c.male_pct).toFixed(2)}% Frauen</b>.
       </div>
       <div class="combined-bar">
