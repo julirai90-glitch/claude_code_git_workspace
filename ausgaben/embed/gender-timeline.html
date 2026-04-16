@@ -169,7 +169,7 @@ function render() {
       <div class="kpi-sub">${first.m.toLocaleString('de-CH')} ♂ · ${first.f.toLocaleString('de-CH')} ♀</div></div>
     <div class="kpi"><div class="kpi-label">Männeranteil ${last.year}${last.p ? 'p' : ''}</div>
       <div class="kpi-value" style="color:${delta > 0 ? '#0068A4' : '#EE7733'}">${endPct.toFixed(1)}%</div>
-      <div class="kpi-sub">${delta > 0 ? '+' : ''}${delta.toFixed(2)} Pp seit ${first.year}</div></div>`;
+      <div class="kpi-sub">${delta > 0 ? '+' : ''}${delta.toFixed(2)} Prozentpunkte seit ${first.year}</div></div>`;
 
   // Chart
   const svg = document.getElementById('ts-svg');
