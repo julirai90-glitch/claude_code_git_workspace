@@ -14,18 +14,27 @@
   .controls label { font-size:12px; color:#666; }
   select { padding:6px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px; max-width:100%; font-family:inherit;
     background:#fff; }
+  .toggle { display:inline-flex; border:1px solid #ccc; border-radius:4px; overflow:hidden; }
+  .toggle button { background:#fff; border:0; padding:6px 10px; font-size:12px; cursor:pointer; color:#555;
+    font-family:inherit; }
+  .toggle button.active { background:#1a1a1a; color:#fff; }
+  .toggle button + button { border-left:1px solid #ccc; }
   .kpis { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
   .kpi { flex:1; min-width:140px; background:#f5f5f5; padding:8px 10px; border-radius:6px; border:1px solid #eee; }
   .kpi-label { font-size:10px; color:#888; text-transform:uppercase; letter-spacing:.05em; }
   .kpi-value { font-size:20px; font-weight:700; color:#1a1a1a; margin-top:2px; }
   .kpi-sub { font-size:11px; color:#666; margin-top:1px; }
-  #pyramid-container { width:100%; max-width:696px; overflow-x:hidden; margin:0 auto; }
+  #pyramid-container { width:100%; max-width:696px; overflow-x:hidden; margin:0 auto; position:relative; }
   svg { width:100%; height:auto; display:block; }
-  .pyr-bar-m { fill:#0068A4; }
-  .pyr-bar-f { fill:#EE7733; }
-  .pyr-klasse { font-size:10px; fill:#555; }
-  .pyr-value { font-size:9px; fill:#444; }
+  .pyr-bar-m { fill:#0068A4; cursor:default; }
+  .pyr-bar-f { fill:#EE7733; cursor:default; }
+  .pyr-klasse { font-size:10px; fill:#555; pointer-events:none; }
   .pyr-axis { font-size:10px; fill:#888; }
+  .pyr-row-hit { fill:transparent; cursor:default; }
+  #pyr-tooltip { position:absolute; pointer-events:none; background:rgba(255,255,255,.96);
+    border:1px solid #ccc; padding:6px 8px; font-size:12px; border-radius:4px;
+    box-shadow:0 2px 6px rgba(0,0,0,.1); display:none; line-height:1.4; min-width:140px; }
+  #pyr-tooltip b { color:#1a1a1a; }
   .pyr-hl { stroke:#1a9e5a; stroke-width:1.5; fill:none; }
   .pyr-hl-label { font-size:10px; fill:#1a9e5a; font-weight:600; }
   .legend { display:flex; gap:14px; font-size:11px; color:#555; margin:8px 0 0; flex-wrap:wrap; }
@@ -46,12 +55,17 @@
   <div class="controls">
     <label for="gem-select">Gemeinde:</label>
     <select id="gem-select"><option value="__kanton__">Kanton Graubünden</option></select>
+    <span class="toggle" id="view-toggle" role="tablist" aria-label="Darstellung">
+      <button type="button" data-view="abs" class="active">Absolut</button>
+      <button type="button" data-view="share">Anteile pro Altersgruppe</button>
+    </span>
   </div>
 
   <div class="kpis" id="kpis"></div>
 
   <div id="pyramid-container">
     <svg id="pyr-svg" viewBox="0 0 696 520" preserveAspectRatio="xMidYMid meet"></svg>
+    <div id="pyr-tooltip"></div>
   </div>
 
   <div class="legend">
@@ -66,7 +80,7 @@
 </div>
 
 <script>
-let DATA = null, CURRENT = '__kanton__';
+let DATA = null, CURRENT = '__kanton__', VIEW = 'abs';
 
 async function load() {
   DATA = await (await fetch('./data/gender-data.json')).json();
@@ -74,6 +88,13 @@ async function load() {
   DATA.gemeinden.slice().sort((a,b) => a.name.localeCompare(b.name, 'de'))
     .forEach(g => { const o = document.createElement('option'); o.value = g.name; o.textContent = g.name; sel.appendChild(o); });
   sel.addEventListener('change', () => { CURRENT = sel.value; render(); postHeight(); });
+  document.getElementById('view-toggle').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-view]');
+    if (!btn) return;
+    document.querySelectorAll('#view-toggle button').forEach(b => b.classList.toggle('active', b === btn));
+    VIEW = btn.dataset.view;
+    render(); postHeight();
+  });
   render();
   postHeight();
 }
@@ -115,39 +136,71 @@ function render() {
   const halfW = (W - ML - MR) / 2 - 10;
   const klassen = DATA.klassen;
   const pyr = d.pyramid;
-  const maxVal = Math.max(...pyr.flat(), 1);
   const rowH = (H - MT - MB) / klassen.length;
   const barH = rowH * 0.8;
 
   // axis label headers
   const lblM = el('text', { x: mid - halfW/2, y: MT - 6, class: 'pyr-axis', 'text-anchor': 'middle' });
-  lblM.textContent = 'Männer'; svg.appendChild(lblM);
+  lblM.textContent = VIEW === 'share' ? 'Männer (% der Altersgruppe)' : 'Männer';
+  svg.appendChild(lblM);
   const lblF = el('text', { x: mid + halfW/2, y: MT - 6, class: 'pyr-axis', 'text-anchor': 'middle' });
-  lblF.textContent = 'Frauen'; svg.appendChild(lblF);
+  lblF.textContent = VIEW === 'share' ? 'Frauen (% der Altersgruppe)' : 'Frauen';
+  svg.appendChild(lblF);
+
+  if (VIEW === 'share') {
+    // Vertikale 50%-Linie (= Mid-Linie, Hilfslinie etwas heller)
+    svg.appendChild(el('line', { x1: mid, x2: mid, y1: MT - 2, y2: H - MB + 2,
+      stroke: '#bbb', 'stroke-width': 1 }));
+  }
+
+  const maxVal = Math.max(...pyr.flat(), 1);
+
+  const tooltip = document.getElementById('pyr-tooltip');
+  const container = document.getElementById('pyramid-container');
 
   klassen.forEach((kl, i) => {
     const yRow = MT + (klassen.length - 1 - i) * rowH;
     const m = pyr[i][0], f = pyr[i][1];
-    const wm = (m / maxVal) * halfW;
-    const wf = (f / maxVal) * halfW;
+    const total = m + f;
     const barY = yRow + (rowH - barH)/2;
-    // M bar (left)
+
+    let wm, wf;
+    if (VIEW === 'share') {
+      const mPct = total > 0 ? m / total * 100 : 0;
+      const fPct = total > 0 ? f / total * 100 : 0;
+      wm = mPct / 100 * halfW;
+      wf = fPct / 100 * halfW;
+    } else {
+      wm = (m / maxVal) * halfW;
+      wf = (f / maxVal) * halfW;
+    }
+
     svg.appendChild(el('rect', { x: mid - wm, y: barY, width: wm, height: barH, class: 'pyr-bar-m' }));
-    // F bar (right)
     svg.appendChild(el('rect', { x: mid, y: barY, width: wf, height: barH, class: 'pyr-bar-f' }));
     // Klasse label (center)
     const lb = el('text', { x: mid, y: barY + barH/2 + 3, class: 'pyr-klasse', 'text-anchor': 'middle' });
     lb.textContent = kl.replace(' Jahre', '').replace(' und mehr', '+');
     svg.appendChild(lb);
-    // value left (M)
-    if (wm > 14) {
-      const tm = el('text', { x: mid - wm - 4, y: barY + barH/2 + 3, class: 'pyr-value', 'text-anchor': 'end' });
-      tm.textContent = m; svg.appendChild(tm);
-    }
-    if (wf > 14) {
-      const tf = el('text', { x: mid + wf + 4, y: barY + barH/2 + 3, class: 'pyr-value', 'text-anchor': 'start' });
-      tf.textContent = f; svg.appendChild(tf);
-    }
+
+    // Hit-area fuer Hover-Tooltip (ueber die ganze Zeile)
+    const hit = el('rect', { x: ML, y: yRow, width: W - ML - MR, height: rowH, class: 'pyr-row-hit' });
+    const mPct = total > 0 ? (m / total * 100).toFixed(1) : '–';
+    const fPct = total > 0 ? (f / total * 100).toFixed(1) : '–';
+    const klName = kl.replace(' und mehr', '+');
+    hit.addEventListener('mousemove', evt => {
+      tooltip.innerHTML = `<b>${klName}</b><br>
+        <span style="color:#0068A4">♂ ${m.toLocaleString('de-CH')} (${mPct}%)</span><br>
+        <span style="color:#EE7733">♀ ${f.toLocaleString('de-CH')} (${fPct}%)</span><br>
+        <span style="color:#888">Total ${total.toLocaleString('de-CH')}</span>`;
+      tooltip.style.display = 'block';
+      const cRect = container.getBoundingClientRect();
+      const left = evt.clientX - cRect.left + 12;
+      const top = evt.clientY - cRect.top + 8;
+      tooltip.style.left = Math.min(left, container.clientWidth - tooltip.offsetWidth - 4) + 'px';
+      tooltip.style.top = top + 'px';
+    });
+    hit.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+    svg.appendChild(hit);
   });
 }
 

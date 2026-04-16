@@ -1,19 +1,26 @@
-"""Build gender-data.json: combines 2024 age pyramid (data.gr.ch) + 2025p totals (Excel).
+"""Build gender-data.json: combines 2024 age pyramid (data.gr.ch) + 2025p totals (Excel)
++ historical Geschlechter-Zeitreihen (BFS PxWeb) seit 1981 fuer Kanton, seit 2010 pro Gemeinde.
 
 Sources:
   - C:\\Users\\julir\\Downloads\\dvs_awt_soci_202502111.csv
     = Staendige Wohnbevoelkerung 2024 per Gemeinde x Geschlecht x Altersklasse (data.gr.ch)
   - C:\\Users\\julir\\Downloads\\News_Staendige Wohnbevoelkerung ... 2025p (1).xlsx
     = Provisorische 2025 Zahlen per Gemeinde + CH / Auslaender Split (Statistik GR)
+  - BFS PxWeb px-x-0102020000_201 "Demografische Bilanz nach institutionellen Gliederungen"
+    = Bestand am 31.12. nach Jahr (1981-2024) x Gemeinde x Geschlecht (Komponente=16)
+    Wird fuer Kanton-Zeitreihe ab 1981 und Gemeinde-Zeitreihe ab 2010 benutzt.
 
 Output: ../gender-data.json, consumed by gender-* embeds.
 
-Note: Gemeindestand 2025 = 100 Gemeinden. Tschiertschen-Praden wurde in Churwalden fusioniert.
-Fuer die 2024er Pyramide werden die Altersklassen dieser beiden addiert, damit der
-Gemeindestand konsistent bleibt.
+Note zu Fusionen: Gemeindestand 2025 = 100 Gemeinden. Tschiertschen-Praden wurde in
+Churwalden fusioniert. Fuer 2024er Pyramide und 2010-2024er Zeitreihe werden die Werte
+dieser beiden addiert (FUSIONS_2025). Fuer Gemeinden, die zwischen 2010 und 2024 fusioniert
+wurden, beginnt die Zeitreihe ab dem Jahr, in dem die heutige Gemeindenummer existiert.
 """
 import csv
 import json
+import ssl
+import urllib.request
 from collections import defaultdict
 from pathlib import Path
 
@@ -38,6 +45,16 @@ MIDPOINTS = {k: (i * 5 + 2) if k != "100 Jahre und mehr" else 102 for i, k in en
 
 # Gemeinden, die in 2025 in Churwalden aufgegangen sind:
 FUSIONS_2025 = {"Tschiertschen-Praden": "Churwalden"}
+
+# Mapping historische BFS-Gemeindenummer -> heutige BFS-Gemeindenummer (Stand 2025)
+# fuer alle Gemeindenummer-Wechsel zwischen 2010 und 2024 in GR.
+# Tschiertschen-Praden 3932 -> Churwalden 3911 (per 2025).
+FUSIONS_2025_BY_NR = {3932: 3911}
+
+# ---- BFS PxWeb config ----
+PXWEB_URL = "https://www.pxweb.bfs.admin.ch/api/v1/de/px-x-0102020000_201/px-x-0102020000_201.px"
+PXWEB_GR_KANTON_CODE = "1201"  # "- Graubuenden / Grigioni / Grischun" in der Geographic-Dimension
+PXWEB_KOMPONENTE_BESTAND_31_12 = "16"
 
 
 def read_2024_pyramids():
@@ -124,6 +141,192 @@ def read_2025p_excel():
         else:
             gemeinden.append(rec)
     return kanton, gemeinden
+
+
+def _pxweb_fetch_metadata():
+    """Holt die Tabellen-Metadaten und liefert die 3 GR-Code-Listen:
+        kanton_code, regionen=[(code, name)], gemeinden=[(code, bfs_nr, name)].
+    Verwendet nur stdlib (urllib + ssl context to handle Windows cert issues).
+    """
+    import re
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    with urllib.request.urlopen(PXWEB_URL, context=ctx) as r:
+        meta = json.loads(r.read())
+    geo = next(v for v in meta["variables"] if "Kanton" in v["code"])
+    codes, texts = geo["values"], geo["valueTexts"]
+    gr_start = codes.index(PXWEB_GR_KANTON_CODE)
+    gr_end = None
+    for i, t in enumerate(texts[gr_start + 1:], start=gr_start + 1):
+        if t.startswith("- "):
+            gr_end = i
+            break
+    regions, gemeinden = [], []
+    for c, t in list(zip(codes, texts))[gr_start:gr_end]:
+        if t.startswith(">> Region"):
+            regions.append((c, t.replace(">> ", "").strip()))
+        elif t.startswith("......"):
+            m = re.match(r"\.+\s*(\d{4})\s+(.+)", t)
+            if m:
+                gemeinden.append((c, int(m.group(1)), m.group(2).strip()))
+    return PXWEB_GR_KANTON_CODE, regions, gemeinden
+
+
+def _pxweb_query(geo_codes, year_codes):
+    """POST-Query an PxWeb. Liefert dict (year, geo_code, sex_code) -> count."""
+    body = {
+        "query": [
+            {"code": "Jahr", "selection": {"filter": "item", "values": year_codes}},
+            {"code": "Kanton (-) / Bezirk (>>) / Gemeinde (......)",
+             "selection": {"filter": "item", "values": geo_codes}},
+            {"code": "Staatsangehörigkeit (Kategorie)",
+             "selection": {"filter": "item", "values": ["0"]}},
+            {"code": "Geschlecht", "selection": {"filter": "item", "values": ["1", "2"]}},
+            {"code": "Demografische Komponente",
+             "selection": {"filter": "item", "values": [PXWEB_KOMPONENTE_BESTAND_31_12]}},
+        ],
+        "response": {"format": "json-stat2"},
+    }
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    req = urllib.request.Request(
+        PXWEB_URL,
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, context=ctx) as r:
+        d = json.loads(r.read())
+    # json-stat2: dimensions in 'dimension', values in 'value' (flat array).
+    dims = d["id"]            # ordered list of dimension codes
+    sizes = d["size"]
+    cats = {dim: d["dimension"][dim]["category"]["index"] for dim in dims}
+    rev = {dim: {v: k for k, v in cats[dim].items()} for dim in dims}
+    values = d["value"]
+    # Compute strides for index decoding
+    strides = []
+    s = 1
+    for sz in reversed(sizes):
+        strides.insert(0, s)
+        s *= sz
+    out = {}
+    for flat_idx, v in enumerate(values):
+        if v is None:
+            continue
+        coord = []
+        idx = flat_idx
+        for stride in strides:
+            coord.append(idx // stride)
+            idx %= stride
+        keys = {dims[i]: rev[dims[i]][coord[i]] for i in range(len(dims))}
+        year = keys["Jahr"]
+        geo_code = keys["Kanton (-) / Bezirk (>>) / Gemeinde (......)"]
+        sex = keys["Geschlecht"]
+        out[(year, geo_code, sex)] = int(v)
+    return out
+
+
+def fetch_timeseries():
+    """Liefert dict mit drei Sektionen:
+       {
+         "kanton":   [{year, m, f}, ...]  (1981-2024),
+         "regionen": {region_name: [{year, m, f}, ...]} (2010-2024),
+         "gemeinden":{bfs_nr (str): [{year, m, f}, ...]} (2010-2024, mit Fusionen aggregiert),
+       }
+    """
+    print("Fetching BFS PxWeb metadata ...")
+    kanton_code, regions, gemeinden = _pxweb_fetch_metadata()
+    print(f"  -> Kanton {kanton_code}, {len(regions)} Regionen, {len(gemeinden)} Gemeinden (historisch)")
+
+    # Gemeinde-BFS-Nr -> Region-Name (anhand Reihenfolge in BFS-Hierarchie)
+    gemeinde_to_region = _build_gemeinde_region_map(regions, gemeinden)
+
+    # Query 1: Kanton 1981-2024
+    years_full = [str(y) for y in range(1981, 2025)]
+    print(f"  Query Kanton 1981-2024 ({len(years_full)} Jahre)...")
+    raw_kanton = _pxweb_query([kanton_code], years_full)
+
+    # Query 2: alle Regionen + Gemeinden 2010-2024
+    years_short = [str(y) for y in range(2010, 2025)]
+    geo_codes = [c for c, _ in regions] + [c for c, _, _ in gemeinden]
+    print(f"  Query Regionen+Gemeinden 2010-2024 ({len(geo_codes)} Geo-Einheiten)...")
+    raw_geo = _pxweb_query(geo_codes, years_short)
+
+    # Build Kanton series
+    kanton_ts = []
+    for y in years_full:
+        m = raw_kanton.get((y, kanton_code, "1"), 0)
+        f = raw_kanton.get((y, kanton_code, "2"), 0)
+        if m + f > 0:
+            kanton_ts.append({"year": int(y), "m": m, "f": f})
+
+    # Build Regionen series
+    regionen_ts = {}
+    for code, name in regions:
+        series = []
+        for y in years_short:
+            m = raw_geo.get((y, code, "1"), 0)
+            f = raw_geo.get((y, code, "2"), 0)
+            if m + f > 0:
+                series.append({"year": int(y), "m": m, "f": f})
+        regionen_ts[name] = series
+
+    # Build Gemeinden series mit Fusion-Aggregation
+    # Schritt A: per (jahr, current_nr) summieren
+    nr_to_current = {}  # historische BFS-Nr -> aktuelle (heutige) BFS-Nr
+    for hist_nr, curr_nr in FUSIONS_2025_BY_NR.items():
+        nr_to_current[hist_nr] = curr_nr
+
+    agg = defaultdict(lambda: defaultdict(int))  # (year, current_nr) -> {'m':..., 'f':...}
+    for code, bfs_nr, _ in gemeinden:
+        current_nr = nr_to_current.get(bfs_nr, bfs_nr)
+        for y in years_short:
+            m = raw_geo.get((y, code, "1"), 0)
+            f = raw_geo.get((y, code, "2"), 0)
+            if m + f > 0:
+                agg[(int(y), current_nr)]["m"] += m
+                agg[(int(y), current_nr)]["f"] += f
+
+    gemeinden_ts = defaultdict(list)
+    # Liste aller heutigen Gemeindenummern (alle, ausser jenen, die fusioniert wurden)
+    current_nrs = sorted({nr_to_current.get(bfs_nr, bfs_nr) for _, bfs_nr, _ in gemeinden})
+    for nr in current_nrs:
+        for y in range(2010, 2025):
+            r = agg.get((y, nr))
+            if r:
+                gemeinden_ts[str(nr)].append({"year": y, "m": r["m"], "f": r["f"]})
+
+    print(f"  -> Kanton: {len(kanton_ts)} Punkte, "
+          f"Regionen: {len(regionen_ts)} mit je {len(next(iter(regionen_ts.values())))} Punkten, "
+          f"Gemeinden: {len(gemeinden_ts)}")
+    return {
+        "kanton": kanton_ts,
+        "regionen": regionen_ts,
+        "gemeinden": dict(gemeinden_ts),
+        "_gemeinde_to_region": gemeinde_to_region,
+    }
+
+
+def _build_gemeinde_region_map(regions, gemeinden):
+    """Anhand der Reihenfolge der BFS-Geo-Codes (1201, 1202 Region, 1203 Gemeinde, ...)
+    wird jede Gemeinde der zuletzt davor stehenden Region zugeordnet.
+    regions: [(code, name)], gemeinden: [(code, bfs_nr, name)].
+    Gibt {bfs_nr -> region_name} zurueck.
+    """
+    region_codes = {c: n for c, n in regions}
+    # Sortiere nach geo_code (Geo-Codes sind aufsteigend)
+    all_entries = [(c, "R", n) for c, n in regions] + [(c, "G", nr) for c, nr, _ in gemeinden]
+    all_entries.sort(key=lambda x: int(x[0]))
+    out = {}
+    current = None
+    for code, kind, payload in all_entries:
+        if kind == "R":
+            current = payload
+        elif kind == "G" and current:
+            out[payload] = current
+    return out
 
 
 def build_pyramid_pairs(klassen_m, klassen_f):
@@ -226,11 +429,41 @@ def main():
         "gemeindestand": "2025 (100 Gemeinden, Tschiertschen-Praden in Churwalden fusioniert)",
     }
 
+    # ---- Zeitreihen 1981-2024 (BFS PxWeb) + 2025p (Excel) ----
+    ts = fetch_timeseries()
+
+    # Append 2025p Punkt an alle Serien
+    ts["kanton"].append({"year": 2025, "m": kanton25["m"], "f": kanton25["f"], "p": True})
+    name_to_nr = {g["name"]: g["nr"] for g in g_list}
+    name_to_2025 = {g["name"]: g for g in g_list}
+    for name, g in name_to_2025.items():
+        nr = str(name_to_nr[name])
+        if nr in ts["gemeinden"]:
+            ts["gemeinden"][nr].append({"year": 2025, "m": g["m_2025p"], "f": g["f_2025p"], "p": True})
+    # Regionen-2025p = Summe der jeweiligen Gemeinden 2025p
+    g2region = ts.pop("_gemeinde_to_region", {})
+    region_25 = defaultdict(lambda: {"m": 0, "f": 0})
+    for g in g_list:
+        # Heutiger Gemeindenummer-Mapping fuer alte (fusionierte) BFS-Nrs
+        rname = g2region.get(g["nr"])
+        if not rname:
+            # Tschiertschen-Praden 3932 -> Churwalden 3911 - g2region hat 3932 als key, nicht 3911
+            for hist, curr in FUSIONS_2025_BY_NR.items():
+                if curr == g["nr"]:
+                    rname = g2region.get(hist); break
+        if rname:
+            region_25[rname]["m"] += g["m_2025p"]
+            region_25[rname]["f"] += g["f_2025p"]
+    for rname, vals in region_25.items():
+        if rname in ts["regionen"]:
+            ts["regionen"][rname].append({"year": 2025, "m": vals["m"], "f": vals["f"], "p": True})
+
     out = {
         "meta": meta,
         "klassen": KLASSEN,
         "kanton_pyramid_2024": kanton_pairs,
         "gemeinden": g_list,
+        "timeseries": ts,
     }
 
     with open(OUT_JSON, "w", encoding="utf-8") as f:
@@ -252,6 +485,21 @@ def main():
     print(f"Top 5 weiblichste (2025p):")
     for g in sorted(g_list, key=lambda x: x["male_pct_2025p"])[:5]:
         print(f"  {g['name']}: {g['male_pct_2025p']}% ({g['total_2025p']} EW)")
+
+    # Zeitreihe-Verifikation
+    print(f"\n-- Zeitreihen --")
+    k = ts["kanton"]
+    if k:
+        first = k[0]
+        last_full = next((p for p in reversed(k) if not p.get("p")), None)
+        last = k[-1]
+        def pct(p): return round(p["m"] / (p["m"] + p["f"]) * 100, 2)
+        print(f"Kanton {first['year']}: M={first['m']:,} F={first['f']:,} -> {pct(first)}% Maenner")
+        if last_full:
+            print(f"Kanton {last_full['year']}: M={last_full['m']:,} F={last_full['f']:,} -> {pct(last_full)}% Maenner")
+        print(f"Kanton {last['year']}{'p' if last.get('p') else ''}: M={last['m']:,} F={last['f']:,} -> {pct(last)}% Maenner")
+    print(f"Anzahl Gemeinden mit Zeitreihe: {len(ts['gemeinden'])}")
+    print(f"Anzahl Regionen mit Zeitreihe: {len(ts['regionen'])}")
 
 
 if __name__ == "__main__":

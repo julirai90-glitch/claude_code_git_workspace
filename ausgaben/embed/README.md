@@ -106,7 +106,8 @@ Jede Blase eine Gemeinde · X = Männeranteil (44–60%) · Y = Einwohnerzahl (l
 
 **Datei:** `gender-pyramide.html`
 Dropdown Gemeinde (Default: Kanton). Kennzahlen oben (EW · Männeranteil · Ø Alter).
-Pyramide markiert die Altersklasse, ab der die Frauenseite überwiegt.
+View-Toggle *Absolut* / *Anteile pro Altersgruppe* — letzteres zeigt divergent um die 50 %-Linie,
+in welchen Altersklassen Männer bzw. Frauen überwiegen, unabhängig von der Gruppengrösse.
 
 ```html
 <iframe
@@ -160,6 +161,23 @@ Quote. Disclaimer: statistische Spielerei — keine Fusions-Empfehlung.
   style="width:100%;border:0;height:560px"
   loading="lazy"
   title="Gemeinde-Matching Graubünden — statistische Spielerei">
+</iframe>
+```
+
+### Block 6 — Zeitverlauf seit 1981 (100 % gestapelte Flächen)
+
+**Datei:** `gender-timeline.html`
+Dropdown wählt zwischen Kanton (seit 1981), 11 Regionen und 100 Gemeinden (beide seit 2010).
+Erzählt visuell, wie sich der Männer-/Frauenanteil über die Jahre verschoben hat —
+Kanton-Default zeigt den Wandel vom historischen Frauenüberschuss (1981: 49.2 % Männer) zum
+heutigen leichten Männerüberschuss (2025p: 50.4 %).
+
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/gender-timeline.html"
+  style="width:100%;border:0;height:560px"
+  loading="lazy"
+  title="Geschlechterverhältnis Graubünden seit 1981">
 </iframe>
 ```
 

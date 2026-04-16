@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Geschlechterverhältnis Graubünden — Zeitverlauf seit 1981</title>
+<style>
+  html, body { margin:0; padding:0; overflow-x:hidden; max-width:100%; background:#fff; color:#1a1a1a;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  #wrap { width:100%; max-width:696px; margin:0 auto; padding:8px; box-sizing:border-box; }
+  h1 { font-size:19px; margin:4px 0 2px; font-weight:700; }
+  .lead { font-size:14px; color:#555; margin:0 0 10px; }
+  .controls { display:flex; gap:8px; margin-bottom:10px; align-items:center; flex-wrap:wrap; }
+  .controls label { font-size:12px; color:#666; }
+  select { padding:6px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px; max-width:100%;
+    font-family:inherit; background:#fff; }
+  .kpis { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .kpi { flex:1; min-width:120px; background:#f5f5f5; padding:8px 10px; border-radius:6px; border:1px solid #eee; }
+  .kpi-label { font-size:10px; color:#888; text-transform:uppercase; letter-spacing:.05em; }
+  .kpi-value { font-size:20px; font-weight:700; color:#1a1a1a; margin-top:2px; }
+  .kpi-sub { font-size:11px; color:#666; margin-top:1px; }
+  .arrow { font-size:13px; color:#888; margin:0 4px; }
+  #chart-container { width:100%; max-width:696px; margin:0 auto; position:relative; }
+  svg { width:100%; height:auto; display:block; }
+  .area-m { fill:#0068A4; }
+  .area-f { fill:#EE7733; }
+  .midline { stroke:#fff; stroke-width:1.2; stroke-dasharray:3 3; fill:none; }
+  .axis text { font-size:10px; fill:#888; }
+  .axis line { stroke:#ddd; }
+  .label-area { font-size:11px; fill:#fff; font-weight:600; }
+  .hover-line { stroke:#1a1a1a; stroke-width:1; opacity:.4; }
+  .tooltip { position:absolute; pointer-events:none; background:rgba(255,255,255,.96);
+    border:1px solid #ccc; padding:6px 8px; font-size:12px; border-radius:4px;
+    box-shadow:0 2px 6px rgba(0,0,0,.1); display:none; line-height:1.4; min-width:140px; }
+  .tooltip b { color:#1a1a1a; }
+  .legend { display:flex; gap:14px; font-size:11px; color:#555; margin:8px 0 0; flex-wrap:wrap; }
+  .legend .box { display:inline-block; width:12px; height:10px; margin-right:4px; vertical-align:middle; border-radius:2px; }
+  .source { font-size:11px; color:#888; margin-top:10px; line-height:1.4; border-top:1px solid #eee; padding-top:6px; }
+  .err { color:#b00; padding:10px; background:#fff5f5; border:1px solid #fcc; border-radius:4px; margin:10px 0; font-size:13px; }
+  @media (max-width:600px) {
+    h1 { font-size:17px; } .lead { font-size:13px; }
+    .kpi-value { font-size:17px; } .kpi { min-width:100px; padding:6px 8px; }
+    .label-area { font-size:10px; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Vom Frauen- zum Männerkanton</h1>
+  <p class="lead">Wie sich das Verhältnis von Männern und Frauen in Graubünden seit 1981 verändert hat. Pro Gemeinde wählbar.</p>
+
+  <div class="controls">
+    <label for="geo-select">Auswahl:</label>
+    <select id="geo-select"></select>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div id="chart-container">
+    <svg id="ts-svg" viewBox="0 0 696 360" preserveAspectRatio="xMidYMid meet"></svg>
+    <div id="tooltip" class="tooltip"></div>
+  </div>
+
+  <div class="legend">
+    <span><span class="box" style="background:#0068A4"></span>Männer</span>
+    <span><span class="box" style="background:#EE7733"></span>Frauen</span>
+    <span style="color:#888">— gepunktet 2025 = provisorisch</span>
+  </div>
+
+  <p class="source">
+    Daten: BFS STATPOP / Demografische Bilanz (Bestand am 31.12.) seit 1981 + provisorische Daten 2025 (Statistik Graubünden).
+    BFS-Tabelle <a href="https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_201/-/px-x-0102020000_201.px" target="_blank" rel="noopener">px-x-0102020000_201</a><br>
+    Grafik: Südostschweiz/jr · Hinweis: Kanton-Reihe seit 1981, Regionen und Gemeinden seit 2010 (Gemeindestand 2025).
+  </p>
+</div>
+
+<script>
+let DATA = null, CURRENT = '__kanton__';
+const NS = 'http://www.w3.org/2000/svg';
+
+function showError(msg) {
+  const w = document.getElementById('wrap');
+  const div = document.createElement('div');
+  div.className = 'err';
+  div.textContent = 'Fehler: ' + msg;
+  w.appendChild(div);
+  postHeight();
+}
+
+async function load() {
+  try {
+    const r = await fetch('./data/gender-data.json');
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' bei gender-data.json');
+    DATA = await r.json();
+    if (!DATA || !DATA.timeseries || !DATA.timeseries.kanton) {
+      throw new Error('Fehlende timeseries-Daten in gender-data.json');
+    }
+    buildDropdown();
+    render();
+    postHeight();
+  } catch (e) {
+    showError(e.message || String(e));
+  }
+}
+
+function buildDropdown() {
+  const sel = document.getElementById('geo-select');
+  sel.innerHTML = '';
+  const optK = document.createElement('option');
+  optK.value = '__kanton__'; optK.textContent = 'Kanton Graubünden (seit 1981)';
+  sel.appendChild(optK);
+  // Regionen-Gruppe
+  const regs = Object.keys(DATA.timeseries.regionen).sort((a,b) => a.localeCompare(b, 'de'));
+  if (regs.length) {
+    const g = document.createElement('optgroup'); g.label = '11 Regionen (seit 2010)';
+    regs.forEach(name => {
+      const o = document.createElement('option');
+      o.value = 'R:' + name; o.textContent = name;
+      g.appendChild(o);
+    });
+    sel.appendChild(g);
+  }
+  // Gemeinden-Gruppe
+  const gems = DATA.gemeinden.slice().sort((a,b) => a.name.localeCompare(b.name, 'de'));
+  if (gems.length) {
+    const g = document.createElement('optgroup'); g.label = '100 Gemeinden (seit 2010)';
+    gems.forEach(gm => {
+      const o = document.createElement('option');
+      o.value = 'G:' + gm.nr; o.textContent = gm.name;
+      g.appendChild(o);
+    });
+    sel.appendChild(g);
+  }
+  sel.addEventListener('change', () => { CURRENT = sel.value; render(); postHeight(); });
+}
+
+function getSeries() {
+  if (CURRENT === '__kanton__') {
+    return { name: 'Kanton Graubünden', series: DATA.timeseries.kanton };
+  }
+  if (CURRENT.startsWith('R:')) {
+    const name = CURRENT.slice(2);
+    return { name: name, series: DATA.timeseries.regionen[name] || [] };
+  }
+  if (CURRENT.startsWith('G:')) {
+    const nr = CURRENT.slice(2);
+    const g = DATA.gemeinden.find(x => String(x.nr) === nr);
+    return { name: g ? g.name : nr, series: DATA.timeseries.gemeinden[nr] || [] };
+  }
+  return { name: '', series: [] };
+}
+
+function render() {
+  const { name, series } = getSeries();
+  if (!series.length) { document.getElementById('ts-svg').innerHTML = ''; return; }
+
+  // KPIs: Wandel Anfangsjahr -> 2025p
+  const first = series[0], last = series[series.length - 1];
+  const pctM = p => p.m / (p.m + p.f) * 100;
+  const startPct = pctM(first), endPct = pctM(last);
+  const delta = endPct - startPct;
+  const kpis = document.getElementById('kpis');
+  kpis.innerHTML = `
+    <div class="kpi"><div class="kpi-label">Auswahl</div>
+      <div class="kpi-value" style="font-size:15px">${name}</div>
+      <div class="kpi-sub">${first.year}–${last.year}${last.p ? 'p' : ''}</div></div>
+    <div class="kpi"><div class="kpi-label">Männeranteil ${first.year}</div>
+      <div class="kpi-value">${startPct.toFixed(1)}%</div>
+      <div class="kpi-sub">${first.m.toLocaleString('de-CH')} ♂ · ${first.f.toLocaleString('de-CH')} ♀</div></div>
+    <div class="kpi"><div class="kpi-label">Männeranteil ${last.year}${last.p ? 'p' : ''}</div>
+      <div class="kpi-value" style="color:${delta > 0 ? '#0068A4' : '#EE7733'}">${endPct.toFixed(1)}%</div>
+      <div class="kpi-sub">${delta > 0 ? '+' : ''}${delta.toFixed(2)} Pp seit ${first.year}</div></div>`;
+
+  // Chart
+  const svg = document.getElementById('ts-svg');
+  svg.innerHTML = '';
+  const mob = window.innerWidth < 600;
+  const W = 696, H = mob ? 320 : 360, ML = 42, MR = 70, MT = 14, MB = 28;
+  const iw = W - ML - MR, ih = H - MT - MB;
+  const yearMin = first.year, yearMax = last.year;
+  const x = y => ML + (y - yearMin) / Math.max(1, yearMax - yearMin) * iw;
+
+  // Y-Achse dynamisch um Datenbereich herum zoomen (mind. 40-60%, sonst Daten +/-2 Pp)
+  const allPct = series.map(pctM);
+  const dataMin = Math.min(...allPct), dataMax = Math.max(...allPct);
+  let yMin = Math.min(40, Math.floor(dataMin - 2));
+  let yMax = Math.max(60, Math.ceil(dataMax + 2));
+  // Symmetrisch um 50 fuehlt sich besser an
+  const span = Math.max(50 - yMin, yMax - 50);
+  yMin = 50 - span; yMax = 50 + span;
+  if (yMin < 0) yMin = 0;
+  if (yMax > 100) yMax = 100;
+  const yScale = pct => MT + (yMax - pct) / (yMax - yMin) * ih;
+
+  // Build path strings: stacked area = M (0%->mPct) below, F (mPct->100%) above
+  // we draw M from bottom (y at 0%) up to mPct, F from mPct up to 100%
+  const yBottom = MT + ih;
+  const yTop = MT;
+
+  // M area: along bottom + along top of M (which is mPct line)
+  const mPath = ['M', ML, yBottom];
+  series.forEach(p => mPath.push('L', x(p.year), yScale(pctM(p))));
+  mPath.push('L', x(yearMax), yBottom, 'Z');
+  const mPathSolid = svg.appendChild(el('path', { d: mPath.join(' '), class: 'area-m' }));
+
+  // F area: along top (100%) and along mPct line backwards
+  const fPath = ['M', ML, yTop, 'L', ML + iw, yTop];
+  for (let i = series.length - 1; i >= 0; i--) {
+    fPath.push('L', x(series[i].year), yScale(pctM(series[i])));
+  }
+  fPath.push('Z');
+  svg.appendChild(el('path', { d: fPath.join(' '), class: 'area-f' }));
+
+  // 50%-Referenzlinie (auf weiss in der Naht)
+  svg.appendChild(el('line', { x1: ML, x2: ML + iw, y1: yScale(50), y2: yScale(50), class: 'midline' }));
+
+  // X-Achse: Ticks
+  const xAxis = el('g', { class: 'axis' });
+  // Choose tick years: every 5 if range > 20, else every 2-3
+  const range = yearMax - yearMin;
+  let step = 5;
+  if (range <= 15) step = 2;
+  if (range <= 8) step = 1;
+  for (let y = Math.ceil(yearMin / step) * step; y <= yearMax; y += step) {
+    const px = x(y);
+    xAxis.appendChild(el('line', { x1: px, x2: px, y1: yBottom, y2: yBottom + 4 }));
+    const t = el('text', { x: px, y: yBottom + 16, 'text-anchor': 'middle' });
+    t.textContent = y;
+    xAxis.appendChild(t);
+  }
+  // Always include yearMax label (even if not on grid)
+  if ((yearMax - yearMin) % step !== 0) {
+    const px = x(yearMax);
+    const t = el('text', { x: px, y: yBottom + 16, 'text-anchor': 'middle' });
+    t.textContent = yearMax + (last.p ? 'p' : '');
+    xAxis.appendChild(t);
+  }
+  svg.appendChild(xAxis);
+
+  // Y-Achse: dynamische Ticks im Zoom-Bereich
+  const yAxis = el('g', { class: 'axis' });
+  const yRange = yMax - yMin;
+  let yStep = 5;
+  if (yRange <= 12) yStep = 2;
+  if (yRange <= 6) yStep = 1;
+  for (let v = Math.ceil(yMin / yStep) * yStep; v <= yMax; v += yStep) {
+    const py = yScale(v);
+    const t = el('text', { x: ML - 4, y: py + 3, 'text-anchor': 'end' });
+    t.textContent = v + '%';
+    yAxis.appendChild(t);
+    if (v !== 50) {
+      yAxis.appendChild(el('line', { x1: ML, x2: ML + iw, y1: py, y2: py, stroke: '#eee', 'stroke-width': 1 }));
+    }
+  }
+  svg.appendChild(yAxis);
+
+  // Right-edge labels — direkt am Naht-Endpunkt
+  const lastM = pctM(last);
+  const lastY = yScale(lastM);
+  const lblM = el('text', { x: ML + iw + 6, y: lastY + 14, class: 'label-area', fill: '#0068A4', 'dominant-baseline': 'middle' });
+  lblM.textContent = `${lastM.toFixed(1)}% ♂`;
+  svg.appendChild(lblM);
+  const lblF = el('text', { x: ML + iw + 6, y: lastY - 6, class: 'label-area', fill: '#EE7733', 'dominant-baseline': 'middle' });
+  lblF.textContent = `${(100 - lastM).toFixed(1)}% ♀`;
+  svg.appendChild(lblF);
+
+  // Hover overlay
+  const tooltip = document.getElementById('tooltip');
+  const overlay = el('rect', { x: ML, y: MT, width: iw, height: ih, fill: 'transparent' });
+  const hoverLine = el('line', { x1: ML, x2: ML, y1: MT, y2: yBottom, class: 'hover-line', style: 'display:none' });
+  svg.appendChild(hoverLine);
+  svg.appendChild(overlay);
+
+  const container = document.getElementById('chart-container');
+  function move(evt) {
+    const rect = svg.getBoundingClientRect();
+    const sx = (evt.clientX - rect.left) / rect.width * W;
+    if (sx < ML || sx > ML + iw) return hide();
+    const yr = Math.round(yearMin + (sx - ML) / iw * (yearMax - yearMin));
+    const p = series.find(s => s.year === yr) || series.reduce((a, b) => Math.abs(b.year - yr) < Math.abs(a.year - yr) ? b : a);
+    const px = x(p.year);
+    hoverLine.setAttribute('x1', px); hoverLine.setAttribute('x2', px);
+    hoverLine.style.display = 'block';
+    const total = p.m + p.f;
+    const mp = (p.m / total * 100).toFixed(1);
+    const fp = (p.f / total * 100).toFixed(1);
+    tooltip.innerHTML = `<b>${p.year}${p.p ? 'p (provisorisch)' : ''}</b><br>
+      <span style="color:#0068A4">♂ ${p.m.toLocaleString('de-CH')} (${mp}%)</span><br>
+      <span style="color:#EE7733">♀ ${p.f.toLocaleString('de-CH')} (${fp}%)</span><br>
+      <span style="color:#888">Total ${total.toLocaleString('de-CH')}</span>`;
+    tooltip.style.display = 'block';
+    const cRect = container.getBoundingClientRect();
+    const left = evt.clientX - cRect.left + 12;
+    const top = evt.clientY - cRect.top + 8;
+    tooltip.style.left = Math.min(left, container.clientWidth - tooltip.offsetWidth - 4) + 'px';
+    tooltip.style.top = top + 'px';
+  }
+  function hide() { tooltip.style.display = 'none'; hoverLine.style.display = 'none'; }
+  overlay.addEventListener('mousemove', move);
+  overlay.addEventListener('mouseleave', hide);
+  overlay.addEventListener('touchmove', e => { if (e.touches[0]) move(e.touches[0]); e.preventDefault(); }, { passive: false });
+  overlay.addEventListener('touchend', hide);
+}
+
+function el(tag, attrs = {}) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function postHeight() {
+  const h = document.documentElement.scrollHeight;
+  if (window.parent !== window) window.parent.postMessage({ type: 'embed-size', height: h }, '*');
+}
+window.addEventListener('resize', () => { try { render(); postHeight(); } catch (e) {} });
+load();
+</script>
+</body>
+</html>
