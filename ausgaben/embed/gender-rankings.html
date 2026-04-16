@@ -41,7 +41,7 @@
 <body>
 <div id="wrap">
   <h1>Die männlichsten und weiblichsten Dörfer</h1>
-  <p class="lead">Rangliste der 100 Bündner Gemeinden nach Männeranteil. <strong>Stand 31.12.2025 (provisorisch).</strong></p>
+  <p class="lead">Rangliste der Bündner Gemeinden nach Geschlechterverteilung. <strong>Stand 31.12.2025 (provisorisch).</strong></p>
 
   <div class="tabs" id="tabs">
     <div class="tab active" data-mode="maennlichste">Top 10 männlichste</div>
@@ -55,7 +55,7 @@
 
   <p class="source">
     Daten: Statistik Graubünden · STATPOP 2025 (provisorisch, Stand 02.04.2026) · <a href="https://data.gr.ch" target="_blank" rel="noopener">data.gr.ch</a><br>
-    Grafik: Südostschweiz/jr · Gemeinden unter 50 EW werden nicht dargestellt.
+    Grafik: Südostschweiz/jr
   </p>
 </div>
 
@@ -78,7 +78,7 @@ function render() {
   const cont = document.getElementById('ranking-container');
   const grPct = DATA.meta.gr_male_pct_2025p;
 
-  const gems = DATA.gemeinden.filter(g => g.total_2025p >= 50);
+  const gems = DATA.gemeinden.slice();
   let list, caption;
   if (MODE === 'maennlichste') {
     list = gems.slice().sort((a,b) => b.male_pct_2025p - a.male_pct_2025p).slice(0, 10);

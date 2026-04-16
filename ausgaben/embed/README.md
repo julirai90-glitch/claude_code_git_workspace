@@ -122,7 +122,6 @@ in welchen Altersklassen Männer bzw. Frauen überwiegen, unabhängig von der Gr
 
 **Datei:** `gender-rankings.html`
 Tabs: *Top 10 männlichste · Top 10 weiblichste · Grösste Abweichungen*.
-Gemeinden < 50 EW ausgenommen, damit Mini-Dörfer keine Zahlen-Artefakte erzeugen.
 
 ```html
 <iframe

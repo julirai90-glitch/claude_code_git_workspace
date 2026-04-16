@@ -63,7 +63,7 @@
 
   <p class="source">
     Daten: Statistik Graubünden · STATPOP 2025 (provisorisch, Stand 02.04.2026) · <a href="https://data.gr.ch" target="_blank" rel="noopener">data.gr.ch</a><br>
-    Grafik: Südostschweiz/jr · Gemeinden mit weniger als 50 Einwohnerinnen und Einwohnern bleiben aussen vor.
+    Grafik: Südostschweiz/jr
   </p>
 </div>
 
@@ -85,8 +85,7 @@ async function load() {
     if (!DATA || !DATA.gemeinden || !DATA.gemeinden.length) throw new Error('Gemeinden-Array leer');
 
     const sel = document.getElementById('gem-select');
-    const valid = DATA.gemeinden.filter(g => g.total_2025p >= 50)
-      .slice().sort((a,b) => a.name.localeCompare(b.name, 'de'));
+    const valid = DATA.gemeinden.slice().sort((a,b) => a.name.localeCompare(b.name, 'de'));
     valid.forEach(g => { const o = document.createElement('option'); o.value = g.name; o.textContent = g.name; sel.appendChild(o); });
 
     sel.addEventListener('change', () => renderFor(sel.value));
@@ -129,7 +128,7 @@ function combine(a, b) {
 
 function renderFor(key) {
   try {
-    const valid = DATA.gemeinden.filter(g => g.total_2025p >= 50);
+    const valid = DATA.gemeinden.slice();
     const grPct = DATA.meta.gr_male_pct_2025p;
     let g;
     if (key === '__random__') {
