@@ -147,23 +147,7 @@ Gemeinden. Erklär-Box markiert das Bild als strukturellen Unterschied, nicht al
 </iframe>
 ```
 
-### Block 5 — Gemeinde-Matching (Augenzwinkern)
-
-**Datei:** `gender-matching.html`
-Zufallspaar- oder Gemeinde-Dropdown. Das Tool paart jede Gemeinde mit deutlichem
-Geschlechter-Überschuss mit einer passenden Gegengemeinde und zeigt die kombinierte
-Quote. Disclaimer: statistische Spielerei — keine Fusions-Empfehlung.
-
-```html
-<iframe
-  src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/gender-matching.html"
-  style="width:100%;border:0;height:560px"
-  loading="lazy"
-  title="Gemeinde-Matching Graubünden — statistische Spielerei">
-</iframe>
-```
-
-### Block 6 — Zeitverlauf seit 1981 (100 % gestapelte Flächen)
+### Block 5 — Zeitverlauf seit 1981 (100 % gestapelte Flächen)
 
 **Datei:** `gender-timeline.html`
 Dropdown wählt zwischen Kanton (seit 1981), 11 Regionen und 100 Gemeinden (beide seit 2010).
