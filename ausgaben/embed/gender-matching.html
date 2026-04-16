@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wer würde gut zusammenpassen? Ein statistisches Gemeinde-Matching</title>
+<style>
+  html, body { margin:0; padding:0; overflow-x:hidden; max-width:100%; background:#fff; color:#1a1a1a;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  #wrap { width:100%; max-width:696px; margin:0 auto; padding:8px; box-sizing:border-box; }
+  h1 { font-size:19px; margin:4px 0 2px; font-weight:700; }
+  .lead { font-size:14px; color:#555; margin:0 0 10px; }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+  .controls label { font-size:12px; color:#666; }
+  select, button { padding:7px 11px; border:1px solid #ccc; border-radius:4px; font-size:13px;
+    font-family:inherit; background:#fff; max-width:100%; box-sizing:border-box; }
+  button { background:#1a9e5a; color:#fff; border-color:#1a9e5a; cursor:pointer; font-weight:600; }
+  button:hover { background:#158848; }
+  .pair { display:grid; grid-template-columns:1fr 28px 1fr; gap:10px; align-items:center; margin-bottom:14px;
+    background:#fafafa; border:1px solid #eee; border-radius:8px; padding:12px 10px; }
+  .card { background:#fff; border:1px solid #e8e8e8; border-radius:6px; padding:10px; }
+  .card-name { font-weight:700; font-size:15px; color:#1a1a1a; margin-bottom:2px; }
+  .card-badge { display:inline-block; font-size:11px; padding:2px 7px; border-radius:10px; color:#fff;
+    font-weight:600; margin-bottom:4px; }
+  .badge-m { background:#0068A4; } .badge-f { background:#EE7733; }
+  .card-stat { font-size:12px; color:#555; line-height:1.5; }
+  .plus { font-size:22px; text-align:center; color:#1a9e5a; font-weight:700; }
+  .result { background:#e7f5ed; border:1px solid #1a9e5a; border-radius:8px; padding:12px 14px; margin-bottom:12px; }
+  .result-head { font-size:12px; color:#1a9e5a; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+  .result-body { font-size:14px; color:#1a1a1a; line-height:1.5; }
+  .result-quote { font-size:13px; color:#444; font-style:italic; margin-top:6px; }
+  .combined-bar { margin-top:10px; }
+  .stack { position:relative; height:28px; background:#eee; border-radius:3px; overflow:hidden; display:flex; }
+  .stack-m { background:#0068A4; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:700; }
+  .stack-f { background:#EE7733; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:700; }
+  .disclaimer { font-size:11px; color:#888; margin-top:4px; background:#fffbea; padding:8px 10px;
+    border-left:3px solid #ffbb33; border-radius:0 4px 4px 0; line-height:1.4; }
+  .source { font-size:11px; color:#888; margin-top:12px; line-height:1.4; border-top:1px solid #eee; padding-top:6px; }
+  @media (max-width:600px) {
+    h1 { font-size:17px; } .lead { font-size:13px; }
+    .pair { grid-template-columns:1fr; gap:6px; padding:10px 8px; }
+    .plus { transform:rotate(90deg); margin:-4px 0; }
+    .card-stat { font-size:11.5px; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Gemeinde sucht Gemeinde</h1>
+  <p class="lead">Ein augenzwinkerndes Gedankenspiel: Jede Bündner Gemeinde mit Männerüberschuss kriegt eine Partnergemeinde mit Frauenüberschuss — zusammen ergeben sie ein ausgeglichenes Mini-Graubünden.</p>
+
+  <div class="controls">
+    <label for="gem-select">Gemeinde wählen:</label>
+    <select id="gem-select"><option value="__random__">🎲 Zufallspaar</option></select>
+    <button id="btn-random">Neues Zufallspaar</button>
+  </div>
+
+  <div id="result"></div>
+
+  <p class="disclaimer">
+    <strong>Statistische Spielerei.</strong> Kein ernsthafter politischer Vorschlag für Gemeindefusionen. Das Matching ignoriert Entfernung, Sprache und Region bewusst — wer auf welchen Berg gehört, entscheidet weiterhin die Geografie, nicht die Statistik.
+  </p>
+
+  <p class="source">
+    Daten: Statistik Graubünden · STATPOP 2025 (provisorisch, Stand 02.04.2026) · <a href="https://data.gr.ch" target="_blank" rel="noopener">data.gr.ch</a><br>
+    Grafik: Südostschweiz/jr · Gemeinden mit weniger als 50 Einwohnerinnen und Einwohnern bleiben aussen vor.
+  </p>
+</div>
+
+<script>
+let DATA = null;
+
+async function load() {
+  DATA = await (await fetch('./data/gender-data.json')).json();
+  const sel = document.getElementById('gem-select');
+  const valid = DATA.gemeinden.filter(g => g.total_2025p >= 50)
+    .slice().sort((a,b) => a.name.localeCompare(b.name, 'de'));
+  valid.forEach(g => { const o = document.createElement('option'); o.value = g.name; o.textContent = g.name; sel.appendChild(o); });
+
+  sel.addEventListener('change', () => renderFor(sel.value));
+  document.getElementById('btn-random').addEventListener('click', () => {
+    sel.value = '__random__';
+    renderFor('__random__');
+  });
+  renderFor('__random__');
+}
+
+// Match a Gemeinde with its ideal complementary partner.
+// Score = |combined_male_pct - 50| + weight*|size_diff_ratio|
+// We pick the opposite-sex gemeinde that best balances to 50%.
+function bestPartner(g, candidates) {
+  const isMaleSurplus = g.male_pct_2025p > 50;
+  const pool = candidates.filter(c => c.name !== g.name &&
+    (isMaleSurplus ? c.male_pct_2025p < 50 : c.male_pct_2025p > 50));
+  if (!pool.length) return null;
+  let best = null, bestScore = Infinity;
+  for (const c of pool) {
+    const combined = combine(g, c);
+    const deviation = Math.abs(combined.male_pct - 50);
+    const sizeRatio = Math.min(g.total_2025p, c.total_2025p) / Math.max(g.total_2025p, c.total_2025p);
+    // Score: primaer Ausgleichs-Qualitaet, sekundaer aehnliche Grösse (damit nicht Chur+Rossa)
+    const score = deviation - sizeRatio * 0.3;
+    if (score < bestScore) { bestScore = score; best = c; }
+  }
+  return best;
+}
+
+function combine(a, b) {
+  const total = a.total_2025p + b.total_2025p;
+  const m = a.m_2025p + b.m_2025p;
+  const f = a.f_2025p + b.f_2025p;
+  return { total, m, f, male_pct: m / total * 100 };
+}
+
+function renderFor(key) {
+  const valid = DATA.gemeinden.filter(g => g.total_2025p >= 50);
+  const grPct = DATA.meta.gr_male_pct_2025p;
+  let g;
+  if (key === '__random__') {
+    // Ziehe eine Gemeinde mit deutlicher Abweichung (>2pp vom Kantonsschnitt)
+    const skewed = valid.filter(x => Math.abs(x.male_pct_2025p - grPct) > 2);
+    g = skewed[Math.floor(Math.random() * skewed.length)] || valid[0];
+  } else {
+    g = valid.find(x => x.name === key);
+  }
+  const partner = bestPartner(g, valid);
+  if (!partner) { document.getElementById('result').innerHTML = '<p>Keine passende Partnergemeinde gefunden.</p>'; return; }
+  render(g, partner);
+}
+
+function render(a, b) {
+  // Ordering: Männerüberschuss links, Frauenüberschuss rechts
+  let left = a, right = b;
+  if (a.male_pct_2025p < b.male_pct_2025p) { left = b; right = a; }
+  const c = combine(left, right);
+  const deviation = Math.abs(c.male_pct - 50);
+  const qualitaet = deviation < 0.5 ? 'perfekt' : deviation < 1.5 ? 'sehr ausgeglichen' : 'deutlich ausgewogener';
+
+  const html = `
+    <div class="pair">
+      <div class="card">
+        <div class="card-badge badge-m">Männerüberschuss</div>
+        <div class="card-name">${left.name}</div>
+        <div class="card-stat">
+          ${left.total_2025p.toLocaleString('de-CH')} Einwohner<br>
+          <b>${left.male_pct_2025p}%</b> Männer · ${(100-left.male_pct_2025p).toFixed(2)}% Frauen<br>
+          ${left.m_2025p} ♂ · ${left.f_2025p} ♀ &nbsp;(<b>+${left.m_2025p - left.f_2025p}</b> Männer)
+        </div>
+      </div>
+      <div class="plus">+</div>
+      <div class="card">
+        <div class="card-badge badge-f">Frauenüberschuss</div>
+        <div class="card-name">${right.name}</div>
+        <div class="card-stat">
+          ${right.total_2025p.toLocaleString('de-CH')} Einwohner<br>
+          <b>${(100-right.male_pct_2025p).toFixed(2)}%</b> Frauen · ${right.male_pct_2025p}% Männer<br>
+          ${right.m_2025p} ♂ · ${right.f_2025p} ♀ &nbsp;(<b>+${right.f_2025p - right.m_2025p}</b> Frauen)
+        </div>
+      </div>
+    </div>
+    <div class="result">
+      <div class="result-head">Ergebnis</div>
+      <div class="result-body">
+        Zusammen ergeben <b>${left.name}</b> und <b>${right.name}</b> ein kleines, ${qualitaet}es Mini-Graubünden:
+        <b>${c.total.toLocaleString('de-CH')} Einwohnerinnen und Einwohner</b>, davon <b>${c.male_pct.toFixed(2)}% Männer</b> und <b>${(100-c.male_pct).toFixed(2)}% Frauen</b>.
+      </div>
+      <div class="combined-bar">
+        <div class="stack">
+          <div class="stack-m" style="width:${c.male_pct}%">${c.male_pct.toFixed(1)}% ♂</div>
+          <div class="stack-f" style="width:${100-c.male_pct}%">${(100-c.male_pct).toFixed(1)}% ♀</div>
+        </div>
+      </div>
+      <div class="result-quote">Der Kanton insgesamt liegt bei ${grPct}% Männern.</div>
+    </div>`;
+  document.getElementById('result').innerHTML = html;
+  postHeight();
+}
+
+function postHeight() {
+  const h = document.documentElement.scrollHeight;
+  if (window.parent !== window) window.parent.postMessage({ type: 'embed-size', height: h }, '*');
+}
+window.addEventListener('resize', postHeight);
+load();
+</script>
+</body>
+</html>

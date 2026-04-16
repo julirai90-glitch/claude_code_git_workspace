@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Männeranteil: Schweizer Bürger und ausländische Wohnbevölkerung in Graubünden</title>
+<style>
+  html, body { margin:0; padding:0; overflow-x:hidden; max-width:100%; background:#fff; color:#1a1a1a;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  #wrap { width:100%; max-width:696px; margin:0 auto; padding:8px; box-sizing:border-box; }
+  h1 { font-size:19px; margin:4px 0 2px; font-weight:700; }
+  .lead { font-size:14px; color:#555; margin:0 0 12px; }
+  .note { font-size:12px; color:#666; background:#f9f9f9; border-left:3px solid #1a9e5a; padding:8px 10px;
+    margin-bottom:12px; border-radius:0 4px 4px 0; }
+  .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+  .controls label { font-size:12px; color:#666; }
+  select { padding:6px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px; max-width:100%;
+    font-family:inherit; background:#fff; }
+  .group { margin-bottom:16px; }
+  .group-title { font-size:14px; font-weight:700; margin-bottom:4px; color:#1a1a1a; }
+  .group-sub { font-size:12px; color:#888; margin-bottom:6px; }
+  .stack { position:relative; height:36px; background:#eee; border-radius:4px; overflow:hidden; display:flex; }
+  .stack-m { background:#0068A4; display:flex; align-items:center; justify-content:center; color:#fff;
+    font-size:13px; font-weight:700; transition:width .3s; }
+  .stack-f { background:#EE7733; display:flex; align-items:center; justify-content:center; color:#fff;
+    font-size:13px; font-weight:700; transition:width .3s; }
+  .stack-labels { display:flex; justify-content:space-between; margin-top:4px; font-size:11px; color:#888; }
+  .big-numbers { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:14px; }
+  .bn { background:#f5f5f5; padding:8px; border-radius:6px; text-align:center; }
+  .bn-val { font-size:18px; font-weight:700; color:#0068A4; }
+  .bn-label { font-size:10px; color:#666; text-transform:uppercase; letter-spacing:.04em; }
+  .legend { display:flex; gap:14px; font-size:11px; color:#555; margin-top:6px; flex-wrap:wrap; }
+  .legend .box { display:inline-block; width:12px; height:10px; margin-right:4px; vertical-align:middle; border-radius:2px; }
+  .source { font-size:11px; color:#888; margin-top:14px; line-height:1.4; border-top:1px solid #eee; padding-top:6px; }
+  @media (max-width:600px) {
+    h1 { font-size:17px; } .lead { font-size:13px; }
+    .bn-val { font-size:16px; }
+    .stack-m, .stack-f { font-size:12px; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Zwei Geschlechterverteilungen — je nach Pass</h1>
+  <p class="lead">Die Gesamtbevölkerung Graubündens ist fast ausgeglichen. Schaut man getrennt auf Schweizer Bürgerinnen und Bürger einerseits und die ausländische Wohnbevölkerung andererseits, zeigen sich zwei unterschiedliche Bilder.</p>
+
+  <div class="note">
+    Kein wertendes Ranking — die Zahlen zeigen unterschiedliche Bevölkerungsstrukturen. Die ausländische Wohnbevölkerung in Graubünden ist jünger und stärker von Erwerbstätigkeit geprägt, was sich in einer höheren Männerquote spiegelt.
+  </div>
+
+  <div class="controls">
+    <label for="gem-select">Anzeige:</label>
+    <select id="gem-select"><option value="__kanton__">Kanton Graubünden</option></select>
+  </div>
+
+  <div class="big-numbers" id="bignums"></div>
+
+  <div id="groups"></div>
+
+  <div class="legend">
+    <span><span class="box" style="background:#0068A4"></span>Männer</span>
+    <span><span class="box" style="background:#EE7733"></span>Frauen</span>
+  </div>
+
+  <p class="source">
+    Daten: Statistik Graubünden · STATPOP 2025 (provisorisch, Stand 02.04.2026) · <a href="https://data.gr.ch" target="_blank" rel="noopener">data.gr.ch</a><br>
+    Grafik: Südostschweiz/jr · Ausländische Wohnbevölkerung inkl. staatenlose und Angaben ohne.
+  </p>
+</div>
+
+<script>
+let DATA = null, CURRENT = '__kanton__';
+
+async function load() {
+  DATA = await (await fetch('./data/gender-data.json')).json();
+  const sel = document.getElementById('gem-select');
+  DATA.gemeinden.slice().sort((a,b) => a.name.localeCompare(b.name, 'de'))
+    .forEach(g => { const o = document.createElement('option'); o.value = g.name; o.textContent = g.name; sel.appendChild(o); });
+  sel.addEventListener('change', () => { CURRENT = sel.value; render(); postHeight(); });
+  render(); postHeight();
+}
+
+function currentData() {
+  if (CURRENT === '__kanton__') {
+    const m = DATA.meta;
+    return {
+      name: 'Kanton Graubünden',
+      total: { total: m.gr_total_2025p, m: m.gr_m_2025p, f: m.gr_f_2025p, pct: m.gr_male_pct_2025p },
+      ch: { total: m.gr_ch_total, m: m.gr_ch_m, f: m.gr_ch_f, pct: m.gr_ch_male_pct },
+      au: { total: m.gr_au_total, m: m.gr_au_m, f: m.gr_au_f, pct: m.gr_au_male_pct },
+    };
+  }
+  const g = DATA.gemeinden.find(x => x.name === CURRENT);
+  return {
+    name: g.name,
+    total: { total: g.total_2025p, m: g.m_2025p, f: g.f_2025p, pct: g.male_pct_2025p },
+    ch: { total: g.ch_total, m: g.ch_m, f: g.ch_f, pct: g.ch_male_pct },
+    au: { total: g.au_total, m: g.au_m, f: g.au_f, pct: g.au_male_pct },
+  };
+}
+
+function stackHtml(d) {
+  if (!d.total) return `<div style="color:#aaa; font-size:12px; padding:8px 0;">Keine ausländische Wohnbevölkerung.</div>`;
+  const mPct = d.pct;
+  const fPct = 100 - mPct;
+  return `<div class="stack">
+    <div class="stack-m" style="width:${mPct}%">${mPct.toFixed(1)}% ♂</div>
+    <div class="stack-f" style="width:${fPct}%">${fPct.toFixed(1)}% ♀</div>
+  </div>
+  <div class="stack-labels">
+    <span>${d.m.toLocaleString('de-CH')} Männer</span>
+    <span>${d.f.toLocaleString('de-CH')} Frauen</span>
+  </div>`;
+}
+
+function render() {
+  const d = currentData();
+  const bn = document.getElementById('bignums');
+  bn.innerHTML = `
+    <div class="bn"><div class="bn-val">${d.total.pct}%</div><div class="bn-label">Total Männer</div></div>
+    <div class="bn"><div class="bn-val">${d.ch.pct || '–'}%</div><div class="bn-label">Schweizer</div></div>
+    <div class="bn"><div class="bn-val">${d.au.pct || '–'}%</div><div class="bn-label">Ausländer</div></div>`;
+
+  const gr = document.getElementById('groups');
+  gr.innerHTML = `
+    <div class="group">
+      <div class="group-title">Gesamtbevölkerung</div>
+      <div class="group-sub">${d.total.total.toLocaleString('de-CH')} Personen in ${d.name}</div>
+      ${stackHtml(d.total)}
+    </div>
+    <div class="group">
+      <div class="group-title">Schweizer Bürgerinnen und Bürger</div>
+      <div class="group-sub">${d.ch.total.toLocaleString('de-CH')} Personen (${(d.ch.total/d.total.total*100).toFixed(1)}%)</div>
+      ${stackHtml(d.ch)}
+    </div>
+    <div class="group">
+      <div class="group-title">Ausländische Wohnbevölkerung</div>
+      <div class="group-sub">${d.au.total.toLocaleString('de-CH')} Personen (${(d.au.total/d.total.total*100).toFixed(1)}%)</div>
+      ${stackHtml(d.au)}
+    </div>`;
+}
+
+function postHeight() {
+  const h = document.documentElement.scrollHeight;
+  if (window.parent !== window) window.parent.postMessage({ type: 'embed-size', height: h }, '*');
+}
+window.addEventListener('resize', postHeight);
+load();
+</script>
+</body>
+</html>

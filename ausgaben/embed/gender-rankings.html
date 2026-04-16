@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Die männlichsten und weiblichsten Gemeinden Graubündens</title>
+<style>
+  html, body { margin:0; padding:0; overflow-x:hidden; max-width:100%; background:#fff; color:#1a1a1a;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  #wrap { width:100%; max-width:696px; margin:0 auto; padding:8px; box-sizing:border-box; }
+  h1 { font-size:19px; margin:4px 0 2px; font-weight:700; }
+  .lead { font-size:14px; color:#555; margin:0 0 10px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .tab { padding:6px 11px; border:1px solid #ddd; background:#f5f5f5; cursor:pointer; border-radius:14px;
+    font-size:12px; color:#333; }
+  .tab.active { background:#0068A4; color:#fff; border-color:#0068A4; }
+  #ranking-container { width:100%; max-width:696px; overflow-x:hidden; }
+  .row { display:grid; grid-template-columns: 18px 1fr 52px; gap:8px; align-items:center; padding:5px 0;
+    border-bottom:1px solid #f5f5f5; }
+  .rank { font-size:11px; color:#888; text-align:right; font-variant-numeric: tabular-nums; }
+  .row-body { display:flex; align-items:center; gap:6px; }
+  .row-name { font-size:13px; color:#1a1a1a; min-width:110px; max-width:110px; font-weight:500;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar-wrap { flex:1; position:relative; height:22px; background:#fafafa; border-radius:3px; overflow:hidden; }
+  .bar-m { position:absolute; right:50%; top:0; bottom:0; background:#0068A4; }
+  .bar-f { position:absolute; left:50%; top:0; bottom:0; background:#EE7733; }
+  .bar-mid { position:absolute; left:50%; top:0; bottom:0; width:1px; background:#ccc; }
+  .row-pct { font-size:12px; font-weight:700; color:#1a1a1a; text-align:right; font-variant-numeric: tabular-nums; }
+  .row-ew { font-size:10px; color:#999; }
+  .info { font-size:12px; color:#666; background:#f9f9f9; border-left:3px solid #0068A4; padding:8px 10px;
+    margin-bottom:10px; border-radius:0 4px 4px 0; }
+  .source { font-size:11px; color:#888; margin-top:10px; line-height:1.4; border-top:1px solid #eee; padding-top:6px; }
+  @media (max-width:600px) {
+    h1 { font-size:17px; } .lead { font-size:13px; }
+    .tab { font-size:11px; padding:5px 9px; }
+    .row-name { min-width:90px; max-width:90px; font-size:12px; }
+    .row { grid-template-columns: 16px 1fr 44px; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Die männlichsten und weiblichsten Dörfer</h1>
+  <p class="lead">Rangliste der 100 Bündner Gemeinden nach Männeranteil. <strong>Stand 31.12.2025 (provisorisch).</strong></p>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-mode="maennlichste">Top 10 männlichste</div>
+    <div class="tab" data-mode="weiblichste">Top 10 weiblichste</div>
+    <div class="tab" data-mode="diff">Grösste Abweichungen</div>
+  </div>
+
+  <div class="info" id="info"></div>
+
+  <div id="ranking-container"></div>
+
+  <p class="source">
+    Daten: Statistik Graubünden · STATPOP 2025 (provisorisch, Stand 02.04.2026) · <a href="https://data.gr.ch" target="_blank" rel="noopener">data.gr.ch</a><br>
+    Grafik: Südostschweiz/jr · Gemeinden unter 50 EW werden nicht dargestellt.
+  </p>
+</div>
+
+<script>
+let DATA = null, MODE = 'maennlichste';
+
+async function load() {
+  DATA = await (await fetch('./data/gender-data.json')).json();
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    MODE = t.dataset.mode;
+    render(); postHeight();
+  }));
+  render(); postHeight();
+}
+
+function render() {
+  const info = document.getElementById('info');
+  const cont = document.getElementById('ranking-container');
+  const grPct = DATA.meta.gr_male_pct_2025p;
+
+  const gems = DATA.gemeinden.filter(g => g.total_2025p >= 50);
+  let list, caption;
+  if (MODE === 'maennlichste') {
+    list = gems.slice().sort((a,b) => b.male_pct_2025p - a.male_pct_2025p).slice(0, 10);
+    caption = `Die 10 Gemeinden mit dem höchsten Männeranteil. Spitzenreiter: <b>${list[0].name}</b> mit ${list[0].male_pct_2025p}% Männern — das sind ${list[0].m_2025p - list[0].f_2025p} Männer mehr als Frauen bei ${list[0].total_2025p} Einwohnerinnen und Einwohnern. Kantonsschnitt: ${grPct}%.`;
+  } else if (MODE === 'weiblichste') {
+    list = gems.slice().sort((a,b) => a.male_pct_2025p - b.male_pct_2025p).slice(0, 10);
+    caption = `Die 10 Gemeinden mit dem höchsten Frauenanteil. An der Spitze: <b>${list[0].name}</b> mit ${(100 - list[0].male_pct_2025p).toFixed(2)}% Frauen. Kantonsschnitt: ${grPct}% Männer — oder ${(100-grPct).toFixed(2)}% Frauen.`;
+  } else {
+    // Grösste Abweichung vom 50-50-Schnitt (absolut)
+    list = gems.slice().sort((a,b) => Math.abs(b.male_pct_2025p - 50) - Math.abs(a.male_pct_2025p - 50)).slice(0, 10);
+    caption = `Die 10 Gemeinden mit der grössten Abweichung vom 50:50-Gleichgewicht — egal ob nach männlich oder weiblich.`;
+  }
+  info.innerHTML = caption;
+
+  const rows = list.map((g, i) => {
+    const mPct = g.male_pct_2025p;
+    const fPct = 100 - mPct;
+    const deviation = Math.abs(mPct - 50);
+    // Bar-Dimension: max 50% offset at 18% (i.e. 32 oder 68 male_pct) — unrealistisch; use 10%
+    const maxDev = 10;
+    const barMW = (mPct > 50 ? (mPct - 50) / maxDev * 50 : 0);
+    const barFW = (mPct < 50 ? (50 - mPct) / maxDev * 50 : 0);
+    return `<div class="row">
+      <div class="rank">${i+1}.</div>
+      <div class="row-body">
+        <div class="row-name" title="${g.name}">${g.name}</div>
+        <div class="bar-wrap">
+          <div class="bar-m" style="width:${barMW}%"></div>
+          <div class="bar-f" style="width:${barFW}%"></div>
+          <div class="bar-mid"></div>
+        </div>
+      </div>
+      <div>
+        <div class="row-pct">${mPct > 50 ? mPct.toFixed(1) + '% ♂' : fPct.toFixed(1) + '% ♀'}</div>
+        <div class="row-ew">${g.total_2025p.toLocaleString('de-CH')} EW</div>
+      </div>
+    </div>`;
+  }).join('');
+  cont.innerHTML = rows;
+}
+
+function postHeight() {
+  const h = document.documentElement.scrollHeight;
+  if (window.parent !== window) window.parent.postMessage({ type: 'embed-size', height: h }, '*');
+}
+window.addEventListener('resize', postHeight);
+load();
+</script>
+</body>
+</html>

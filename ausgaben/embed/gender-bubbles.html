@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Männer- und Frauenanteil in den 100 Gemeinden Graubündens (2025p)</title>
+<style>
+  html, body { margin:0; padding:0; overflow-x:hidden; max-width:100%; background:#fff; color:#1a1a1a;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  #wrap { width:100%; max-width:696px; margin:0 auto; padding:8px; box-sizing:border-box; }
+  h1 { font-size:19px; margin:4px 0 2px; font-weight:700; }
+  .lead { font-size:14px; color:#555; margin:0 0 10px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+  .tab { padding:6px 10px; border:1px solid #ddd; background:#f5f5f5; cursor:pointer; border-radius:14px;
+    font-size:12px; color:#333; }
+  .tab.active { background:#0068A4; color:#fff; border-color:#0068A4; }
+  .search { margin-bottom:8px; }
+  .search input { width:100%; max-width:100%; padding:7px 10px; border:1px solid #ccc; border-radius:4px;
+    font-size:13px; box-sizing:border-box; font-family:inherit; }
+  #viz { width:100%; max-width:696px; overflow-x:hidden; margin:0 auto; }
+  svg { width:100%; height:auto; display:block; }
+  .axis-label { font-size:11px; fill:#666; }
+  .tick-label { font-size:10px; fill:#888; }
+  .ref-line { stroke:#aaa; stroke-dasharray:3 3; stroke-width:1; }
+  .ref-label { font-size:10px; fill:#666; }
+  .bubble { cursor:pointer; transition:opacity .2s; }
+  .bubble.dimmed { opacity:0.15; }
+  .bubble.highlight { stroke:#1a1a1a; stroke-width:1.5; }
+  .bubble-label { font-size:10px; fill:#1a1a1a; pointer-events:none; font-weight:600; }
+  #tooltip { position:absolute; background:#fff; border:1px solid #ccc; border-radius:4px; padding:6px 9px;
+    font-size:12px; pointer-events:none; opacity:0; transition:opacity .12s; box-shadow:0 2px 8px rgba(0,0,0,.08);
+    z-index:10; max-width:220px; }
+  #tooltip .t-name { font-weight:700; margin-bottom:2px; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:#555; margin:6px 0 0; }
+  .legend .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+  .source { font-size:11px; color:#888; margin-top:10px; line-height:1.4; border-top:1px solid #eee; padding-top:6px; }
+  @media (max-width:600px) {
+    h1 { font-size:17px; } .lead { font-size:13px; }
+    .tab { font-size:11px; padding:5px 9px; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Wo sind die Männer, wo sind die Frauen?</h1>
+  <p class="lead">Jede Blase ist eine Gemeinde. X-Achse: Männeranteil in Prozent. Y-Achse: Einwohnerzahl. <strong>Stand 31.12.2025p (provisorisch).</strong></p>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-mode="all">Alle 100 Gemeinden</div>
+    <div class="tab" data-mode="maennlichste">Männlichste 10</div>
+    <div class="tab" data-mode="weiblichste">Weiblichste 10</div>
+  </div>
+
+  <div class="search">
+    <input type="text" id="search" placeholder="Gemeinde suchen (z.B. Chur, Avers, Rossa)…" />
+  </div>
+
+  <div id="viz">
+    <svg id="svg" viewBox="0 0 696 440" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+  <div id="tooltip"></div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:#0068A4"></span>mehr Männer</span>
+    <span><span class="dot" style="background:#EE7733"></span>mehr Frauen</span>
+    <span><span class="dot" style="background:#1a9e5a"></span>gesucht</span>
+  </div>
+
+  <p class="source">
+    Daten: Statistik Graubünden · STATPOP 2025 (provisorisch, Stand 02.04.2026) · <a href="https://data.gr.ch" target="_blank" rel="noopener">data.gr.ch</a><br>
+    Grafik: Südostschweiz/jr
+  </p>
+</div>
+
+<script>
+const COLOR_M = '#0068A4', COLOR_F = '#EE7733', COLOR_HL = '#1a9e5a';
+let DATA = null, MODE = 'all', SEARCH = '';
+
+async function load() {
+  const r = await fetch('./data/gender-data.json');
+  DATA = await r.json();
+  bind();
+  render();
+  postHeight();
+}
+
+function bind() {
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    MODE = t.dataset.mode;
+    render();
+  }));
+  const s = document.getElementById('search');
+  s.addEventListener('input', () => { SEARCH = s.value.trim().toLowerCase(); render(); });
+  document.addEventListener('touchstart', e => {
+    if (!e.target.closest('.bubble') && !e.target.closest('#tooltip')) hideTooltip();
+  });
+}
+
+function render() {
+  const svg = document.getElementById('svg');
+  svg.innerHTML = '';
+  const W = 696, H = 440, ML = 48, MR = 18, MT = 14, MB = 44;
+  const iw = W - ML - MR, ih = H - MT - MB;
+  const all = DATA.gemeinden;
+  const grPct = DATA.meta.gr_male_pct_2025p;
+
+  // Scales
+  const xMin = 42, xMax = 60;
+  const totals = all.map(g => g.total_2025p);
+  const yMax = Math.max(...totals), yMin = Math.min(...totals);
+  const x = v => ML + (v - xMin) / (xMax - xMin) * iw;
+  const y = v => MT + ih - (Math.log10(v) - Math.log10(yMin)) / (Math.log10(yMax) - Math.log10(yMin)) * ih;
+  const r = v => Math.max(3, Math.min(22, Math.sqrt(v) * 0.25));
+
+  // Grid: vertical 50% and 50.44%
+  const gridG = el('g');
+  [44, 46, 48, 50, 52, 54, 56, 58].forEach(t => {
+    const ln = el('line', { x1: x(t), x2: x(t), y1: MT, y2: MT+ih, stroke: '#f0f0f0', 'stroke-width': 1 });
+    gridG.appendChild(ln);
+    const lb = el('text', { x: x(t), y: MT+ih+14, class: 'tick-label', 'text-anchor': 'middle' });
+    lb.textContent = t + '%'; gridG.appendChild(lb);
+  });
+  [100, 300, 1000, 3000, 10000, 30000].forEach(t => {
+    if (t < yMin || t > yMax) return;
+    const ln = el('line', { x1: ML, x2: ML+iw, y1: y(t), y2: y(t), stroke: '#f5f5f5', 'stroke-width': 1 });
+    gridG.appendChild(ln);
+    const lb = el('text', { x: ML-4, y: y(t)+3, class: 'tick-label', 'text-anchor': 'end' });
+    lb.textContent = t >= 1000 ? (t/1000)+'k' : t; gridG.appendChild(lb);
+  });
+  svg.appendChild(gridG);
+
+  // Reference line Kanton
+  const ref = el('line', { x1: x(grPct), x2: x(grPct), y1: MT, y2: MT+ih, class: 'ref-line' });
+  svg.appendChild(ref);
+  const refLabel = el('text', { x: x(grPct)+3, y: MT+10, class: 'ref-label' });
+  refLabel.textContent = `Kanton ${grPct}%`;
+  svg.appendChild(refLabel);
+
+  // 50% line
+  const p50 = el('line', { x1: x(50), x2: x(50), y1: MT, y2: MT+ih, class: 'ref-line', stroke: '#ccc' });
+  svg.appendChild(p50);
+
+  // Axis label X
+  const xlab = el('text', { x: ML+iw/2, y: H-4, class: 'axis-label', 'text-anchor': 'middle' });
+  xlab.textContent = '← mehr Frauen    Männeranteil %    mehr Männer →';
+  svg.appendChild(xlab);
+
+  // Mode filter (for ranking-Tabs)
+  let visibleSet = null;
+  if (MODE === 'maennlichste') {
+    visibleSet = new Set(all.slice().sort((a,b) => b.male_pct_2025p - a.male_pct_2025p).slice(0,10).map(g => g.name));
+  } else if (MODE === 'weiblichste') {
+    visibleSet = new Set(all.slice().sort((a,b) => a.male_pct_2025p - b.male_pct_2025p).slice(0,10).map(g => g.name));
+  }
+
+  // Bubbles
+  const bubG = el('g');
+  all.forEach(g => {
+    const isMale = g.male_pct_2025p >= 50;
+    const searchHit = SEARCH && g.name.toLowerCase().includes(SEARCH);
+    const modeHit = visibleSet ? visibleSet.has(g.name) : true;
+    const isHL = searchHit;
+    const dim = (SEARCH && !searchHit) || (visibleSet && !modeHit);
+    const c = el('circle', {
+      cx: x(g.male_pct_2025p), cy: y(g.total_2025p), r: r(g.total_2025p),
+      fill: isHL ? COLOR_HL : (isMale ? COLOR_M : COLOR_F),
+      'fill-opacity': 0.55, stroke: isHL ? '#1a1a1a' : 'rgba(0,0,0,.25)', 'stroke-width': isHL ? 1.6 : 0.6,
+      class: 'bubble' + (dim ? ' dimmed' : '') + (isHL ? ' highlight' : '')
+    });
+    c.addEventListener('mouseenter', e => showTooltip(e, g));
+    c.addEventListener('mousemove', e => moveTooltip(e));
+    c.addEventListener('mouseleave', hideTooltip);
+    c.addEventListener('touchstart', e => { e.preventDefault(); showTooltip(e, g); });
+    bubG.appendChild(c);
+  });
+  svg.appendChild(bubG);
+
+  // Labels: Chur immer, visible-Set labels, searchHit label
+  const labelG = el('g');
+  const labelThreshold = isMobile() ? [] : all.filter(g => g.total_2025p > 3000).map(g => g.name);
+  const namesToLabel = new Set([...labelThreshold, 'Chur']);
+  if (visibleSet) visibleSet.forEach(n => namesToLabel.add(n));
+  all.forEach(g => {
+    const isHL = SEARCH && g.name.toLowerCase().includes(SEARCH);
+    if (!namesToLabel.has(g.name) && !isHL) return;
+    const lb = el('text', {
+      x: x(g.male_pct_2025p), y: y(g.total_2025p) - r(g.total_2025p) - 2,
+      class: 'bubble-label', 'text-anchor': 'middle'
+    });
+    lb.textContent = g.name;
+    labelG.appendChild(lb);
+  });
+  svg.appendChild(labelG);
+}
+
+function showTooltip(ev, g) {
+  const tt = document.getElementById('tooltip');
+  const mDiff = g.m_2025p - g.f_2025p;
+  const sign = mDiff > 0 ? '+' : '';
+  tt.innerHTML = `<div class="t-name">${g.name}</div>
+    Einwohner: <b>${g.total_2025p.toLocaleString('de-CH')}</b><br>
+    Männer: ${g.m_2025p.toLocaleString('de-CH')} · Frauen: ${g.f_2025p.toLocaleString('de-CH')}<br>
+    Männeranteil: <b>${g.male_pct_2025p}%</b> (${sign}${mDiff} Männer)<br>
+    Ø Alter 2024: ${g.avg_age_2024 || '–'} Jahre`;
+  tt.style.opacity = '1';
+  moveTooltip(ev);
+}
+function moveTooltip(ev) {
+  const tt = document.getElementById('tooltip');
+  const wrap = document.getElementById('wrap').getBoundingClientRect();
+  const pt = ev.touches ? ev.touches[0] : ev;
+  let left = pt.clientX - wrap.left + 10;
+  let top = pt.clientY - wrap.top + 10;
+  if (left + 240 > wrap.width) left = wrap.width - 240;
+  if (left < 4) left = 4;
+  tt.style.left = left + 'px'; tt.style.top = top + 'px';
+}
+function hideTooltip() { document.getElementById('tooltip').style.opacity = '0'; }
+function isMobile() { return window.innerWidth <= 600; }
+
+function el(tag, attrs = {}) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function postHeight() {
+  const h = document.documentElement.scrollHeight;
+  if (window.parent !== window) window.parent.postMessage({ type: 'embed-size', height: h }, '*');
+}
+window.addEventListener('resize', () => { render(); postHeight(); });
+load();
+</script>
+</body>
+</html>

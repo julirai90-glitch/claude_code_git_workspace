@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alterspyramide Graubünden — Männer und Frauen</title>
+<style>
+  html, body { margin:0; padding:0; overflow-x:hidden; max-width:100%; background:#fff; color:#1a1a1a;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  #wrap { width:100%; max-width:696px; margin:0 auto; padding:8px; box-sizing:border-box; }
+  h1 { font-size:19px; margin:4px 0 2px; font-weight:700; }
+  .lead { font-size:14px; color:#555; margin:0 0 10px; }
+  .controls { display:flex; gap:8px; margin-bottom:10px; align-items:center; flex-wrap:wrap; }
+  .controls label { font-size:12px; color:#666; }
+  select { padding:6px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px; max-width:100%; font-family:inherit;
+    background:#fff; }
+  .kpis { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .kpi { flex:1; min-width:140px; background:#f5f5f5; padding:8px 10px; border-radius:6px; border:1px solid #eee; }
+  .kpi-label { font-size:10px; color:#888; text-transform:uppercase; letter-spacing:.05em; }
+  .kpi-value { font-size:20px; font-weight:700; color:#1a1a1a; margin-top:2px; }
+  .kpi-sub { font-size:11px; color:#666; margin-top:1px; }
+  #pyramid-container { width:100%; max-width:696px; overflow-x:hidden; margin:0 auto; }
+  svg { width:100%; height:auto; display:block; }
+  .pyr-bar-m { fill:#0068A4; }
+  .pyr-bar-f { fill:#EE7733; }
+  .pyr-klasse { font-size:10px; fill:#555; }
+  .pyr-value { font-size:9px; fill:#444; }
+  .pyr-axis { font-size:10px; fill:#888; }
+  .pyr-hl { stroke:#1a9e5a; stroke-width:1.5; fill:none; }
+  .pyr-hl-label { font-size:10px; fill:#1a9e5a; font-weight:600; }
+  .legend { display:flex; gap:14px; font-size:11px; color:#555; margin:8px 0 0; flex-wrap:wrap; }
+  .legend .box { display:inline-block; width:12px; height:10px; margin-right:4px; vertical-align:middle; border-radius:2px; }
+  .source { font-size:11px; color:#888; margin-top:10px; line-height:1.4; border-top:1px solid #eee; padding-top:6px; }
+  @media (max-width:600px) {
+    h1 { font-size:17px; } .lead { font-size:13px; }
+    .kpi-value { font-size:17px; } .kpi { min-width:110px; padding:6px 8px; }
+    .pyr-value { display:none; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Ab 60 kippt die Waage</h1>
+  <p class="lead">Alterspyramide pro Gemeinde: Jüngere Jahrgänge sind männlich dominiert, bei den älteren sind es die Frauen — die Lebenserwartung entscheidet.</p>
+
+  <div class="controls">
+    <label for="gem-select">Gemeinde:</label>
+    <select id="gem-select"><option value="__kanton__">Kanton Graubünden</option></select>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div id="pyramid-container">
+    <svg id="pyr-svg" viewBox="0 0 696 520" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+
+  <div class="legend">
+    <span><span class="box" style="background:#0068A4"></span>Männer</span>
+    <span><span class="box" style="background:#EE7733"></span>Frauen</span>
+    <span style="color:#1a9e5a"><span class="box" style="background:#1a9e5a"></span>Ab hier mehr Frauen</span>
+  </div>
+
+  <p class="source">
+    Daten: Statistik Graubünden · STATPOP 2024 (Altersstruktur) + 2025p (Total/Geschlecht) · <a href="https://data.gr.ch" target="_blank" rel="noopener">data.gr.ch</a><br>
+    Grafik: Südostschweiz/jr
+  </p>
+</div>
+
+<script>
+let DATA = null, CURRENT = '__kanton__';
+
+async function load() {
+  DATA = await (await fetch('./data/gender-data.json')).json();
+  const sel = document.getElementById('gem-select');
+  DATA.gemeinden.slice().sort((a,b) => a.name.localeCompare(b.name, 'de'))
+    .forEach(g => { const o = document.createElement('option'); o.value = g.name; o.textContent = g.name; sel.appendChild(o); });
+  sel.addEventListener('change', () => { CURRENT = sel.value; render(); postHeight(); });
+  render();
+  postHeight();
+}
+
+function currentSet() {
+  if (CURRENT === '__kanton__') {
+    return {
+      name: 'Kanton Graubünden',
+      pyramid: DATA.kanton_pyramid_2024,
+      total: DATA.meta.gr_total_2025p,
+      m: DATA.meta.gr_m_2025p,
+      f: DATA.meta.gr_f_2025p,
+      male_pct: DATA.meta.gr_male_pct_2025p,
+      avg_age: DATA.meta.gr_avg_age_2024
+    };
+  }
+  const g = DATA.gemeinden.find(x => x.name === CURRENT);
+  return {
+    name: g.name, pyramid: g.pyramid_2024,
+    total: g.total_2025p, m: g.m_2025p, f: g.f_2025p,
+    male_pct: g.male_pct_2025p, avg_age: g.avg_age_2024
+  };
+}
+
+function render() {
+  const d = currentSet();
+  // KPIs
+  const kpis = document.getElementById('kpis');
+  kpis.innerHTML = `
+    <div class="kpi"><div class="kpi-label">Einwohner 2025p</div><div class="kpi-value">${d.total.toLocaleString('de-CH')}</div><div class="kpi-sub">${d.m.toLocaleString('de-CH')} ♂ · ${d.f.toLocaleString('de-CH')} ♀</div></div>
+    <div class="kpi"><div class="kpi-label">Männeranteil</div><div class="kpi-value">${d.male_pct}%</div><div class="kpi-sub">${d.male_pct > 50 ? 'mehr Männer' : 'mehr Frauen'}</div></div>
+    <div class="kpi"><div class="kpi-label">Ø Alter 2024</div><div class="kpi-value">${d.avg_age || '–'}</div><div class="kpi-sub">Jahre</div></div>`;
+
+  // Pyramid
+  const svg = document.getElementById('pyr-svg');
+  svg.innerHTML = '';
+  const W = 696, H = 520, ML = 80, MR = 12, MT = 20, MB = 30;
+  const mid = W/2;
+  const halfW = (W - ML - MR) / 2 - 10;
+  const klassen = DATA.klassen;
+  const pyr = d.pyramid;
+  const maxVal = Math.max(...pyr.flat(), 1);
+  const rowH = (H - MT - MB) / klassen.length;
+  const barH = rowH * 0.8;
+
+  // axis label headers
+  const lblM = el('text', { x: mid - halfW/2, y: MT - 6, class: 'pyr-axis', 'text-anchor': 'middle' });
+  lblM.textContent = 'Männer'; svg.appendChild(lblM);
+  const lblF = el('text', { x: mid + halfW/2, y: MT - 6, class: 'pyr-axis', 'text-anchor': 'middle' });
+  lblF.textContent = 'Frauen'; svg.appendChild(lblF);
+
+  // Find "kipp-Punkt": erste Klasse von oben (altest) wo f > m, nach unten durchgehend
+  let kippIdx = -1;
+  for (let i = klassen.length - 1; i >= 0; i--) {
+    if (pyr[i][1] > pyr[i][0]) kippIdx = i;
+    else break;
+  }
+
+  klassen.forEach((kl, i) => {
+    const yRow = MT + (klassen.length - 1 - i) * rowH;
+    const m = pyr[i][0], f = pyr[i][1];
+    const wm = (m / maxVal) * halfW;
+    const wf = (f / maxVal) * halfW;
+    const barY = yRow + (rowH - barH)/2;
+    // M bar (left)
+    svg.appendChild(el('rect', { x: mid - wm, y: barY, width: wm, height: barH, class: 'pyr-bar-m' }));
+    // F bar (right)
+    svg.appendChild(el('rect', { x: mid, y: barY, width: wf, height: barH, class: 'pyr-bar-f' }));
+    // Klasse label (center)
+    const lb = el('text', { x: mid, y: barY + barH/2 + 3, class: 'pyr-klasse', 'text-anchor': 'middle' });
+    lb.textContent = kl.replace(' Jahre', '').replace(' und mehr', '+');
+    svg.appendChild(lb);
+    // value left (M)
+    if (wm > 14) {
+      const tm = el('text', { x: mid - wm - 4, y: barY + barH/2 + 3, class: 'pyr-value', 'text-anchor': 'end' });
+      tm.textContent = m; svg.appendChild(tm);
+    }
+    if (wf > 14) {
+      const tf = el('text', { x: mid + wf + 4, y: barY + barH/2 + 3, class: 'pyr-value', 'text-anchor': 'start' });
+      tf.textContent = f; svg.appendChild(tf);
+    }
+  });
+
+  // Highlight: Linie über dem kipp-Punkt
+  if (kippIdx >= 0) {
+    const yLine = MT + (klassen.length - 1 - kippIdx) * rowH + rowH;
+    svg.appendChild(el('line', { x1: ML, x2: W-MR, y1: yLine, y2: yLine, class: 'pyr-hl' }));
+    const lbl = el('text', { x: W-MR-2, y: yLine - 3, class: 'pyr-hl-label', 'text-anchor': 'end' });
+    lbl.textContent = `Ab ${DATA.klassen[kippIdx].split('-')[0]} Jahren überwiegen Frauen`;
+    svg.appendChild(lbl);
+  }
+}
+
+function el(tag, attrs = {}) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function postHeight() {
+  const h = document.documentElement.scrollHeight;
+  if (window.parent !== window) window.parent.postMessage({ type: 'embed-size', height: h }, '*');
+}
+window.addEventListener('resize', () => { render(); postHeight(); });
+load();
+</script>
+</body>
+</html>

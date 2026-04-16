@@ -78,6 +78,93 @@ Tabs: *Heute (älteste & jüngste)* · *Veränderung 2010–2024*.
 
 ---
 
+# Embeds — Geschlechterverteilung Graubünden
+
+Fünf eigenständige Embeds zur Gender-Story "Wo fehlen die Frauen, wo fehlen die Männer?"
+Jeder Block ist ein eigener iframe mit Tabs/Dropdowns — Fliesstext dazwischen im CMS.
+Gemeinsame Datenbasis: [`data/gender-data.json`](data/gender-data.json), gebaut von
+[`data/prepare-gender-data.py`](data/prepare-gender-data.py).
+
+Stand 2025p (provisorisch) aus Statistik-Graubünden-Excel + Altersstruktur 2024 aus data.gr.ch.
+
+### Block 1 — Blasen: Männer- und Frauenanteil der 100 Gemeinden
+
+**Datei:** `gender-bubbles.html`
+Jede Blase eine Gemeinde · X = Männeranteil (44–60%) · Y = Einwohnerzahl (log) · Tabs
+*Alle · Männlichste 10 · Weiblichste 10* · Such-Input highlightet.
+
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/gender-bubbles.html"
+  style="width:100%;border:0;height:620px"
+  loading="lazy"
+  title="Männer- und Frauenanteil in Graubündens Gemeinden (2025p)">
+</iframe>
+```
+
+### Block 2 — Alterspyramide
+
+**Datei:** `gender-pyramide.html`
+Dropdown Gemeinde (Default: Kanton). Kennzahlen oben (EW · Männeranteil · Ø Alter).
+Pyramide markiert die Altersklasse, ab der die Frauenseite überwiegt.
+
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/gender-pyramide.html"
+  style="width:100%;border:0;height:760px"
+  loading="lazy"
+  title="Alterspyramide Graubünden — Männer und Frauen">
+</iframe>
+```
+
+### Block 3 — Ranglisten
+
+**Datei:** `gender-rankings.html`
+Tabs: *Top 10 männlichste · Top 10 weiblichste · Grösste Abweichungen*.
+Gemeinden < 50 EW ausgenommen, damit Mini-Dörfer keine Zahlen-Artefakte erzeugen.
+
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/gender-rankings.html"
+  style="width:100%;border:0;height:640px"
+  loading="lazy"
+  title="Rangliste Männer- und Frauenanteil Graubünden">
+</iframe>
+```
+
+### Block 4 — Zwei Geschlechterverteilungen (wertneutral)
+
+**Datei:** `gender-ch-vs-auslaender.html`
+Drei 100%-Stacked-Bars: Gesamt · Schweizer · Ausländer. Dropdown optional auf einzelne
+Gemeinden. Erklär-Box markiert das Bild als strukturellen Unterschied, nicht als Wertung.
+
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/gender-ch-vs-auslaender.html"
+  style="width:100%;border:0;height:620px"
+  loading="lazy"
+  title="Männeranteil nach Staatsangehörigkeit Graubünden 2025p">
+</iframe>
+```
+
+### Block 5 — Gemeinde-Matching (Augenzwinkern)
+
+**Datei:** `gender-matching.html`
+Zufallspaar- oder Gemeinde-Dropdown. Das Tool paart jede Gemeinde mit deutlichem
+Geschlechter-Überschuss mit einer passenden Gegengemeinde und zeigt die kombinierte
+Quote. Disclaimer: statistische Spielerei — keine Fusions-Empfehlung.
+
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/embed/gender-matching.html"
+  style="width:100%;border:0;height:560px"
+  loading="lazy"
+  title="Gemeinde-Matching Graubünden — statistische Spielerei">
+</iframe>
+```
+
+---
+
 ## Optional: Auto-Resize via postMessage
 
 Alle 4 Embeds senden ihre Höhe per `postMessage` an die Parent-Seite. Wenn du
