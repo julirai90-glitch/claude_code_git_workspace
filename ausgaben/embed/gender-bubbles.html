@@ -43,7 +43,7 @@
 <body>
 <div id="wrap">
   <h1>Wo sind die Männer, wo sind die Frauen?</h1>
-  <p class="lead">Jede Blase ist eine Gemeinde. X-Achse: Männeranteil in Prozent. Y-Achse: Einwohnerzahl. <strong>Stand 31.12.2025p (provisorisch).</strong></p>
+  <p class="lead">Jede Blase ist eine Bündner Gemeinde. Rechts mehr Männer, links mehr Frauen. Unten jüngere, oben ältere Dörfer. Blasengrösse = Einwohnerzahl. <strong>Stand 31.12.2025p (provisorisch), Alter 2024.</strong></p>
 
   <div class="tabs" id="tabs">
     <div class="tab active" data-mode="all">Alle 100 Gemeinden</div>
@@ -56,7 +56,7 @@
   </div>
 
   <div id="viz">
-    <svg id="svg" viewBox="0 0 696 440" preserveAspectRatio="xMidYMid meet"></svg>
+    <svg id="svg" viewBox="0 0 696 480" preserveAspectRatio="xMidYMid meet"></svg>
   </div>
   <div id="tooltip"></div>
 
@@ -101,51 +101,65 @@ function bind() {
 function render() {
   const svg = document.getElementById('svg');
   svg.innerHTML = '';
-  const W = 696, H = 440, ML = 48, MR = 18, MT = 14, MB = 44;
+  const mob = isMobile();
+  const W = 696, H = mob ? 460 : 480, ML = mob ? 26 : 40, MR = 14, MT = 18, MB = 44;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const iw = W - ML - MR, ih = H - MT - MB;
-  const all = DATA.gemeinden;
+  const all = DATA.gemeinden.filter(g => g.avg_age_2024 != null);
   const grPct = DATA.meta.gr_male_pct_2025p;
+  const grAge = DATA.meta.gr_avg_age_2024;
 
   // Scales
   const xMin = 42, xMax = 60;
-  const totals = all.map(g => g.total_2025p);
-  const yMax = Math.max(...totals), yMin = Math.min(...totals);
+  const yMin = 39, yMax = 59;
+  const maxTotal = Math.max(...all.map(g => g.total_2025p));
   const x = v => ML + (v - xMin) / (xMax - xMin) * iw;
-  const y = v => MT + ih - (Math.log10(v) - Math.log10(yMin)) / (Math.log10(yMax) - Math.log10(yMin)) * ih;
-  const r = v => Math.max(3, Math.min(22, Math.sqrt(v) * 0.25));
+  // Y inverted: low age at bottom, high age at top
+  const y = v => MT + ih - (v - yMin) / (yMax - yMin) * ih;
+  const maxR = mob ? 18 : 28, minR = mob ? 2.5 : 3.5;
+  const r = pop => minR + Math.sqrt(pop / maxTotal) * maxR;
 
-  // Grid: vertical 50% and 50.44%
+  // Grid
   const gridG = el('g');
-  [44, 46, 48, 50, 52, 54, 56, 58].forEach(t => {
-    const ln = el('line', { x1: x(t), x2: x(t), y1: MT, y2: MT+ih, stroke: '#f0f0f0', 'stroke-width': 1 });
-    gridG.appendChild(ln);
-    const lb = el('text', { x: x(t), y: MT+ih+14, class: 'tick-label', 'text-anchor': 'middle' });
-    lb.textContent = t + '%'; gridG.appendChild(lb);
-  });
-  [100, 300, 1000, 3000, 10000, 30000].forEach(t => {
-    if (t < yMin || t > yMax) return;
-    const ln = el('line', { x1: ML, x2: ML+iw, y1: y(t), y2: y(t), stroke: '#f5f5f5', 'stroke-width': 1 });
-    gridG.appendChild(ln);
-    const lb = el('text', { x: ML-4, y: y(t)+3, class: 'tick-label', 'text-anchor': 'end' });
-    lb.textContent = t >= 1000 ? (t/1000)+'k' : t; gridG.appendChild(lb);
-  });
+  const xStep = mob ? 4 : 2;
+  for (let p = 44; p <= 58; p += xStep) {
+    const xp = x(p);
+    gridG.appendChild(el('line', { x1: xp, x2: xp, y1: MT, y2: MT+ih, stroke: '#f0f0f0', 'stroke-width': 1 }));
+    const lb = el('text', { x: xp, y: MT+ih+14, class: 'tick-label', 'text-anchor': 'middle' });
+    lb.textContent = p + '%'; gridG.appendChild(lb);
+  }
+  const yStep = mob ? 5 : 2;
+  for (let a = 40; a <= 58; a += yStep) {
+    const ya = y(a);
+    gridG.appendChild(el('line', { x1: ML, x2: ML+iw, y1: ya, y2: ya, stroke: '#f5f5f5', 'stroke-width': 1 }));
+    const lb = el('text', { x: ML-4, y: ya+3, class: 'tick-label', 'text-anchor': 'end' });
+    lb.textContent = a; gridG.appendChild(lb);
+  }
   svg.appendChild(gridG);
 
-  // Reference line Kanton
-  const ref = el('line', { x1: x(grPct), x2: x(grPct), y1: MT, y2: MT+ih, class: 'ref-line' });
-  svg.appendChild(ref);
-  const refLabel = el('text', { x: x(grPct)+3, y: MT+10, class: 'ref-label' });
-  refLabel.textContent = `Kanton ${grPct}%`;
-  svg.appendChild(refLabel);
+  // Reference lines Kanton (X = male_pct, Y = avg_age)
+  const refX = el('line', { x1: x(grPct), x2: x(grPct), y1: MT, y2: MT+ih, class: 'ref-line' });
+  svg.appendChild(refX);
+  const refXLabel = el('text', { x: x(grPct)+3, y: MT+10, class: 'ref-label' });
+  refXLabel.textContent = `Kanton ${grPct}%`;
+  svg.appendChild(refXLabel);
 
-  // 50% line
-  const p50 = el('line', { x1: x(50), x2: x(50), y1: MT, y2: MT+ih, class: 'ref-line', stroke: '#ccc' });
-  svg.appendChild(p50);
+  const refY = el('line', { x1: ML, x2: ML+iw, y1: y(grAge), y2: y(grAge), class: 'ref-line' });
+  svg.appendChild(refY);
+  const refYLabel = el('text', { x: ML+iw-3, y: y(grAge)-3, class: 'ref-label', 'text-anchor': 'end' });
+  refYLabel.textContent = `Ø ${grAge.toFixed(1)} Jahre`;
+  svg.appendChild(refYLabel);
 
-  // Axis label X
+  // Axis labels
   const xlab = el('text', { x: ML+iw/2, y: H-4, class: 'axis-label', 'text-anchor': 'middle' });
-  xlab.textContent = '← mehr Frauen    Männeranteil %    mehr Männer →';
+  xlab.textContent = mob ? 'Männeranteil in %' : '← mehr Frauen · Männeranteil · mehr Männer →';
   svg.appendChild(xlab);
+  if (!mob) {
+    const ylab = el('text', { x: 12, y: MT+ih/2, class: 'axis-label', 'text-anchor': 'middle',
+      transform: `rotate(-90, 12, ${MT+ih/2})` });
+    ylab.textContent = '← jünger · Ø Alter · älter →';
+    svg.appendChild(ylab);
+  }
 
   // Mode filter (for ranking-Tabs)
   let visibleSet = null;
@@ -155,19 +169,22 @@ function render() {
     visibleSet = new Set(all.slice().sort((a,b) => a.male_pct_2025p - b.male_pct_2025p).slice(0,10).map(g => g.name));
   }
 
-  // Bubbles
+  // Bubbles — draw largest first so small ones stay visible on top
   const bubG = el('g');
-  all.forEach(g => {
+  const sorted = [...all].sort((a,b) => b.total_2025p - a.total_2025p);
+  sorted.forEach(g => {
     const isMale = g.male_pct_2025p >= 50;
     const searchHit = SEARCH && g.name.toLowerCase().includes(SEARCH);
     const modeHit = visibleSet ? visibleSet.has(g.name) : true;
-    const isHL = searchHit;
+    const isHL = searchHit || (visibleSet && modeHit);
     const dim = (SEARCH && !searchHit) || (visibleSet && !modeHit);
     const c = el('circle', {
-      cx: x(g.male_pct_2025p), cy: y(g.total_2025p), r: r(g.total_2025p),
-      fill: isHL ? COLOR_HL : (isMale ? COLOR_M : COLOR_F),
-      'fill-opacity': 0.55, stroke: isHL ? '#1a1a1a' : 'rgba(0,0,0,.25)', 'stroke-width': isHL ? 1.6 : 0.6,
-      class: 'bubble' + (dim ? ' dimmed' : '') + (isHL ? ' highlight' : '')
+      cx: x(g.male_pct_2025p), cy: y(g.avg_age_2024), r: r(g.total_2025p),
+      fill: searchHit ? COLOR_HL : (isMale ? COLOR_M : COLOR_F),
+      'fill-opacity': dim ? 0.12 : (isHL ? 0.85 : 0.55),
+      stroke: isHL ? '#1a1a1a' : 'rgba(0,0,0,.2)',
+      'stroke-width': isHL ? 1.4 : 0.5,
+      class: 'bubble'
     });
     c.addEventListener('mouseenter', e => showTooltip(e, g));
     c.addEventListener('mousemove', e => moveTooltip(e));
@@ -177,16 +194,16 @@ function render() {
   });
   svg.appendChild(bubG);
 
-  // Labels: Chur immer, visible-Set labels, searchHit label
+  // Labels: Chur always, visibleSet labels, search hits
   const labelG = el('g');
-  const labelThreshold = isMobile() ? [] : all.filter(g => g.total_2025p > 3000).map(g => g.name);
-  const namesToLabel = new Set([...labelThreshold, 'Chur']);
+  const namesToLabel = new Set(['Chur']);
+  if (!mob) all.filter(g => g.total_2025p > 3000).forEach(g => namesToLabel.add(g.name));
   if (visibleSet) visibleSet.forEach(n => namesToLabel.add(n));
   all.forEach(g => {
     const isHL = SEARCH && g.name.toLowerCase().includes(SEARCH);
     if (!namesToLabel.has(g.name) && !isHL) return;
     const lb = el('text', {
-      x: x(g.male_pct_2025p), y: y(g.total_2025p) - r(g.total_2025p) - 2,
+      x: x(g.male_pct_2025p), y: y(g.avg_age_2024) - r(g.total_2025p) - 2,
       class: 'bubble-label', 'text-anchor': 'middle'
     });
     lb.textContent = g.name;

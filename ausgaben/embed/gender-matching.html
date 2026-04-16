@@ -70,19 +70,34 @@
 <script>
 let DATA = null;
 
-async function load() {
-  DATA = await (await fetch('./data/gender-data.json')).json();
-  const sel = document.getElementById('gem-select');
-  const valid = DATA.gemeinden.filter(g => g.total_2025p >= 50)
-    .slice().sort((a,b) => a.name.localeCompare(b.name, 'de'));
-  valid.forEach(g => { const o = document.createElement('option'); o.value = g.name; o.textContent = g.name; sel.appendChild(o); });
+function showError(msg) {
+  const el = document.getElementById('result');
+  if (el) el.innerHTML = `<div style="padding:12px;border:1px solid #e66;background:#fdecec;border-radius:6px;color:#900;font-size:13px">
+    <b>Fehler beim Laden:</b> ${msg}</div>`;
+  console.error('gender-matching:', msg);
+}
 
-  sel.addEventListener('change', () => renderFor(sel.value));
-  document.getElementById('btn-random').addEventListener('click', () => {
-    sel.value = '__random__';
+async function load() {
+  try {
+    const r = await fetch('./data/gender-data.json');
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' bei gender-data.json');
+    DATA = await r.json();
+    if (!DATA || !DATA.gemeinden || !DATA.gemeinden.length) throw new Error('Gemeinden-Array leer');
+
+    const sel = document.getElementById('gem-select');
+    const valid = DATA.gemeinden.filter(g => g.total_2025p >= 50)
+      .slice().sort((a,b) => a.name.localeCompare(b.name, 'de'));
+    valid.forEach(g => { const o = document.createElement('option'); o.value = g.name; o.textContent = g.name; sel.appendChild(o); });
+
+    sel.addEventListener('change', () => renderFor(sel.value));
+    document.getElementById('btn-random').addEventListener('click', () => {
+      sel.value = '__random__';
+      renderFor('__random__');
+    });
     renderFor('__random__');
-  });
-  renderFor('__random__');
+  } catch (e) {
+    showError(e.message);
+  }
 }
 
 // Match a Gemeinde with its ideal complementary partner.
@@ -113,19 +128,25 @@ function combine(a, b) {
 }
 
 function renderFor(key) {
-  const valid = DATA.gemeinden.filter(g => g.total_2025p >= 50);
-  const grPct = DATA.meta.gr_male_pct_2025p;
-  let g;
-  if (key === '__random__') {
-    // Ziehe eine Gemeinde mit deutlicher Abweichung (>2pp vom Kantonsschnitt)
-    const skewed = valid.filter(x => Math.abs(x.male_pct_2025p - grPct) > 2);
-    g = skewed[Math.floor(Math.random() * skewed.length)] || valid[0];
-  } else {
-    g = valid.find(x => x.name === key);
-  }
-  const partner = bestPartner(g, valid);
-  if (!partner) { document.getElementById('result').innerHTML = '<p>Keine passende Partnergemeinde gefunden.</p>'; return; }
-  render(g, partner);
+  try {
+    const valid = DATA.gemeinden.filter(g => g.total_2025p >= 50);
+    const grPct = DATA.meta.gr_male_pct_2025p;
+    let g;
+    if (key === '__random__') {
+      const skewed = valid.filter(x => Math.abs(x.male_pct_2025p - grPct) > 2);
+      g = skewed[Math.floor(Math.random() * skewed.length)] || valid[0];
+    } else {
+      g = valid.find(x => x.name === key);
+    }
+    if (!g) { showError('Gemeinde nicht gefunden: ' + key); return; }
+    const partner = bestPartner(g, valid);
+    if (!partner) {
+      document.getElementById('result').innerHTML =
+        '<p style="padding:12px;color:#666">Keine passende Partnergemeinde gefunden für <b>' + g.name + '</b>.</p>';
+      postHeight(); return;
+    }
+    render(g, partner);
+  } catch (e) { showError(e.message); }
 }
 
 function render(a, b) {
