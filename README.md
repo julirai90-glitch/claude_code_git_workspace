@@ -15,6 +15,7 @@ Interaktive Visualisierungen zur Demografie des Kantons Graubünden (101 Gemeind
 | 05 | [Scrollytelling Demografie hell](https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/05-scrollytelling-demografie-hell.html) | Alter & Geschlecht (helles Design) |
 | 06 | [Mann oder Frau?](https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/06-teil-1-geschlecht.html) | Geschlechterverhältnisse |
 | 07 | [Jung oder alt?](https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/07-teil-2-alter.html) | Altersstruktur |
+| 08 | [Geschlechter-Portrait 2025 (5 Embeds)](https://github.com/julirai90-glitch/claude_code_git_workspace/blob/gh-pages/ausgaben/embed/README.md#embeds--geschlechterverteilung-graub%C3%BCnden) | Geschlechterverteilung 2025p — Bubbles, Pyramide, Rankings, CH/Ausländer, Matching |
 
 ## Branches
 
