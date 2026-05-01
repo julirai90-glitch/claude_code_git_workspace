@@ -85,13 +85,14 @@ ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
     return (seed - 0.5);
   }
 
-  // Y-Gridlines + Axis
-  svg.append('g').selectAll('line').data(y.ticks(5)).enter().append('line')
+  // Y-Gridlines + Axis: alle 10er-Schritte (0, 10, 20, …, 100)
+  var yTicks = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+  svg.append('g').selectAll('line').data(yTicks).enter().append('line')
     .attr('class', 'zwg-gridline').attr('x1', m.l).attr('x2', w - m.r)
     .attr('y1', function (d) { return y(d); }).attr('y2', function (d) { return y(d); });
 
   svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(' + m.l + ',0)')
-    .call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return d + ' %'; }));
+    .call(d3.axisLeft(y).tickValues(yTicks).tickFormat(function (d) { return d + ' %'; }));
 
   // Lex-Weber-Schwelle bei y=20
   svg.append('line').attr('class', 'threshold')
