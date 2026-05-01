@@ -101,41 +101,38 @@
 - Wohnungsbestand wuchs: 808 → 886 (+78 Whg.)
 - **Interpretation**: Echter Rückgang durch Zuzug (mehr Erstwohnungen). Grono ist eine der wenigen Gemeinden, die organisch unter 20% gefallen ist.
 
-#### Fürstenau (Domleschg) – Rätselhafte Halbierung 🔍
-- **Keine Fusion**, Gemeindenr. konstant
-- Sehr kleine Gemeinde: ~190 Wohnungen total
-- Entwicklung der absoluten Zahlen:
+#### Fürstenau (Domleschg)
 
-| Jahr | Zweitwohng. | Erstwohng. | Total |
-|------|-------------|------------|-------|
-| 2017 | 39 | 147 | 186 |
-| 2018 | 27 | 150 | 188 |
-| 2022 | 14 | 158 | 190 |
-| 2023 | 14 | 169 | 192 |
-| 2025 | 18 | 172 | 198 |
+Beobachtung im Datensatz `dvs_awt_soci_20260112` (Wohnungen) und `dvs_awt_soci_20250507` (Bevölkerung), abgerufen 2026-05-01:
 
-- **Interpretation**: Kein Abriss, sondern Umnutzung. Zwischen 2021 und 2022 wurden 25 Wohnungen von Zweit- zu Erstwohnungen umklassiert. Mögliche Ursachen: Neuanmeldungen, Wohnsitzwechsel (Home-Office-Effekt post-Corona?), lokale Regulierung. **Recherche lohnt sich.**
+Die Bevölkerung Fürstenaus liegt zwischen 2017 und 2024 jährlich zwischen 343 und 357 Personen (2017: 349; 2024: 353). Die Anzahl der Erstwohnungen steigt im selben Zeitraum von 147 auf 169 (2024), erreicht 172 im März 2025 und liegt im März 2026 bei 167. Die der gleichgestellten Wohnungen schwankt zwischen 0 (2017), 18 (2022) und 7 (2026). Die Gesamtzahl der Wohnungen wächst von 186 (2017) auf 199 (2026), ein Plus von 13. Der Zweitwohnungsanteil sinkt von 20,97 % (2017) auf 11,98 % (2023), liegt im März 2025 bei 13,13 % und im März 2026 bei 16,08 %. Gemeindenummer 3633 unverändert.
 
-#### Brusio (Puschlav) – Fusionssprung 2018 ⚠️
-- Gemeindenr. **3551** – konstant
-- 2017→2018: **+111 Wohnungen** (656 → 767), Quote springt 27.74% → 38.07%
-- Danach stabiler Anstieg bis 43.56%
-- **Interpretation**: 2018 wohl Datennachführung oder Gemeindefusion (ev. Brusio schluckte einen Weiler). Ab 2018 valide Zeitreihe.
+#### Brusio (Puschlav)
 
-#### Soazza (Misox) – Sprung 2024 ⚠️
-- Gemeindenr. **3823** – konstant
-- 2017–2023: stabil 29–33%
-- 2024: **+66 Wohnungen**, Quote springt 29.20% → 45.21%
-- **Interpretation**: Vermutlich Fusion oder Eingemeindung 2024. Müsste im Gemeinderegister verifiziert werden.
+Beobachtung im Datensatz `dvs_awt_soci_20260112`, abgerufen 2026-05-01:
+
+Zwischen März 2017 und März 2018 steigt die Gesamtzahl der Wohnungen von 656 auf 767 (+111). Die Anzahl der Erstwohnungen verändert sich im selben Zeitraum minim (474 → 475), die der erstwohnungs-gleichgestellten Wohnungen sinkt von 9 auf 6. Der Zweitwohnungsanteil steigt von 27,74 % auf 38,07 %. Die Bevölkerung lag in diesen beiden Jahren bei 1'135 (2017) und 1'113 (2018). Über die gesamte Aufzeichnungsperiode 2017–2026 wächst der Wohnungsbestand um 177 Einheiten, die Erstwohnungen verändern sich nicht (474 → 472), und der Anteil steigt um 15,60 Prozentpunkte. Gemeindenummer 3551 unverändert; gemäss [de.wikipedia.org/wiki/Brusio](https://de.wikipedia.org/wiki/Brusio) (abgerufen 2026-04-28) keine Gemeindefusion zwischen 2017 und 2020.
+
+#### Soazza (Misox)
+
+Beobachtung im Datensatz `dvs_awt_soci_20260112`, abgerufen 2026-05-01:
+
+Zwischen Oktober 2023 und März 2024 steigt die Gesamtzahl der Wohnungen von 226 auf 292 (+66). Die Anzahl der Erstwohnungen bleibt unverändert bei 160, die der gleichgestellten Wohnungen ebenfalls bei 0. Der Zweitwohnungsanteil steigt von 29,20 % auf 45,21 %. Die Bevölkerung lag in diesen Jahren bei 332 (2023) und 324 (2024). Über 2017–2026 wächst der Wohnungsbestand um 84 Einheiten, die Erstwohnungen um 17, und der Anteil steigt um 13,80 Prozentpunkte. Gemeindenummer 3823 unverändert; gemäss [de.wikipedia.org/wiki/Soazza](https://de.wikipedia.org/wiki/Soazza) (abgerufen 2026-04-28) keine Gemeindefusion zwischen 2022 und 2025.
+
+#### Calanca (Calancatal)
+
+Beobachtung im Datensatz `dvs_awt_soci_20260112`, abgerufen 2026-05-01:
+
+In den Erhebungen März und Oktober 2020 zeigt der Datensatz für Calanca 6 Erstwohnungen bei einem Gesamtbestand von 394 Wohnungen, was einem Zweitwohnungsanteil von 98,48 % entspricht. In der Vor-Erhebung (Oktober 2019) waren 103 Erstwohnungen erfasst (Anteil 73,66 %), in der Folge-Erhebung (März 2021) 107 (Anteil 73,12 %). Die Bevölkerung in diesen drei Jahren beträgt 200 (2019), 201 (2020) und 197 (2021). Die Gesamtzahl der Wohnungen verändert sich zwischen 2019 und 2021 von 391 auf 398. Zwischen Oktober 2024 und März 2025 steigt die Gesamtzahl der Wohnungen von 397 auf 528 (+131); die Anzahl der Erstwohnungen verändert sich von 109 auf 106. Im Datensatz selbst sind weder zur Erhebung 2020 noch zum Sprung 2025 Anmerkungen oder Methodik-Hinweise hinterlegt. Gemeindenummer 3837 unverändert.
 
 #### Poschiavo (Puschlav) – Stetiger Anstieg
 - 39.50% (2017) → 44.65% (2025)
 - Bestand wächst: 2'433 → 2'759 Whg.
-- Beide Puschlav-Gemeinden entwickeln sich ähnlich (Tourismus-Druck)
 
-#### Calanca (Calancatal) – Datenfehler 2020 ⚠️
-- 2020: **98.48%** – offensichtlicher Datenfehler im GWR
-- 2025: Sprung auf 528 Whg. (+130!) → Fusionsverdacht
+#### Grono (Misox)
+- Gemeindenr. 3832 unverändert, keine Fusion.
+- Quote 2017: 27,35 % → 2025: 18,74 % → 2026: 21,90 %.
+- Wohnungsbestand 2017: 808 → 2026: 977 (+169).
 
 ---
 
@@ -149,57 +146,21 @@
 
 ---
 
-## Verifikation 2026-04-28
+## Externe Verifikation (Stand 2026-04-28)
 
-### Brusio – Fusionshypothese widerlegt ❌
+Mutationsverzeichnisse zu Brusio und Soazza wurden gegen Wikipedia geprüft:
 
-- **Wikipedia, Stand April 2026**: Keine Gemeindefusion zwischen 2017 und 2020. Letzte strukturelle Änderung: 1851 Trennung von Poschiavo. Quelle: [de.wikipedia.org/wiki/Brusio](https://de.wikipedia.org/wiki/Brusio), abgerufen 2026-04-28.
-- **Datenmuster (`dvs_awt_soci_20260112`, abgerufen 2026-04-28)**:
-  - 2017→2018: Total 656→767 Whg. (+111). Erstwohnungen praktisch konstant (~474 → ~475). Damit sind ALLE 111 neuen Einheiten als Zweitwohnungen klassifiziert.
-  - +111 Whg. in einem einzigen Jahr entsprechen 13% des Gesamtbestands – für eine Gemeinde mit 1099 Einwohnern (Wikipedia, 2024) zu viel für echte Neubautätigkeit.
-- **Wahrscheinlichste Erklärung**: GWR-Datennachführung. Vorher unerfasste oder falsch zugeordnete Wohneinheiten (z.B. Rustici, Ferienhäuser im hinteren Tal) wurden 2018 ins Register aufgenommen. Da diese überwiegend nicht als Hauptwohnsitz dienen, fielen sie automatisch in die Zweitwohnungs-Kategorie. Akten-Verifikation nicht möglich ohne Auskunft Statistik GR / GWR.
+- Brusio (BFS 3551): keine Gemeindefusion zwischen 2017 und 2020. Quelle: [de.wikipedia.org/wiki/Brusio](https://de.wikipedia.org/wiki/Brusio), abgerufen 2026-04-28.
+- Soazza (BFS 3823): keine Gemeindefusion zwischen 2022 und 2025. Quelle: [de.wikipedia.org/wiki/Soazza](https://de.wikipedia.org/wiki/Soazza), abgerufen 2026-04-28.
 
-### Soazza – Fusionshypothese widerlegt ❌
+Im Datensatz `dvs_awt_soci_20260112` selbst sind keine Methodik-Hinweise oder Anmerkungen zu einzelnen Gemeinden hinterlegt. Auskünfte zur Datennachführung im Eidg. Gebäude- und Wohnungsregister (GWR) sind nur über das Statistische Amt Graubünden / DVS bzw. das Bundesamt für Raumentwicklung (ARE) verfügbar.
 
-- **Wikipedia, Stand April 2026**: Keine Gemeindefusion zwischen 2022 und 2025. Quelle: [de.wikipedia.org/wiki/Soazza](https://de.wikipedia.org/wiki/Soazza), abgerufen 2026-04-28.
-- **Datenmuster (`dvs_awt_soci_20260112`, abgerufen 2026-04-28)**:
-  - Okt 2023→März 2024: Total 226→292 Whg. (+66). Erstwohnungen unverändert bei 160. Damit sind alle 66 Einheiten als Zweitwohnungen klassifiziert.
-  - +66 Whg. in einer Halbjahres-Erhebung entsprechen 29% des Bestands – für eine Gemeinde mit 324 Einwohnern (Wikipedia, 2024) ebenfalls implausibel als reiner Bauboom.
-  - Sprung erfolgte in der März-2024-Erhebung – also VOR den Unwettern im Misox vom Juni 2024 ([grheute.ch zur Mesolcina-Hilfe](https://www.grheute.ch/gruenes-licht-fuer-sofort-und-sicherungsmassnahmen-im-misox)). Die Unwetter sind als Erklärung ausgeschlossen.
-- **Wahrscheinlichste Erklärung**: gleiches Muster wie Brusio – GWR-Datennachführung.
+Nicht aus den Daten selbst beantwortbar:
 
-### Fürstenau – "Post-Corona-Zuzug" widerlegt, GWR-Reklassifikation + Singularisierung wahrscheinlich
+- Hintergründe der Datenstände in Brusio (März 2018), Soazza (März 2024) und Calanca (2020 sowie März 2025).
+- Aufteilung der zusätzlichen 25 Erstwohnungen in Fürstenau (2017→2025) auf Neubau, Reklassifikation oder Haushalts-Verschiebung.
 
-- **Bevölkerungsentwicklung (`dvs_awt_soci_20250507`, abgerufen 2026-04-28)**:
-
-  | Jahr | Einwohner |
-  |------|-----------|
-  | 2017 | 349 |
-  | 2018 | 353 |
-  | 2019 | 357 |
-  | 2020 | 350 |
-  | 2021 | 343 |
-  | 2022 | 351 |
-  | 2023 | 349 |
-  | 2024 | 353 |
-
-  → Bevölkerung 2017–2024 schwankt nur zwischen 343 und 357. Kein Zuzug-Effekt erkennbar, weder vor noch nach Corona.
-
-- **Wohnungsdaten (`dvs_awt_soci_20260112`, abgerufen 2026-04-28)**:
-  - Erstwohnungen (`zwg_3010`) 2017→2025: 147 → 172 (+25)
-  - Zusätzlich Erstwohnungs-gleichgestellte (`zwg_3100`): 0 → 8 (also +8 Personalwohnungen o.ä., die 2017 noch nicht erfasst waren)
-  - Zweitwohnungen (rechnerisch) 2017→2025: 39 → 26
-  - Personen pro Erstwohnung: 2017: 349/147 = 2.37 → 2025: 353/172 = 2.05
-
-- **Wahrscheinlichste Erklärung**: Mischung aus zwei Effekten:
-  1. **Singularisierung der Haushalte** (Trennungen, ältere Alleinstehende, Generationenwechsel): Die gleiche Bevölkerung verteilt sich auf rund 25 Wohnungen mehr.
-  2. **GWR-Reklassifikation**: Die zusätzlichen 8 erfassten "Erstwohnungs-gleichgestellten" deuten auf eine Datennachführung; ebenso wechselten ggf. Wohnungen mit zuvor unklarem Status formal in die Erstwohnungs-Kategorie.
-- **Was die App-Story-Hypothese sagt**: "vermutlich durch Post-Corona-Zuzug und Wohnsitzwechsel". Der Zuzug-Teil ist durch die Bevölkerungsdaten widerlegt; die Wohnsitzwechsel-Hypothese (im Sinne von neuen Anmeldungen) ebenfalls. Übrig bleibt: GWR-Datenpflege + demographische Singularisierung.
-
-### Was offen bleibt
-
-- **Akten-Bestätigung der GWR-Nachführung** für Brusio (2018) und Soazza (2024): nur via Statistik Graubünden / Bundesamt für Statistik / Gemeindekanzleien zu klären. E-Mail-Vorlagen liegen im Plan-File `~/.claude/plans/alle-drei-dinge-jetzt-agile-balloon.md`.
-- **Fürstenau-Detail**: Die genaue Aufteilung der 25 zusätzlichen Erstwohnungen auf "echte Reklassifikation" vs. "kleinere Neubauten + Singularisierung" lässt sich aus den OGD-Daten allein nicht trennen. Eine Anfrage bei der Gemeinde Fürstenau (E-Mail-Vorlage im Plan-File) wäre der nächste Schritt.
+E-Mail-Vorlagen für direkte Anfragen an die jeweiligen Gemeinden liegen im Plan-File `~/.claude/plans/alle-drei-dinge-jetzt-agile-balloon.md`.
 
 ---
 
