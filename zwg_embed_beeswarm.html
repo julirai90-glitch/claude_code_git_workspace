@@ -12,7 +12,11 @@
   #swarm-svg { width: 100%; height: 540px; }
   .threshold { stroke: #B5001E; stroke-width: 1.2; stroke-dasharray: 4,3; }
   .lex-label { font-size: 10px; fill: #B5001E; font-style: italic; }
-  .pt { cursor: pointer; }
+  .pt { cursor: pointer; transition: stroke 0.15s, stroke-width 0.15s, fill-opacity 0.15s; }
+  .pt.highlight { stroke: #1E3A5F; stroke-width: 2.5; }
+  .pt.dimmed { fill-opacity: 0.12; stroke-opacity: 0.3; }
+  .pt-label { font-size: 10px; fill: #1E3A5F; font-weight: 600; pointer-events: none; opacity: 0; }
+  .pt-label.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -24,6 +28,11 @@
     <button class="playbtn" id="playbtn">▶</button>
     <input class="periodSlider" type="range" id="periodSlider" min="0" max="0" value="0" step="1">
     <span class="periodLabel" id="periodLabel">…</span>
+  </div>
+  <div class="zwg-controls" style="margin-top:0;">
+    <input class="search" type="text" id="search" placeholder="Eigene Gemeinde suchen…" />
+    <select id="region-filter"><option value="">Alle Regionen</option></select>
+    <span id="search-count" style="font-size:11px;color:#888;"></span>
   </div>
 
   <svg id="swarm-svg"></svg>
@@ -95,14 +104,16 @@ ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
   svg.append('text').attr('transform', 'translate(14,' + (h / 2) + ') rotate(-90)')
     .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#666').text('Zweitwohnungsanteil');
 
-  var pts = svg.append('g').selectAll('circle').data(snapshots, function (d) { return d.bfs; })
+  var ptsGroup = svg.append('g');
+  var pts = ptsGroup.selectAll('circle').data(snapshots, function (d) { return d.bfs; })
     .enter().append('circle')
     .attr('class', 'pt')
     .attr('cx', function (d) { return xCenter + jitterFor(d.bfs) * xRange; })
     .attr('fill-opacity', 0.7)
     .attr('stroke', '#fff').attr('stroke-width', 1)
     .on('mouseenter', function (evt, d) {
-      d3.select(this).attr('stroke', ZWG.MARKEN.blueDark).attr('stroke-width', 2);
+      if (!d3.select(this).classed('highlight'))
+        d3.select(this).attr('stroke', ZWG.MARKEN.blueDark).attr('stroke-width', 2);
       var p = d.pos[curKey()];
       if (!p) return;
       ZWG.showTooltip('<strong style="color:' + ZWG.MARKEN.blueDark + '">' + d.name + '</strong>'
@@ -111,7 +122,11 @@ ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
         + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">Wohnungen</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">' + ZWG.fmtN(p.total) + '</span></div>', evt);
     })
     .on('mousemove', ZWG.positionTooltip)
-    .on('mouseleave', function () { d3.select(this).attr('stroke', '#fff').attr('stroke-width', 1); ZWG.hideTooltip(); })
+    .on('mouseleave', function () {
+      if (!d3.select(this).classed('highlight'))
+        d3.select(this).attr('stroke', '#fff').attr('stroke-width', 1);
+      ZWG.hideTooltip();
+    })
     .on('click', function (evt, d) {
       var p = d.pos[curKey()];
       if (!p) return;
@@ -120,6 +135,62 @@ ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
         + '<span style="color:#999;">(' + d.region + ')</span> · ' + ZWG.fmtPct(p.anteil)
         + ' · ' + ZWG.fmtN(p.total) + ' Wohnungen';
     });
+
+  // Label-Layer für Highlights
+  var labelLayer = svg.append('g').attr('class', 'labels');
+  var labels = labelLayer.selectAll('text').data(snapshots, function (d) { return d.bfs; })
+    .enter().append('text')
+    .attr('class', function (d) { return 'pt-label pt-label-' + d.bfs; })
+    .attr('x', function (d) { return xCenter + jitterFor(d.bfs) * xRange + 8; })
+    .attr('dy', '0.32em')
+    .text(function (d) { return d.name; });
+
+  // Region-Filter befüllen + Filter-Logik
+  var counts = {};
+  DATA.gemeinden.forEach(function (g) { if (g.region) counts[g.region] = (counts[g.region] || 0) + 1; });
+  var regSel = document.getElementById('region-filter');
+  Object.keys(counts).sort(function (a, b) { return a.localeCompare(b, 'de'); }).forEach(function (r) {
+    var opt = document.createElement('option');
+    opt.value = r; opt.textContent = r + ' (' + counts[r] + ')';
+    regSel.appendChild(opt);
+  });
+  var searchEl = document.getElementById('search');
+  searchEl.addEventListener('input', applyHighlight);
+  regSel.addEventListener('change', applyHighlight);
+
+  function applyHighlight() {
+    var q = searchEl.value.toLowerCase().trim();
+    var reg = regSel.value;
+    var hits = 0;
+    pts.classed('highlight', function (d) {
+      var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && d.region === reg;
+      var hit = (q || reg) ? (hitS || hitR) : false;
+      if (hit) hits++;
+      return hit;
+    }).classed('dimmed', function (d) {
+      if (!q && !reg) return false;
+      var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && d.region === reg;
+      return !(hitS || hitR);
+    }).attr('stroke', function (d) {
+      var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && d.region === reg;
+      return ((q || reg) && (hitS || hitR)) ? ZWG.MARKEN.blueDark : '#fff';
+    }).attr('stroke-width', function (d) {
+      var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && d.region === reg;
+      return ((q || reg) && (hitS || hitR)) ? 2.5 : 1;
+    });
+    // Highlight-Punkte nach vorne holen, damit sie nicht von gedimmten verdeckt werden
+    pts.filter(function () { return d3.select(this).classed('highlight'); }).raise();
+    // Labels nur bei Suche (Region-Auswahl wären zu viele Labels — meist 6–19 Gemeinden)
+    labels.classed('show', function (d) {
+      if (q) return d.name.toLowerCase().indexOf(q) >= 0;
+      return false; // bei Region-Filter keine Labels (zu dicht)
+    });
+    document.getElementById('search-count').textContent = (q || reg) ? (hits + ' Treffer') : '';
+  }
 
   var slider = document.getElementById('periodSlider');
   var label = document.getElementById('periodLabel');
@@ -152,6 +223,9 @@ ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
       .attr('cy', function (d) { var pp = d.pos[curKey()]; return pp ? y(pp.anteil) : y(0); })
       .attr('r',  function (d) { var pp = d.pos[curKey()]; return pp ? r(pp.total) : 4; })
       .attr('fill', function (d) { var pp = d.pos[curKey()]; return pp ? ZWG.colorForAnteil(pp.anteil) : '#ccc'; });
+    labels.transition().duration(650).ease(d3.easeCubicInOut)
+      .attr('y', function (d) { var pp = d.pos[curKey()]; return pp ? y(pp.anteil) : y(0); });
+    applyHighlight();
   }
   frame();
 });
