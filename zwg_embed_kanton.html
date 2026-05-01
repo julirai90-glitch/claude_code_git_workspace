@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wohnungsbestand Graubünden 2017–2026 (Total · Erst · Zweit)</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="zwg_common.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: transparent; color: #1a1a1a; }
+  .wrap { max-width: 696px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 16px 24px; }
+  h2 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #1E3A5F; }
+  .sub { font-size: 13px; color: #666; line-height: 1.45; margin-bottom: 14px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
+  .stat { background: #f9f9f7; border-radius: 6px; padding: 10px; border: 1px solid #e5e5e5; border-left: 3px solid #1E3A5F; }
+  .stat.erst { border-left-color: #0068A4; }
+  .stat.gleich { border-left-color: #cce0ee; }
+  .stat.zweit { border-left-color: #EE7733; }
+  @media (max-width: 540px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat .lbl { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: .5px; }
+  .stat .val { font-size: 18px; font-weight: 700; color: #1E3A5F; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat .delta { font-size: 11px; color: #666; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; font-size: 11px; }
+  .leg-item { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .leg-item.muted { opacity: .35; }
+
+  #chart { width: 100%; height: 360px; }
+  .axis text { font-size: 10px; fill: #666; }
+  .axis path, .axis line { stroke: #ddd; }
+  .gridline { stroke: #f0f0f0; stroke-dasharray: 2,2; }
+  .area { stroke: #fff; stroke-width: 1; }
+  .area.muted { opacity: .15; }
+  .total-line { fill: none; stroke: #1E3A5F; stroke-width: 1.6; stroke-dasharray: 4,2; opacity: .65; }
+  .hover-line { stroke: #1E3A5F; stroke-width: 1; stroke-dasharray: 3,3; opacity: .45; }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2>Wohnungsbestand Graubünden 2017–2026</h2>
+  <p class="sub">Kantonsweite Summe aller 100 Bündner Gemeinden, jährlich Stand März.</p>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="legend" id="legend"></div>
+  <svg id="chart"></svg>
+
+  <div id="source"></div>
+</div>
+
+<script>
+(function () {
+  // Stack-Reihenfolge von unten nach oben: Erst → gleichgestellt → Zweit.
+  // Summe der Schichten = Total. Total wird zusätzlich als gestrichelte Oberkante gezeigt.
+  var SERIES = [
+    { key: 'erst',      label: 'Erstwohnungen',           color: '#0068A4' },
+    { key: 'gleich',    label: 'Erst-gleichgestellt',     color: '#cce0ee' },
+    { key: 'zweit_eng', label: 'Zweitwohnungen i. e. S.', color: '#EE7733' }
+  ];
+
+  var muted = {};
+
+  ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (data) {
+    var marz = data.reihe.filter(function (r) { return r.semester === 'März'; });
+    marz.sort(function (a, b) { return a.jahr - b.jahr; });
+
+    renderStats(marz);
+    renderLegend();
+    renderChart(marz);
+    document.getElementById('source').innerHTML = ZWG.footerHTML();
+  });
+
+  function renderStats(marz) {
+    var first = marz[0], last = marz[marz.length - 1];
+    var rows = [
+      { cls: '',       lbl: 'Total Wohnungen',         first: first.total,     last: last.total },
+      { cls: 'erst',   lbl: 'Erstwohnungen',           first: first.erst,      last: last.erst },
+      { cls: 'gleich', lbl: 'Erst-gleichgestellt',     first: first.gleich,    last: last.gleich },
+      { cls: 'zweit',  lbl: 'Zweitwohnungen i. e. S.', first: first.zweit_eng, last: last.zweit_eng }
+    ];
+    document.getElementById('stats').innerHTML = rows.map(function (r) {
+      var d = r.last - r.first;
+      var pct = r.first ? (d / r.first * 100) : 0;
+      var sign = d > 0 ? '+' : '';
+      return '<div class="stat ' + r.cls + '">'
+        + '<div class="lbl">' + r.lbl + '</div>'
+        + '<div class="val">' + ZWG.fmtN(r.last) + '</div>'
+        + '<div class="delta">' + sign + ZWG.fmtN(d) + ' (' + sign + pct.toFixed(1).replace('.', ',') + ' %) seit 2017</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  function renderLegend() {
+    var leg = document.getElementById('legend');
+    leg.innerHTML = SERIES.map(function (s) {
+      return '<span class="leg-item" data-key="' + s.key + '">'
+        + '<span class="leg-dot" style="background:' + s.color + '"></span>' + s.label + '</span>';
+    }).join('') + '<span class="leg-item" style="cursor:default;"><span class="leg-dot" style="background:transparent;border-top:2px dashed #1E3A5F;width:14px;height:0;border-radius:0;"></span>Total</span>';
+    Array.prototype.forEach.call(leg.querySelectorAll('.leg-item[data-key]'), function (el) {
+      el.addEventListener('click', function () {
+        var k = el.dataset.key;
+        muted[k] = !muted[k];
+        el.classList.toggle('muted', muted[k]);
+        d3.select('.area-' + k).classed('muted', muted[k]);
+      });
+    });
+  }
+
+  function renderChart(marz) {
+    var svg = d3.select('#chart');
+    var w = svg.node().clientWidth || 648;
+    var h = 360;
+    var m = { t: 16, r: 22, b: 30, l: 64 };
+    svg.attr('viewBox', '0 0 ' + w + ' ' + h).selectAll('*').remove();
+
+    var x = d3.scaleLinear()
+      .domain(d3.extent(marz, function (d) { return d.jahr; }))
+      .range([m.l, w - m.r]);
+
+    var yMax = d3.max(marz, function (d) { return d.total; });
+    var y = d3.scaleLinear()
+      .domain([0, Math.ceil(yMax / 20000) * 20000])
+      .range([h - m.b, m.t]);
+
+    svg.append('g').selectAll('line').data(y.ticks(5)).enter().append('line')
+      .attr('class', 'gridline')
+      .attr('x1', m.l).attr('x2', w - m.r)
+      .attr('y1', function (d) { return y(d); })
+      .attr('y2', function (d) { return y(d); });
+
+    svg.append('g').attr('class', 'axis')
+      .attr('transform', 'translate(0,' + (h - m.b) + ')')
+      .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(marz.length));
+
+    svg.append('g').attr('class', 'axis')
+      .attr('transform', 'translate(' + m.l + ',0)')
+      .call(d3.axisLeft(y).ticks(5).tickFormat(function (v) {
+        return v >= 1000 ? (v / 1000).toLocaleString('de-CH') + 'k' : v;
+      }));
+
+    // Stacked Areas: Erst → gleich → Zweit (Reihenfolge bestimmt Z-Order von unten).
+    var keys = SERIES.map(function (s) { return s.key; });
+    var stack = d3.stack().keys(keys)
+      .value(function (d, key) { return d[key]; })
+      .order(d3.stackOrderNone);
+    var stacked = stack(marz);
+
+    var area = d3.area()
+      .x(function (d) { return x(d.data.jahr); })
+      .y0(function (d) { return y(d[0]); })
+      .y1(function (d) { return y(d[1]); })
+      .curve(d3.curveMonotoneX);
+
+    svg.append('g').selectAll('path.area').data(stacked).enter()
+      .append('path')
+      .attr('class', function (d) { return 'area area-' + d.key; })
+      .attr('fill', function (d) { return SERIES.find(function (s) { return s.key === d.key; }).color; })
+      .attr('d', area);
+
+    // Total als gestrichelte Oberkante (zur Lesbarkeit; Stack-Top = Total)
+    var totalLine = d3.line()
+      .x(function (d) { return x(d.jahr); })
+      .y(function (d) { return y(d.total); })
+      .curve(d3.curveMonotoneX);
+    svg.append('path').datum(marz).attr('class', 'total-line').attr('d', totalLine);
+
+    // Hover-Overlay
+    var hov = svg.append('line').attr('class', 'hover-line').style('display', 'none');
+    var rect = svg.append('rect')
+      .attr('x', m.l).attr('y', m.t)
+      .attr('width', w - m.l - m.r).attr('height', h - m.t - m.b)
+      .attr('fill', 'transparent');
+
+    rect.on('mousemove', function (evt) {
+      var px = d3.pointer(evt, svg.node())[0];
+      var jahr = Math.round(x.invert(px));
+      var rec = marz.find(function (d) { return d.jahr === jahr; });
+      if (!rec) return;
+      hov.attr('x1', x(rec.jahr)).attr('x2', x(rec.jahr))
+         .attr('y1', m.t).attr('y2', h - m.b)
+         .style('display', null);
+
+      var html = '<strong>März ' + rec.jahr + '</strong>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:12px;margin-top:2px;">'
+        + '<span style="color:#1E3A5F;font-weight:600;">Total</span>'
+        + '<span style="font-variant-numeric:tabular-nums;">' + ZWG.fmtN(rec.total) + '</span></div>'
+        + SERIES.map(function (s) {
+          var pct = (rec[s.key] / rec.total * 100).toFixed(1).replace('.', ',');
+          return '<div class="row2" style="display:flex;justify-content:space-between;gap:12px;margin-top:2px;">'
+            + '<span style="color:' + s.color + ';font-weight:600;">' + s.label + '</span>'
+            + '<span style="font-variant-numeric:tabular-nums;">' + ZWG.fmtN(rec[s.key]) + ' <span style="color:#999;">(' + pct + ' %)</span></span>'
+            + '</div>';
+        }).join('');
+      ZWG.showTooltip(html, evt);
+    });
+    rect.on('mouseleave', function () {
+      hov.style('display', 'none');
+      ZWG.hideTooltip();
+    });
+  }
+
+})();
+</script>
+</body>
+</html>

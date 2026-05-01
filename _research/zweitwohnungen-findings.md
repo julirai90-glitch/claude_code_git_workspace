@@ -141,11 +141,97 @@
 
 ## Offene Fragen / Recherche-Leads
 
-1. **Fürstenau**: Was hat 2021/22 die Umnutzung von ~25 Zweitwohnungen zu Erstwohnungen ausgelöst? Lokale Initiative? Post-Corona-Zuzug? Behördenentscheid?
+1. **Fürstenau**: Was hat 2021/22 die Umnutzung von ~25 Zweitwohnungen zu Erstwohnungen ausgelöst? Lokale Initiative? Post-Corona-Zuzug? Behördenentscheid? → siehe **Verifikation 2026-04-28** unten
 2. **Grono**: Wie hat die Gemeinde den Zuzug aktiv gefördert? Bauzonenpolitik?
-3. **Brusio/Soazza**: Fusionsgeschichte verifizieren (Amtliche Gemeinderegister GR)
+3. **Brusio/Soazza**: Fusionsgeschichte verifizieren (Amtliche Gemeinderegister GR) → **widerlegt**, siehe unten
 4. **Calanca 2020**: Datenfehler im GWR melden?
 5. **Laax**: Trotz hoher Ausgangsbasis (-5.7%) sinkend – Umnutzungsprojekte?
+
+---
+
+## Verifikation 2026-04-28
+
+### Brusio – Fusionshypothese widerlegt ❌
+
+- **Wikipedia, Stand April 2026**: Keine Gemeindefusion zwischen 2017 und 2020. Letzte strukturelle Änderung: 1851 Trennung von Poschiavo. Quelle: [de.wikipedia.org/wiki/Brusio](https://de.wikipedia.org/wiki/Brusio), abgerufen 2026-04-28.
+- **Datenmuster (`dvs_awt_soci_20260112`, abgerufen 2026-04-28)**:
+  - 2017→2018: Total 656→767 Whg. (+111). Erstwohnungen praktisch konstant (~474 → ~475). Damit sind ALLE 111 neuen Einheiten als Zweitwohnungen klassifiziert.
+  - +111 Whg. in einem einzigen Jahr entsprechen 13% des Gesamtbestands – für eine Gemeinde mit 1099 Einwohnern (Wikipedia, 2024) zu viel für echte Neubautätigkeit.
+- **Wahrscheinlichste Erklärung**: GWR-Datennachführung. Vorher unerfasste oder falsch zugeordnete Wohneinheiten (z.B. Rustici, Ferienhäuser im hinteren Tal) wurden 2018 ins Register aufgenommen. Da diese überwiegend nicht als Hauptwohnsitz dienen, fielen sie automatisch in die Zweitwohnungs-Kategorie. Akten-Verifikation nicht möglich ohne Auskunft Statistik GR / GWR.
+
+### Soazza – Fusionshypothese widerlegt ❌
+
+- **Wikipedia, Stand April 2026**: Keine Gemeindefusion zwischen 2022 und 2025. Quelle: [de.wikipedia.org/wiki/Soazza](https://de.wikipedia.org/wiki/Soazza), abgerufen 2026-04-28.
+- **Datenmuster (`dvs_awt_soci_20260112`, abgerufen 2026-04-28)**:
+  - Okt 2023→März 2024: Total 226→292 Whg. (+66). Erstwohnungen unverändert bei 160. Damit sind alle 66 Einheiten als Zweitwohnungen klassifiziert.
+  - +66 Whg. in einer Halbjahres-Erhebung entsprechen 29% des Bestands – für eine Gemeinde mit 324 Einwohnern (Wikipedia, 2024) ebenfalls implausibel als reiner Bauboom.
+  - Sprung erfolgte in der März-2024-Erhebung – also VOR den Unwettern im Misox vom Juni 2024 ([grheute.ch zur Mesolcina-Hilfe](https://www.grheute.ch/gruenes-licht-fuer-sofort-und-sicherungsmassnahmen-im-misox)). Die Unwetter sind als Erklärung ausgeschlossen.
+- **Wahrscheinlichste Erklärung**: gleiches Muster wie Brusio – GWR-Datennachführung.
+
+### Fürstenau – "Post-Corona-Zuzug" widerlegt, GWR-Reklassifikation + Singularisierung wahrscheinlich
+
+- **Bevölkerungsentwicklung (`dvs_awt_soci_20250507`, abgerufen 2026-04-28)**:
+
+  | Jahr | Einwohner |
+  |------|-----------|
+  | 2017 | 349 |
+  | 2018 | 353 |
+  | 2019 | 357 |
+  | 2020 | 350 |
+  | 2021 | 343 |
+  | 2022 | 351 |
+  | 2023 | 349 |
+  | 2024 | 353 |
+
+  → Bevölkerung 2017–2024 schwankt nur zwischen 343 und 357. Kein Zuzug-Effekt erkennbar, weder vor noch nach Corona.
+
+- **Wohnungsdaten (`dvs_awt_soci_20260112`, abgerufen 2026-04-28)**:
+  - Erstwohnungen (`zwg_3010`) 2017→2025: 147 → 172 (+25)
+  - Zusätzlich Erstwohnungs-gleichgestellte (`zwg_3100`): 0 → 8 (also +8 Personalwohnungen o.ä., die 2017 noch nicht erfasst waren)
+  - Zweitwohnungen (rechnerisch) 2017→2025: 39 → 26
+  - Personen pro Erstwohnung: 2017: 349/147 = 2.37 → 2025: 353/172 = 2.05
+
+- **Wahrscheinlichste Erklärung**: Mischung aus zwei Effekten:
+  1. **Singularisierung der Haushalte** (Trennungen, ältere Alleinstehende, Generationenwechsel): Die gleiche Bevölkerung verteilt sich auf rund 25 Wohnungen mehr.
+  2. **GWR-Reklassifikation**: Die zusätzlichen 8 erfassten "Erstwohnungs-gleichgestellten" deuten auf eine Datennachführung; ebenso wechselten ggf. Wohnungen mit zuvor unklarem Status formal in die Erstwohnungs-Kategorie.
+- **Was die App-Story-Hypothese sagt**: "vermutlich durch Post-Corona-Zuzug und Wohnsitzwechsel". Der Zuzug-Teil ist durch die Bevölkerungsdaten widerlegt; die Wohnsitzwechsel-Hypothese (im Sinne von neuen Anmeldungen) ebenfalls. Übrig bleibt: GWR-Datenpflege + demographische Singularisierung.
+
+### Was offen bleibt
+
+- **Akten-Bestätigung der GWR-Nachführung** für Brusio (2018) und Soazza (2024): nur via Statistik Graubünden / Bundesamt für Statistik / Gemeindekanzleien zu klären. E-Mail-Vorlagen liegen im Plan-File `~/.claude/plans/alle-drei-dinge-jetzt-agile-balloon.md`.
+- **Fürstenau-Detail**: Die genaue Aufteilung der 25 zusätzlichen Erstwohnungen auf "echte Reklassifikation" vs. "kleinere Neubauten + Singularisierung" lässt sich aus den OGD-Daten allein nicht trennen. Eine Anfrage bei der Gemeinde Fürstenau (E-Mail-Vorlage im Plan-File) wäre der nächste Schritt.
+
+---
+
+## Kantonsweite Aggregation 2017–2026 (verifiziert 2026-04-29)
+
+Aggregiert aus `dvs_awt_soci_20260112` (1700 Records, 17 Halbjahres-Erhebungen). Pro Erhebung Summe über alle 100 Bündner Gemeinden. März und Oktober eines Jahres haben im GWR identische Werte; die Tabelle zeigt jährliche März-Stände.
+
+| Erhebung | Total Whg | Erstwhg | Erst-gleichg. | Zweitwhg i.e.S. | Quote i.e.S. |
+|---:|---:|---:|---:|---:|---:|
+| März 2017 | 168'775 | 89'706 | 778 | 78'291 | 46,39 % |
+| März 2018 | 170'929 | 90'530 | 963 | 79'436 | 46,47 % |
+| März 2019 | 173'013 | 91'174 | 1'124 | 80'715 | 46,65 % |
+| März 2020 | 174'441 | 92'121 | 993 | 81'327 | 46,62 % |
+| März 2021 | 175'936 | 93'159 | 1'121 | 81'656 | 46,41 % |
+| März 2022 | 177'328 | 94'158 | 1'186 | 81'984 | 46,23 % |
+| März 2023 | 179'452 | 94'979 | 1'217 | 83'256 | 46,39 % |
+| März 2024 | 182'699 | 96'084 | 1'167 | 85'448 | 46,77 % |
+| März 2025 | 184'810 | 97'018 | 1'091 | 86'701 | 46,91 % |
+| März 2026 | **186'270** | **97'950** | **1'049** | **87'271** | **46,85 %** |
+
+**Veränderung 2017 → 2026:**
+- Total: +17'495 Whg (+10,4 %)
+- Erstwohnungen: +8'244 Whg (+9,2 %)
+- Erstwohnungs-gleichgestellt: +271 Whg (+34,8 %)
+- Zweitwohnungen i.e.S.: +8'980 Whg (+11,5 %)
+- Quote i.e.S.: +0,46 Prozentpunkte (praktisch konstant)
+
+**Wichtige Beobachtung (Fakten, ohne Interpretation):** In den 9 Jahren Aufzeichnung wuchs der Wohnungsbestand kantonsweit um rund 17'500 Einheiten. Davon entfielen 8'244 auf Erstwohnungen und 8'980 auf Zweitwohnungen i.e.S. — leicht mehr als die Hälfte des Zuwachses ist eine Zweitwohnung. Die Quote bewegt sich seit 2017 zwischen 46,2 % und 46,9 %.
+
+**Calanca-Anomalie 2020 (quantifiziert):** Die Gemeinde meldete in der Erhebung 2020 (März und Oktober) 98,48 % Zweitwohnungsanteil; vorher (2019) und nachher (2021) lag der Wert bei 73,7 % bzw. 73,1 %. Differenz ≈ +25,1 Prozentpunkte = ca. 99 zusätzlich gemeldete Zweitwohnungen für die zwei Erhebungen 2020. Effekt auf die kantonsweite Zweit-Summe: 99 / 81'327 = 0,12 %, vernachlässigbar. Der Datenfehler ist im OGD-Datensatz unverändert enthalten und wird in den Visualisierungen nur visuell markiert.
+
+**Verifikation:** Skript `_research/verify_kanton.py` ruft per `group_by=jahr,semester` direkt die data.gr.ch-API auf und vergleicht mit dem lokalen Aggregat. Alle 17 Erhebungen × 4 Felder (total, erst, gleich, count) wurden 1:1 bestätigt (PASS). Konsistenz `total = erst + gleich + zweit` wurde für alle 17 Erhebungen geprüft (PASS). Quote-Konsistenz (gewichtetes Gemeinde-Mittel vs. kantonsweite Datensatz-Quote) zeigt für alle 17 Erhebungen Differenzen < 0,001 Prozentpunkte (Rundung). Lokale Quelldatei: `zweitwohnungen_kanton_zeitreihe.json`. Verifikations-Datum: 2026-04-29.
 
 ---
 

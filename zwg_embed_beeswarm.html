@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zweitwohnungen GR — Bee Swarm 2017→2026</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+<style>
+  #swarm-svg { width: 100%; height: 540px; }
+  .threshold { stroke: #B5001E; stroke-width: 1.2; stroke-dasharray: 4,3; }
+  .lex-label { font-size: 10px; fill: #B5001E; font-style: italic; }
+  .pt { cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Alle Gemeinden, vertikal sortiert nach Quote</h2>
+  <p class="sub">Jeder Punkt = eine Gemeinde. Y = Zweitwohnungsanteil. X = nur leichter Jitter, damit sich Punkte nicht überlappen — keine zweite Datendimension. Slider/Play bewegen die Punkte vertikal über die 10 Jahre.</p>
+
+  <div class="zwg-slider-bar">
+    <button class="playbtn" id="playbtn">▶</button>
+    <input class="periodSlider" type="range" id="periodSlider" min="0" max="0" value="0" step="1">
+    <span class="periodLabel" id="periodLabel">…</span>
+  </div>
+
+  <svg id="swarm-svg"></svg>
+  <div id="detail" style="font-size:11px;color:#888;margin-top:8px;">Hover oder Klick auf einen Punkt für Details.</div>
+
+  <div id="source"></div>
+</div>
+
+<script>
+ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
+  document.getElementById('source').innerHTML = ZWG.footerHTML();
+
+  // Nur März-Stände — Oktober ist im GWR identisch.
+  var periods = DATA.periods.filter(function (p) { return p.s === 'März'; });
+
+  // Pro Gemeinde {pos: { '2017-März': anteil, ... }, ...}
+  var snapshots = DATA.gemeinden.map(function (g) {
+    var pos = {};
+    g.serie.forEach(function (s) {
+      pos[s.j + '-' + s.s] = { anteil: s.a, total: s.t, anomaly: ZWG.isAnomaly(g.name, s.j, s.s) };
+    });
+    return { name: g.name, bfs: g.bfs, region: g.region, pos: pos };
+  });
+
+  var svg = d3.select('#swarm-svg');
+  var w = svg.node().clientWidth || 648;
+  var h = 540;
+  var m = { t: 24, r: 18, b: 32, l: 50 };
+  svg.attr('viewBox', '0 0 ' + w + ' ' + h).selectAll('*').remove();
+
+  var allAnteile = [], allTotals = [];
+  snapshots.forEach(function (s) {
+    Object.values(s.pos).forEach(function (p) {
+      allAnteile.push(p.anteil); allTotals.push(p.total);
+    });
+  });
+
+  var yMax = Math.ceil(d3.max(allAnteile) / 10) * 10;
+  var y = d3.scaleLinear().domain([0, Math.max(yMax, 100)]).range([h - m.b, m.t]);
+  var r = d3.scaleSqrt().domain([0, d3.max(allTotals)]).range([4, 14]);
+
+  // Jitter-Bereich auf X — deterministisch via BFS-Hash, damit die Position
+  // stabil bleibt zwischen Frames.
+  var xCenter = (m.l + w - m.r) / 2;
+  var xRange = (w - m.l - m.r) * 0.85;
+  function jitterFor(bfs) {
+    // Konstanter Hash aus BFS → −0.5..+0.5
+    var n = parseInt(bfs, 10) || 0;
+    var seed = ((n * 9301 + 49297) % 233280) / 233280;
+    return (seed - 0.5);
+  }
+
+  // Y-Gridlines + Axis
+  svg.append('g').selectAll('line').data(y.ticks(5)).enter().append('line')
+    .attr('class', 'zwg-gridline').attr('x1', m.l).attr('x2', w - m.r)
+    .attr('y1', function (d) { return y(d); }).attr('y2', function (d) { return y(d); });
+
+  svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(' + m.l + ',0)')
+    .call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return d + ' %'; }));
+
+  // Lex-Weber-Schwelle bei y=20
+  svg.append('line').attr('class', 'threshold')
+    .attr('x1', m.l).attr('x2', w - m.r)
+    .attr('y1', y(20)).attr('y2', y(20));
+  svg.append('text').attr('class', 'lex-label')
+    .attr('x', w - m.r - 4).attr('y', y(20) - 4).attr('text-anchor', 'end')
+    .text('20 % Lex-Weber-Schwelle');
+
+  svg.append('text').attr('transform', 'translate(14,' + (h / 2) + ') rotate(-90)')
+    .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#666').text('Zweitwohnungsanteil');
+
+  var pts = svg.append('g').selectAll('circle').data(snapshots, function (d) { return d.bfs; })
+    .enter().append('circle')
+    .attr('class', 'pt')
+    .attr('cx', function (d) { return xCenter + jitterFor(d.bfs) * xRange; })
+    .attr('fill-opacity', 0.7)
+    .attr('stroke', '#fff').attr('stroke-width', 1)
+    .on('mouseenter', function (evt, d) {
+      d3.select(this).attr('stroke', ZWG.MARKEN.blueDark).attr('stroke-width', 2);
+      var p = d.pos[curKey()];
+      if (!p) return;
+      ZWG.showTooltip('<strong style="color:' + ZWG.MARKEN.blueDark + '">' + d.name + '</strong>'
+        + '<div style="font-size:10px;color:#999;margin:1px 0 4px;">' + d.region + '</div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">Quote</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">' + ZWG.fmtPct(p.anteil) + '</span></div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">Wohnungen</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">' + ZWG.fmtN(p.total) + '</span></div>', evt);
+    })
+    .on('mousemove', ZWG.positionTooltip)
+    .on('mouseleave', function () { d3.select(this).attr('stroke', '#fff').attr('stroke-width', 1); ZWG.hideTooltip(); })
+    .on('click', function (evt, d) {
+      var p = d.pos[curKey()];
+      if (!p) return;
+      document.getElementById('detail').innerHTML =
+        '<strong style="color:' + ZWG.MARKEN.blueDark + '">' + d.name + '</strong> '
+        + '<span style="color:#999;">(' + d.region + ')</span> · ' + ZWG.fmtPct(p.anteil)
+        + ' · ' + ZWG.fmtN(p.total) + ' Wohnungen';
+    });
+
+  var slider = document.getElementById('periodSlider');
+  var label = document.getElementById('periodLabel');
+  var playBtn = document.getElementById('playbtn');
+  slider.max = periods.length - 1;
+  slider.value = periods.length - 1;
+  var playing = false, timer = null;
+
+  slider.addEventListener('input', frame);
+  playBtn.addEventListener('click', function () {
+    playing = !playing;
+    this.textContent = playing ? '⏸' : '▶';
+    if (playing) {
+      timer = setInterval(function () {
+        var v = (+slider.value + 1) % periods.length;
+        slider.value = v; frame();
+      }, 800);
+    } else { clearInterval(timer); }
+  });
+
+  function curKey() {
+    var p = periods[+slider.value];
+    return p.j + '-' + p.s;
+  }
+
+  function frame() {
+    var p = periods[+slider.value];
+    label.textContent = p.s + ' ' + p.j;
+    pts.transition().duration(650).ease(d3.easeCubicInOut)
+      .attr('cy', function (d) { var pp = d.pos[curKey()]; return pp ? y(pp.anteil) : y(0); })
+      .attr('r',  function (d) { var pp = d.pos[curKey()]; return pp ? r(pp.total) : 4; })
+      .attr('fill', function (d) { var pp = d.pos[curKey()]; return pp ? ZWG.colorForAnteil(pp.anteil) : '#ccc'; });
+  }
+  frame();
+});
+</script>
+</body>
+</html>

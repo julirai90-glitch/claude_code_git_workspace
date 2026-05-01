@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zweitwohnungs-Atlas Graubünden</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<!-- Datawrapper-Resize: passt Höhe des eingebetteten Datawrapper-iframes dynamisch an -->
+<script>
+window.addEventListener("message", function(a) {
+  if (void 0 !== a.data["datawrapper-height"]) {
+    var e = document.querySelectorAll("iframe");
+    for (var t in a.data["datawrapper-height"])
+      for (var r, i = 0; r = e[i]; i++)
+        if (r.contentWindow === a.source) {
+          var d = a.data["datawrapper-height"][t] + "px";
+          r.style.height = d;
+        }
+  }
+});
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: transparent; color: #1a1a1a; }
+  .wrap { max-width: 696px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; }
+  .title-bar { padding: 16px 24px 8px; }
+  .title-bar h2 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #1E3A5F; }
+  .title-bar p { font-size: 13px; color: #666; line-height: 1.45; }
+  .tabs { display: flex; border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; background: #f9f9f7; }
+  .tab-btn { flex: 1; padding: 10px 4px; font-size: 12px; font-weight: 600; color: #666; background: transparent; border: none; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .tab-btn:hover { background: #fff; color: #0068A4; }
+  .tab-btn.active { background: #fff; color: #0068A4; border-bottom-color: #0068A4; }
+  .tab-content { display: none; padding: 16px 24px; }
+  .tab-content.active { display: block; }
+  .source { font-size: 11px; color: #aaa; padding: 12px 24px 16px; border-top: 1px solid #f0f0f0; line-height: 1.5; }
+
+  /* Tabelle */
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .controls label { font-size: 11px; color: #666; }
+  .controls input, .controls select { font-size: 12px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; background: #fff; }
+  .controls .search { width: 140px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; }
+  .stat-box { background: #f9f9f7; border-radius: 6px; padding: 8px; border: 1px solid #e5e5e5; }
+  .stat-box .label { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-box .value { font-size: 16px; font-weight: 700; margin-top: 2px; color: #1E3A5F; }
+  .stat-box .sub { font-size: 9px; color: #aaa; margin-top: 1px; }
+  #table-list { border: 1px solid #eee; border-radius: 4px; }
+  .row { display: flex; align-items: center; padding: 5px 8px; border-bottom: 1px solid #f5f5f5; cursor: pointer; transition: background 0.1s; }
+  .row:hover { background: #f0ede8; }
+  .row.selected { background: #fef3cd; }
+  .row .nm { flex: 0 0 130px; font-size: 11px; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .br { flex: 1; height: 12px; background: #eee; border-radius: 2px; position: relative; margin: 0 6px; }
+  .row .fl { height: 100%; border-radius: 2px; }
+  .row .lex { position: absolute; left: 20%; top: -2px; height: 16px; border-left: 1px dashed rgba(0,0,0,0.35); }
+  .row .pct { flex: 0 0 50px; font-size: 11px; color: #1a1a1a; text-align: right; font-variant-numeric: tabular-nums; }
+  .row .delta { flex: 0 0 50px; font-size: 10px; text-align: right; font-variant-numeric: tabular-nums; }
+  .delta.up { color: #B5001E; }
+  .delta.down { color: #0068A4; }
+  .delta.flat { color: #999; }
+  #detail { background: #f9f9f7; border-radius: 6px; padding: 12px; margin-top: 12px; border: 1px solid #e5e5e5; min-height: 60px; }
+  #detail.empty { color: #aaa; font-size: 12px; font-style: italic; }
+  #detail h3 { font-size: 14px; color: #1E3A5F; margin-bottom: 6px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 11px; }
+  .detail-grid .k { color: #888; }
+  .detail-grid .v { color: #1a1a1a; font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+  .spark { width: 100%; height: 50px; margin-top: 8px; }
+
+  /* Scatter */
+  #scatter-svg { width: 100%; height: 460px; }
+  .axis text { font-size: 10px; fill: #666; }
+  .axis line, .axis path { stroke: #ddd; }
+  .gridline { stroke: #f0f0f0; stroke-dasharray: 2,2; }
+  .threshold { stroke: #B5001E; stroke-width: 1.2; stroke-dasharray: 4,3; }
+  .threshold-zero { stroke: #1E3A5F; stroke-width: 1; stroke-dasharray: 4,3; }
+  .quad-label { font-size: 10px; fill: #aaa; font-style: italic; }
+  .pt { cursor: pointer; transition: r 0.1s; }
+  .pt:hover { stroke: #1E3A5F; stroke-width: 1.5; }
+  .pt.selected { stroke: #1E3A5F; stroke-width: 2; }
+
+  /* Slider / Animation */
+  .slider-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .slider-bar #playbtn { width: 32px; height: 32px; background: #0068A4; color: #fff; border: none; border-radius: 50%; font-size: 14px; cursor: pointer; }
+  .slider-bar #playbtn:hover { background: #1E3A5F; }
+  #periodSlider { flex: 1; }
+  #periodLabel { font-size: 13px; font-weight: 700; color: #1E3A5F; min-width: 110px; text-align: right; font-variant-numeric: tabular-nums; }
+  #anim-bars { max-height: 460px; overflow-y: auto; border: 1px solid #eee; border-radius: 4px; padding: 4px 6px; }
+  .abar { display: flex; align-items: center; padding: 1px 0; }
+  .abar .nm { flex: 0 0 120px; font-size: 10px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .abar .br { flex: 1; height: 9px; background: #f0f0f0; border-radius: 1px; position: relative; margin: 0 6px; }
+  .abar .fl { height: 100%; border-radius: 1px; transition: width 0.4s ease, background 0.4s ease; }
+  .abar .lex { position: absolute; left: 20%; top: -1px; height: 11px; border-left: 1px dashed rgba(0,0,0,0.3); }
+  .abar .pct { flex: 0 0 42px; font-size: 10px; text-align: right; color: #555; font-variant-numeric: tabular-nums; }
+
+  /* Karte: Datawrapper-iframe; eigene Stile nicht mehr nötig */
+
+  /* Tooltip */
+  #tooltip { position: fixed; pointer-events: none; background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 6px 8px; font-size: 11px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); z-index: 1000; opacity: 0; transition: opacity 0.1s; max-width: 220px; }
+  #tooltip.show { opacity: 1; }
+  #tooltip strong { color: #1E3A5F; display: block; margin-bottom: 2px; }
+  #tooltip .row2 { display: flex; justify-content: space-between; gap: 8px; }
+  #tooltip .k { color: #888; }
+  #tooltip .v { font-weight: 600; }
+
+  .loading { text-align: center; padding: 30px; color: #888; font-size: 12px; }
+  .err { padding: 12px; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 4px; color: #991b1b; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="title-bar">
+    <h2>Zweitwohnungs-Atlas Graubünden</h2>
+    <p id="subtitle">Lade Daten…</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="liste">Tabelle</button>
+    <button class="tab-btn" data-tab="scatter">Scatter</button>
+    <button class="tab-btn" data-tab="zeit">Zeitreihe</button>
+    <button class="tab-btn" data-tab="kanton">Kanton</button>
+    <button class="tab-btn" data-tab="karte">Karte</button>
+  </div>
+
+  <div class="tab-content active" data-tab="liste">
+    <div class="stat-grid" id="stats"></div>
+    <div class="controls">
+      <input class="search" type="text" id="search" placeholder="Gemeinde suchen…" />
+      <select id="lex-filter">
+        <option value="">Alle</option>
+        <option value="ueber">Über 20% (Lex Weber)</option>
+        <option value="unter">Unter 20%</option>
+      </select>
+      <select id="sort">
+        <option value="anteil-desc">Quote ↓</option>
+        <option value="anteil-asc">Quote ↑</option>
+        <option value="delta-desc">Veränderung ↓</option>
+        <option value="delta-asc">Veränderung ↑</option>
+        <option value="total-desc">Wohnungen ↓</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+    <div id="table-list"></div>
+    <div id="detail" class="empty">Klick auf eine Gemeinde für Details und Zeitverlauf.</div>
+  </div>
+
+  <div class="tab-content" data-tab="scatter">
+    <p style="font-size:12px;color:#666;margin-bottom:8px;">Jeder Punkt = eine Gemeinde. Y-Achse: aktueller Zweitwohnungsanteil (oben = hoch). X-Achse: Veränderung seit März 2017 in Prozentpunkten (links = gesunken, rechts = gestiegen). Punktgrösse = Anzahl Wohnungen total.</p>
+    <svg id="scatter-svg"></svg>
+    <div id="scatter-detail" style="font-size:11px;color:#888;margin-top:8px;">Hover über einen Punkt für Details.</div>
+  </div>
+
+  <div class="tab-content" data-tab="zeit">
+    <p style="font-size:12px;color:#666;margin-bottom:10px;">Zweitwohnungsanteil aller Gemeinden über die Zeit. Slider bewegen oder Play drücken. Gemeinden absteigend nach Quote sortiert.</p>
+    <div class="slider-bar">
+      <button id="playbtn">▶</button>
+      <input type="range" id="periodSlider" min="0" max="0" value="0" step="1">
+      <span id="periodLabel">…</span>
+    </div>
+    <div id="anim-bars"></div>
+    <p id="anim-note" style="display:none;font-size:11px;color:#999;margin-top:6px;">⚠ Calanca: in der Erhebung 2020 ist im GWR ein Datenfehler dokumentiert (Quote 98,48 % statt ~73 %); der Wert ist hier ausgegraut.</p>
+  </div>
+
+  <div class="tab-content" data-tab="kanton">
+    <p style="font-size:12px;color:#666;margin-bottom:8px;">Kantonsweite Summen aller 100 Bündner Gemeinden 2017–2026: Total / Erstwohnungen / Zweitwohnungen i.&nbsp;e.&nbsp;S. (jährlich März).</p>
+    <iframe src="zwg_embed_kanton.html" loading="lazy" id="kanton-iframe"
+            scrolling="no" frameborder="0"
+            style="width:100%;border:none;min-height:600px;"
+            title="Wohnungsbestand Graubünden 2017–2026"></iframe>
+  </div>
+
+  <div class="tab-content" data-tab="karte">
+    <p style="font-size:12px;color:#666;margin-bottom:8px;">Alle 100 Bündner Gemeinden, eingefärbt nach Zweitwohnungsanteil März 2026. Karte gehostet bei Datawrapper (Basemap: Schweizer Gemeinden 2025).</p>
+    <div id="dw-map-wrap" style="width:100%;min-height:638px;">
+      <iframe title="Zweitwohnungsanteil in Graubünden — März 2026" aria-label="Choropleth map" id="datawrapper-chart-uzHEN" src="https://datawrapper.dwcdn.net/uzHEN/1/" scrolling="no" frameborder="0" style="width:0;min-width:100% !important;border:none;" height="638" data-external="1"></iframe>
+    </div>
+    <p style="font-size:10px;color:#999;margin-top:4px;"><a href="https://datawrapper.dwcdn.net/uzHEN/" target="_blank" style="color:#0068A4;text-decoration:none;">Karte in eigenem Tab öffnen ↗</a></p>
+  </div>
+
+  <div class="source" id="src">Daten: Statistik Graubünden, Datensatz dvs_awt_soci_20260112 (Zweitwohnungsanteil 2017–2026, Halbjahres-Erhebung). Bevölkerung: dvs_awt_soci_20250507 (2024). Geometrien: opendatasoft georef-switzerland-gemeinde 2025. Quelle: Eidg. Gebäude- und Wohnungsregister (GWR). Grafik: Julian Reich.</div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+const COLORS = {
+  blue: '#0068A4',
+  blueDark: '#1E3A5F',
+  blueLight: '#cce0ee',
+  orange: '#EE7733',
+  red: '#B5001E',
+  cream: '#f5e0c0'
+};
+
+let DATA = null;
+let selectedName = null;
+
+const tooltip = document.getElementById('tooltip');
+function showTooltip(html, evt) {
+  tooltip.innerHTML = html;
+  tooltip.classList.add('show');
+  positionTooltip(evt);
+}
+function positionTooltip(evt) {
+  const x = evt.clientX + 12;
+  const y = evt.clientY + 12;
+  tooltip.style.left = Math.min(x, window.innerWidth - 240) + 'px';
+  tooltip.style.top = Math.min(y, window.innerHeight - 80) + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('show'); }
+
+function colorForAnteil(a) {
+  // Linear: 0=blue, 20=blueLight, 40=cream, 70=orange, 100=red
+  const stops = [
+    [0, [0, 104, 164]],
+    [20, [204, 224, 238]],
+    [40, [245, 224, 192]],
+    [70, [238, 119, 51]],
+    [100, [181, 0, 30]]
+  ];
+  let lo = stops[0], hi = stops[stops.length - 1];
+  for (let i = 0; i < stops.length - 1; i++) {
+    if (a >= stops[i][0] && a <= stops[i + 1][0]) { lo = stops[i]; hi = stops[i + 1]; break; }
+  }
+  const t = (a - lo[0]) / (hi[0] - lo[0] || 1);
+  const rgb = lo[1].map((c, k) => Math.round(c + t * (hi[1][k] - c)));
+  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+}
+
+function fmtPct(v) { return v.toFixed(2).replace('.', ',') + '%'; }
+function fmtPp(v) {
+  if (v === null || v === undefined || isNaN(v)) return '–';
+  const sign = v > 0 ? '+' : '';
+  return sign + v.toFixed(2).replace('.', ',') + ' Pp';
+}
+function fmtN(v) { return v == null ? '–' : v.toLocaleString('de-CH'); }
+
+// ============ TAB SWITCHING ============
+// Wichtig: nach classList-Wechsel muss das DOM gerendert sein, bevor wir
+// SVG-Breiten messen. Daher requestAnimationFrame.
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const target = b.dataset.tab;
+    document.querySelector('.tab-content[data-tab="' + target + '"]').classList.add('active');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (target === 'scatter') drawScatter();
+      if (target === 'zeit') drawAnimation();
+      // Karte: Datawrapper-iframe lädt selbst.
+      // Höhe an Parent: erledigt automatisch durch iframe-resizer/contentWindow.
+    }));
+  });
+});
+
+// Calanca 2020 ist ein dokumentierter GWR-Datenfehler (Quote 98.48 %, vorher
+// und nachher ~73 %). Wir lassen die Werte in den Daten unverändert, markieren
+// sie aber im UI.
+function isAnomaly(name, j, sem) {
+  return name === 'Calanca' && j === 2020;
+}
+
+// ============ TAB 1: TABELLE ============
+function renderTable() {
+  if (!DATA) return;
+  const search = document.getElementById('search').value.toLowerCase().trim();
+  const lexFilter = document.getElementById('lex-filter').value;
+  const sort = document.getElementById('sort').value;
+
+  let list = DATA.gemeinden.slice();
+  if (search) list = list.filter(g => g.name.toLowerCase().includes(search));
+  if (lexFilter === 'ueber') list = list.filter(g => g.aktuell.anteil > 20);
+  if (lexFilter === 'unter') list = list.filter(g => g.aktuell.anteil <= 20);
+
+  const cmp = {
+    'anteil-desc': (a, b) => b.aktuell.anteil - a.aktuell.anteil,
+    'anteil-asc':  (a, b) => a.aktuell.anteil - b.aktuell.anteil,
+    'delta-desc':  (a, b) => b.delta_pp - a.delta_pp,
+    'delta-asc':   (a, b) => a.delta_pp - b.delta_pp,
+    'total-desc':  (a, b) => b.aktuell.total - a.aktuell.total,
+    'name':        (a, b) => a.name.localeCompare(b.name, 'de')
+  }[sort];
+  list.sort(cmp);
+
+  const tbody = document.getElementById('table-list');
+  tbody.innerHTML = list.map(g => {
+    const a = g.aktuell.anteil;
+    const w = Math.min(a, 100);
+    const dCls = g.delta_pp > 0.1 ? 'up' : g.delta_pp < -0.1 ? 'down' : 'flat';
+    return `<div class="row${selectedName === g.name ? ' selected' : ''}" data-name="${g.name.replace(/"/g, '&quot;')}">
+      <div class="nm" title="${g.name}">${g.name}</div>
+      <div class="br"><div class="fl" style="width:${w}%;background:${colorForAnteil(a)}"></div><div class="lex"></div></div>
+      <div class="pct">${fmtPct(a)}</div>
+      <div class="delta ${dCls}">${fmtPp(g.delta_pp)}</div>
+    </div>`;
+  }).join('');
+
+  tbody.querySelectorAll('.row').forEach(r => {
+    r.addEventListener('click', () => selectGemeinde(r.dataset.name));
+  });
+
+  // Stats für aktuelle Auswahl
+  const n = list.length;
+  const ueber = list.filter(g => g.aktuell.anteil > 20).length;
+  const median = n ? list.map(g => g.aktuell.anteil).sort((a, b) => a - b)[Math.floor(n / 2)] : 0;
+  const totWhg = list.reduce((s, g) => s + (g.aktuell.total || 0), 0);
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-box"><div class="label">Gemeinden</div><div class="value">${n}</div><div class="sub">von ${DATA.gemeinden.length}</div></div>
+    <div class="stat-box"><div class="label">Über 20%</div><div class="value">${ueber}</div><div class="sub">${n ? Math.round(ueber/n*100) : 0}% der Auswahl</div></div>
+    <div class="stat-box"><div class="label">Median</div><div class="value">${median.toFixed(1).replace('.', ',')}%</div><div class="sub">Zweitwhg-Anteil</div></div>
+    <div class="stat-box"><div class="label">Wohnungen</div><div class="value">${(totWhg/1000).toFixed(0)}k</div><div class="sub">Total in Auswahl</div></div>
+  `;
+}
+
+function selectGemeinde(name) {
+  selectedName = name;
+  const g = DATA.gemeinden.find(x => x.name === name);
+  if (!g) return;
+  const det = document.getElementById('detail');
+  det.classList.remove('empty');
+  det.innerHTML = `
+    <h3>${g.name}</h3>
+    <div class="detail-grid">
+      <div class="k">Zweitwohnungsanteil ${g.aktuell.sem} ${g.aktuell.jahr}</div><div class="v">${fmtPct(g.aktuell.anteil)}</div>
+      <div class="k">Veränderung seit ${g.erst_jahr.sem} ${g.erst_jahr.jahr}</div><div class="v">${fmtPp(g.delta_pp)}</div>
+      <div class="k">Wohnungen total</div><div class="v">${fmtN(g.aktuell.total)}</div>
+      <div class="k">Erstwohnungen (Hauptwohnsitz)</div><div class="v">${fmtN(g.aktuell.erst)}</div>
+      <div class="k">Erstwohnungs-gleichgestellt</div><div class="v">${fmtN(g.aktuell.gleich)}</div>
+      <div class="k">BFS-Nummer</div><div class="v">${g.bfs}</div>
+    </div>
+    <svg class="spark" id="spark-${g.bfs}"></svg>
+  `;
+  drawSparkline(g);
+  // refresh table to highlight
+  document.querySelectorAll('#table-list .row').forEach(r => r.classList.toggle('selected', r.dataset.name === name));
+}
+
+function drawSparkline(g) {
+  const svgId = 'spark-' + g.bfs;
+  const svg = d3.select('#' + svgId);
+  const node = svg.node();
+  if (!node) return;
+  const w = node.clientWidth || 500;
+  const h = 50;
+  svg.attr('viewBox', `0 0 ${w} ${h}`).selectAll('*').remove();
+
+  const data = g.serie.map((s, i) => ({ x: i, anteil: s.a, label: s.s + ' ' + s.j, anomaly: isAnomaly(g.name, s.j, s.s) }));
+  // Linie ohne Anomalie-Punkte zeichnen, damit der Spike nicht durchgezogen wird
+  const lineData = data.filter(d => !d.anomaly);
+  const x = d3.scaleLinear().domain([0, data.length - 1]).range([4, w - 4]);
+  const y = d3.scaleLinear().domain([0, Math.max(100, d3.max(lineData, d => d.anteil) + 5)]).range([h - 4, 4]);
+
+  svg.append('line').attr('x1', 4).attr('x2', w - 4).attr('y1', y(20)).attr('y2', y(20))
+    .attr('stroke', COLORS.red).attr('stroke-width', 1).attr('stroke-dasharray', '3,3').attr('opacity', 0.5);
+
+  const line = d3.line().x(d => x(d.x)).y(d => y(d.anteil)).curve(d3.curveMonotoneX);
+  svg.append('path').datum(lineData).attr('fill', 'none').attr('stroke', COLORS.blueDark).attr('stroke-width', 1.5).attr('d', line);
+  svg.selectAll('circle.pt').data(data).enter().append('circle').attr('class', 'pt')
+    .attr('cx', d => x(d.x)).attr('cy', d => y(d.anteil)).attr('r', d => d.anomaly ? 3 : 2)
+    .attr('fill', d => d.anomaly ? '#999' : colorForAnteil(d.anteil))
+    .attr('stroke', d => d.anomaly ? '#666' : 'none').attr('stroke-width', d => d.anomaly ? 1 : 0);
+  svg.append('text').attr('x', x(0)).attr('y', y(data[0].anteil) - 6).attr('font-size', 9).attr('fill', '#666').text(data[0].label.split(' ')[1]);
+  svg.append('text').attr('x', x(data.length - 1)).attr('y', y(data[data.length-1].anteil) - 6).attr('text-anchor', 'end').attr('font-size', 9).attr('fill', '#666').text(data[data.length-1].label.split(' ')[1]);
+  // Kleine Notiz, falls Anomalie
+  if (data.some(d => d.anomaly)) {
+    svg.append('text').attr('x', w - 4).attr('y', h - 1).attr('text-anchor', 'end').attr('font-size', 8).attr('fill', '#999').attr('font-style', 'italic').text('⚠ 2020 GWR-Datenfehler');
+  }
+}
+
+['search', 'lex-filter', 'sort'].forEach(id => {
+  document.getElementById(id).addEventListener('input', renderTable);
+  document.getElementById(id).addEventListener('change', renderTable);
+});
+
+// ============ TAB 2: SCATTER ============
+// X = Veränderung in Pp (negativ links, positiv rechts)
+// Y = Quote (oben = hoch), Lex-Weber-Schwelle als horizontale Linie
+let scatterDrawn = false;
+function drawScatter() {
+  if (!DATA || scatterDrawn) return;
+
+  const svg = d3.select('#scatter-svg');
+  const node = svg.node();
+  const w = node.clientWidth || 600;
+  if (w < 50) return; // Tab noch nicht sichtbar — wird beim nächsten Click neu versucht
+  scatterDrawn = true;
+  const h = 460;
+  const m = { t: 24, r: 18, b: 44, l: 52 };
+  svg.attr('viewBox', `0 0 ${w} ${h}`).selectAll('*').remove();
+
+  const data = DATA.gemeinden.filter(g => g.delta_pp != null);
+  const yMax = Math.ceil(d3.max(data, d => d.aktuell.anteil) / 10) * 10;
+  const xExt = d3.extent(data, d => d.delta_pp);
+  const xPad = Math.ceil(Math.max(Math.abs(xExt[0]), Math.abs(xExt[1])) / 5) * 5;
+
+  const x = d3.scaleLinear().domain([-xPad, xPad]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain([0, Math.max(yMax, 100)]).range([h - m.b, m.t]);
+  // Min radius bei 5 (auch kleinste Gemeinden noch klar sichtbar), Max bei 18
+  // (Chur mit ~22'400 Wohnungen). Sqrt-Skala = visuelle Fläche proportional.
+  const r = d3.scaleSqrt().domain([0, d3.max(data, d => d.aktuell.total)]).range([5, 18]);
+
+  const xt = x.ticks(5), yt = y.ticks(5);
+  svg.append('g').selectAll('line').data(xt).enter().append('line')
+    .attr('class', 'gridline').attr('x1', d => x(d)).attr('x2', d => x(d)).attr('y1', m.t).attr('y2', h - m.b);
+  svg.append('g').selectAll('line').data(yt).enter().append('line')
+    .attr('class', 'gridline').attr('x1', m.l).attr('x2', w - m.r).attr('y1', d => y(d)).attr('y2', d => y(d));
+
+  // Lex-Weber-Schwelle = horizontale Linie bei y = 20
+  svg.append('line').attr('class', 'threshold').attr('x1', m.l).attr('x2', w - m.r).attr('y1', y(20)).attr('y2', y(20));
+  // Null-Veränderung = vertikale Linie bei x = 0
+  svg.append('line').attr('class', 'threshold-zero').attr('x1', x(0)).attr('x2', x(0)).attr('y1', m.t).attr('y2', h - m.b);
+
+  // Quadranten-Labels
+  svg.append('text').attr('class', 'quad-label').attr('x', x(0) + 6).attr('y', y(20) - 4).text('über 20%, steigend');
+  svg.append('text').attr('class', 'quad-label').attr('x', x(0) - 6).attr('y', y(20) - 4).attr('text-anchor', 'end').text('über 20%, sinkend');
+  svg.append('text').attr('class', 'quad-label').attr('x', x(0) + 6).attr('y', y(20) + 14).text('unter 20%, steigend');
+  svg.append('text').attr('class', 'quad-label').attr('x', x(0) - 6).attr('y', y(20) + 14).attr('text-anchor', 'end').text('unter 20%, sinkend');
+
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${h - m.b})`).call(d3.axisBottom(x).ticks(5).tickFormat(d => (d > 0 ? '+' : '') + d + ' Pp'));
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickFormat(d => d + '%'));
+
+  svg.append('text').attr('x', w / 2).attr('y', h - 6).attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#666').text('Veränderung Zweitwohnungsanteil 2017 → 2026 (Pp)');
+  svg.append('text').attr('transform', `translate(14,${h / 2}) rotate(-90)`).attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#666').text('Zweitwohnungsanteil März 2026');
+
+  svg.append('g').selectAll('circle').data(data).enter().append('circle')
+    .attr('class', 'pt')
+    .attr('cx', d => x(d.delta_pp))
+    .attr('cy', d => y(d.aktuell.anteil))
+    .attr('r', d => r(d.aktuell.total))
+    .attr('fill', d => colorForAnteil(d.aktuell.anteil))
+    .attr('fill-opacity', 0.7)
+    .attr('stroke', '#fff')
+    .attr('stroke-width', 1.2)
+    .on('mouseenter', function(evt, d) {
+      d3.select(this).attr('stroke', COLORS.blueDark).attr('stroke-width', 2.2);
+      showTooltip(`<strong>${d.name}</strong>
+        <div class="row2"><span class="k">Quote 2026</span><span class="v">${fmtPct(d.aktuell.anteil)}</span></div>
+        <div class="row2"><span class="k">Δ seit 2017</span><span class="v">${fmtPp(d.delta_pp)}</span></div>
+        <div class="row2"><span class="k">Wohnungen</span><span class="v">${fmtN(d.aktuell.total)}</span></div>`, evt);
+    })
+    .on('mousemove', positionTooltip)
+    .on('mouseleave', function() { d3.select(this).attr('stroke', '#fff').attr('stroke-width', 1.2); hideTooltip(); })
+    .on('click', (evt, d) => {
+      document.getElementById('scatter-detail').innerHTML = `<strong style="color:${COLORS.blueDark}">${d.name}</strong> · ${fmtPct(d.aktuell.anteil)} (${fmtPp(d.delta_pp)} seit 2017) · ${fmtN(d.aktuell.total)} Wohnungen · ${fmtN(d.aktuell.erst)} Erstwohnungen`;
+    });
+}
+
+// ============ TAB 3: SLIDER / ANIMATION ============
+let animDrawn = false;
+let playing = false;
+let playInterval = null;
+
+function drawAnimation() {
+  if (!DATA || animDrawn) {
+    if (animDrawn) updateAnimBars();
+    return;
+  }
+  animDrawn = true;
+
+  const slider = document.getElementById('periodSlider');
+  slider.max = DATA.periods.length - 1;
+  slider.value = DATA.periods.length - 1;
+
+  slider.addEventListener('input', updateAnimBars);
+
+  document.getElementById('playbtn').addEventListener('click', () => {
+    playing = !playing;
+    document.getElementById('playbtn').textContent = playing ? '⏸' : '▶';
+    if (playing) {
+      playInterval = setInterval(() => {
+        let v = +slider.value;
+        v = (v + 1) % DATA.periods.length;
+        slider.value = v;
+        updateAnimBars();
+      }, 800);
+    } else {
+      clearInterval(playInterval);
+    }
+  });
+
+  updateAnimBars();
+}
+
+function updateAnimBars() {
+  const i = +document.getElementById('periodSlider').value;
+  const p = DATA.periods[i];
+  document.getElementById('periodLabel').textContent = p.s + ' ' + p.j;
+
+  const rows = DATA.gemeinden.map(g => {
+    const snap = g.serie.find(s => s.j === p.j && s.s === p.s);
+    return { name: g.name, anteil: snap ? snap.a : null, total: snap ? snap.t : null, anomaly: isAnomaly(g.name, p.j, p.s) };
+  }).filter(r => r.anteil != null).sort((a, b) => b.anteil - a.anteil);
+
+  const c = document.getElementById('anim-bars');
+  if (c.children.length !== rows.length) {
+    c.innerHTML = rows.map(r =>
+      `<div class="abar" data-name="${r.name.replace(/"/g, '&quot;')}">
+        <div class="nm"></div>
+        <div class="br"><div class="fl"></div><div class="lex"></div></div>
+        <div class="pct"></div>
+      </div>`).join('');
+  }
+  Array.from(c.children).forEach((el, idx) => {
+    const r = rows[idx];
+    el.dataset.name = r.name;
+    el.querySelector('.nm').textContent = r.name + (r.anomaly ? ' ⚠' : '');
+    el.querySelector('.nm').title = r.anomaly ? 'Calanca 2020: dokumentierter GWR-Datenfehler (Quote 98,48 % statt ~73 %)' : r.name;
+    el.querySelector('.fl').style.width = Math.min(r.anteil, 100) + '%';
+    el.querySelector('.fl').style.background = r.anomaly ? '#999' : colorForAnteil(r.anteil);
+    el.querySelector('.fl').style.opacity = r.anomaly ? '0.55' : '1';
+    el.querySelector('.pct').textContent = fmtPct(r.anteil) + (r.anomaly ? ' ⚠' : '');
+    el.querySelector('.pct').style.color = r.anomaly ? '#999' : '';
+  });
+  // Hinweis-Zeile, falls aktueller Snapshot eine Anomalie enthält
+  const note = document.getElementById('anim-note');
+  const hasAnom = rows.some(r => r.anomaly);
+  if (note) note.style.display = hasAnom ? 'block' : 'none';
+}
+
+// ============ TAB 4: KARTE ============
+// Karte ist als Datawrapper-iframe eingebunden (basemap
+// switzerland-graubunden-municipalities-2025). Das Resize-Script oben
+// im <head> regelt die Höhe automatisch. Kein D3-Code nötig.
+
+// ============ INIT ============
+async function init() {
+  try {
+    const res = await fetch('zweitwohnungen_data.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    DATA = await res.json();
+    document.getElementById('subtitle').textContent =
+      `Alle ${DATA.meta.gemeinden_count} Bündner Gemeinden · Stand ${DATA.meta.snapshot_aktuell} · ${DATA.meta.erhebungen} Halbjahres-Erhebungen 2017–2026`;
+    renderTable();
+  } catch (e) {
+    document.getElementById('table-list').innerHTML = '<div class="err">Daten konnten nicht geladen werden: ' + e.message + '. Stelle sicher, dass die Datei <code>zweitwohnungen_data.json</code> im selben Ordner liegt.</div>';
+  }
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "datasetId": "dvs_awt_soci_20260112",
+    "erstellt": "2026-04-29",
+    "erhebungen": 17,
+    "definitionen": {
+      "total": "Σ zwg_3150 (Wohnungen total) über alle Gemeinden",
+      "erst": "Σ zwg_3010 (Erstwohnungen / Hauptwohnsitz)",
+      "gleich": "Σ zwg_3100 (Erstwohnungs-gleichgestellt: Personalwohnungen, Hotelmitarbeiter-Zimmer etc.)",
+      "zweit_eng": "total − erst − gleich (Zweitwohnungen i.e.S.)",
+      "quote_eng_pct": "(total − erst − gleich) / total × 100",
+      "quote_dataset_pct": "(total − erst) / total × 100  (Datensatz-Quote zwg_3120, gleichgestellte zählen hier zu Zweitwohnungen)"
+    },
+    "anomalie_calanca_2020": "Calanca meldete 2020 (März+Oktober) eine Quote von 98.48% statt ~73%. Effekt auf Kantonsumme zweit_eng: ca. +98 Whg pro Erhebung. Dokumentiert im findings-File."
+  },
+  "reihe": [
+    {
+      "jahr": 2017,
+      "semester": "März",
+      "periode_id": "2017-03",
+      "gemeinden": 100,
+      "total": 168775,
+      "erst": 89706,
+      "gleich": 778,
+      "zweit_eng": 78291,
+      "quote_eng_pct": 46.3878,
+      "quote_dataset_pct": 46.8488
+    },
+    {
+      "jahr": 2018,
+      "semester": "März",
+      "periode_id": "2018-03",
+      "gemeinden": 100,
+      "total": 170929,
+      "erst": 90530,
+      "gleich": 963,
+      "zweit_eng": 79436,
+      "quote_eng_pct": 46.4731,
+      "quote_dataset_pct": 47.0365
+    },
+    {
+      "jahr": 2019,
+      "semester": "März",
+      "periode_id": "2019-03",
+      "gemeinden": 100,
+      "total": 173013,
+      "erst": 91174,
+      "gleich": 1124,
+      "zweit_eng": 80715,
+      "quote_eng_pct": 46.6526,
+      "quote_dataset_pct": 47.3022
+    },
+    {
+      "jahr": 2019,
+      "semester": "Oktober",
+      "periode_id": "2019-10",
+      "gemeinden": 100,
+      "total": 173013,
+      "erst": 91174,
+      "gleich": 1124,
+      "zweit_eng": 80715,
+      "quote_eng_pct": 46.6526,
+      "quote_dataset_pct": 47.3022
+    },
+    {
+      "jahr": 2020,
+      "semester": "März",
+      "periode_id": "2020-03",
+      "gemeinden": 100,
+      "total": 174441,
+      "erst": 92121,
+      "gleich": 993,
+      "zweit_eng": 81327,
+      "quote_eng_pct": 46.6215,
+      "quote_dataset_pct": 47.1907
+    },
+    {
+      "jahr": 2020,
+      "semester": "Oktober",
+      "periode_id": "2020-10",
+      "gemeinden": 100,
+      "total": 174441,
+      "erst": 92121,
+      "gleich": 993,
+      "zweit_eng": 81327,
+      "quote_eng_pct": 46.6215,
+      "quote_dataset_pct": 47.1907
+    },
+    {
+      "jahr": 2021,
+      "semester": "März",
+      "periode_id": "2021-03",
+      "gemeinden": 100,
+      "total": 175936,
+      "erst": 93159,
+      "gleich": 1121,
+      "zweit_eng": 81656,
+      "quote_eng_pct": 46.4123,
+      "quote_dataset_pct": 47.0495
+    },
+    {
+      "jahr": 2021,
+      "semester": "Oktober",
+      "periode_id": "2021-10",
+      "gemeinden": 100,
+      "total": 175936,
+      "erst": 93159,
+      "gleich": 1121,
+      "zweit_eng": 81656,
+      "quote_eng_pct": 46.4123,
+      "quote_dataset_pct": 47.0495
+    },
+    {
+      "jahr": 2022,
+      "semester": "März",
+      "periode_id": "2022-03",
+      "gemeinden": 100,
+      "total": 177328,
+      "erst": 94158,
+      "gleich": 1186,
+      "zweit_eng": 81984,
+      "quote_eng_pct": 46.233,
+      "quote_dataset_pct": 46.9018
+    },
+    {
+      "jahr": 2022,
+      "semester": "Oktober",
+      "periode_id": "2022-10",
+      "gemeinden": 100,
+      "total": 177328,
+      "erst": 94158,
+      "gleich": 1186,
+      "zweit_eng": 81984,
+      "quote_eng_pct": 46.233,
+      "quote_dataset_pct": 46.9018
+    },
+    {
+      "jahr": 2023,
+      "semester": "März",
+      "periode_id": "2023-03",
+      "gemeinden": 100,
+      "total": 179452,
+      "erst": 94979,
+      "gleich": 1217,
+      "zweit_eng": 83256,
+      "quote_eng_pct": 46.3946,
+      "quote_dataset_pct": 47.0728
+    },
+    {
+      "jahr": 2023,
+      "semester": "Oktober",
+      "periode_id": "2023-10",
+      "gemeinden": 100,
+      "total": 179452,
+      "erst": 94979,
+      "gleich": 1217,
+      "zweit_eng": 83256,
+      "quote_eng_pct": 46.3946,
+      "quote_dataset_pct": 47.0728
+    },
+    {
+      "jahr": 2024,
+      "semester": "März",
+      "periode_id": "2024-03",
+      "gemeinden": 100,
+      "total": 182699,
+      "erst": 96084,
+      "gleich": 1167,
+      "zweit_eng": 85448,
+      "quote_eng_pct": 46.7698,
+      "quote_dataset_pct": 47.4086
+    },
+    {
+      "jahr": 2024,
+      "semester": "Oktober",
+      "periode_id": "2024-10",
+      "gemeinden": 100,
+      "total": 182699,
+      "erst": 96084,
+      "gleich": 1167,
+      "zweit_eng": 85448,
+      "quote_eng_pct": 46.7698,
+      "quote_dataset_pct": 47.4086
+    },
+    {
+      "jahr": 2025,
+      "semester": "März",
+      "periode_id": "2025-03",
+      "gemeinden": 100,
+      "total": 184810,
+      "erst": 97018,
+      "gleich": 1091,
+      "zweit_eng": 86701,
+      "quote_eng_pct": 46.9136,
+      "quote_dataset_pct": 47.5039
+    },
+    {
+      "jahr": 2025,
+      "semester": "Oktober",
+      "periode_id": "2025-10",
+      "gemeinden": 100,
+      "total": 184810,
+      "erst": 97018,
+      "gleich": 1091,
+      "zweit_eng": 86701,
+      "quote_eng_pct": 46.9136,
+      "quote_dataset_pct": 47.5039
+    },
+    {
+      "jahr": 2026,
+      "semester": "März",
+      "periode_id": "2026-03",
+      "gemeinden": 100,
+      "total": 186270,
+      "erst": 97950,
+      "gleich": 1049,
+      "zweit_eng": 87271,
+      "quote_eng_pct": 46.8519,
+      "quote_dataset_pct": 47.415
+    }
+  ]
+}

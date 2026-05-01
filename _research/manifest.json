@@ -1,0 +1,62 @@
+{
+  "built": "2026-05-01",
+  "entries": [
+    {
+      "path": "_research/zwg_raw.json",
+      "role": "roh",
+      "description": "Roh-Dump Zweitwohnungsanteil 2017–2026, alle Records",
+      "sha256": "00cdb798df61cb98d3730a61f19f4e517be58054d55fda50dd78780d5701b050",
+      "bytes": 319735,
+      "records": 1700,
+      "manifest_built": "2026-05-01",
+      "source_api": "https://data.gr.ch/api/explore/v2.1/catalog/datasets/dvs_awt_soci_20260112/exports/json",
+      "dataset_id": "dvs_awt_soci_20260112"
+    },
+    {
+      "path": "_research/bev_raw.json",
+      "role": "roh",
+      "description": "Roh-Dump Bevölkerung nach Gemeinde 2010–2024",
+      "sha256": "a5ec18920ee6026c232db24bbb2675cea110d6ce062790b1b6f2133307c191a7",
+      "bytes": 4468053,
+      "records": 35241,
+      "manifest_built": "2026-05-01",
+      "source_api": "https://data.gr.ch/api/explore/v2.1/catalog/datasets/dvs_awt_soci_20250507/exports/json",
+      "dataset_id": "dvs_awt_soci_20250507"
+    },
+    {
+      "path": "zweitwohnungen_data.json",
+      "role": "konsolidiert",
+      "description": "Konsolidiert: 100 Gemeinden mit Aktuell-Snapshot, Zeitreihe, Region, Bevölkerung 2024",
+      "sha256": "5cf81e75ce3fb698beaa373ce3e21e20297f4c194b2bff074dbaed64953c4274",
+      "bytes": 99554,
+      "records": 100,
+      "manifest_built": "2026-05-01",
+      "derived_from": [
+        "_research/zwg_raw.json",
+        "_research/bev_raw.json"
+      ]
+    },
+    {
+      "path": "zweitwohnungen_kanton_zeitreihe.json",
+      "role": "konsolidiert",
+      "description": "Konsolidiert: kantonsweite Aggregate pro Erhebung (17 Records)",
+      "sha256": "bc2c15c52e3e760eed601a37204e6598c44d7004b87b1cbb0d129d78bf96ef31",
+      "bytes": 5756,
+      "records": 17,
+      "manifest_built": "2026-05-01",
+      "derived_from": [
+        "_research/zwg_raw.json"
+      ]
+    },
+    {
+      "path": "zweitwohnungen_geo.geojson",
+      "role": "roh",
+      "description": "GeoJSON Bündner Gemeinden 2025 (BFS-Codes, Bezirks-/Region-Namen)",
+      "sha256": "1c65881a22fcaa99ae51a5cf2609cd400977e507aa20a7663dd4641d40a5e241",
+      "bytes": 2313945,
+      "records": 100,
+      "manifest_built": "2026-05-01",
+      "source_api": "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/georef-switzerland-gemeinde/exports/geojson?refine=kan_code:18"
+    }
+  ]
+}

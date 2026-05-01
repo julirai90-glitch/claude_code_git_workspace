@@ -314,6 +314,304 @@ a { color: inherit; }
 }
 
 /* ========================================
+   ANATOMY VIEW (Gemeindenamen-Bauformen)
+   ======================================== */
+.chart-area--typography {
+  height: auto;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* --- Search bar --- */
+.anat-search {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  position: relative;
+}
+.anat-search-label {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--c-text);
+  white-space: nowrap;
+}
+.anat-search-input {
+  flex: 1 1 200px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--c-text);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.anat-search-input:focus { border-color: var(--c-accent-2); }
+.anat-search-clear {
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.6rem;
+  height: 1.6rem;
+  border: none;
+  background: transparent;
+  color: var(--c-muted);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.anat-search-clear:hover { background: var(--c-border); color: var(--c-text); }
+
+/* --- Info bar (search result) --- */
+.anat-info {
+  font-size: 0.88rem;
+  color: var(--c-text);
+  background: #FFF8E1;
+  border-left: 3px solid var(--c-accent);
+  padding: 0.6rem 0.8rem;
+  border-radius: 2px;
+  line-height: 1.55;
+}
+.anat-info-pill {
+  display: inline-block;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  vertical-align: 1px;
+}
+.anat-info-miss {
+  color: var(--c-muted);
+  font-style: italic;
+}
+
+/* --- Sections (Bauformen + Kuriositäten) --- */
+.anat-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.anat-section:first-of-type { margin-top: 0.5rem; }
+.anat-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.8vw, 1.7rem);
+  font-weight: 800;
+  color: var(--c-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.anat-section-sub {
+  font-size: 0.88rem;
+  color: var(--c-muted);
+  margin: 0.2rem 0 0;
+}
+
+/* Eyebrow with hairlines on each side */
+.anat-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.2rem;
+}
+.anat-eyebrow-text {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+.anat-eyebrow-line {
+  flex: 1;
+  height: 1px;
+  background: var(--c-border);
+}
+.anat-eyebrow-line:first-child { max-width: 1.5rem; }
+
+/* --- Plakate (Bauformen) --- */
+.anat-posters {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--c-border);
+}
+.anat-poster {
+  display: grid;
+  grid-template-columns: minmax(3.5rem, auto) 1fr;
+  gap: 1.25rem 1.5rem;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--c-border);
+  transition: background 0.2s;
+}
+.anat-poster--active {
+  background: linear-gradient(90deg, rgba(181,0,30,0.05), transparent 70%);
+  margin-inline: -1rem;
+  padding-inline: 1rem;
+}
+.anat-poster-num {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 3.6rem);
+  font-weight: 800;
+  color: var(--c-accent-2);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  text-align: right;
+  align-self: start;
+}
+.anat-poster-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.anat-poster-meta {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.anat-poster-hero {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--c-text);
+  letter-spacing: -0.02em;
+  margin: 0;
+  cursor: pointer;
+  display: inline-block;
+  align-self: flex-start;
+  transition: opacity 0.15s;
+}
+.anat-poster-hero:hover { opacity: 0.85; }
+.anat-mark {
+  color: var(--c-accent);
+  font-style: italic;
+}
+.anat-poster-desc {
+  font-size: 0.92rem;
+  color: var(--c-text);
+  margin: 0;
+  line-height: 1.55;
+  max-width: 52ch;
+}
+.anat-poster-list {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--c-muted);
+  margin-top: 0.25rem;
+}
+.anat-poster-only {
+  font-style: italic;
+  color: var(--c-muted);
+  font-size: 0.85rem;
+}
+
+/* --- Name pills (clickable) --- */
+.anat-name {
+  display: inline-block;
+  font-weight: 700;
+  padding: 0 0.18rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.12s, opacity 0.15s;
+}
+.anat-name:hover { background: rgba(0,0,0,0.05); }
+.anat-name--active {
+  background: #FFF3B0;
+  outline: 2px solid var(--c-accent);
+}
+.anat-name--dim { opacity: 0.28; }
+.anat-sep {
+  display: inline-block;
+  margin: 0 0.4rem;
+  color: var(--c-border);
+  font-weight: 400;
+}
+
+/* --- Fact strip (Kuriositäten) --- */
+.anat-fact-strip {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid var(--c-border);
+  margin-top: 0.5rem;
+}
+.anat-fact {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr;
+  gap: 1rem;
+  padding: 1rem 0.5rem 1rem 0;
+  border-bottom: 1px solid var(--c-border);
+  align-items: baseline;
+}
+.anat-fact:nth-child(odd) {
+  padding-right: 1.5rem;
+  border-right: 1px solid var(--c-border);
+}
+.anat-fact:nth-child(even) {
+  padding-left: 1.5rem;
+}
+.anat-fact-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--c-accent);
+  line-height: 1;
+  text-align: right;
+  letter-spacing: -0.02em;
+}
+.anat-fact-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.anat-fact-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--c-text);
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+}
+.anat-fact-example {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--c-accent-2);
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .anat-search-label { font-size: 0.85rem; }
+  .anat-poster {
+    grid-template-columns: 3rem 1fr;
+    gap: 0.8rem 1rem;
+    padding: 1.2rem 0;
+  }
+  .anat-poster-num  { font-size: 2.4rem; }
+  .anat-poster-hero { font-size: 1.4rem; }
+  .anat-fact-strip {
+    grid-template-columns: 1fr;
+  }
+  .anat-fact:nth-child(odd) {
+    padding-right: 0.5rem;
+    border-right: none;
+  }
+  .anat-fact:nth-child(even) {
+    padding-left: 0;
+  }
+}
+
+/* ========================================
    KEY FACTS
    ======================================== */
 .facts-section {

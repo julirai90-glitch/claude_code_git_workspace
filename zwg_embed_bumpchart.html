@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zweitwohnungen GR — Bumpchart Rang 2017–2026</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+<style>
+  #bump-svg { width: 100%; height: 720px; }
+  .ln { fill: none; stroke-width: 1.4; opacity: 0.25; cursor: pointer; transition: opacity 0.15s, stroke-width 0.15s; }
+  .ln:hover { opacity: 1; stroke-width: 3; }
+  .ln.highlight { opacity: 1; stroke-width: 3; }
+  .ln.dimmed { opacity: 0.06; }
+  .pt { cursor: pointer; }
+  .pt.highlight { stroke: #1E3A5F; stroke-width: 1.5; }
+  .endlabel { font-size: 9.5px; fill: #1E3A5F; font-weight: 600; opacity: 0; pointer-events: none; }
+  .endlabel.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Wer überholt wen? Rangverlauf 2017→2026</h2>
+  <p class="sub">Y-Achse = Rang (1 = höchste Quote im jeweiligen Jahr, 100 = tiefste). Über die 10 Jahre verschieben sich die Ränge — wer steigt im Ranking, wer fällt ab. Region oder Suche highlightet die Linien.</p>
+
+  <div class="zwg-controls">
+    <input class="search" type="text" id="search" placeholder="Gemeinde suchen…" />
+    <select id="region-filter"><option value="">Alle Regionen</option></select>
+  </div>
+
+  <svg id="bump-svg"></svg>
+  <div id="detail" style="font-size:11px;color:#888;margin-top:8px;">Hover oder Klick auf eine Linie für Details.</div>
+
+  <div id="source"></div>
+</div>
+
+<script>
+ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
+  document.getElementById('source').innerHTML = ZWG.footerHTML();
+
+  var periods = DATA.periods.filter(function (p) { return p.s === 'März'; });
+
+  // Pro Jahr: Gemeinden absteigend nach Quote sortieren → Rang
+  // Map: bfs -> { jahr -> rank }
+  var rankByBfs = {};
+  DATA.gemeinden.forEach(function (g) { rankByBfs[g.bfs] = {}; });
+  periods.forEach(function (p) {
+    var entries = DATA.gemeinden.map(function (g) {
+      var s = g.serie.find(function (sx) { return sx.j === p.j && sx.s === p.s; });
+      return s ? { bfs: g.bfs, anteil: s.a } : null;
+    }).filter(Boolean);
+    entries.sort(function (a, b) { return b.anteil - a.anteil; });
+    entries.forEach(function (e, i) { rankByBfs[e.bfs][p.j] = i + 1; });
+  });
+
+  var lines = DATA.gemeinden.map(function (g) {
+    var pts = periods.map(function (p) {
+      return { jahr: p.j, rank: rankByBfs[g.bfs][p.j], anteil: (g.serie.find(function (s) { return s.j === p.j && s.s === p.s; }) || {}).a };
+    }).filter(function (x) { return x.rank != null; });
+    return { name: g.name, bfs: g.bfs, region: g.region, points: pts };
+  });
+
+  var svg = d3.select('#bump-svg');
+  var w = svg.node().clientWidth || 648;
+  var h = 720;
+  var m = { t: 24, r: 80, b: 32, l: 36 };
+  svg.attr('viewBox', '0 0 ' + w + ' ' + h).selectAll('*').remove();
+
+  var x = d3.scaleLinear().domain(d3.extent(periods, function (p) { return p.j; })).range([m.l, w - m.r]);
+  var y = d3.scaleLinear().domain([1, DATA.gemeinden.length]).range([m.t, h - m.b]); // 1 oben, 100 unten
+
+  // Achsen
+  svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(0,' + (h - m.b) + ')')
+    .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(periods.length));
+  svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(' + m.l + ',0)')
+    .call(d3.axisLeft(y).ticks(10).tickFormat(function (d) { return '#' + d; }));
+
+  svg.append('text').attr('transform', 'translate(14,' + (h / 2) + ') rotate(-90)')
+    .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#666').text('Rang (1 = höchste Quote)');
+
+  var line = d3.line().x(function (d) { return x(d.jahr); }).y(function (d) { return y(d.rank); }).curve(d3.curveMonotoneX);
+
+  var paths = svg.append('g').selectAll('path').data(lines, function (d) { return d.bfs; })
+    .enter().append('path')
+    .attr('class', 'ln')
+    .attr('stroke', function (d) {
+      var first = d.points[0], last = d.points[d.points.length - 1];
+      // Farbe abhängig von Rangveränderung: stark gestiegen rot, stark gefallen blau
+      return ZWG.colorForAnteil(last.anteil || 50);
+    })
+    .attr('d', function (d) { return line(d.points); })
+    .on('mouseenter', function (evt, d) {
+      var first = d.points[0], last = d.points[d.points.length - 1];
+      var diff = first.rank - last.rank;
+      ZWG.showTooltip('<strong style="color:' + ZWG.MARKEN.blueDark + '">' + d.name + '</strong>'
+        + '<div style="font-size:10px;color:#999;margin:1px 0 4px;">' + d.region + '</div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">Rang 2017</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">#' + first.rank + '</span></div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">Rang 2026</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">#' + last.rank + '</span></div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">Δ Rang</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">' + (diff > 0 ? '+' + diff : diff) + '</span></div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">Quote 2026</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">' + ZWG.fmtPct(last.anteil) + '</span></div>', evt);
+      svg.select('.endlabel-' + d.bfs).classed('show', true);
+    })
+    .on('mousemove', ZWG.positionTooltip)
+    .on('mouseleave', function (evt, d) {
+      ZWG.hideTooltip();
+      svg.select('.endlabel-' + d.bfs).classed('show', false);
+    })
+    .on('click', function (evt, d) {
+      var first = d.points[0], last = d.points[d.points.length - 1];
+      var diff = first.rank - last.rank;
+      var dir = diff > 0 ? 'um ' + diff + ' Plätze nach oben' : diff < 0 ? 'um ' + Math.abs(diff) + ' Plätze nach unten' : 'unverändert';
+      document.getElementById('detail').innerHTML =
+        '<strong style="color:' + ZWG.MARKEN.blueDark + '">' + d.name + '</strong> '
+        + '<span style="color:#999;">(' + d.region + ')</span> · '
+        + '#' + first.rank + ' (2017) → #' + last.rank + ' (2026) · ' + dir
+        + ' · Quote 2026: ' + ZWG.fmtPct(last.anteil);
+    });
+
+  // End-Labels
+  svg.append('g').selectAll('text.endlabel').data(lines).enter().append('text')
+    .attr('class', function (d) { return 'endlabel endlabel-' + d.bfs; })
+    .attr('x', x(periods[periods.length - 1].j) + 4)
+    .attr('y', function (d) { return y(d.points[d.points.length - 1].rank); })
+    .attr('dy', '0.32em').text(function (d) { return d.name; });
+
+  // Region-Filter + Suche
+  var counts = {};
+  DATA.gemeinden.forEach(function (g) { if (g.region) counts[g.region] = (counts[g.region] || 0) + 1; });
+  var sel = document.getElementById('region-filter');
+  Object.keys(counts).sort(function (a, b) { return a.localeCompare(b, 'de'); }).forEach(function (r) {
+    var opt = document.createElement('option');
+    opt.value = r; opt.textContent = r + ' (' + counts[r] + ')';
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', applyFilters);
+  document.getElementById('search').addEventListener('input', applyFilters);
+
+  function applyFilters() {
+    var q = document.getElementById('search').value.toLowerCase().trim();
+    var reg = document.getElementById('region-filter').value;
+    paths.classed('highlight', function (d) {
+      var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && d.region === reg;
+      return hitS || hitR;
+    }).classed('dimmed', function (d) {
+      if (!q && !reg) return false;
+      var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && d.region === reg;
+      return !(hitS || hitR);
+    });
+    svg.selectAll('.endlabel').classed('show', false);
+    if (q || reg) {
+      lines.forEach(function (d) {
+        var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+        var hitR = reg && d.region === reg;
+        if (hitS || hitR) svg.select('.endlabel-' + d.bfs).classed('show', true);
+      });
+    }
+  }
+});
+</script>
+</body>
+</html>

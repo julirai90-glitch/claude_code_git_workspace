@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zweitwohnungen GR — Bumpchart animiert (mit Namen)</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+<style>
+  /* Eine vertikale Reihe pro Gemeinde, animiert via transform: translateY. */
+  #stage {
+    position: relative;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .row {
+    position: absolute;
+    left: 0; right: 0;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 11px;
+    transition: transform 0.65s cubic-bezier(.5,.1,.3,1), background 0.2s;
+    will-change: transform;
+  }
+  .row:hover { background: #f6f3ee; }
+  .row.dimmed { opacity: 0.18; }
+  .row.highlight { background: #fef3cd; }
+  .row .rk { flex: 0 0 32px; font-weight: 700; color: #1E3A5F; font-variant-numeric: tabular-nums; }
+  .row .arr { flex: 0 0 28px; font-size: 10px; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; }
+  .row .arr.up { color: #1a9e5a; }
+  .row .arr.down { color: #B5001E; }
+  .row .arr.flat { color: #aaa; }
+  .row .nm { flex: 0 0 145px; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .br { flex: 1; height: 10px; background: #eee; border-radius: 2px; position: relative; margin: 0 8px; }
+  .row .fl { height: 100%; border-radius: 2px; transition: width 0.5s, background 0.5s; }
+  .row .lex { position: absolute; left: 20%; top: -2px; height: 14px; border-left: 1px dashed rgba(0,0,0,0.32); }
+  .row .pct { flex: 0 0 50px; text-align: right; color: #555; font-variant-numeric: tabular-nums; }
+  .row .reg { flex: 0 0 90px; font-size: 9px; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Wer überholt wen? Animation 2017→2026</h2>
+  <p class="sub">Alle 100 Gemeinden vertikal sortiert nach Rang (1 = höchste Quote). Slider/Play wechselt den Stichtag — Gemeinden tauschen ihre Position. Pfeil zeigt Rangveränderung gegenüber dem Vorjahr.</p>
+
+  <div class="zwg-slider-bar">
+    <button class="playbtn" id="playbtn">▶</button>
+    <input class="periodSlider" type="range" id="periodSlider" min="0" max="0" value="0" step="1">
+    <span class="periodLabel" id="periodLabel">…</span>
+  </div>
+  <div class="zwg-controls" style="margin-top:0;">
+    <input class="search" type="text" id="search" placeholder="Eigene Gemeinde suchen…" />
+    <select id="region-filter"><option value="">Alle Regionen</option></select>
+    <span id="search-count" style="font-size:11px;color:#888;"></span>
+  </div>
+
+  <div id="stage"></div>
+  <div id="detail" style="font-size:11px;color:#888;margin-top:8px;">Klick auf eine Reihe für Details.</div>
+
+  <div id="source"></div>
+</div>
+
+<script>
+ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
+  document.getElementById('source').innerHTML = ZWG.footerHTML();
+
+  var ROW_H = 22;
+  var periods = DATA.periods.filter(function (p) { return p.s === 'März'; });
+
+  // Pro Jahr: bfs -> rank
+  var rankByYear = {};
+  periods.forEach(function (p) {
+    var entries = DATA.gemeinden.map(function (g) {
+      var s = g.serie.find(function (sx) { return sx.j === p.j && sx.s === p.s; });
+      return s ? { bfs: g.bfs, anteil: s.a, total: s.t } : null;
+    }).filter(Boolean);
+    entries.sort(function (a, b) { return b.anteil - a.anteil; });
+    var map = {};
+    entries.forEach(function (e, i) { map[e.bfs] = { rank: i + 1, anteil: e.anteil, total: e.total }; });
+    rankByYear[p.j] = map;
+  });
+
+  var stage = document.getElementById('stage');
+  stage.style.height = (ROW_H * DATA.gemeinden.length + 6) + 'px';
+
+  // Reihen einmal anlegen, dann nur transform updaten
+  stage.innerHTML = DATA.gemeinden.map(function (g) {
+    return '<div class="row" data-bfs="' + g.bfs + '" data-name="' + g.name.replace(/"/g, '&quot;') + '" data-region="' + (g.region || '').replace(/"/g, '&quot;') + '">'
+      + '<div class="rk"></div>'
+      + '<div class="arr"></div>'
+      + '<div class="nm">' + g.name + '</div>'
+      + '<div class="reg">' + (g.region || '') + '</div>'
+      + '<div class="br"><div class="fl"></div><div class="lex"></div></div>'
+      + '<div class="pct"></div>'
+      + '</div>';
+  }).join('');
+
+  var rows = Array.prototype.slice.call(stage.querySelectorAll('.row'));
+
+  // Klick auf Reihe → Detail-Anzeige
+  rows.forEach(function (r) {
+    r.addEventListener('click', function () {
+      var bfs = r.dataset.bfs;
+      var p = periods[+slider.value];
+      var prevJ = +slider.value > 0 ? periods[+slider.value - 1].j : null;
+      var cur = rankByYear[p.j][bfs];
+      var prev = prevJ ? rankByYear[prevJ][bfs] : null;
+      var diff = prev ? prev.rank - cur.rank : 0;
+      var dir = diff > 0 ? '↑ ' + diff + ' Plätze' : diff < 0 ? '↓ ' + Math.abs(diff) + ' Plätze' : 'unverändert';
+      document.getElementById('detail').innerHTML =
+        '<strong style="color:' + ZWG.MARKEN.blueDark + '">' + r.dataset.name + '</strong> '
+        + '<span style="color:#999;">(' + r.dataset.region + ')</span> · '
+        + 'Rang #' + cur.rank + ' (' + p.s + ' ' + p.j + ') · '
+        + 'Quote: ' + ZWG.fmtPct(cur.anteil) + ' · ' + dir + ' seit Vorjahr';
+    });
+  });
+
+  var slider = document.getElementById('periodSlider');
+  var label = document.getElementById('periodLabel');
+  var playBtn = document.getElementById('playbtn');
+  var searchEl = document.getElementById('search');
+  var regSel = document.getElementById('region-filter');
+  slider.max = periods.length - 1;
+  slider.value = periods.length - 1;
+  var playing = false, timer = null;
+
+  // Region-Filter befüllen
+  var counts = {};
+  DATA.gemeinden.forEach(function (g) { if (g.region) counts[g.region] = (counts[g.region] || 0) + 1; });
+  Object.keys(counts).sort(function (a, b) { return a.localeCompare(b, 'de'); }).forEach(function (r) {
+    var opt = document.createElement('option');
+    opt.value = r; opt.textContent = r + ' (' + counts[r] + ')';
+    regSel.appendChild(opt);
+  });
+
+  slider.addEventListener('input', frame);
+  searchEl.addEventListener('input', applyHighlight);
+  regSel.addEventListener('change', applyHighlight);
+
+  playBtn.addEventListener('click', function () {
+    playing = !playing;
+    this.textContent = playing ? '⏸' : '▶';
+    if (playing) {
+      timer = setInterval(function () {
+        var v = (+slider.value + 1) % periods.length;
+        slider.value = v; frame();
+      }, 1100);  // langsamer, damit Sprünge sichtbar bleiben
+    } else { clearInterval(timer); }
+  });
+
+  function frame() {
+    var i = +slider.value;
+    var p = periods[i];
+    var prev = i > 0 ? periods[i - 1] : null;
+    label.textContent = p.s + ' ' + p.j;
+
+    var ranks = rankByYear[p.j];
+    var prevRanks = prev ? rankByYear[prev.j] : null;
+
+    rows.forEach(function (r) {
+      var bfs = r.dataset.bfs;
+      var cur = ranks[bfs];
+      if (!cur) return;
+      // Position via translateY animieren
+      r.style.transform = 'translateY(' + ((cur.rank - 1) * ROW_H) + 'px)';
+      r.querySelector('.rk').textContent = '#' + cur.rank;
+      r.querySelector('.fl').style.width = Math.min(cur.anteil, 100) + '%';
+      r.querySelector('.fl').style.background = ZWG.colorForAnteil(cur.anteil);
+      r.querySelector('.pct').textContent = ZWG.fmtPct(cur.anteil);
+
+      var arr = r.querySelector('.arr');
+      if (prevRanks && prevRanks[bfs]) {
+        var diff = prevRanks[bfs].rank - cur.rank;
+        if (diff > 0) { arr.textContent = '↑' + diff; arr.className = 'arr up'; }
+        else if (diff < 0) { arr.textContent = '↓' + Math.abs(diff); arr.className = 'arr down'; }
+        else { arr.textContent = '–'; arr.className = 'arr flat'; }
+      } else {
+        arr.textContent = '';
+        arr.className = 'arr';
+      }
+    });
+    applyHighlight();
+  }
+
+  function applyHighlight() {
+    var q = searchEl.value.toLowerCase().trim();
+    var reg = regSel.value;
+    var firstMatch = null, count = 0;
+    rows.forEach(function (r) {
+      var hitS = q && r.dataset.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && r.dataset.region === reg;
+      var hit = (q || reg) ? (hitS || hitR) : false;
+      r.classList.toggle('highlight', !!hit);
+      r.classList.toggle('dimmed', (q || reg) && !hit);
+      if (hit) {
+        if (!firstMatch) firstMatch = r;
+        count++;
+      }
+    });
+    var c = document.getElementById('search-count');
+    c.textContent = (q || reg) ? (count + ' Treffer') : '';
+    if (firstMatch && (q || reg)) firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  frame();
+});
+</script>
+</body>
+</html>

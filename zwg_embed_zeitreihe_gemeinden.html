@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zweitwohnungen Graubünden — Slider 2017–2026 (alle Gemeinden)</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Zeitverlauf aller Gemeinden 2017–2026</h2>
+  <p class="sub">Slider bewegen oder Play drücken. Gemeinden absteigend nach Quote sortiert.</p>
+
+  <div class="zwg-slider-bar">
+    <button class="playbtn" id="playbtn">▶</button>
+    <input class="periodSlider" type="range" id="periodSlider" min="0" max="0" value="0" step="1">
+    <span class="periodLabel" id="periodLabel">…</span>
+  </div>
+  <div class="zwg-controls" style="margin-top:0;">
+    <input class="search" type="text" id="search" placeholder="Eigene Gemeinde suchen…" />
+    <span id="search-count" style="font-size:11px;color:#888;"></span>
+  </div>
+  <div class="zwg-anim" id="anim"></div>
+  <p class="zwg-note" id="anim-note" style="display:none;">⚠ Calanca: in der Erhebung 2020 ist im GWR ein Datenfehler dokumentiert (Quote 98,48 % statt ~73 %); der Wert ist hier ausgegraut.</p>
+
+  <div id="source"></div>
+</div>
+
+<script>
+ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
+  document.getElementById('source').innerHTML = ZWG.footerHTML();
+
+  // Im GWR sind März- und Oktober-Werte identisch — Slider nutzt nur März.
+  var periods = DATA.periods.filter(function (p) { return p.s === 'März'; });
+
+  var slider = document.getElementById('periodSlider');
+  var label = document.getElementById('periodLabel');
+  slider.max = periods.length - 1;
+  slider.value = periods.length - 1;
+
+  var playing = false, timer = null;
+  document.getElementById('playbtn').addEventListener('click', function () {
+    playing = !playing;
+    this.textContent = playing ? '⏸' : '▶';
+    if (playing) {
+      timer = setInterval(function () {
+        var v = (+slider.value + 1) % periods.length;
+        slider.value = v; update();
+      }, 800);
+    } else { clearInterval(timer); }
+  });
+  slider.addEventListener('input', update);
+
+  var searchEl = document.getElementById('search');
+  searchEl.addEventListener('input', applyHighlight);
+
+  update();
+  applyHighlight();
+
+  function update() {
+    var i = +slider.value;
+    var p = periods[i];
+    label.textContent = p.s + ' ' + p.j;
+
+    var rows = DATA.gemeinden.map(function (g) {
+      var snap = g.serie.find(function (s) { return s.j === p.j && s.s === p.s; });
+      return { name: g.name, anteil: snap ? snap.a : null, anomaly: ZWG.isAnomaly(g.name, p.j, p.s) };
+    }).filter(function (r) { return r.anteil != null; })
+      .sort(function (a, b) { return b.anteil - a.anteil; });
+
+    var c = document.getElementById('anim');
+    if (c.children.length !== rows.length) {
+      c.innerHTML = rows.map(function (r) {
+        return '<div class="zwg-abar" data-name="' + r.name.replace(/"/g, '&quot;') + '">'
+          + '<div class="nm"></div><div class="br"><div class="fl"></div><div class="lex"></div></div><div class="pct"></div></div>';
+      }).join('');
+    }
+    Array.prototype.forEach.call(c.children, function (el, idx) {
+      var r = rows[idx];
+      el.dataset.name = r.name;
+      el.querySelector('.nm').textContent = r.name + (r.anomaly ? ' ⚠' : '');
+      el.querySelector('.nm').title = r.anomaly ? 'Calanca 2020: dokumentierter GWR-Datenfehler' : r.name;
+      el.querySelector('.fl').style.width = Math.min(r.anteil, 100) + '%';
+      el.querySelector('.fl').style.background = r.anomaly ? '#999' : ZWG.colorForAnteil(r.anteil);
+      el.querySelector('.fl').style.opacity = r.anomaly ? '0.55' : '1';
+      el.querySelector('.pct').textContent = ZWG.fmtPct(r.anteil) + (r.anomaly ? ' ⚠' : '');
+      el.querySelector('.pct').style.color = r.anomaly ? '#999' : '';
+    });
+    var note = document.getElementById('anim-note');
+    note.style.display = rows.some(function (r) { return r.anomaly; }) ? 'block' : 'none';
+
+    applyHighlight();
+  }
+
+  function applyHighlight() {
+    var q = searchEl.value.toLowerCase().trim();
+    var bars = document.querySelectorAll('#anim .zwg-abar');
+    var firstMatch = null, count = 0;
+    bars.forEach(function (b) {
+      var name = (b.dataset.name || '').toLowerCase();
+      var hit = q && name.indexOf(q) >= 0;
+      b.style.background = hit ? '#fef3cd' : '';
+      b.style.outline = hit ? '1px solid #EE7733' : '';
+      b.style.borderRadius = hit ? '3px' : '';
+      if (hit) {
+        if (!firstMatch) firstMatch = b;
+        count++;
+      }
+    });
+    var c = document.getElementById('search-count');
+    c.textContent = q ? (count + ' Treffer') : '';
+    if (firstMatch && q) firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+});
+</script>
+</body>
+</html>

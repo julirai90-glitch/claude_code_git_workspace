@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zweitwohnungen Graubünden — Karte aller Gemeinden (März 2026)</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+<!-- Datawrapper-Resize-Script: synchronisiert Höhe des inneren iframe -->
+<script>
+window.addEventListener('message', function (a) {
+  if (void 0 !== a.data['datawrapper-height']) {
+    var e = document.querySelectorAll('iframe');
+    for (var t in a.data['datawrapper-height'])
+      for (var r, i = 0; r = e[i]; i++)
+        if (r.contentWindow === a.source) {
+          r.style.height = a.data['datawrapper-height'][t] + 'px';
+        }
+  }
+});
+</script>
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Zweitwohnungsanteil — alle 100 Bündner Gemeinden, März 2026</h2>
+  <p class="sub">Choropleth aller 100 Gemeinden, eingefärbt nach Zweitwohnungsanteil. Karte gehostet bei Datawrapper auf der offiziellen Schweizer Gemeindekarte (Stand 2025). Hover-Tooltip zeigt Wert pro Gemeinde.</p>
+
+  <div id="dw-wrap" style="width:100%;min-height:638px;">
+    <iframe title="Zweitwohnungsanteil in Graubünden — März 2026"
+            aria-label="Choropleth map"
+            id="datawrapper-chart-uzHEN"
+            src="https://datawrapper.dwcdn.net/uzHEN/1/"
+            scrolling="no" frameborder="0"
+            style="width:0;min-width:100% !important;border:none;"
+            height="638" data-external="1"></iframe>
+  </div>
+  <p class="zwg-note">
+    Karte: <a href="https://datawrapper.dwcdn.net/uzHEN/" target="_blank" style="color:#0068A4;text-decoration:none;">in eigenem Tab öffnen ↗</a> ·
+    Basemap: «Switzerland — Graubünden Municipalities 2025» (Datawrapper).
+  </p>
+
+  <div id="source"></div>
+</div>
+
+<script>
+document.getElementById('source').innerHTML = ZWG.footerHTML('Karten-Engine: Datawrapper.de.');
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zweitwohnungen Graubünden — Tabelle aller Gemeinden (März 2026)</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Zweitwohnungsanteil — alle 100 Bündner Gemeinden</h2>
+  <p class="sub" id="sub">Stand März 2026.</p>
+
+  <div class="zwg-stats" id="stats"></div>
+
+  <div class="zwg-controls">
+    <input class="search" type="text" id="search" placeholder="Gemeinde suchen…" />
+    <select id="region-filter"><option value="">Alle Regionen</option></select>
+    <select id="lex-filter">
+      <option value="">Alle</option>
+      <option value="ueber">Über 20 % (Lex Weber)</option>
+      <option value="unter">Unter 20 %</option>
+    </select>
+    <select id="sort">
+      <option value="anteil-desc">Quote ↓</option>
+      <option value="anteil-asc">Quote ↑</option>
+      <option value="delta-desc">Veränderung ↓</option>
+      <option value="delta-asc">Veränderung ↑</option>
+      <option value="total-desc">Wohnungen ↓</option>
+      <option value="name">Name A–Z</option>
+    </select>
+  </div>
+  <div class="zwg-list" id="list"></div>
+  <div class="zwg-detail empty" id="detail">Klick auf eine Gemeinde für Details und Zeitverlauf.</div>
+
+  <div id="source"></div>
+</div>
+
+<script>
+(function () {
+  var DATA = null;
+  var selected = null;
+
+  ZWG.loadData('zweitwohnungen_data.json', document.body, function (d) {
+    DATA = d;
+    document.getElementById('source').innerHTML = ZWG.footerHTML();
+    populateRegions();
+    bindEvents();
+    render();
+  });
+
+  function populateRegions() {
+    var counts = {};
+    DATA.gemeinden.forEach(function (g) {
+      if (g.region) counts[g.region] = (counts[g.region] || 0) + 1;
+    });
+    var sel = document.getElementById('region-filter');
+    Object.keys(counts).sort(function (a, b) { return a.localeCompare(b, 'de'); }).forEach(function (r) {
+      var opt = document.createElement('option');
+      opt.value = r;
+      opt.textContent = r + ' (' + counts[r] + ')';
+      sel.appendChild(opt);
+    });
+  }
+
+  function bindEvents() {
+    ['search', 'region-filter', 'lex-filter', 'sort'].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.addEventListener('input', render);
+      el.addEventListener('change', render);
+    });
+  }
+
+  function currentList() {
+    var s = document.getElementById('search').value.toLowerCase().trim();
+    var reg = document.getElementById('region-filter').value;
+    var f = document.getElementById('lex-filter').value;
+    var srt = document.getElementById('sort').value;
+    var list = DATA.gemeinden.slice();
+    if (s) list = list.filter(function (g) { return g.name.toLowerCase().indexOf(s) >= 0; });
+    if (reg) list = list.filter(function (g) { return g.region === reg; });
+    if (f === 'ueber') list = list.filter(function (g) { return g.aktuell.anteil > 20; });
+    if (f === 'unter') list = list.filter(function (g) { return g.aktuell.anteil <= 20; });
+    var cmp = {
+      'anteil-desc': function (a, b) { return b.aktuell.anteil - a.aktuell.anteil; },
+      'anteil-asc':  function (a, b) { return a.aktuell.anteil - b.aktuell.anteil; },
+      'delta-desc':  function (a, b) { return b.delta_pp - a.delta_pp; },
+      'delta-asc':   function (a, b) { return a.delta_pp - b.delta_pp; },
+      'total-desc':  function (a, b) { return b.aktuell.total - a.aktuell.total; },
+      'name':        function (a, b) { return a.name.localeCompare(b.name, 'de'); }
+    }[srt];
+    list.sort(cmp);
+    return list;
+  }
+
+  function render() {
+    var list = currentList();
+    var n = list.length;
+    var ueber = list.filter(function (g) { return g.aktuell.anteil > 20; }).length;
+    var arr = list.map(function (g) { return g.aktuell.anteil; }).sort(function (a, b) { return a - b; });
+    var median = n ? arr[Math.floor(n / 2)] : 0;
+    var totWhg = list.reduce(function (s, g) { return s + g.aktuell.total; }, 0);
+
+    document.getElementById('stats').innerHTML =
+        '<div class="zwg-stat"><div class="lbl">Gemeinden</div><div class="val">' + n + '</div><div class="sub2">von ' + DATA.gemeinden.length + '</div></div>'
+      + '<div class="zwg-stat"><div class="lbl">Über 20 %</div><div class="val">' + ueber + '</div><div class="sub2">' + (n ? Math.round(ueber/n*100) : 0) + ' % der Auswahl</div></div>'
+      + '<div class="zwg-stat"><div class="lbl">Median</div><div class="val">' + median.toFixed(1).replace('.', ',') + ' %</div><div class="sub2">Quote</div></div>'
+      + '<div class="zwg-stat"><div class="lbl">Wohnungen</div><div class="val">' + (totWhg/1000).toFixed(0) + 'k</div><div class="sub2">Total in Auswahl</div></div>';
+
+    document.getElementById('list').innerHTML = list.map(function (g) {
+      var a = g.aktuell.anteil;
+      var w = Math.min(a, 100);
+      var dCls = g.delta_pp > 0.1 ? 'up' : g.delta_pp < -0.1 ? 'down' : 'flat';
+      return '<div class="zwg-row' + (selected === g.name ? ' selected' : '') + '" data-name="' + g.name.replace(/"/g, '&quot;') + '">'
+        + '<div class="nm" title="' + g.name + '">' + g.name + '</div>'
+        + '<div class="br"><div class="fl" style="width:' + w + '%;background:' + ZWG.colorForAnteil(a) + '"></div><div class="lex"></div></div>'
+        + '<div class="pct">' + ZWG.fmtPct(a) + '</div>'
+        + '<div class="delta ' + dCls + '">' + ZWG.fmtPp(g.delta_pp) + '</div>'
+        + '</div>';
+    }).join('');
+
+    Array.prototype.forEach.call(document.querySelectorAll('.zwg-row'), function (r) {
+      r.addEventListener('click', function () { selectGem(r.dataset.name); });
+    });
+  }
+
+  function selectGem(name) {
+    selected = name;
+    var g = DATA.gemeinden.find(function (x) { return x.name === name; });
+    if (!g) return;
+    var det = document.getElementById('detail');
+    det.classList.remove('empty');
+    det.innerHTML =
+      '<h3>' + g.name + '</h3>'
+      + '<div class="zwg-detail-grid">'
+      + '  <div class="k">Zweitwohnungsanteil ' + g.aktuell.sem + ' ' + g.aktuell.jahr + '</div><div class="v">' + ZWG.fmtPct(g.aktuell.anteil) + '</div>'
+      + '  <div class="k">Veränderung seit ' + g.erst_jahr.sem + ' ' + g.erst_jahr.jahr + '</div><div class="v">' + ZWG.fmtPp(g.delta_pp) + '</div>'
+      + '  <div class="k">Wohnungen total</div><div class="v">' + ZWG.fmtN(g.aktuell.total) + '</div>'
+      + '  <div class="k">Erstwohnungen (Hauptwohnsitz)</div><div class="v">' + ZWG.fmtN(g.aktuell.erst) + '</div>'
+      + '  <div class="k">Erstwohnungs-gleichgestellt</div><div class="v">' + ZWG.fmtN(g.aktuell.gleich) + '</div>'
+      + '  <div class="k">Region</div><div class="v">' + (g.region || '–') + '</div>'
+      + '  <div class="k">BFS-Nummer</div><div class="v">' + g.bfs + '</div>'
+      + '</div>'
+      + '<svg class="zwg-spark" id="spark-' + g.bfs + '"></svg>';
+    drawSpark(g);
+    Array.prototype.forEach.call(document.querySelectorAll('.zwg-row'), function (r) {
+      r.classList.toggle('selected', r.dataset.name === name);
+    });
+  }
+
+  function drawSpark(g) {
+    var svg = d3.select('#spark-' + g.bfs);
+    var node = svg.node(); if (!node) return;
+    var w = node.clientWidth || 500, h = 50;
+    svg.attr('viewBox', '0 0 ' + w + ' ' + h).selectAll('*').remove();
+
+    var data = g.serie.map(function (s, i) { return { x: i, anteil: s.a, label: s.s + ' ' + s.j, anomaly: ZWG.isAnomaly(g.name, s.j, s.s) }; });
+    var lineData = data.filter(function (d) { return !d.anomaly; });
+    var x = d3.scaleLinear().domain([0, data.length - 1]).range([4, w - 4]);
+    var y = d3.scaleLinear().domain([0, Math.max(100, d3.max(lineData, function (d) { return d.anteil; }) + 5)]).range([h - 4, 4]);
+
+    svg.append('line').attr('x1', 4).attr('x2', w - 4).attr('y1', y(20)).attr('y2', y(20))
+      .attr('stroke', ZWG.MARKEN.red).attr('stroke-width', 1).attr('stroke-dasharray', '3,3').attr('opacity', 0.5);
+
+    var line = d3.line().x(function (d) { return x(d.x); }).y(function (d) { return y(d.anteil); }).curve(d3.curveMonotoneX);
+    svg.append('path').datum(lineData).attr('fill', 'none').attr('stroke', ZWG.MARKEN.blueDark).attr('stroke-width', 1.5).attr('d', line);
+    svg.selectAll('circle.pt').data(data).enter().append('circle').attr('class', 'pt')
+      .attr('cx', function (d) { return x(d.x); }).attr('cy', function (d) { return y(d.anteil); })
+      .attr('r', function (d) { return d.anomaly ? 3 : 2; })
+      .attr('fill', function (d) { return d.anomaly ? '#999' : ZWG.colorForAnteil(d.anteil); })
+      .attr('stroke', function (d) { return d.anomaly ? '#666' : 'none'; })
+      .attr('stroke-width', function (d) { return d.anomaly ? 1 : 0; });
+    svg.append('text').attr('x', x(0)).attr('y', y(data[0].anteil) - 6).attr('font-size', 9).attr('fill', '#666').text(data[0].label.split(' ')[1]);
+    svg.append('text').attr('x', x(data.length - 1)).attr('y', y(data[data.length - 1].anteil) - 6).attr('text-anchor', 'end').attr('font-size', 9).attr('fill', '#666').text(data[data.length - 1].label.split(' ')[1]);
+    if (data.some(function (d) { return d.anomaly; })) {
+      svg.append('text').attr('x', w - 4).attr('y', h - 1).attr('text-anchor', 'end').attr('font-size', 8).attr('fill', '#999').attr('font-style', 'italic').text('⚠ 2020 GWR-Datenfehler');
+    }
+  }
+})();
+</script>
+</body>
+</html>

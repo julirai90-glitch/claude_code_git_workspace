@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zweitwohnungen GR — Slope-Chart 2017–2026</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+<style>
+  #slope-svg { width: 100%; height: 540px; }
+  .threshold { stroke: #B5001E; stroke-width: 1.2; stroke-dasharray: 4,3; }
+  .lex-label { font-size: 10px; fill: #B5001E; font-style: italic; }
+  .ln { fill: none; stroke-width: 1; opacity: 0.18; cursor: pointer; transition: opacity 0.15s, stroke-width 0.15s; }
+  .ln:hover { opacity: 1; stroke-width: 2.5; }
+  .ln.highlight { opacity: 1; stroke-width: 2.5; }
+  .ln.dimmed { opacity: 0.06; }
+  .endlabel { font-size: 10px; fill: #1E3A5F; font-weight: 600; opacity: 0; pointer-events: none; }
+  .endlabel.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Alle Gemeinden 2017→2026 auf einen Blick</h2>
+  <p class="sub">100 Linien — eine pro Gemeinde, von ihrer Quote 2017 (links) zu ihrer Quote 2026 (rechts). Hover über eine Linie zeigt die Gemeinde an. Die Region-Auswahl rechts highlightet alle Gemeinden einer Region.</p>
+
+  <div class="zwg-controls">
+    <input class="search" type="text" id="search" placeholder="Gemeinde suchen…" />
+    <select id="region-filter"><option value="">Alle Regionen</option></select>
+  </div>
+
+  <svg id="slope-svg"></svg>
+  <div id="detail" style="font-size:11px;color:#888;margin-top:8px;">Klick auf eine Linie für Details unten.</div>
+
+  <div id="source"></div>
+</div>
+
+<script>
+ZWG.loadData('zweitwohnungen_data.json', document.body, function (DATA) {
+  document.getElementById('source').innerHTML = ZWG.footerHTML();
+  populateRegions();
+
+  var periods = DATA.periods.filter(function (p) { return p.s === 'März'; });
+  // Pro Gemeinde Array von {jahr, anteil}
+  var lines = DATA.gemeinden.map(function (g) {
+    var byYear = {};
+    g.serie.forEach(function (s) { if (s.s === 'März') byYear[s.j] = s.a; });
+    return {
+      name: g.name, bfs: g.bfs, region: g.region,
+      points: periods.map(function (p) { return { jahr: p.j, anteil: byYear[p.j] }; }).filter(function (x) { return x.anteil != null; }),
+      first: byYear[periods[0].j],
+      last: byYear[periods[periods.length - 1].j]
+    };
+  }).filter(function (l) { return l.points.length >= 2; });
+
+  var svg = d3.select('#slope-svg');
+  var w = svg.node().clientWidth || 648;
+  var h = 540;
+  var m = { t: 24, r: 70, b: 32, l: 50 };
+  svg.attr('viewBox', '0 0 ' + w + ' ' + h).selectAll('*').remove();
+
+  var x = d3.scaleLinear().domain(d3.extent(periods, function (p) { return p.j; })).range([m.l, w - m.r]);
+  var allA = [];
+  lines.forEach(function (l) { l.points.forEach(function (pt) { allA.push(pt.anteil); }); });
+  var yMax = Math.ceil(d3.max(allA) / 10) * 10;
+  var y = d3.scaleLinear().domain([0, Math.max(yMax, 100)]).range([h - m.b, m.t]);
+
+  // Achsen
+  svg.append('g').selectAll('line').data(y.ticks(5)).enter().append('line')
+    .attr('class', 'zwg-gridline').attr('x1', m.l).attr('x2', w - m.r)
+    .attr('y1', function (d) { return y(d); }).attr('y2', function (d) { return y(d); });
+  svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(0,' + (h - m.b) + ')')
+    .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(periods.length));
+  svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(' + m.l + ',0)')
+    .call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return d + ' %'; }));
+
+  svg.append('line').attr('class', 'threshold').attr('x1', m.l).attr('x2', w - m.r)
+    .attr('y1', y(20)).attr('y2', y(20));
+  svg.append('text').attr('class', 'lex-label')
+    .attr('x', w - m.r - 4).attr('y', y(20) - 4).attr('text-anchor', 'end')
+    .text('20 % Lex-Weber-Schwelle');
+
+  svg.append('text').attr('transform', 'translate(14,' + (h / 2) + ') rotate(-90)')
+    .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', '#666').text('Zweitwohnungsanteil');
+
+  var line = d3.line().x(function (d) { return x(d.jahr); }).y(function (d) { return y(d.anteil); }).curve(d3.curveMonotoneX);
+
+  var paths = svg.append('g').selectAll('path').data(lines, function (d) { return d.bfs; })
+    .enter().append('path')
+    .attr('class', 'ln')
+    .attr('stroke', function (d) { return ZWG.colorForAnteil(d.last); })
+    .attr('d', function (d) { return line(d.points); })
+    .on('mouseenter', function (evt, d) {
+      ZWG.showTooltip('<strong style="color:' + ZWG.MARKEN.blueDark + '">' + d.name + '</strong>'
+        + '<div style="font-size:10px;color:#999;margin:1px 0 4px;">' + d.region + '</div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">2017</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">' + ZWG.fmtPct(d.first) + '</span></div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">2026</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">' + ZWG.fmtPct(d.last) + '</span></div>'
+        + '<div class="row2" style="display:flex;justify-content:space-between;gap:8px;"><span style="color:#888">Δ</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">' + ZWG.fmtPp(d.last - d.first) + '</span></div>', evt);
+      // Endlabel anzeigen
+      svg.select('.endlabel-' + d.bfs).classed('show', true);
+    })
+    .on('mousemove', ZWG.positionTooltip)
+    .on('mouseleave', function (evt, d) {
+      ZWG.hideTooltip();
+      svg.select('.endlabel-' + d.bfs).classed('show', false);
+    })
+    .on('click', function (evt, d) {
+      document.getElementById('detail').innerHTML =
+        '<strong style="color:' + ZWG.MARKEN.blueDark + '">' + d.name + '</strong> '
+        + '<span style="color:#999;">(' + d.region + ')</span> · '
+        + 'März 2017: ' + ZWG.fmtPct(d.first) + ' → März 2026: ' + ZWG.fmtPct(d.last)
+        + ' · Δ ' + ZWG.fmtPp(d.last - d.first);
+    });
+
+  // End-Labels (initial unsichtbar)
+  svg.append('g').selectAll('text.endlabel').data(lines).enter().append('text')
+    .attr('class', function (d) { return 'endlabel endlabel-' + d.bfs; })
+    .attr('x', x(periods[periods.length - 1].j) + 4)
+    .attr('y', function (d) { return y(d.last); })
+    .attr('dy', '0.32em').text(function (d) { return d.name; });
+
+  // Suche und Region-Filter highlighten
+  function populateRegions() {
+    var counts = {};
+    DATA.gemeinden.forEach(function (g) { if (g.region) counts[g.region] = (counts[g.region] || 0) + 1; });
+    var sel = document.getElementById('region-filter');
+    Object.keys(counts).sort(function (a, b) { return a.localeCompare(b, 'de'); }).forEach(function (r) {
+      var opt = document.createElement('option');
+      opt.value = r; opt.textContent = r + ' (' + counts[r] + ')';
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', applyFilters);
+    document.getElementById('search').addEventListener('input', applyFilters);
+  }
+
+  function applyFilters() {
+    var q = document.getElementById('search').value.toLowerCase().trim();
+    var reg = document.getElementById('region-filter').value;
+    paths.classed('highlight', function (d) {
+      var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && d.region === reg;
+      return hitS || hitR;
+    }).classed('dimmed', function (d) {
+      if (!q && !reg) return false;
+      var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+      var hitR = reg && d.region === reg;
+      return !(hitS || hitR);
+    });
+    // End-Labels für Highlights anzeigen
+    svg.selectAll('.endlabel').classed('show', false);
+    if (q || reg) {
+      lines.forEach(function (d) {
+        var hitS = q && d.name.toLowerCase().indexOf(q) >= 0;
+        var hitR = reg && d.region === reg;
+        if (hitS || hitR) svg.select('.endlabel-' + d.bfs).classed('show', true);
+      });
+    }
+  }
+});
+</script>
+</body>
+</html>

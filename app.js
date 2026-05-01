@@ -737,33 +737,33 @@ const STORIES = [
     ausgabe: 3,
     status: 'ready',
     category: 'Gesellschaft',
-    title: 'Chur bleibt kurz — Santa Maria in Calanca braucht 22 Zeichen',
-    lead: 'Die Länge eines Gemeindenamens verrät viel: über Sprachgeschichte, Gemeindefusionen und geografische Lage. Alle 101 Gemeinden im Überblick — nach Arbeitsplatzquote, Bevölkerung und Sprachzugehörigkeit.',
-    chartTitle: 'Namenslänge, Bevölkerung und Wirtschaftscharakter — alle 101 Gemeinden 2023',
-    chartSubtitle: 'X: VZÄ / 100 Einw. · Y: Wohnbevölkerung (log) · Grösse: Namenslänge · Farbe: Sprachregion',
-    chartType: 'bubble',
+    title: 'Acht Bauformen, 100 Gemeinden — was Graubündens Namen verraten',
+    lead: 'Drei Viertel der Bündner Gemeinden tragen einen schlichten Einzelwortnamen — Chur, Davos, Trun. Das verbleibende Viertel verrät an Schrägstrich, Bindestrich, Klammern oder Präpositionen, was den Kanton besonders macht: Mehrsprachigkeit, Fusionsgeschichte, Verwechslungsgefahr mit anderen Kantonen. Suche deine Gemeinde — und sieh, zu welcher Familie sie gehört.',
+    chartTitle: 'Anatomie der Gemeindenamen Graubündens',
+    chartSubtitle: 'Acht Bauformen nach Konstruktion · Farbe = Sprachregion · Suchfeld zeigt deine Gemeinde + Kategorie',
+    chartType: 'typography',
     apiDatasetId: null,
     apiQuery: null,
     parseData: null,
     staticData: {
       series: [
-      {label:"Deutschsprachig",color:"#1E3A5F",points:[{name:"St. Moritz",x:144.2,y:4926,nl:10},{name:"Samnaun",x:128.2,y:755,nl:7},{name:"Rothenbrunnen",x:97.4,y:312,nl:13},{name:"Arosa",x:74.0,y:3143,nl:5},{name:"Davos",x:69.2,y:10800,nl:5},{name:"Chur",x:66.6,y:38949,nl:4},{name:"Laax",x:57.3,y:2112,nl:4},{name:"Landquart",x:55.9,y:9191,nl:9},{name:"Vals",x:55.7,y:949,nl:4},{name:"Thusis",x:53.1,y:3459,nl:6},{name:"Maienfeld",x:53.0,y:3193,nl:9},{name:"Grüsch",x:52.7,y:2161,nl:6},{name:"Zizers",x:50.4,y:3589,nl:6},{name:"Flims",x:47.8,y:2939,nl:5},{name:"Küblis",x:47.3,y:920,nl:6},{name:"Cazis",x:47.2,y:2416,nl:5},{name:"Bonaduz",x:42.6,y:3533,nl:7},{name:"Klosters",x:40.1,y:4473,nl:8},{name:"Schiers",x:39.7,y:2951,nl:7},{name:"Fürstenau",x:38.1,y:349,nl:9},{name:"Andeer",x:36.9,y:926,nl:6},{name:"Zillis-Reischen",x:36.8,y:419,nl:15},{name:"Ferrera",x:36.6,y:82,nl:7},{name:"Seewis im Prättigau",x:35.2,y:1430,nl:19},{name:"Scharans",x:35.2,y:838,nl:8},{name:"Fläsch",x:33.6,y:868,nl:6},{name:"Churwalden",x:32.0,y:2147,nl:10},{name:"Untervaz",x:31.9,y:2675,nl:8},{name:"Tschappina",x:31.4,y:140,nl:10},{name:"Furna",x:29.6,y:203,nl:5},{name:"Conters im Prättigau",x:28.9,y:228,nl:20},{name:"Trimmis",x:28.1,y:3363,nl:7},{name:"Malans",x:27.5,y:2527,nl:6},{name:"Sils im Domleschg",x:26.1,y:966,nl:17},{name:"Jenaz",x:25.5,y:1145,nl:5},{name:"Tschiertschen-Praden",x:25.3,y:293,nl:20},{name:"Fideris",x:24.4,y:618,nl:7},{name:"Jenins",x:22.2,y:948,nl:6},{name:"Luzein",x:22.1,y:1625,nl:6},{name:"Rhäzüns",x:19.8,y:1633,nl:7},{name:"Flerden",x:18.1,y:254,nl:7},{name:"Urmein",x:17.8,y:163,nl:6},{name:"Schmitten (GR)",x:17.2,y:209,nl:14},{name:"Masein",x:17.1,y:532,nl:6},{name:"Domleschg",x:16.2,y:2219,nl:9},{name:"Tamins",x:15.6,y:1215,nl:6},{name:"Felsberg",x:15.1,y:2833,nl:8},{name:"Rongellen",x:9.8,y:61,nl:9},{name:"Avers",x:52.4,y:168,nl:5},{name:"Rheinwald",x:44.3,y:576,nl:9},{name:"Sufers",x:40.4,y:151,nl:6},{name:"Safiental",x:28.0,y:963,nl:9}]},
-      {label:"R\u00e4toromanisch",color:"#16803A",points:[{name:"Pontresina",x:86.4,y:2077,nl:10},{name:"Samedan",x:78.5,y:2913,nl:7},{name:"Silvaplana",x:70.1,y:1089,nl:10},{name:"Zuoz",x:57.7,y:1218,nl:4},{name:"Scuol",x:55.2,y:4572,nl:5},{name:"Zernez",x:48.9,y:1579,nl:6},{name:"Surses",x:47.6,y:2424,nl:6},{name:"Bever",x:46.1,y:607,nl:5},{name:"Muntogna da Schons",x:44.7,y:371,nl:18},{name:"Valsot",x:41.7,y:811,nl:6},{name:"Trun",x:41.0,y:1154,nl:4},{name:"Tujetsch",x:39.6,y:1171,nl:8},{name:"Schluein",x:36.8,y:612,nl:8},{name:"Falera",x:34.6,y:627,nl:6},{name:"S-chanf",x:32.7,y:706,nl:7},{name:"Medel (Lucmagn)",x:31.7,y:328,nl:15},{name:"Lumnezia",x:30.2,y:2072,nl:8},{name:"La Punt Chamues-ch",x:29.2,y:732,nl:18},{name:"Sumvitg",x:29.0,y:1079,nl:7},{name:"Madulain",x:28.4,y:197,nl:8},{name:"Trin",x:17.1,y:1525,nl:4},{name:"Sagogn",x:9.4,y:766,nl:6},{name:"Val Müstair",x:61.1,y:1422,nl:11}]},
+      {label:"Deutschsprachig",color:"#1E3A5F",points:[{name:"St. Moritz",x:144.2,y:4926,nl:10},{name:"Samnaun",x:128.2,y:755,nl:7},{name:"Rothenbrunnen",x:97.4,y:312,nl:13},{name:"Arosa",x:74.0,y:3143,nl:5},{name:"Davos",x:69.2,y:10800,nl:5},{name:"Chur",x:66.6,y:38949,nl:4},{name:"Laax",x:57.3,y:2112,nl:4},{name:"Landquart",x:55.9,y:9191,nl:9},{name:"Vals",x:55.7,y:949,nl:4},{name:"Thusis",x:53.1,y:3459,nl:6},{name:"Maienfeld",x:53.0,y:3193,nl:9},{name:"Grüsch",x:52.7,y:2161,nl:6},{name:"Zizers",x:50.4,y:3589,nl:6},{name:"Flims",x:47.8,y:2939,nl:5},{name:"Küblis",x:47.3,y:920,nl:6},{name:"Cazis",x:47.2,y:2416,nl:5},{name:"Bonaduz",x:42.6,y:3533,nl:7},{name:"Klosters",x:40.1,y:4473,nl:8},{name:"Schiers",x:39.7,y:2951,nl:7},{name:"Fürstenau",x:38.1,y:349,nl:9},{name:"Andeer",x:36.9,y:926,nl:6},{name:"Zillis-Reischen",x:36.8,y:419,nl:15},{name:"Ferrera",x:36.6,y:82,nl:7},{name:"Seewis im Prättigau",x:35.2,y:1430,nl:19},{name:"Scharans",x:35.2,y:838,nl:8},{name:"Fläsch",x:33.6,y:868,nl:6},{name:"Churwalden",x:32.0,y:2147,nl:10},{name:"Untervaz",x:31.9,y:2675,nl:8},{name:"Tschappina",x:31.4,y:140,nl:10},{name:"Furna",x:29.6,y:203,nl:5},{name:"Conters im Prättigau",x:28.9,y:228,nl:20},{name:"Trimmis",x:28.1,y:3363,nl:7},{name:"Malans",x:27.5,y:2527,nl:6},{name:"Sils im Domleschg",x:26.1,y:966,nl:17},{name:"Jenaz",x:25.5,y:1145,nl:5},{name:"Fideris",x:24.4,y:618,nl:7},{name:"Jenins",x:22.2,y:948,nl:6},{name:"Luzein",x:22.1,y:1625,nl:6},{name:"Rhäzüns",x:19.8,y:1633,nl:7},{name:"Flerden",x:18.1,y:254,nl:7},{name:"Urmein",x:17.8,y:163,nl:6},{name:"Schmitten (GR)",x:17.2,y:209,nl:14},{name:"Masein",x:17.1,y:532,nl:6},{name:"Domleschg",x:16.2,y:2219,nl:9},{name:"Tamins",x:15.6,y:1215,nl:6},{name:"Felsberg",x:15.1,y:2833,nl:8},{name:"Rongellen",x:9.8,y:61,nl:9},{name:"Avers",x:52.4,y:168,nl:5},{name:"Rheinwald",x:44.3,y:576,nl:9},{name:"Sufers",x:40.4,y:151,nl:6},{name:"Safiental",x:28.0,y:963,nl:9}]},
+      {label:"R\u00e4toromanisch",color:"#EE7733",points:[{name:"Pontresina",x:86.4,y:2077,nl:10},{name:"Samedan",x:78.5,y:2913,nl:7},{name:"Silvaplana",x:70.1,y:1089,nl:10},{name:"Zuoz",x:57.7,y:1218,nl:4},{name:"Scuol",x:55.2,y:4572,nl:5},{name:"Zernez",x:48.9,y:1579,nl:6},{name:"Surses",x:47.6,y:2424,nl:6},{name:"Bever",x:46.1,y:607,nl:5},{name:"Muntogna da Schons",x:44.7,y:371,nl:18},{name:"Valsot",x:41.7,y:811,nl:6},{name:"Trun",x:41.0,y:1154,nl:4},{name:"Tujetsch",x:39.6,y:1171,nl:8},{name:"Schluein",x:36.8,y:612,nl:8},{name:"Falera",x:34.6,y:627,nl:6},{name:"S-chanf",x:32.7,y:706,nl:7},{name:"Medel (Lucmagn)",x:31.7,y:328,nl:15},{name:"Lumnezia",x:30.2,y:2072,nl:8},{name:"La Punt Chamues-ch",x:29.2,y:732,nl:18},{name:"Sumvitg",x:29.0,y:1079,nl:7},{name:"Madulain",x:28.4,y:197,nl:8},{name:"Trin",x:17.1,y:1525,nl:4},{name:"Sagogn",x:9.4,y:766,nl:6},{name:"Val Müstair",x:61.1,y:1422,nl:11}]},
       {label:"Italienischsprachig",color:"#B5001E",points:[{name:"Bregaglia",x:52.7,y:1578,nl:9},{name:"Brusio",x:67.5,y:1105,nl:6},{name:"Grono",x:60.6,y:1556,nl:5},{name:"Poschiavo",x:47.6,y:3525,nl:9},{name:"San Vittore",x:46.5,y:912,nl:11},{name:"Calanca",x:44.1,y:211,nl:7},{name:"Roveredo (GR)",x:35.2,y:2625,nl:13},{name:"Mesocco",x:34.6,y:1420,nl:7},{name:"Castaneda",x:27.9,y:262,nl:9},{name:"Lostallo",x:27.3,y:850,nl:8},{name:"Soazza",x:26.8,y:332,nl:6},{name:"Cama",x:22.1,y:691,nl:4},{name:"Rossa",x:11.2,y:161,nl:5},{name:"Buseno",x:11.0,y:91,nl:6},{name:"Santa Maria in Calanca",x:5.9,y:119,nl:22}]},
-      {label:"Zweisprachig",color:"#8B6914",points:[{name:"Bergün Filisur",x:45.6,y:901,nl:14},{name:"Obersaxen Mundaun",x:42.4,y:1148,nl:17},{name:"Sils im Engadin/Segl",x:122.9,y:708,nl:20},{name:"Vaz/Obervaz",x:80.4,y:2742,nl:11},{name:"Celerina/Schlarigna",x:52.7,y:1411,nl:19},{name:"Ilanz/Glion",x:49.6,y:5030,nl:11},{name:"Disentis/Mustér",x:44.0,y:2080,nl:15},{name:"Domat/Ems",x:39.5,y:8286,nl:9},{name:"Albula/Alvra",x:36.7,y:1313,nl:12},{name:"Breil/Brigels",x:32.5,y:1713,nl:13},{name:"Lantsch/Lenz",x:26.7,y:528,nl:12}]}
+      {label:"Zweisprachig",color:"#0068A4",points:[{name:"Bergün Filisur",x:45.6,y:901,nl:14},{name:"Obersaxen Mundaun",x:42.4,y:1148,nl:17},{name:"Sils im Engadin/Segl",x:122.9,y:708,nl:20},{name:"Vaz/Obervaz",x:80.4,y:2742,nl:11},{name:"Celerina/Schlarigna",x:52.7,y:1411,nl:19},{name:"Ilanz/Glion",x:49.6,y:5030,nl:11},{name:"Disentis/Mustér",x:44.0,y:2080,nl:15},{name:"Domat/Ems",x:39.5,y:8286,nl:9},{name:"Albula/Alvra",x:36.7,y:1313,nl:12},{name:"Breil/Brigels",x:32.5,y:1713,nl:13},{name:"Lantsch/Lenz",x:26.7,y:528,nl:12}]}
     ],
       xLabel: 'VZÄ / 100 Einw.',
       yLabel: 'Wohnbevölkerung'
     },
     keyFacts: [
-      { number: '22', label: 'Zeichen', context: '"Santa Maria in Calanca" — längster Gemeindename GR' },
-      { number: '4', label: 'Zeichen', context: '7 Gemeinden: Cama, Chur, Laax, Trin, Trun, Vals, Zuoz' },
-      { number: '8.8', label: 'Zeichen Ø', context: 'Durchschnittliche Länge aller 101 Gemeindenamen' }
+      { number: '8', label: 'Bauformen', context: 'In so viele Konstruktionsmuster lassen sich die 100 Bündner Gemeindenamen einteilen' },
+      { number: '9', label: 'Schrägstrich-Namen', context: 'Domat/Ems, Disentis/Mustér, Vaz/Obervaz und sechs weitere — diese Form gibts schweizweit fast nur in GR' },
+      { number: '7', label: 'Zeichen Median', context: 'Mittlere Länge der 100 Namen — Ø liegt bei 8.8, gezogen durch Vielwortnamen wie Santa Maria in Calanca' }
     ],
     analysis: [
-      'Die Blase zeigt es direkt: Chur (4 Zeichen) ist dominierend gross — aber kurz benannt. St. Moritz (10 Zeichen) ist wirtschaftlich aktiv (144 VZÄ/100 EW) und eher mittelgross. Santa Maria in Calanca (22 Zeichen) hingegen ist winzig, arm an Arbeitsplätzen und hat den längsten Namen — ein klassisches Schlafdorf in der Peripherie.',
-      'Lange Namen entstehen oft durch Fusionen: "Tschiertschen-Praden" (20 Zeichen) und "Conters im Prättigau" (20 Zeichen) tragen noch zwei Ortschaften im Namen. Zweisprachige Gemeinden führen beide Sprachversionen mit Schrägstrich — Disentis/Mustér, Breil/Brigels — und werden so automatisch länger.',
-      'Kurze Namen sind oft die ältesten Toponyme. "Chur" geht auf lateinisch "Curia" zurück, "Trun" und "Zuoz" auf vorrömische Wurzeln. Die vier rätoromanischen 4-Zeichen-Namen (Trin, Trun, Zuoz, Bever) sind sprachwissenschaftliche Fossilien — komprimiert über Jahrhunderte.'
+      'Drei Viertel der 100 Bündner Gemeinden — 75 — tragen einen schlichten Einzelwortnamen: Chur, Davos, Trun, Zuoz, Vals. Bei den restlichen 25 hat der Name etwas dazu: einen Schrägstrich für die zweite Sprache (9 Gemeinden), eine Präposition wie «im Prättigau» oder «da Schons» (5), eine Klammer zur Unterscheidung von gleichnamigen Orten anderswo (3), oder einen Bindestrich aus einer Fusion oder einem rätoromanischen Phonem-Trenner (3). Eine einzige Gemeinde nutzt einen Punkt: St. Moritz.',
+      'Die Schrägstrich-Schreibweise ist eine Graubünder Spezialität — Domat/Ems, Disentis/Mustér, Vaz/Obervaz, Albula/Alvra, Breil/Brigels und vier weitere führen ihre deutsche und rätoromanische (oder italienische) Namensform parallel. Im Misox dagegen leben die Namen mit Präpositionen: «Santa Maria in Calanca» reiht Heilige, Präposition und Tal aneinander und kommt so auf 22 Zeichen — der längste Gemeindename des Kantons.',
+      'Die Buchstaben selbst erzählen weiter: Über ein Fünftel aller Namen beginnt mit «S» (Sils, Schiers, Soazza, Surses). Sieben Buchstaben des Alphabets tauchen nie als Anfang auf. Kurze Namen sind oft die ältesten Toponyme — «Chur» kommt vom lateinischen «Curia», «Trun» und «Zuoz» wurzeln vorrömisch. Wer nach seiner Gemeinde sucht: das Suchfeld oben hebt sie hervor und zeigt, zu welcher Bauformfamilie sie gehört.'
     ],
     chartVariants: [
       {
@@ -784,14 +784,14 @@ const STORIES = [
             {name:'Scharans',x:44.3,y:8,pop:836},{name:'Fläsch',x:43.3,y:6,pop:879},{name:'Churwalden',x:42.7,y:10,pop:2114},
             {name:'Untervaz',x:42.0,y:8,pop:2674},{name:'Tschappina',x:48.9,y:10,pop:146},{name:'Furna',x:43.6,y:5,pop:203},
             {name:'Conters im Prättigau',x:45.2,y:20,pop:224},{name:'Trimmis',x:42.9,y:7,pop:3424},{name:'Malans',x:43.9,y:6,pop:2529},
-            {name:'Sils im Domleschg',x:44.1,y:17,pop:976},{name:'Jenaz',x:46.4,y:5,pop:1164},{name:'Tschiertschen-Praden',x:47.1,y:20,pop:309},
+            {name:'Sils im Domleschg',x:44.1,y:17,pop:976},{name:'Jenaz',x:46.4,y:5,pop:1164},
             {name:'Fideris',x:44.8,y:7,pop:626},{name:'Jenins',x:43.3,y:6,pop:961},{name:'Luzein',x:44.7,y:6,pop:1689},
             {name:'Rhäzüns',x:41.8,y:7,pop:1612},{name:'Flerden',x:42.9,y:7,pop:255},{name:'Urmein',x:52.1,y:6,pop:163},
             {name:'Schmitten (GR)',x:51.6,y:14,pop:205},{name:'Masein',x:41.2,y:6,pop:531},{name:'Domleschg',x:43.9,y:9,pop:2262},
             {name:'Tamins',x:45.0,y:6,pop:1223},{name:'Felsberg',x:40.1,y:8,pop:2886},{name:'Rongellen',x:45.6,y:9,pop:59},
             {name:'Avers',x:44.4,y:5,pop:169},{name:'Rheinwald',x:48.3,y:9,pop:570},{name:'Sufers',x:44.7,y:6,pop:147},{name:'Safiental',x:45.8,y:9,pop:964}
           ]},
-          {label:'Rätoromanisch',color:'#16803A',points:[
+          {label:'Rätoromanisch',color:'#EE7733',points:[
             {name:'Pontresina',x:45.3,y:10,pop:2072},{name:'Samedan',x:44.7,y:7,pop:2901},{name:'Silvaplana',x:47.5,y:10,pop:1124},
             {name:'Zuoz',x:42.7,y:4,pop:1224},{name:'Scuol',x:47.0,y:5,pop:4546},{name:'Zernez',x:46.2,y:6,pop:1592},
             {name:'Surses',x:48.8,y:6,pop:2465},{name:'Bever',x:45.8,y:5,pop:618},{name:'Muntogna da Schons',x:45.4,y:18,pop:368},
@@ -808,7 +808,7 @@ const STORIES = [
             {name:'Lostallo',x:45.4,y:8,pop:866},{name:'Soazza',x:53.3,y:6,pop:324},{name:'Cama',x:43.9,y:4,pop:720},
             {name:'Rossa',x:55.6,y:5,pop:168},{name:'Buseno',x:57.4,y:6,pop:91},{name:'Santa Maria in Calanca',x:57.2,y:22,pop:113}
           ]},
-          {label:'Zweisprachig',color:'#8B6914',points:[
+          {label:'Zweisprachig',color:'#0068A4',points:[
             {name:'Bergün Filisur',x:47.5,y:14,pop:898},{name:'Obersaxen Mundaun',x:48.3,y:17,pop:1160},
             {name:'Sils im Engadin/Segl',x:44.0,y:20,pop:708},{name:'Vaz/Obervaz',x:44.7,y:11,pop:2732},
             {name:'Celerina/Schlarigna',x:47.2,y:19,pop:1415},{name:'Ilanz/Glion',x:45.8,y:11,pop:5067},
@@ -819,12 +819,12 @@ const STORIES = [
       },
       {
         type: 'name-buckets',
-        title: 'Wie lang sind Graubündner Gemeindenamen? — alle 101 Gemeinden in Töpfen',
+        title: 'Wie lang sind Graubündner Gemeindenamen? — alle 100 Gemeinden in Töpfen',
         series: [
-          {label:'Deutschsprachig',color:'#1E3A5F',names:['St. Moritz','Samnaun','Rothenbrunnen','Arosa','Davos','Chur','Laax','Landquart','Vals','Thusis','Maienfeld','Grüsch','Zizers','Flims','Küblis','Cazis','Bonaduz','Klosters','Schiers','Fürstenau','Andeer','Zillis-Reischen','Ferrera','Seewis im Prättigau','Scharans','Fläsch','Churwalden','Untervaz','Tschappina','Furna','Conters im Prättigau','Trimmis','Malans','Sils im Domleschg','Jenaz','Tschiertschen-Praden','Fideris','Jenins','Luzein','Rhäzüns','Flerden','Urmein','Schmitten (GR)','Masein','Domleschg','Tamins','Felsberg','Rongellen','Avers','Rheinwald','Sufers','Safiental']},
-          {label:'Rätoromanisch',color:'#16803A',names:['Pontresina','Samedan','Silvaplana','Zuoz','Scuol','Zernez','Surses','Bever','Muntogna da Schons','Valsot','Trun','Tujetsch','Schluein','Falera','S-chanf','Medel (Lucmagn)','Lumnezia','La Punt Chamues-ch','Sumvitg','Madulain','Trin','Sagogn','Val Müstair']},
+          {label:'Deutschsprachig',color:'#1E3A5F',names:['St. Moritz','Samnaun','Rothenbrunnen','Arosa','Davos','Chur','Laax','Landquart','Vals','Thusis','Maienfeld','Grüsch','Zizers','Flims','Küblis','Cazis','Bonaduz','Klosters','Schiers','Fürstenau','Andeer','Zillis-Reischen','Ferrera','Seewis im Prättigau','Scharans','Fläsch','Churwalden','Untervaz','Tschappina','Furna','Conters im Prättigau','Trimmis','Malans','Sils im Domleschg','Jenaz','Fideris','Jenins','Luzein','Rhäzüns','Flerden','Urmein','Schmitten (GR)','Masein','Domleschg','Tamins','Felsberg','Rongellen','Avers','Rheinwald','Sufers','Safiental']},
+          {label:'Rätoromanisch',color:'#EE7733',names:['Pontresina','Samedan','Silvaplana','Zuoz','Scuol','Zernez','Surses','Bever','Muntogna da Schons','Valsot','Trun','Tujetsch','Schluein','Falera','S-chanf','Medel (Lucmagn)','Lumnezia','La Punt Chamues-ch','Sumvitg','Madulain','Trin','Sagogn','Val Müstair']},
           {label:'Italienischsprachig',color:'#B5001E',names:['Bregaglia','Brusio','Grono','Poschiavo','San Vittore','Calanca','Roveredo (GR)','Mesocco','Castaneda','Lostallo','Soazza','Cama','Rossa','Buseno','Santa Maria in Calanca']},
-          {label:'Zweisprachig',color:'#8B6914',names:['Bergün Filisur','Obersaxen Mundaun','Sils im Engadin/Segl','Vaz/Obervaz','Celerina/Schlarigna','Ilanz/Glion','Disentis/Mustér','Domat/Ems','Albula/Alvra','Breil/Brigels','Lantsch/Lenz']}
+          {label:'Zweisprachig',color:'#0068A4',names:['Bergün Filisur','Obersaxen Mundaun','Sils im Engadin/Segl','Vaz/Obervaz','Celerina/Schlarigna','Ilanz/Glion','Disentis/Mustér','Domat/Ems','Albula/Alvra','Breil/Brigels','Lantsch/Lenz']}
         ]
       }
     ],
@@ -836,16 +836,13 @@ const STORIES = [
     ausgabe: 4,
     status: 'ready',
     category: 'Gesellschaft',
-    title: '79 von 100 Gemeinden: Graubünden und die Zweitwohnungen',
-    lead: 'Die Lex Weber verbietet seit 2012 neue Zweitwohnungen in Gemeinden mit über 20% Anteil. In Graubünden liegt diese Grenze für fast alle Gemeinden weit unter der Realität: 79 von 100 Gemeinden überschreiten die 20%-Schwelle — manche wie Obersaxen Mundaun mit über 81%.',
-    chartTitle: 'Zweitwohnungsanteil März 2025 — Höchst- und Tiefstwerte (Top 10 / Bottom 10)',
-    chartSubtitle: 'Statistik Graubünden (dvs_awt_soci_20260112) · Quelle: Bundesregister Gebäude und Wohnungen (GWR)',
-    chartType: 'bar',
-    horizontal: true,
-    apiDatasetId: null,
-    apiQuery: null,
-    parseData: null,
-    staticData: {
+    title: 'Fast jede zweite Wohnung in Graubünden ist eine Zweitwohnung',
+    lead: 'Rund 87’000 Wohnungen in Graubünden sind Zweitwohnungen — das sind 47 % aller 186’270 Wohneinheiten im Kanton (Stand März 2026). Die Lex Weber begrenzt seit 2016 neue Zweitwohnungen in Gemeinden mit über 20 % Anteil; in Graubünden liegen 82 von 100 Gemeinden über dieser Schwelle. Der interaktive Atlas unten zeigt alle Gemeinden, ihre Veränderung seit 2017 und ihren Verlauf über 17 Halbjahres-Erhebungen — inklusive der kantonsweiten Mengen­entwicklung Total / Erst / Zweit 2017→2026.',
+    chartTitle: 'Zweitwohnungs-Atlas: alle 100 Gemeinden — Tabelle, Scatter, Zeitreihe, Kanton, Karte',
+    chartSubtitle: 'Statistik Graubünden (dvs_awt_soci_20260112) · 17 Erhebungen März 2017 – März 2026 · Quelle: Eidg. Gebäude- und Wohnungsregister',
+    chartType: 'embedded',
+    embedUrl: 'zweitwohnungen_atlas.html',
+    _legacyStatic: {
       labels: [
         'Obersaxen Mundaun','Calanca','Madulain','Ferrera','Falera',
         'Vaz/Obervaz','Tschappina','Surses','Buseno','Lantsch/Lenz',
@@ -860,23 +857,20 @@ const STORIES = [
       ],
       unit: '%'
     },
-    chartColors: [
-      'rgba(181,0,30,0.90)','rgba(181,0,30,0.82)','rgba(181,0,30,0.75)','rgba(181,0,30,0.68)','rgba(181,0,30,0.62)',
-      'rgba(181,0,30,0.55)','rgba(181,0,30,0.50)','rgba(181,0,30,0.44)','rgba(181,0,30,0.38)','rgba(181,0,30,0.33)',
-      'rgba(30,58,95,0.33)','rgba(30,58,95,0.38)','rgba(30,58,95,0.44)','rgba(30,58,95,0.50)','rgba(30,58,95,0.55)',
-      'rgba(30,58,95,0.62)','rgba(30,58,95,0.68)','rgba(30,58,95,0.75)','rgba(30,58,95,0.82)','rgba(30,58,95,0.90)'
-    ],
+    _legacyChartColors: null,
     keyFacts: [
-      { number: '79%', label: 'über Lex-Weber-Grenze', context: '79 von 100 Gemeinden liegen über 20% Zweitwohnungsanteil' },
-      { number: '81%', label: 'Höchstwert GR', context: 'Obersaxen Mundaun — 4 von 5 Wohnungen sind Ferienwohnungen' },
-      { number: '7.6%', label: 'Tiefstwert GR', context: 'Felsberg — am stärksten dauerhaft bewohnte Gemeinde GR' }
+      { number: '87’271', label: 'Zweitwohnungen kantonsweit', context: 'Fast jede zweite Wohnung in Graubünden — 46.9 % der 186’270 Wohneinheiten — ist eine Zweitwohnung (März 2026)' },
+      { number: '82 / 100', label: 'über Lex-Weber-Grenze', context: '82 von 100 Bündner Gemeinden liegen über 20% Zweitwohnungsanteil (März 2026)' },
+      { number: '81 %', label: 'Höchstwert GR', context: 'Obersaxen Mundaun — von 2828 Wohneinheiten sind 538 als Erstwohnung erfasst' },
+      { number: '8.8 %', label: 'Tiefstwert (robust)', context: 'Felsberg — 1188 Erstwohnungen bei 1302 Wohneinheiten total, 2886 Einwohner' }
     ],
     analysis: [
-      'Graubünden ist der Kanton mit dem schweizweit höchsten Zweitwohnungsanteil. Die Lex Weber (Volksinitiative 2012, in Kraft 2016) begrenzt Neubauten auf Gemeinden mit unter 20% Feriendomizilen — trifft aber faktisch kaum jemanden in GR. Spitzenreiter Obersaxen Mundaun liegt bei 81%: Von knapp 2\'800 Wohneinheiten sind nur rund 530 dauerhaft bewohnt.',
-      'Die tiefsten Quoten finden sich im dicht besiedelten Rheintal: Felsberg (7.6%), Domat/Ems (8.2%), Landquart (8.3%) sind echte Wohnorte. Auch Chur liegt mit 12% deutlich unter dem Kantonsdurchschnitt — obwohl das schon bedeutet, dass jede 8. Wohnung der Kantonshauptstadt leer steht.',
-      'Die Entwicklung seit 2017 zeigt ein geteiltes Bild: Grono (Misox) ist organisch unter 20% gefallen — durch Zuzug, nicht durch Regulierung. Fürstenau (Domleschg) halbierte seinen Anteil von 21% auf 13%, vermutlich durch Post-Corona-Zuzug und Wohnsitzwechsel. Auf der anderen Seite legten Brusio (+15.8 Prozentpunkte), Soazza (+14.5 Pp.) und Zillis-Reischen (+14.3 Pp.) stark zu. Der Druck auf den Wohnungsmarkt bleibt in GR ein Dauerthema.'
+      'Graubünden ist der Kanton mit dem schweizweit höchsten Zweitwohnungsanteil. Im März 2026 zählt der Kanton 186’270 Wohnungen, davon 97’950 Erstwohnungen, 1’049 erstwohnungs-gleichgestellte Einheiten (Personalwohnungen, Hotelzimmer für Mitarbeitende) und 87’271 Zweitwohnungen — das sind 46.9 %. Die Lex Weber (Volksinitiative 2012, in Kraft seit 2016) begrenzt Neubauten auf Gemeinden mit unter 20% Feriendomizilen. Im März 2026 liegen 82 der 100 Bündner Gemeinden über dieser Schwelle. Der Median-Wert beträgt rund 51%.',
+      'Die tiefsten Quoten finden sich im dicht besiedelten Rheintal: Felsberg (8.8%), Domat/Ems (8.4%), Landquart (8.7%), Trimmis (9.9%). Die Kantonshauptstadt Chur liegt bei 12.9%. Den höchsten Wert weisen Obersaxen Mundaun (81.0%), Calanca (78.3%) und Falera (77.9%) aus.',
+      'Über die Zeit 2017–2026 zeigen sich vier Muster, die der Atlas-Scatter-Plot offenlegt. Erstens, die größten Anstiege traten bei Brusio (+15.6 Prozentpunkte), Zillis-Reischen (+14.9 Pp.), Sumvitg (+14.8 Pp.), Trun (+13.8 Pp.) und Soazza (+13.8 Pp.) auf. In Brusio und Soazza sprang das Wohnungstotal in einer einzigen Halbjahres-Erhebung sprunghaft hoch (Brusio +111 Whg. März 2018, Soazza +66 Whg. März 2024), ohne Gemeindefusion und ohne dass die Erstwohnungen mitwuchsen — gemäss Wikipedia-Recherche zu Mutationsverzeichnissen gab es in keiner der beiden Gemeinden in den jeweiligen Jahren eine Fusion; das verbleibende plausible Erklärungsmuster ist eine Datennachführung im Gebäude- und Wohnungsregister.',
+      'Zweitens, die größten Rückgänge gab es in Laax (-6.2 Pp.), Grono (-5.4 Pp.), Fürstenau (-4.9 Pp.), Rongellen (-4.7 Pp.) und Trin (-4.5 Pp.). Bei Fürstenau ist die Bevölkerung 2017–2024 stabil bei rund 350 Personen geblieben, während die als Erstwohnung erfassten Einheiten von 147 auf 167 stiegen — das spricht für kleinere Haushalte und eine Reklassifikation, nicht für Zuzug. Drittens, Grono fiel zwischenzeitlich unter 20% (März 2025: 18.7%), liegt aber im März 2026 wieder bei 21.9% — die 20%-Schwelle ist für mehrere Gemeinden eine Wackelmarke. Viertens, in 78 von 100 Gemeinden hat sich der Anteil 2017–2026 um weniger als 5 Prozentpunkte verändert; der Bestand ist in den meisten Bündner Gemeinden stabil.'
     ],
-    source: 'Statistik Graubünden, dvs_awt_soci_20260112: Zweitwohnungsanteil 2017–2025 (Erhebung März 2025). Quelle: Eidg. Gebäude- und Wohnungsregister (GWR)'
+    source: 'Statistik Graubünden, dvs_awt_soci_20260112: Zweitwohnungsanteil 2017–2026 (17 Halbjahres-Erhebungen, Stand März 2026). Bevölkerung: dvs_awt_soci_20250507 (Stand 2024). Geometrien: opendatasoft georef-switzerland-gemeinde 2025. Mutationsprüfung Brusio/Soazza: de.wikipedia.org/wiki/Brusio bzw. /Soazza, abgerufen 2026-04-28. Datenquelle Wohnungen: Eidg. Gebäude- und Wohnungsregister (GWR)'
   },
 
   {
@@ -1677,19 +1671,410 @@ function destroyChart() {
   if (activeChart) { activeChart.destroy(); activeChart = null; }
 }
 
+// ============================================================
+// TYPOGRAPHY VIEW — community-name wordcloud with search
+// ============================================================
+
+// Classify a community name into its construction "Bauform"
+function classifyName(name) {
+  if (name.indexOf('/') !== -1)            return 'schraegstrich';
+  if (name.indexOf('(') !== -1)            return 'klammer';
+  if (/^St\./.test(name))                  return 'abkuerzung';
+  // Romansh phonem-hyphen: S-chanf, La Punt Chamues-ch
+  var lastWord = name.split(' ').pop();
+  if (/^S-/.test(lastWord) || /-ch$/.test(lastWord)) return 'rmphonem';
+  if (/\b(im|in|da)\b/.test(name) && name.indexOf(' ') !== -1) return 'praeposition';
+  if (name.indexOf('-') !== -1)            return 'bindestrich';
+  if (name.indexOf(' ') !== -1)            return 'mehrwort';
+  return 'einzelwort';
+}
+
+function isVowel(ch) { return /[aeiouAEIOUäöüÄÖÜéèàÀÉÈ]/.test(ch); }
+
+// Strip everything except letters (incl. umlauts/accents)
+function lettersOnly(s) { return s.replace(/[^A-Za-zÀ-ÿ]/g, ''); }
+
+function computeLetterStats(c) {
+  var L = lettersOnly(c.name);
+  c.letters = L.length;
+  c.vowels  = 0;
+  c.cons    = 0;
+  for (var i = 0; i < L.length; i++) (isVowel(L[i]) ? ++c.vowels : ++c.cons);
+  c.vowelRatio = c.letters ? c.vowels / c.letters : 0;
+  c.consRatio  = c.letters ? c.cons   / c.letters : 0;
+  // Longest consonant cluster — measured WITHIN word boundaries
+  // (split on any non-letter so slashes/hyphens/spaces don't create artificial clusters)
+  var pieces = c.name.split(/[^A-Za-zÀ-ÿ]+/).filter(Boolean);
+  c.consCluster = 0;
+  pieces.forEach(function(p) {
+    var clusters = p.match(/[^aeiouAEIOUäöüÄÖÜéèàÀÉÈ]+/g) || [];
+    clusters.forEach(function(cl) { if (cl.length > c.consCluster) c.consCluster = cl.length; });
+  });
+  c.words = c.name.split(/\s+/).filter(Boolean).length;
+  c.initial = c.name[0];
+  c.endLetter = L[L.length - 1] ? L[L.length - 1].toLowerCase() : '';
+}
+
+
+// ============================================================
+// ANATOMY VIEW — taxonomic breakdown of community-name forms
+// ============================================================
+
+function renderTypographyView(chartArea, d) {
+  if (!chartArea || !d || !d.series) return;
+
+  // 1. Flatten all communities with metadata
+  var all = [];
+  d.series.forEach(function(serie) {
+    (serie.points || []).forEach(function(p) {
+      var pop = (p.pop != null) ? p.pop : (p.y != null ? p.y : 0);
+      var nl  = (p.nl  != null) ? p.nl  : p.name.length;
+      all.push({
+        name: p.name, pop: pop, nl: nl,
+        lang: serie.label, color: serie.color,
+        form: classifyName(p.name)
+      });
+    });
+  });
+  if (!all.length) return;
+  all.forEach(computeLetterStats);
+
+  // 2. Compute curiosities
+  function maxBy(arr, key) {
+    return arr.reduce(function(a, b) { return b[key] > a[key] ? b : a; });
+  }
+  function allAt(arr, key, val) {
+    return arr.filter(function(x) { return Math.abs(x[key] - val) < 1e-9; });
+  }
+  var curMaxLetters       = maxBy(all, 'letters');
+  var curMostVowels       = maxBy(all, 'vowels');
+  var curMostCons         = maxBy(all, 'cons');
+  var curHighVowelRatio   = maxBy(all, 'vowelRatio');
+  var curHighConsRatio    = maxBy(all, 'consRatio');
+  var curLongestCluster   = maxBy(all, 'consCluster');
+  var minLetters = Math.min.apply(null, all.map(function(c) { return c.letters; }));
+  var shortest = allAt(all, 'letters', minLetters);
+  var maxConsRatioVal = curHighConsRatio.consRatio;
+  var consChampions = allAt(all, 'consRatio', maxConsRatioVal);
+  var maxClusterVal = curLongestCluster.consCluster;
+  var clusterChamps = allAt(all, 'consCluster', maxClusterVal);
+  // Initials
+  var initialCount = {};
+  all.forEach(function(c) {
+    var L = (c.initial || '').toUpperCase();
+    initialCount[L] = (initialCount[L] || 0) + 1;
+  });
+  var sortedInitials = Object.keys(initialCount).sort(function(a, b) {
+    return initialCount[b] - initialCount[a];
+  });
+  var topInitial = sortedInitials[0];
+  var topInitialCount = initialCount[topInitial];
+  var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  var missingInitials = alphabet.filter(function(L) { return !initialCount[L]; });
+  // Endings
+  var endCount = {};
+  all.forEach(function(c) {
+    endCount[c.endLetter] = (endCount[c.endLetter] || 0) + 1;
+  });
+  var sortedEndings = Object.keys(endCount).sort(function(a, b) {
+    return endCount[b] - endCount[a];
+  });
+  var topEnding = sortedEndings[0];
+  var topEndingCount = endCount[topEnding];
+  // Word counts
+  var multiWord = all.filter(function(c) { return c.words > 1; }).length;
+  var singleWord = all.length - multiWord;
+
+  // 3. Group by Bauform (ordered by count desc)
+  var formMeta = {
+    'einzelwort':    { title: 'Einzelwort',                desc: 'Ein Wort, kein Trenner — der häufigste Typ.' },
+    'schraegstrich': { title: 'Schrägstrich-Zweisprachigkeit', desc: 'Zwei Sprachversionen mit «/» verbunden — eine Graubündner Spezialität.' },
+    'praeposition':  { title: 'Mit Präposition',           desc: '«im», «in» oder «da» binden Ortskern und Region.' },
+    'mehrwort':      { title: 'Mehrwortig (ohne Trenner)', desc: 'Zwei Wörter, durch ein Leerzeichen getrennt.' },
+    'klammer':       { title: 'Klammer-Zusatz',            desc: 'Disambiguierung in Klammern — meistens (GR), wenn der Name in mehreren Kantonen vorkommt.' },
+    'bindestrich':   { title: 'Bindestrich-Fusion',        desc: 'Zwei Ortskerne mit «-» — Resultat einer Gemeindefusion.' },
+    'rmphonem':      { title: 'Romanisches Phonem-«-»',    desc: 'Bindestrich als Phonem-Trenner: «S-chanf», «Chamues-ch».' },
+    'abkuerzung':    { title: 'Mit Abkürzung',             desc: 'Punkt im Namen: «St.» als Heiligen-Anrede.' }
+  };
+  var formGroups = Object.keys(formMeta).map(function(form) {
+    var items = all.filter(function(c) { return c.form === form; });
+    items.sort(function(a, b) { return b.pop - a.pop; });
+    return { form: form, meta: formMeta[form], items: items };
+  }).filter(function(g) { return g.items.length > 0; });
+  formGroups.sort(function(a, b) { return b.items.length - a.items.length; });
+
+  // 4. Helpers
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+  }
+  function namePill(c) {
+    return '<span class="anat-name" '
+      + 'data-key="' + c.name.toLowerCase() + '" '
+      + 'data-name="' + escapeHtml(c.name) + '" '
+      + 'data-form="' + c.form + '" '
+      + 'style="color:' + c.color + '">'
+      + escapeHtml(c.name) + '</span>';
+  }
+
+  // 5. Build HTML
+  var legendHtml = d.series.map(function(s) {
+    return '<span class="anat-legend-item">'
+      + '<span class="anat-legend-dot" style="background:' + s.color + '"></span>'
+      + escapeHtml(s.label) + '</span>';
+  }).join('');
+
+  var dlOptions = all.slice().sort(function(a, b) {
+    return a.name.localeCompare(b.name, 'de');
+  }).map(function(c) {
+    return '<option value="' + escapeHtml(c.name) + '"></option>';
+  }).join('');
+
+  // Hero examples per Bauform — picked for clarity / iconic value
+  var heroByForm = {
+    'einzelwort':    'Chur',
+    'schraegstrich': 'Domat/Ems',
+    'praeposition':  'Santa Maria in Calanca',
+    'mehrwort':      'Bergün Filisur',
+    'klammer':       'Schmitten (GR)',
+    'bindestrich':   'Zillis-Reischen',
+    'rmphonem':      'S-chanf',
+    'abkuerzung':    'St. Moritz'
+  };
+
+  // Highlight the structural element of a name (the «/», «-», «(…)», preposition, etc.)
+  function formatHero(name, form) {
+    var safe = escapeHtml(name);
+    var mark = function(s) { return '<span class="anat-mark">' + s + '</span>'; };
+    if (form === 'schraegstrich') return safe.replace('/', mark('/'));
+    if (form === 'bindestrich' || form === 'rmphonem') return safe.replace('-', mark('-'));
+    if (form === 'klammer') return safe.replace(/\(([^)]+)\)/, mark('($1)'));
+    if (form === 'praeposition') return safe.replace(/\b(im|in|da)\b/, mark('$1'));
+    if (form === 'abkuerzung') return safe.replace(/^(St\.)/, mark('$1'));
+    return safe;
+  }
+
+  var formsHtml = formGroups.map(function(g) {
+    var heroName = heroByForm[g.form] || g.items[0].name;
+    var heroRec  = all.filter(function(c) { return c.name === heroName; })[0] || g.items[0];
+    var listItems = g.items.filter(function(c) { return c.name !== heroRec.name; });
+    var listHtml  = listItems.length
+      ? listItems.map(namePill).join('<span class="anat-sep">·</span>')
+      : '<span class="anat-poster-only">— einzige Gemeinde dieser Bauform</span>';
+    var heroPillKey = heroRec.name.toLowerCase();
+    return ''
+      + '<article class="anat-poster" data-form="' + g.form + '">'
+      +   '<div class="anat-poster-num">' + g.items.length + '</div>'
+      +   '<div class="anat-poster-body">'
+      +     '<div class="anat-poster-meta">' + escapeHtml(g.meta.title) + '</div>'
+      +     '<h4 class="anat-poster-hero anat-name" '
+      +       'data-key="' + heroPillKey + '" '
+      +       'data-name="' + escapeHtml(heroRec.name) + '" '
+      +       'data-form="' + g.form + '">'
+      +       formatHero(heroRec.name, g.form)
+      +     '</h4>'
+      +     '<p class="anat-poster-desc">' + escapeHtml(g.meta.desc) + '</p>'
+      +     '<div class="anat-poster-list">' + listHtml + '</div>'
+      +   '</div>'
+      + '</article>';
+  }).join('');
+
+  function curioRow(num, label, example) {
+    return ''
+      + '<div class="anat-fact">'
+      +   '<div class="anat-fact-num">' + num + '</div>'
+      +   '<div class="anat-fact-body">'
+      +     '<div class="anat-fact-label">' + label + '</div>'
+      +     '<div class="anat-fact-example">' + example + '</div>'
+      +   '</div>'
+      + '</div>';
+  }
+  var shortestNames  = shortest.map(function(c) { return c.name; }).join(' · ');
+  var consChampNames = consChampions.map(function(c) { return c.name; }).join(' · ');
+  var clusterNames   = clusterChamps.map(function(c) { return c.name; }).join(' · ');
+  var missingTxt = missingInitials.length ? missingInitials.join(' · ') : '—';
+  var curiosHtml = ''
+    + curioRow(curMaxLetters.nl,
+        'Zeichen — längster Name',
+        escapeHtml(curMaxLetters.name))
+    + curioRow(minLetters,
+        'Zeichen — kürzeste Namen',
+        escapeHtml(shortestNames))
+    + curioRow(curMostVowels.vowels,
+        'Vokale absolut',
+        escapeHtml(curMostVowels.name))
+    + curioRow(curMostCons.cons,
+        'Konsonanten absolut',
+        escapeHtml(curMostCons.name))
+    + curioRow((curHighVowelRatio.vowelRatio * 100).toFixed(0) + '%',
+        'Vokalanteil — Spitze',
+        escapeHtml(curHighVowelRatio.name) + ' (' + curHighVowelRatio.vowels + ' von ' + curHighVowelRatio.letters + ')')
+    + curioRow((maxConsRatioVal * 100).toFixed(0) + '%',
+        'Konsonantenanteil — Spitze',
+        escapeHtml(consChampNames))
+    + curioRow(curLongestCluster.consCluster,
+        'Konsonanten in Folge im Wort',
+        escapeHtml(clusterNames))
+    + curioRow(topInitialCount,
+        'Gemeinden mit Anfangs-«' + topInitial + '»',
+        'Jede ' + Math.round(all.length / topInitialCount) + '. Gemeinde — häufigster Anfangsbuchstabe')
+    + curioRow(missingInitials.length,
+        'Buchstaben nie als Anfang',
+        escapeHtml(missingTxt))
+    + curioRow(topEndingCount,
+        'Gemeinden enden auf «-' + topEnding + '»',
+        'Häufigste Endung — meist romanisch oder italienisch')
+    + curioRow(singleWord,
+        'Namen aus einem Wort',
+        multiWord + ' Namen bestehen aus zwei oder mehr Wörtern')
+    + curioRow(d.series.length,
+        'Sprachregionen',
+        d.series.map(function(s) { return s.label; }).join(' · '));
+
+  chartArea.innerHTML = ''
+    + '<div class="anat-search">'
+    +   '<label class="anat-search-label" for="anat-search-input">Wo steht deine Gemeinde?</label>'
+    +   '<input id="anat-search-input" class="anat-search-input" type="text" '
+    +     'placeholder="Gemeindename eingeben oder anklicken…" autocomplete="off" list="anat-search-list" />'
+    +   '<datalist id="anat-search-list">' + dlOptions + '</datalist>'
+    +   '<button class="anat-search-clear" id="anat-search-clear" type="button" hidden>×</button>'
+    + '</div>'
+    + '<div class="anat-info" id="anat-info" hidden></div>'
+    + '<section class="anat-section">'
+    +   '<header class="anat-eyebrow">'
+    +     '<span class="anat-eyebrow-line"></span>'
+    +     '<span class="anat-eyebrow-text">Bauformen</span>'
+    +     '<span class="anat-eyebrow-line"></span>'
+    +   '</header>'
+    +   '<h3 class="anat-section-title">Acht Wege, eine Gemeinde zu nennen</h3>'
+    +   '<p class="anat-section-sub">Wie ist der Name deiner Gemeinde konstruiert?</p>'
+    +   '<div class="anat-posters">' + formsHtml + '</div>'
+    + '</section>'
+    + '<section class="anat-section">'
+    +   '<header class="anat-eyebrow">'
+    +     '<span class="anat-eyebrow-line"></span>'
+    +     '<span class="anat-eyebrow-text">Kuriositäten</span>'
+    +     '<span class="anat-eyebrow-line"></span>'
+    +   '</header>'
+    +   '<h3 class="anat-section-title">Was die Buchstaben sonst noch verraten</h3>'
+    +   '<div class="anat-fact-strip">' + curiosHtml + '</div>'
+    + '</section>';
+
+  // 6. Wire interactions
+  var input  = document.getElementById('anat-search-input');
+  var clear  = document.getElementById('anat-search-clear');
+  var info   = document.getElementById('anat-info');
+
+  function clearHighlight() {
+    chartArea.querySelectorAll('.anat-name').forEach(function(el) {
+      el.classList.remove('anat-name--active', 'anat-name--dim');
+    });
+    chartArea.querySelectorAll('.anat-poster').forEach(function(el) {
+      el.classList.remove('anat-poster--active');
+    });
+    info.hidden = true;
+    info.innerHTML = '';
+  }
+
+  function findMatch(q) {
+    if (!q) return null;
+    var spans = chartArea.querySelectorAll('.anat-name');
+    var match = null;
+    spans.forEach(function(el) { if (!match && el.dataset.key === q) match = el; });
+    if (!match) spans.forEach(function(el) { if (!match && el.dataset.key.indexOf(q) === 0) match = el; });
+    if (!match) spans.forEach(function(el) { if (!match && el.dataset.key.indexOf(q) !== -1) match = el; });
+    return match;
+  }
+
+  function highlight(query, sourceEl) {
+    var q = (query || '').trim().toLowerCase();
+    var spans = chartArea.querySelectorAll('.anat-name');
+    var posters = chartArea.querySelectorAll('.anat-poster');
+    spans.forEach(function(el) { el.classList.remove('anat-name--active', 'anat-name--dim'); });
+    posters.forEach(function(el) { el.classList.remove('anat-poster--active'); });
+    if (!q) { info.hidden = true; clear.hidden = true; return; }
+    clear.hidden = false;
+
+    var match = sourceEl || findMatch(q);
+    if (!match) {
+      info.innerHTML = '<span class="anat-info-miss">Keine Übereinstimmung — versuche einen anderen Namen.</span>';
+      info.hidden = false;
+      return;
+    }
+    spans.forEach(function(el) { if (el !== match) el.classList.add('anat-name--dim'); });
+    match.classList.add('anat-name--active');
+
+    var formId = match.dataset.form;
+    var formEl = chartArea.querySelector('.anat-poster[data-form="' + formId + '"]');
+    if (formEl) formEl.classList.add('anat-form--active');
+
+    var rec = all.filter(function(c) { return c.name === match.dataset.name; })[0];
+    if (rec) {
+      var meta = formMeta[rec.form];
+      info.innerHTML = ''
+        + '<strong>' + escapeHtml(rec.name) + '</strong>'
+        + ' · <span class="anat-info-pill" style="background:' + rec.color + '">' + escapeHtml(rec.lang) + '</span>'
+        + ' · gehört zur Bauform <em>«' + escapeHtml(meta.title) + '»</em>'
+        + ' · ' + rec.letters + ' Buchstaben (' + rec.vowels + ' Vokale, ' + rec.cons + ' Konsonanten)'
+        + ' · ' + rec.pop.toLocaleString('de-CH') + ' Einw.';
+      info.hidden = false;
+    }
+    if (typeof match.scrollIntoView === 'function') {
+      try { match.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { /* old browsers */ }
+    }
+  }
+
+  if (input) {
+    input.addEventListener('input', function() { highlight(this.value); });
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { this.value = ''; clearHighlight(); clear.hidden = true; }
+    });
+  }
+  if (clear) {
+    clear.addEventListener('click', function() {
+      if (input) input.value = '';
+      clearHighlight();
+      this.hidden = true;
+      if (input) input.focus();
+    });
+  }
+  chartArea.addEventListener('click', function(e) {
+    var el = e.target.closest('.anat-name');
+    if (!el) return;
+    if (input) input.value = el.dataset.name;
+    highlight(el.dataset.name, el);
+  });
+}
+
+
 function buildChart(story, data) {
   destroyChart();
-  const canvas = document.getElementById('mainChart');
-  if (!canvas) return;
-  const ctx  = canvas.getContext('2d');
+
   const d    = data;
   const type = story.chartType;
 
-  // Set chart-type class on chart-area for CSS height overrides
-  var chartArea = canvas.closest('.chart-area');
-  if (chartArea) {
-    chartArea.className = 'chart-area' + (type === 'butterfly' ? ' chart-area--butterfly' : '');
+  // Resolve chart-area; restore canvas if a previous render replaced it
+  var chartArea = document.querySelector('.chart-area');
+  if (!chartArea) return;
+  chartArea.className = 'chart-area'
+    + (type === 'butterfly' ? ' chart-area--butterfly' : '')
+    + (type === 'typography' ? ' chart-area--typography' : '');
+
+  // Typography view: render community names as a wordcloud with search
+  if (type === 'typography' && d && d.series) {
+    renderTypographyView(chartArea, d);
+    return;
   }
+
+  // Ensure a fresh canvas exists for Chart.js
+  var canvas = document.getElementById('mainChart');
+  if (!canvas) {
+    chartArea.innerHTML = '<canvas id="mainChart"></canvas>';
+    canvas = document.getElementById('mainChart');
+  }
+  if (!canvas) return;
+  const ctx  = canvas.getContext('2d');
 
   // No data: show placeholder message
   if (!d) {
@@ -2409,11 +2794,44 @@ function renderStory(index) {
   setEl('story-source', 'Quelle: ' + s.source);
 
   // 2. Build chart — static data or live fetch
-  // Special case: embedded visualizations (links to external pages)
+  // Special case: embedded visualizations (inline iframe)
+  // Höhen-Sync via iframe-resizer (https://iframe-resizer.com/) – die child-
+  // Seite des Skripts ist im Atlas-HTML schon eingebunden, hier laden wir die
+  // parent-Seite einmalig nach und initialisieren den Resize.
   if (s.chartType === 'embedded' && s.embedUrl) {
     const chartArea = document.querySelector('.chart-area');
     if (chartArea) {
-      chartArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:400px;background:#f5f5f0;border-radius:8px;flex-direction:column;gap:20px;"><p style="font-size:16px;color:#666;text-align:center;">Interaktive Visualisierung</p><a href="' + s.embedUrl + '" target="_blank" style="padding:12px 24px;background:#1E3A5F;color:#fff;text-decoration:none;border-radius:6px;font-weight:600;">Zur vollständigen Visualisierung →</a></div>';
+      var minH = s.embedMinHeight || 600;
+      var iframeId = 'embed-' + s.id;
+      chartArea.innerHTML = '<iframe id="' + iframeId + '" src="' + s.embedUrl + '" loading="lazy" style="width:100%;border:none;min-height:' + minH + 'px;background:#fff;border-radius:8px;display:block;" scrolling="no" title="' + (s.chartTitle || 'Interaktive Visualisierung') + '"></iframe>' +
+        '<p style="margin-top:8px;font-size:11px;color:#999;text-align:right;"><a href="' + s.embedUrl + '" target="_blank" style="color:#0068A4;text-decoration:none;">In neuem Tab öffnen ↗</a></p>';
+
+      function _initResizer() {
+        if (typeof window.iFrameResize !== 'function') return;
+        try {
+          window.iFrameResize({
+            checkOrigin: false,
+            heightCalculationMethod: 'lowestElement',
+            log: false,
+            minHeight: minH
+          }, '#' + iframeId);
+        } catch (e) { /* iframe schon resized */ }
+      }
+      if (typeof window.iFrameResize === 'function') {
+        // Library bereits geladen, sofort initialisieren (nach load des iframes)
+        document.getElementById(iframeId).addEventListener('load', _initResizer, { once: true });
+      } else if (!window.__iframeResizerLoading) {
+        window.__iframeResizerLoading = true;
+        var sc = document.createElement('script');
+        sc.src = 'https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js';
+        sc.onload = function() {
+          // alle bestehenden embed-iframes initialisieren
+          document.querySelectorAll('iframe[id^="embed-"]').forEach(function(f) {
+            window.iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement', log: false }, f);
+          });
+        };
+        document.head.appendChild(sc);
+      }
     }
     setDataBadge('live', 'Interaktive Visualisierung');
   } else if (s.staticData) {
