@@ -86,9 +86,9 @@ ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DA
   }
 
   var rows = [
-    { label: 'Total Wohnungen',       s: start.total,     e: end.total,     cls: '' },
     { label: 'Erstwohnungen',         s: start.erst,      e: end.erst,      cls: '' },
-    { label: 'Zweitwohnungen i.e.S.', s: start.zweit_eng, e: end.zweit_eng, cls: 'zweit' }
+    { label: 'Zweitwohnungen i.e.S.', s: start.zweit_eng, e: end.zweit_eng, cls: 'zweit' },
+    { label: 'Total Wohnungen',       s: start.total,     e: end.total,     cls: '' }
   ];
 
   document.getElementById('wach-tbody').innerHTML = rows.map(function (row) {
