@@ -22,6 +22,7 @@ Höhen-Sync: jeder Embed hat das iframe-resizer/contentWindow-Script — die res
 | 8 | `zwg_embed_bumpchart.html` | 100 Rang-Linien über die Zeit (Y = Rang 1–100) | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/zwg_embed_bumpchart.html) |
 | 9 | `zwg_embed_bumpchart_animated.html` | Vertikale Liste aller Gemeinden, sortiert sich live nach Rang um, mit ↑↓-Pfeil | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/zwg_embed_bumpchart_animated.html) |
 | 10 | `zwg_embed_karte.html` | Datawrapper-Choropleth aller 100 Bündner Gemeinden (Basemap 2025) | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/zwg_embed_karte.html) |
+| 11 | `zwg_embed_wachstum.html` | HTML-Tabelle: Wachstum Total / Erst / Zweit 2017→2026, Erst-gleichgestellt in Fussnote | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/zwg_embed_wachstum.html) |
 
 ---
 
@@ -265,6 +266,29 @@ Wenn du **mehrere Embeds auf derselben Seite** einbindest, reicht Variante A —
 
 ---
 
+## 11. Wachstumsraten-Tabelle (Total / Erst / Zweit)
+
+**A — responsive:**
+```html
+<iframe id="zwg-wachstum"
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/zwg_embed_wachstum.html"
+  title="Wohnungsentwicklung Graubünden 2017–2026"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; display:block;"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#zwg-wachstum');</script>
+```
+
+**B — einfach:**
+```html
+<iframe src="https://julirai90-glitch.github.io/claude_code_git_workspace/zwg_embed_wachstum.html"
+  title="Wohnungsentwicklung Graubünden 2017–2026"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; min-height:320px; display:block;"></iframe>
+```
+
+---
+
 ## Mehrere Embeds auf einer Seite
 
 Wenn du z.B. den Atlas und das Kanton-Embed auf derselben WordPress-Seite zeigen willst, reicht **eine** Script-Einbindung:
@@ -297,5 +321,5 @@ Wenn du z.B. den Atlas und das Kanton-Embed auf derselben WordPress-Seite zeigen
 
 ---
 
-*Letztes Update: 2026-05-01.
+*Letztes Update: 2026-05-04.
 Bei Datenupdate auf gh-pages aktualisieren sich alle Embeds automatisch — keine Code-Änderung im einbettenden Artikel nötig.*

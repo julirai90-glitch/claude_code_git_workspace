@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wohnungsentwicklung Graubünden 2017–2026</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+<style>
+  .wach-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  .wach-table th {
+    background: #1E3A5F; color: #fff; padding: 8px 10px;
+    text-align: right; font-weight: 600; font-size: 11px;
+    letter-spacing: 0.3px; border: none;
+  }
+  .wach-table th:first-child { text-align: left; border-radius: 4px 0 0 0; }
+  .wach-table th:last-child  { border-radius: 0 4px 0 0; }
+  .wach-table td {
+    padding: 9px 10px; border-bottom: 1px solid #eee;
+    text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .wach-table td:first-child { text-align: left; font-weight: 500; }
+  .wach-table tbody tr:hover td { background: #f0ede8; }
+  /* Zweitwohnungen-Zeile hervorgehoben */
+  .wach-table tr.zweit td { background: #cce0ee; }
+  .wach-table tr.zweit:hover td { background: #b8d4e8; }
+  .wach-table tr.zweit .delta-pct { font-weight: 700; color: #EE7733; font-size: 14px; }
+  .wach-table tr:last-child td { border-bottom: none; }
+  .wach-table .delta-pct { font-weight: 600; }
+  .wach-table tfoot td {
+    padding: 6px 10px; font-size: 11px; color: #888;
+    border-top: 1px solid #ddd; text-align: left; border-bottom: none;
+  }
+</style>
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Wohnungsentwicklung Graubünden 2017–2026</h2>
+  <p class="sub" id="wach-sub">Daten werden geladen…</p>
+
+  <table class="wach-table">
+    <thead>
+      <tr>
+        <th>Kategorie</th>
+        <th>März 2017</th>
+        <th>März 2026</th>
+        <th>Δ absolut</th>
+        <th>Δ %</th>
+      </tr>
+    </thead>
+    <tbody id="wach-tbody">
+      <tr><td colspan="5" style="text-align:center;color:#aaa;padding:20px;">…</td></tr>
+    </tbody>
+    <tfoot>
+      <tr><td colspan="5" id="wach-note"></td></tr>
+    </tfoot>
+  </table>
+
+  <div id="source"></div>
+</div>
+
+<script>
+ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DATA) {
+  document.getElementById('source').innerHTML = ZWG.footerHTML();
+
+  var start = null, end = null;
+  DATA.reihe.forEach(function (r) {
+    if (r.periode_id === '2017-03') start = r;
+    if (r.periode_id === '2026-03') end   = r;
+  });
+
+  if (!start || !end) {
+    document.getElementById('wach-tbody').innerHTML =
+      '<tr><td colspan="5" style="color:#B5001E;">Datenpunkte 2017-03 / 2026-03 nicht gefunden.</td></tr>';
+    return;
+  }
+
+  function deltaPct(a, b) { return (b - a) / a * 100; }
+  function fmtDeltaAbs(a, b) {
+    var d = b - a;
+    return (d >= 0 ? '+' : '−') + ZWG.fmtN(Math.abs(d));
+  }
+  function fmtDeltaPct(a, b) {
+    var p = deltaPct(a, b);
+    return (p >= 0 ? '+' : '−') + Math.abs(p).toFixed(1).replace('.', ',') + ' %';
+  }
+
+  var rows = [
+    { label: 'Total Wohnungen',       s: start.total,     e: end.total,     cls: '' },
+    { label: 'Erstwohnungen',         s: start.erst,      e: end.erst,      cls: '' },
+    { label: 'Zweitwohnungen i.e.S.', s: start.zweit_eng, e: end.zweit_eng, cls: 'zweit' }
+  ];
+
+  document.getElementById('wach-tbody').innerHTML = rows.map(function (row) {
+    return '<tr class="' + row.cls + '">'
+      + '<td>' + row.label + '</td>'
+      + '<td>' + ZWG.fmtN(row.s) + '</td>'
+      + '<td>' + ZWG.fmtN(row.e) + '</td>'
+      + '<td>' + fmtDeltaAbs(row.s, row.e) + '</td>'
+      + '<td class="delta-pct">' + fmtDeltaPct(row.s, row.e) + '</td>'
+      + '</tr>';
+  }).join('');
+
+  // Subtitle dynamisch aus den geladenen Daten
+  var pctZweit = fmtDeltaPct(start.zweit_eng, end.zweit_eng);
+  var pctErst  = fmtDeltaPct(start.erst,      end.erst);
+  var pctTotal = fmtDeltaPct(start.total,     end.total);
+  document.getElementById('wach-sub').textContent =
+    'März 2017 → März 2026. '
+    + 'Zweitwohnungen i.e.S. ' + pctZweit
+    + ', Erstwohnungen ' + pctErst
+    + ', Total ' + pctTotal + '.';
+
+  // Fussnote: Erst-gleichgestellt dynamisch berechnet
+  var dGleich = end.gleich - start.gleich;
+  var pGleich = deltaPct(start.gleich, end.gleich).toFixed(1).replace('.', ',');
+  document.getElementById('wach-note').textContent =
+    'Nicht enthalten: Erst-gleichgestellt (Personalwohnungen u.ä.): '
+    + ZWG.fmtN(start.gleich) + ' → ' + ZWG.fmtN(end.gleich)
+    + ' (+' + pGleich + ' %), absolut ' + ZWG.fmtN(end.gleich) + ' Wohnungen. '
+    + 'Zweitwohnungen i.e.S. = Total − Erstwohnungen − Erst-gleichgestellt (Art. 3 ZWG).';
+});
+</script>
+</body>
+</html>
