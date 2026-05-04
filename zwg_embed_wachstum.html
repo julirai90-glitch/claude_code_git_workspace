@@ -23,8 +23,8 @@
   .wach-table td:first-child { text-align: left; font-weight: 500; }
   .wach-table tbody tr:hover td { background: #f0ede8; }
   /* Zweitwohnungen-Zeile hervorgehoben */
-  .wach-table tr.zweit td { background: #cce0ee; }
-  .wach-table tr.zweit:hover td { background: #b8d4e8; }
+  .wach-table tr.zweit td { background: #fdebd8; }
+  .wach-table tr.zweit:hover td { background: #fad9bb; }
   .wach-table tr.zweit .delta-pct { font-weight: 700; color: #EE7733; font-size: 14px; }
   .wach-table tr:last-child td { border-bottom: none; }
   .wach-table .delta-pct { font-weight: 600; }
@@ -37,7 +37,6 @@
 <body>
 <div class="zwg-wrap">
   <h2>Wohnungsentwicklung Graubünden 2017–2026</h2>
-  <p class="sub" id="wach-sub">Daten werden geladen…</p>
 
   <table class="wach-table">
     <thead>
@@ -101,16 +100,6 @@ ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DA
       + '<td class="delta-pct">' + fmtDeltaPct(row.s, row.e) + '</td>'
       + '</tr>';
   }).join('');
-
-  // Subtitle dynamisch aus den geladenen Daten
-  var pctZweit = fmtDeltaPct(start.zweit_eng, end.zweit_eng);
-  var pctErst  = fmtDeltaPct(start.erst,      end.erst);
-  var pctTotal = fmtDeltaPct(start.total,     end.total);
-  document.getElementById('wach-sub').textContent =
-    'März 2017 → März 2026. '
-    + 'Zweitwohnungen i.e.S. ' + pctZweit
-    + ', Erstwohnungen ' + pctErst
-    + ', Total ' + pctTotal + '.';
 
   // Fussnote: Erst-gleichgestellt dynamisch berechnet
   var dGleich = end.gleich - start.gleich;
