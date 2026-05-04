@@ -125,8 +125,8 @@ ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DA
         ZWG.showTooltip(
           '<strong style="color:#1E3A5F;">' + r.label + '</strong>'
           + '<div style="margin-top:4px;display:grid;grid-template-columns:auto auto;gap:2px 10px;font-size:11px;">'
-          + '<span style="color:#0068A4;">Erst</span><span style="font-weight:600;">' + r.erst.toFixed(2).replace('.', ',') + ' %</span>'
-          + '<span style="color:#EE7733;">Zweit</span><span style="font-weight:600;">' + r.zweit.toFixed(2).replace('.', ',') + ' %</span>'
+          + '<span style="color:#0068A4;">Erstwohnungen</span><span style="font-weight:600;">' + r.erst.toFixed(2).replace('.', ',') + ' %</span>'
+          + '<span style="color:#EE7733;">Zweitwohnungen</span><span style="font-weight:600;">' + r.zweit.toFixed(2).replace('.', ',') + ' %</span>'
           + '<span style="color:#888;">Differenz</span><span style="font-weight:600;">' + (diff >= 0 ? '+' : '') + diff.toFixed(2).replace('.', ',') + ' Pp</span>'
           + '</div>'
           + (r.calanca ? '<div style="font-size:10px;color:#aaa;margin-top:4px;">* Calanca-Anomalie</div>' : ''),
@@ -134,9 +134,9 @@ ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DA
         );
         document.getElementById('rate-detail').innerHTML =
           '<strong style="color:#1E3A5F;">' + r.label + '</strong>: '
-          + 'Erst <strong>' + r.erst.toFixed(2).replace('.', ',') + ' %</strong> '
+          + 'Erstwohnungen <strong>' + r.erst.toFixed(2).replace('.', ',') + ' %</strong> '
           + '(+' + ZWG.fmtN(r.erstAbs) + ' Wohnungen), '
-          + 'Zweit <strong>' + r.zweit.toFixed(2).replace('.', ',') + ' %</strong> '
+          + 'Zweitwohnungen <strong>' + r.zweit.toFixed(2).replace('.', ',') + ' %</strong> '
           + '(+' + ZWG.fmtN(r.zweitAbs) + ' Wohnungen)'
           + (r.calanca ? ' <span style="color:#aaa;">* Calanca-Anomalie</span>' : '');
       })
