@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jährliche Wachstumsraten Erst- und Zweitwohnungen GR</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="zwg_common.js"></script>
+<link rel="stylesheet" href="zwg_common.css">
+<style>
+  #rate-svg { width: 100%; height: 340px; display: block; }
+  .bar { cursor: pointer; transition: opacity 0.1s; }
+  .bar:hover { opacity: 0.75; }
+  .zero-line { stroke: #333; stroke-width: 1.5; }
+  .legend { display: flex; gap: 16px; margin-bottom: 10px; font-size: 12px; align-items: center; }
+  .legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+  #rate-detail { font-size: 11px; color: #888; margin-top: 6px; min-height: 18px; }
+</style>
+</head>
+<body>
+<div class="zwg-wrap">
+  <h2>Wachstum pro Jahr: Erst- und Zweitwohnungen 2017–2026</h2>
+  <p class="sub">März-zu-März-Veränderung in Prozent. Jeder Balken = ein Jahresschritt.</p>
+
+  <div class="legend">
+    <span><span class="legend-swatch" style="background:#0068A4;"></span>Erstwohnungen</span>
+    <span><span class="legend-swatch" style="background:#EE7733;"></span>Zweitwohnungen i.e.S.</span>
+  </div>
+
+  <svg id="rate-svg"></svg>
+  <div id="rate-detail">Hover auf einen Balken für Details.</div>
+
+  <p class="zwg-note" style="margin-top:10px;">Basis: März-Stichtag. Zweitwohnungen i.e.S. = Total − Erstwohnungen − Erst-gleichgestellt (Art. 3 ZWG). * 2019→2020: Calanca-Anomalie im GWR (+98 Whg., Effekt ca. +0,12 Pp auf Kantonsaggregat). Quelle: ARE/GWR, data.gr.ch, Datensatz dvs_awt_soci_20260112.</p>
+
+  <div id="source"></div>
+</div>
+
+<script>
+ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DATA) {
+  document.getElementById('source').innerHTML = ZWG.footerHTML();
+
+  var maerz = DATA.reihe.filter(function (r) { return r.semester === 'März'; })
+                        .sort(function (a, b) { return a.jahr - b.jahr; });
+
+  var rates = [];
+  for (var i = 1; i < maerz.length; i++) {
+    var p = maerz[i - 1], c = maerz[i];
+    rates.push({
+      label:    p.jahr + '→' + c.jahr,
+      shortLabel: '\'' + String(p.jahr).slice(2) + '/' + String(c.jahr).slice(2),
+      erst:     (c.erst      / p.erst      - 1) * 100,
+      zweit:    (c.zweit_eng / p.zweit_eng - 1) * 100,
+      erstAbs:  c.erst      - p.erst,
+      zweitAbs: c.zweit_eng - p.zweit_eng,
+      calanca:  c.jahr === 2020
+    });
+  }
+
+  var svg = d3.select('#rate-svg');
+  var W = svg.node().clientWidth || 648;
+  var H = 340;
+  var m = { t: 16, r: 16, b: 44, l: 44 };
+  svg.attr('viewBox', '0 0 ' + W + ' ' + H).selectAll('*').remove();
+
+  var x0 = d3.scaleBand()
+    .domain(rates.map(function (r) { return r.label; }))
+    .range([m.l, W - m.r])
+    .padding(0.28);
+
+  var x1 = d3.scaleBand()
+    .domain(['erst', 'zweit'])
+    .range([0, x0.bandwidth()])
+    .padding(0.08);
+
+  var yMax = Math.ceil(d3.max(rates.map(function (r) { return Math.max(r.erst, r.zweit); })) * 4) / 4 + 0.25;
+  var y = d3.scaleLinear().domain([0, yMax]).range([H - m.b, m.t]);
+
+  // Gridlines
+  var yTicks = d3.range(0, yMax + 0.01, 0.5);
+  svg.append('g').selectAll('line').data(yTicks).enter().append('line')
+    .attr('class', 'zwg-gridline')
+    .attr('x1', m.l).attr('x2', W - m.r)
+    .attr('y1', function (d) { return y(d); })
+    .attr('y2', function (d) { return y(d); });
+
+  // Zero line (etwas stärker)
+  svg.append('line').attr('class', 'zero-line')
+    .attr('x1', m.l).attr('x2', W - m.r)
+    .attr('y1', y(0)).attr('y2', y(0));
+
+  // Y-Achse
+  svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(' + m.l + ',0)')
+    .call(d3.axisLeft(y).tickValues(yTicks).tickFormat(function (d) { return d.toFixed(1).replace('.', ',') + ' %'; }));
+
+  // X-Achse
+  svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(0,' + (H - m.b) + ')')
+    .call(d3.axisBottom(x0).tickFormat(function (d, i) { return rates[i].shortLabel; }));
+
+  // Calanca-Stern
+  var calIdx = rates.findIndex(function (r) { return r.calanca; });
+  if (calIdx >= 0) {
+    var r = rates[calIdx];
+    var cx = x0(r.label) + x0.bandwidth() / 2;
+    svg.append('text')
+      .attr('x', cx).attr('y', H - m.b + 32)
+      .attr('text-anchor', 'middle').attr('font-size', 9).attr('fill', '#aaa')
+      .text('*');
+  }
+
+  // Balken
+  var grps = svg.append('g').selectAll('g').data(rates).enter().append('g')
+    .attr('transform', function (r) { return 'translate(' + x0(r.label) + ',0)'; });
+
+  function addBar(key, color) {
+    grps.append('rect')
+      .attr('class', 'bar')
+      .attr('x', function () { return x1(key); })
+      .attr('y', function (r) { return y(r[key]); })
+      .attr('width', x1.bandwidth())
+      .attr('height', function (r) { return y(0) - y(r[key]); })
+      .attr('fill', color)
+      .attr('rx', 2)
+      .on('mouseenter', function (evt, r) {
+        var diff = r.zweit - r.erst;
+        ZWG.showTooltip(
+          '<strong style="color:#1E3A5F;">' + r.label + '</strong>'
+          + '<div style="margin-top:4px;display:grid;grid-template-columns:auto auto;gap:2px 10px;font-size:11px;">'
+          + '<span style="color:#0068A4;">Erst</span><span style="font-weight:600;">' + r.erst.toFixed(2).replace('.', ',') + ' %</span>'
+          + '<span style="color:#EE7733;">Zweit</span><span style="font-weight:600;">' + r.zweit.toFixed(2).replace('.', ',') + ' %</span>'
+          + '<span style="color:#888;">Differenz</span><span style="font-weight:600;">' + (diff >= 0 ? '+' : '') + diff.toFixed(2).replace('.', ',') + ' Pp</span>'
+          + '</div>'
+          + (r.calanca ? '<div style="font-size:10px;color:#aaa;margin-top:4px;">* Calanca-Anomalie</div>' : ''),
+          evt
+        );
+        document.getElementById('rate-detail').innerHTML =
+          '<strong style="color:#1E3A5F;">' + r.label + '</strong>: '
+          + 'Erst <strong>' + r.erst.toFixed(2).replace('.', ',') + ' %</strong> '
+          + '(+' + ZWG.fmtN(r.erstAbs) + ' Wohnungen), '
+          + 'Zweit <strong>' + r.zweit.toFixed(2).replace('.', ',') + ' %</strong> '
+          + '(+' + ZWG.fmtN(r.zweitAbs) + ' Wohnungen)'
+          + (r.calanca ? ' <span style="color:#aaa;">* Calanca-Anomalie</span>' : '');
+      })
+      .on('mousemove', ZWG.positionTooltip)
+      .on('mouseleave', ZWG.hideTooltip);
+  }
+
+  addBar('erst',  '#0068A4');
+  addBar('zweit', '#EE7733');
+
+  // Wert-Labels auf Balken (nur wenn breit genug)
+  if (x1.bandwidth() > 18) {
+    ['erst', 'zweit'].forEach(function (key, ki) {
+      grps.append('text')
+        .attr('x', function () { return x1(key) + x1.bandwidth() / 2; })
+        .attr('y', function (r) { return y(r[key]) - 3; })
+        .attr('text-anchor', 'middle')
+        .attr('font-size', 9)
+        .attr('fill', ki === 0 ? '#0068A4' : '#EE7733')
+        .attr('font-weight', 600)
+        .text(function (r) { return r[key].toFixed(1).replace('.', ','); });
+    });
+  }
+});
+</script>
+</body>
+</html>
