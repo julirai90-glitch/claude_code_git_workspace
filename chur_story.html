@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eine Stadt, 60 Gemeinden – Churs verborgene Dimension</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: #f5f2ec;
+    color: #1a1a1a;
+    line-height: 1.7;
+  }
+
+  .hero {
+    background: #1a2744;
+    color: white;
+    padding: 80px 40px 60px;
+    text-align: center;
+  }
+
+  .hero .kicker {
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #8fa8d6;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: normal;
+    line-height: 1.2;
+    max-width: 800px;
+    margin: 0 auto 24px;
+  }
+
+  .hero .lead {
+    font-size: clamp(16px, 2.5vw, 20px);
+    color: #b8c8e0;
+    max-width: 640px;
+    margin: 0 auto;
+    font-style: italic;
+  }
+
+  .article-body {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px 24px;
+  }
+
+  .article-body p {
+    font-size: 18px;
+    margin-bottom: 24px;
+    color: #2a2a2a;
+  }
+
+  .highlight-box {
+    background: #1a2744;
+    color: white;
+    border-radius: 4px;
+    padding: 32px 40px;
+    margin: 48px 0;
+    text-align: center;
+  }
+
+  .highlight-box .big-number {
+    font-size: 72px;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    line-height: 1;
+    color: #8fa8d6;
+  }
+
+  .highlight-box .big-label {
+    font-size: 18px;
+    margin-top: 8px;
+    color: #c8d8f0;
+  }
+
+  .section-title {
+    font-family: 'Arial', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
+    margin-top: 48px;
+    border-top: 1px solid #ddd;
+    padding-top: 16px;
+  }
+
+  h2 {
+    font-size: 28px;
+    font-weight: normal;
+    margin-bottom: 20px;
+    color: #1a2744;
+  }
+
+  /* ─── CHART ─────────────────────────────── */
+
+  .chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 40px 32px 32px;
+    margin: 48px -20px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+  }
+
+  .chart-title {
+    font-family: 'Arial', sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: #1a2744;
+    margin-bottom: 4px;
+  }
+
+  .chart-subtitle {
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 32px;
+  }
+
+  .bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bar-label {
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    width: 140px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 48px;
+    background: #f0ede8;
+    border-radius: 3px;
+    overflow: visible;
+    position: relative;
+  }
+
+  .bar-chur {
+    height: 100%;
+    background: #1a2744;
+    border-radius: 3px;
+    position: relative;
+    cursor: default;
+    transition: filter 0.2s;
+  }
+
+  .bar-chur:hover {
+    filter: brightness(1.2);
+  }
+
+  .bar-stacked {
+    display: flex;
+    height: 100%;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-segment {
+    height: 100%;
+    cursor: pointer;
+    transition: filter 0.15s;
+    position: relative;
+  }
+
+  .bar-segment:hover {
+    filter: brightness(1.25);
+    z-index: 10;
+  }
+
+  .bar-value {
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+    color: #555;
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+
+  /* Tooltip */
+  #tooltip {
+    position: fixed;
+    background: #1a2744;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 1000;
+    max-width: 200px;
+    line-height: 1.5;
+  }
+
+  #tooltip.visible { opacity: 1; }
+
+  #tooltip .tt-name { font-weight: bold; font-size: 14px; }
+  #tooltip .tt-pop { color: #8fa8d6; }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+  }
+
+  /* Municipality list */
+  .gemeente-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .gemeente-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 4px;
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    border-left: 3px solid transparent;
+  }
+
+  .gemeente-item:nth-child(3n+1) { border-left-color: #2563eb; }
+  .gemeente-item:nth-child(3n+2) { border-left-color: #16a34a; }
+  .gemeente-item:nth-child(3n)   { border-left-color: #dc2626; }
+
+  .gemeente-name { color: #333; }
+  .gemeente-pop  { color: #888; font-size: 12px; }
+
+  .source-note {
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+    color: #999;
+    margin-top: 40px;
+    border-top: 1px solid #e0ddd8;
+    padding-top: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="kicker">Graubünden in Zahlen · 2024</div>
+  <h1>Eine Stadt, 60 Gemeinden</h1>
+  <p class="lead">Was Chur von Graubünden unterscheidet – und warum die Kantons&shy;hauptstadt fast das Gewicht des halben Kantons trägt.</p>
+</div>
+
+<div class="article-body">
+
+  <p>Chur ist die kleinste Kantonshauptstadt der Schweiz. Doch verglichen mit dem Rest von Graubünden ist sie ein Koloss. Mit <strong>39'177 Einwohnerinnen und Einwohnern</strong> im Jahr 2024 überragt Chur nicht nur alle anderen Gemeinden des Kantons – sie ist so gross wie 60 von ihnen zusammen.</p>
+
+  <p>Diese 60 Gemeinden, von den winzigsten Dörfern des Kantons bis hin zu bekannten Wintersportorten, summieren sich auf 39'125 Personen. Die Lücke zu Chur: gerade einmal 52 Menschen.</p>
+
+  <div class="highlight-box">
+    <div class="big-number">60</div>
+    <div class="big-label">Bündner Gemeinden passen bevölkerungsmässig in Chur</div>
+  </div>
+
+  <p>Das Bild wird umso eindrücklicher, wenn man sich die kleinste dieser Gemeinden vor Augen führt: <strong>Rongellen</strong> im Schamserthal zählt gerade einmal 59 Menschen. Bräuchte Rongellen einen Churer Stadtbus, würden alle Einwohnerinnen und Einwohner in zwei Fahrzeuge passen.</p>
+
+  <p>Doch auch die grosse Vielfalt ist bemerkenswert: Die 60 Gemeinden verteilen sich über den ganzen Kanton – vom Calancatal im Süden bis ins Prättigau im Norden, vom Engadin bis zum Rheinwald. Bekannte Namen wie <strong>Sils im Engadin</strong>, <strong>Silvaplana</strong> oder <strong>Vals</strong> sind darunter. Orte, die touristische Bekanntheit geniessen, die Chur beinahe überflüssig erscheinen lässt – bevölkerungsmässig sind sie aber verschwindend klein.</p>
+
+  <div class="section-title">Visualisierung</div>
+  <h2>Chur gegen die 60 kleinsten Gemeinden</h2>
+  <p>Die Grafik zeigt zwei Balken: Chur als eine Einheit – und darunter die 60 Gemeinden, gestapelt von der kleinsten zur grössten. Fahre mit der Maus über die einzelnen Segmente, um die Gemeinden zu sehen.</p>
+
+</div>
+
+<!-- CHART outside article-body for full-width feel -->
+<div style="max-width: 900px; margin: 0 auto; padding: 0 24px;">
+  <div class="chart-container">
+    <div class="chart-title">Bevölkerung 2024: Chur vs. die 60 kleinsten Bündner Gemeinden</div>
+    <div class="chart-subtitle">Daten: Kanton Graubünden (data.gr.ch), Quelle: DVS/AWT</div>
+
+    <div class="bar-wrapper" id="chart"></div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#1a2744;"></div>
+        <span>Chur (39'177)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background: linear-gradient(90deg, #2563eb, #dc2626);"></div>
+        <span>60 kleinste Gemeinden (39'125 zusammen)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="article-body">
+
+  <div class="section-title">Die 60 Gemeinden</div>
+  <h2>Von Rongellen bis Celerina</h2>
+  <p>Hier sind alle 60 Gemeinden aufgelistet, die zusammen Churs Einwohnerzahl erreichen – beginnend mit der kleinsten:</p>
+
+  <div class="gemeente-grid" id="list"></div>
+
+  <p style="margin-top:32px;">Was diese Aufzählung verdeutlicht: <strong>Graubünden ist ein Kanton der kleinen Orte</strong>. Von 101 Gemeinden liegen 60 unter der Marke von 1'415 Einwohnern. Die Hälfte aller Gemeinden hat weniger als 700 Einwohner. Chur ist nicht einfach gross – sie ist in einer anderen Grössenordnung.</p>
+
+  <p>Das hat politische Konsequenzen. Im Grossrat des Kantons vertreten Churer Abgeordnete einen überproportionalen Anteil der Bevölkerung. Im Alltag bedeutet es, dass viele Dienste – vom Spital über die Universität bis zum Einkaufszentrum – zentralisiert in Chur angeboten werden. Der halbe Kanton ist bevölkerungsmässig kleiner als eine Stadt.</p>
+
+  <div class="source-note">
+    Datenquelle: Kanton Graubünden, Dienststelle für Wirtschaft und Tourismus (DVS/AWT), Datensatz «Populaziun permanenta tenor onn, vischnanca e naziunalitad», Stand 2024. Abgerufen via data.gr.ch (Open Government Data).
+  </div>
+
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+const churPop = 39177;
+const fitting = [
+  {name:"Rongellen",pop:59},{name:"Ferrera",pop:76},{name:"Buseno",pop:91},
+  {name:"Santa Maria in Calanca",pop:113},{name:"Tschappina",pop:146},{name:"Sufers",pop:147},
+  {name:"Urmein",pop:163},{name:"Rossa",pop:168},{name:"Avers",pop:169},
+  {name:"Madulain",pop:196},{name:"Furna",pop:203},{name:"Calanca",pop:204},
+  {name:"Schmitten (GR)",pop:205},{name:"Conters im Prättigau",pop:224},{name:"Castaneda",pop:254},
+  {name:"Flerden",pop:255},{name:"Rothenbrunnen",pop:304},{name:"Tschiertschen-Praden",pop:309},
+  {name:"Soazza",pop:324},{name:"Medel (Lucmagn)",pop:328},{name:"Fürstenau",pop:353},
+  {name:"Muntogna da Schons",pop:368},{name:"Zillis-Reischen",pop:426},{name:"Lantsch/Lenz",pop:518},
+  {name:"Masein",pop:531},{name:"Rheinwald",pop:570},{name:"Schluein",pop:616},
+  {name:"Bever",pop:618},{name:"Fideris",pop:626},{name:"Falera",pop:635},
+  {name:"Sils im Engadin/Segl",pop:708},{name:"S-chanf",pop:713},{name:"Cama",pop:720},
+  {name:"Samnaun",pop:750},{name:"La Punt Chamues-ch",pop:750},{name:"Sagogn",pop:769},
+  {name:"Valsot",pop:801},{name:"Scharans",pop:836},{name:"Lostallo",pop:866},
+  {name:"Fläsch",pop:879},{name:"Bergün Filisur",pop:898},{name:"Küblis",pop:910},
+  {name:"Andeer",pop:923},{name:"Vals",pop:958},{name:"San Vittore",pop:961},
+  {name:"Jenins",pop:964},{name:"Safiental",pop:964},{name:"Sils im Domleschg",pop:976},
+  {name:"Sumvitg",pop:1063},{name:"Brusio",pop:1099},{name:"Silvaplana",pop:1124},
+  {name:"Trun",pop:1141},{name:"Obersaxen Mundaun",pop:1160},{name:"Jenaz",pop:1164},
+  {name:"Tujetsch",pop:1199},{name:"Tamins",pop:1223},{name:"Zuoz",pop:1224},
+  {name:"Albula/Alvra",pop:1354},{name:"Mesocco",pop:1414},{name:"Celerina/Schlarigna",pop:1415}
+];
+
+const totalSmall = fitting.reduce((s, d) => s + d.pop, 0); // 39125
+
+// Color palette - gradient from blue to orange/red
+function getColor(index, total) {
+  const t = index / (total - 1);
+  // Blues → teals → greens → yellows → oranges → reds
+  const stops = [
+    [37, 99, 235],   // blue
+    [6, 182, 212],   // cyan
+    [16, 185, 129],  // teal
+    [234, 179, 8],   // yellow
+    [249, 115, 22],  // orange
+    [220, 38, 38],   // red
+  ];
+  const seg = t * (stops.length - 1);
+  const i = Math.floor(seg);
+  const f = seg - i;
+  const a = stops[Math.min(i, stops.length - 1)];
+  const b = stops[Math.min(i + 1, stops.length - 1)];
+  const r = Math.round(a[0] + (b[0] - a[0]) * f);
+  const g = Math.round(a[1] + (b[1] - a[1]) * f);
+  const bl = Math.round(a[2] + (b[2] - a[2]) * f);
+  return `rgb(${r},${g},${bl})`;
+}
+
+// ─── Build chart ───────────────────────────────────────
+const chart = document.getElementById('chart');
+const tooltip = document.getElementById('tooltip');
+const maxVal = churPop;
+
+function makeBar(label, content, valueText) {
+  const row = document.createElement('div');
+  row.className = 'bar-row';
+
+  const lbl = document.createElement('div');
+  lbl.className = 'bar-label';
+  lbl.textContent = label;
+
+  const track = document.createElement('div');
+  track.className = 'bar-track';
+
+  const bar = document.createElement('div');
+  bar.style.width = '100%';
+  bar.style.height = '100%';
+  bar.appendChild(content);
+
+  track.appendChild(bar);
+
+  const val = document.createElement('div');
+  val.className = 'bar-value';
+  val.textContent = valueText;
+
+  row.appendChild(lbl);
+  row.appendChild(track);
+  row.appendChild(val);
+  chart.appendChild(row);
+}
+
+// Chur bar
+const churBarInner = document.createElement('div');
+churBarInner.className = 'bar-chur';
+churBarInner.style.width = '100%';
+churBarInner.title = 'Chur: 39\'177';
+makeBar('Chur', churBarInner, "39'177");
+
+// Stacked bar
+const stackedInner = document.createElement('div');
+stackedInner.className = 'bar-stacked';
+stackedInner.style.width = (totalSmall / churPop * 100).toFixed(2) + '%';
+
+fitting.forEach((d, i) => {
+  const seg = document.createElement('div');
+  seg.className = 'bar-segment';
+  seg.style.width = (d.pop / totalSmall * 100).toFixed(4) + '%';
+  seg.style.background = getColor(i, fitting.length);
+
+  seg.addEventListener('mousemove', (e) => {
+    tooltip.innerHTML = `<div class="tt-name">${d.name}</div><div class="tt-pop">${d.pop.toLocaleString('de-CH')} Einw.</div>`;
+    tooltip.classList.add('visible');
+    tooltip.style.left = (e.clientX + 12) + 'px';
+    tooltip.style.top = (e.clientY - 40) + 'px';
+  });
+  seg.addEventListener('mouseleave', () => {
+    tooltip.classList.remove('visible');
+  });
+
+  stackedInner.appendChild(seg);
+});
+
+const gapSeg = document.createElement('div');
+gapSeg.style.flex = '1';
+gapSeg.style.background = 'transparent';
+stackedInner.appendChild(gapSeg);
+
+makeBar('60 Gemeinden', stackedInner, "39'125");
+
+// ─── Build list ────────────────────────────────────────
+const list = document.getElementById('list');
+fitting.forEach((d, i) => {
+  const item = document.createElement('div');
+  item.className = 'gemeente-item';
+  item.innerHTML = `
+    <span class="gemeente-name">${i + 1}. ${d.name}</span>
+    <span class="gemeente-pop">${d.pop.toLocaleString('de-CH')}</span>
+  `;
+  list.appendChild(item);
+});
+</script>
+</body>
+</html>

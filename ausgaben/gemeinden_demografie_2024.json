@@ -1,0 +1,12035 @@
+{
+ "meta": {
+  "gr_total": 206138,
+  "gr_avg_age": 45.19,
+  "gr_male_pct": 50.36,
+  "n_gemeinden": 101
+ },
+ "gr_pyramid": [
+  {
+   "klasse": "0-4 Jahre",
+   "m": 4313,
+   "f": 3881
+  },
+  {
+   "klasse": "5-9 Jahre",
+   "m": 4718,
+   "f": 4434
+  },
+  {
+   "klasse": "10-14 Jahre",
+   "m": 4731,
+   "f": 4517
+  },
+  {
+   "klasse": "15-19 Jahre",
+   "m": 4856,
+   "f": 4298
+  },
+  {
+   "klasse": "20-24 Jahre",
+   "m": 5376,
+   "f": 4694
+  },
+  {
+   "klasse": "25-29 Jahre",
+   "m": 6155,
+   "f": 5608
+  },
+  {
+   "klasse": "30-34 Jahre",
+   "m": 6577,
+   "f": 6225
+  },
+  {
+   "klasse": "35-39 Jahre",
+   "m": 7138,
+   "f": 6713
+  },
+  {
+   "klasse": "40-44 Jahre",
+   "m": 7117,
+   "f": 6750
+  },
+  {
+   "klasse": "45-49 Jahre",
+   "m": 6665,
+   "f": 6474
+  },
+  {
+   "klasse": "50-54 Jahre",
+   "m": 7373,
+   "f": 7160
+  },
+  {
+   "klasse": "55-59 Jahre",
+   "m": 8265,
+   "f": 7947
+  },
+  {
+   "klasse": "60-64 Jahre",
+   "m": 7794,
+   "f": 7819
+  },
+  {
+   "klasse": "65-69 Jahre",
+   "m": 6639,
+   "f": 6795
+  },
+  {
+   "klasse": "70-74 Jahre",
+   "m": 5666,
+   "f": 5805
+  },
+  {
+   "klasse": "75-79 Jahre",
+   "m": 4722,
+   "f": 5240
+  },
+  {
+   "klasse": "80-84 Jahre",
+   "m": 3280,
+   "f": 3920
+  },
+  {
+   "klasse": "85-89 Jahre",
+   "m": 1706,
+   "f": 2520
+  },
+  {
+   "klasse": "90-94 Jahre",
+   "m": 588,
+   "f": 1210
+  },
+  {
+   "klasse": "95-99 Jahre",
+   "m": 114,
+   "f": 299
+  },
+  {
+   "klasse": "100 Jahre und mehr",
+   "m": 8,
+   "f": 28
+  }
+ ],
+ "gemeinden": [
+  {
+   "gemeinde": "Chur",
+   "nr": 3901,
+   "total": 39177,
+   "maenner": 19209,
+   "frauen": 19968,
+   "avg_age": 44.43,
+   "male_pct": 49.03,
+   "youth_pct": 16.69,
+   "senior_pct": 22.42,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 809,
+     "f": 754
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 853,
+     "f": 832
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 836,
+     "f": 800
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 864,
+     "f": 789
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 1056,
+     "f": 962
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 1423,
+     "f": 1355
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 1510,
+     "f": 1437
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 1496,
+     "f": 1398
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 1340,
+     "f": 1309
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 1210,
+     "f": 1225
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 1321,
+     "f": 1335
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 1395,
+     "f": 1461
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 1279,
+     "f": 1343
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 1074,
+     "f": 1165
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 923,
+     "f": 1058
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 752,
+     "f": 1026
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 578,
+     "f": 822
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 333,
+     "f": 565
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 127,
+     "f": 260
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 28,
+     "f": 66
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 2,
+     "f": 6
+    }
+   ]
+  },
+  {
+   "gemeinde": "Davos",
+   "nr": 3851,
+   "total": 10774,
+   "maenner": 5410,
+   "frauen": 5364,
+   "avg_age": 44.9,
+   "male_pct": 50.21,
+   "youth_pct": 16.97,
+   "senior_pct": 22.47,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 193,
+     "f": 194
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 231,
+     "f": 244
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 233,
+     "f": 228
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 302,
+     "f": 203
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 254,
+     "f": 208
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 313,
+     "f": 304
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 363,
+     "f": 340
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 405,
+     "f": 381
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 428,
+     "f": 402
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 405,
+     "f": 410
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 374,
+     "f": 388
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 432,
+     "f": 412
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 379,
+     "f": 327
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 308,
+     "f": 332
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 275,
+     "f": 330
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 246,
+     "f": 265
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 169,
+     "f": 200
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 65,
+     "f": 119
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 32,
+     "f": 57
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 19
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 2,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Landquart",
+   "nr": 3955,
+   "total": 9244,
+   "maenner": 4660,
+   "frauen": 4584,
+   "avg_age": 43.01,
+   "male_pct": 50.41,
+   "youth_pct": 20.35,
+   "senior_pct": 20.75,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 241,
+     "f": 190
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 245,
+     "f": 251
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 244,
+     "f": 246
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 247,
+     "f": 217
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 229,
+     "f": 184
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 280,
+     "f": 245
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 303,
+     "f": 311
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 351,
+     "f": 308
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 322,
+     "f": 325
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 288,
+     "f": 281
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 295,
+     "f": 302
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 354,
+     "f": 349
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 345,
+     "f": 373
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 297,
+     "f": 322
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 231,
+     "f": 238
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 207,
+     "f": 188
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 98,
+     "f": 142
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 56,
+     "f": 72
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 24,
+     "f": 34
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 3,
+     "f": 5
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Domat/Ems",
+   "nr": 3722,
+   "total": 8392,
+   "maenner": 4235,
+   "frauen": 4157,
+   "avg_age": 42.5,
+   "male_pct": 50.46,
+   "youth_pct": 20.01,
+   "senior_pct": 19.95,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 203,
+     "f": 185
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 221,
+     "f": 196
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 246,
+     "f": 186
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 216,
+     "f": 226
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 261,
+     "f": 260
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 250,
+     "f": 230
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 287,
+     "f": 271
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 313,
+     "f": 286
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 297,
+     "f": 299
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 305,
+     "f": 276
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 308,
+     "f": 303
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 313,
+     "f": 271
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 244,
+     "f": 265
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 195,
+     "f": 217
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 192,
+     "f": 215
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 169,
+     "f": 180
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 121,
+     "f": 149
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 75,
+     "f": 96
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 17,
+     "f": 38
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 7
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 1,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Ilanz/Glion",
+   "nr": 3619,
+   "total": 5067,
+   "maenner": 2486,
+   "frauen": 2581,
+   "avg_age": 45.93,
+   "male_pct": 49.06,
+   "youth_pct": 17.19,
+   "senior_pct": 25.34,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 101,
+     "f": 97
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 132,
+     "f": 110
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 111,
+     "f": 119
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 105,
+     "f": 96
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 141,
+     "f": 117
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 147,
+     "f": 135
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 159,
+     "f": 135
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 169,
+     "f": 160
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 178,
+     "f": 161
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 131,
+     "f": 138
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 164,
+     "f": 168
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 192,
+     "f": 193
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 195,
+     "f": 229
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 176,
+     "f": 173
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 136,
+     "f": 151
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 120,
+     "f": 156
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 82,
+     "f": 97
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 33,
+     "f": 90
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 11,
+     "f": 39
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 3,
+     "f": 17
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "St. Moritz",
+   "nr": 3787,
+   "total": 4997,
+   "maenner": 2519,
+   "frauen": 2478,
+   "avg_age": 46.74,
+   "male_pct": 50.41,
+   "youth_pct": 13.31,
+   "senior_pct": 23.21,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 81,
+     "f": 72
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 81,
+     "f": 70
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 92,
+     "f": 87
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 102,
+     "f": 80
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 125,
+     "f": 95
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 160,
+     "f": 156
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 162,
+     "f": 163
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 195,
+     "f": 192
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 172,
+     "f": 174
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 188,
+     "f": 181
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 201,
+     "f": 198
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 238,
+     "f": 186
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 191,
+     "f": 195
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 146,
+     "f": 158
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 123,
+     "f": 121
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 93,
+     "f": 142
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 89,
+     "f": 111
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 59,
+     "f": 68
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 15,
+     "f": 27
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 5,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 1,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Scuol",
+   "nr": 3762,
+   "total": 4546,
+   "maenner": 2252,
+   "frauen": 2294,
+   "avg_age": 47.32,
+   "male_pct": 49.54,
+   "youth_pct": 16.61,
+   "senior_pct": 27.34,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 93,
+     "f": 63
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 87,
+     "f": 100
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 107,
+     "f": 113
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 107,
+     "f": 85
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 118,
+     "f": 90
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 113,
+     "f": 80
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 98,
+     "f": 119
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 143,
+     "f": 155
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 131,
+     "f": 134
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 149,
+     "f": 161
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 173,
+     "f": 162
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 166,
+     "f": 194
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 178,
+     "f": 184
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 159,
+     "f": 175
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 158,
+     "f": 138
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 123,
+     "f": 139
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 92,
+     "f": 102
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 39,
+     "f": 65
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 16,
+     "f": 25
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 10
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Klosters",
+   "nr": 3871,
+   "total": 4478,
+   "maenner": 2259,
+   "frauen": 2219,
+   "avg_age": 48.29,
+   "male_pct": 50.45,
+   "youth_pct": 14.72,
+   "senior_pct": 29.23,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 84,
+     "f": 78
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 91,
+     "f": 68
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 88,
+     "f": 77
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 83,
+     "f": 90
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 121,
+     "f": 91
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 139,
+     "f": 111
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 126,
+     "f": 114
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 140,
+     "f": 107
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 139,
+     "f": 136
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 140,
+     "f": 129
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 154,
+     "f": 162
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 187,
+     "f": 158
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 187,
+     "f": 169
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 164,
+     "f": 181
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 134,
+     "f": 157
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 125,
+     "f": 155
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 86,
+     "f": 110
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 50,
+     "f": 74
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 20,
+     "f": 41
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 9
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 2
+    }
+   ]
+  },
+  {
+   "gemeinde": "Zizers",
+   "nr": 3947,
+   "total": 3691,
+   "maenner": 1841,
+   "frauen": 1850,
+   "avg_age": 43.71,
+   "male_pct": 49.88,
+   "youth_pct": 18.23,
+   "senior_pct": 21.21,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 75,
+     "f": 67
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 79,
+     "f": 72
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 86,
+     "f": 100
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 98,
+     "f": 96
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 125,
+     "f": 112
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 123,
+     "f": 108
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 111,
+     "f": 99
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 119,
+     "f": 133
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 130,
+     "f": 129
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 135,
+     "f": 123
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 127,
+     "f": 128
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 138,
+     "f": 127
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 128,
+     "f": 140
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 107,
+     "f": 114
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 82,
+     "f": 98
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 81,
+     "f": 82
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 56,
+     "f": 58
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 27,
+     "f": 45
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 12,
+     "f": 15
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 4
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Bonaduz",
+   "nr": 3721,
+   "total": 3565,
+   "maenner": 1777,
+   "frauen": 1788,
+   "avg_age": 41.64,
+   "male_pct": 49.85,
+   "youth_pct": 21.74,
+   "senior_pct": 18.37,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 89,
+     "f": 85
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 105,
+     "f": 113
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 104,
+     "f": 109
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 92,
+     "f": 78
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 101,
+     "f": 87
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 84,
+     "f": 102
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 139,
+     "f": 117
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 118,
+     "f": 105
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 129,
+     "f": 153
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 115,
+     "f": 105
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 134,
+     "f": 118
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 134,
+     "f": 130
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 133,
+     "f": 131
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 88,
+     "f": 110
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 84,
+     "f": 93
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 58,
+     "f": 69
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 44,
+     "f": 42
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 16,
+     "f": 28
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 7,
+     "f": 11
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Poschiavo",
+   "nr": 3561,
+   "total": 3505,
+   "maenner": 1739,
+   "frauen": 1766,
+   "avg_age": 46.84,
+   "male_pct": 49.61,
+   "youth_pct": 18.8,
+   "senior_pct": 28.3,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 59,
+     "f": 68
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 89,
+     "f": 79
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 110,
+     "f": 87
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 80,
+     "f": 87
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 88,
+     "f": 70
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 76,
+     "f": 82
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 81,
+     "f": 76
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 87,
+     "f": 102
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 117,
+     "f": 92
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 113,
+     "f": 111
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 124,
+     "f": 133
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 127,
+     "f": 125
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 130,
+     "f": 120
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 122,
+     "f": 127
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 122,
+     "f": 113
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 100,
+     "f": 118
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 67,
+     "f": 79
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 31,
+     "f": 57
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 12,
+     "f": 31
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 4,
+     "f": 9
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Thusis",
+   "nr": 3668,
+   "total": 3439,
+   "maenner": 1760,
+   "frauen": 1679,
+   "avg_age": 44.47,
+   "male_pct": 51.18,
+   "youth_pct": 17.19,
+   "senior_pct": 22.3,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 69,
+     "f": 63
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 77,
+     "f": 63
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 88,
+     "f": 80
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 76,
+     "f": 75
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 115,
+     "f": 92
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 138,
+     "f": 80
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 115,
+     "f": 103
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 112,
+     "f": 101
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 104,
+     "f": 120
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 126,
+     "f": 98
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 141,
+     "f": 111
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 128,
+     "f": 157
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 125,
+     "f": 115
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 110,
+     "f": 128
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 79,
+     "f": 78
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 65,
+     "f": 96
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 52,
+     "f": 61
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 30,
+     "f": 35
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 7,
+     "f": 18
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 3,
+     "f": 5
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Trimmis",
+   "nr": 3945,
+   "total": 3424,
+   "maenner": 1742,
+   "frauen": 1682,
+   "avg_age": 43.05,
+   "male_pct": 50.88,
+   "youth_pct": 20.68,
+   "senior_pct": 19.39,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 75,
+     "f": 80
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 93,
+     "f": 81
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 96,
+     "f": 97
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 115,
+     "f": 71
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 96,
+     "f": 60
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 93,
+     "f": 92
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 100,
+     "f": 96
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 100,
+     "f": 110
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 129,
+     "f": 128
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 125,
+     "f": 114
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 139,
+     "f": 134
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 118,
+     "f": 147
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 133,
+     "f": 138
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 93,
+     "f": 101
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 82,
+     "f": 71
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 65,
+     "f": 80
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 54,
+     "f": 48
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 25,
+     "f": 17
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 9,
+     "f": 14
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Maienfeld",
+   "nr": 3953,
+   "total": 3266,
+   "maenner": 1638,
+   "frauen": 1628,
+   "avg_age": 44.18,
+   "male_pct": 50.15,
+   "youth_pct": 18.59,
+   "senior_pct": 21.22,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 81,
+     "f": 62
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 87,
+     "f": 71
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 82,
+     "f": 81
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 69,
+     "f": 74
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 68,
+     "f": 77
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 93,
+     "f": 82
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 89,
+     "f": 102
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 125,
+     "f": 109
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 126,
+     "f": 120
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 106,
+     "f": 115
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 120,
+     "f": 111
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 130,
+     "f": 161
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 130,
+     "f": 102
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 99,
+     "f": 102
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 73,
+     "f": 87
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 68,
+     "f": 64
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 54,
+     "f": 61
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 26,
+     "f": 34
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 8,
+     "f": 12
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 4,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Arosa",
+   "nr": 3921,
+   "total": 3159,
+   "maenner": 1682,
+   "frauen": 1477,
+   "avg_age": 47.44,
+   "male_pct": 53.24,
+   "youth_pct": 12.47,
+   "senior_pct": 25.99,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 61,
+     "f": 56
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 53,
+     "f": 57
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 50,
+     "f": 39
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 50,
+     "f": 28
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 73,
+     "f": 62
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 114,
+     "f": 92
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 117,
+     "f": 124
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 121,
+     "f": 102
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 122,
+     "f": 85
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 108,
+     "f": 89
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 111,
+     "f": 83
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 125,
+     "f": 127
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 162,
+     "f": 127
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 140,
+     "f": 111
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 101,
+     "f": 86
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 77,
+     "f": 89
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 62,
+     "f": 48
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 25,
+     "f": 36
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 10,
+     "f": 30
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 5
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Schiers",
+   "nr": 3962,
+   "total": 2993,
+   "maenner": 1508,
+   "frauen": 1485,
+   "avg_age": 41.65,
+   "male_pct": 50.38,
+   "youth_pct": 21.88,
+   "senior_pct": 19.45,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 87,
+     "f": 83
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 89,
+     "f": 84
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 79,
+     "f": 69
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 77,
+     "f": 87
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 91,
+     "f": 85
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 93,
+     "f": 80
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 94,
+     "f": 101
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 105,
+     "f": 99
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 103,
+     "f": 92
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 101,
+     "f": 95
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 104,
+     "f": 94
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 113,
+     "f": 102
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 97,
+     "f": 107
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 95,
+     "f": 81
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 66,
+     "f": 67
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 59,
+     "f": 66
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 34,
+     "f": 45
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 14,
+     "f": 29
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 7,
+     "f": 18
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Flims",
+   "nr": 3732,
+   "total": 2902,
+   "maenner": 1461,
+   "frauen": 1441,
+   "avg_age": 46.38,
+   "male_pct": 50.34,
+   "youth_pct": 15.33,
+   "senior_pct": 25.88,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 46,
+     "f": 59
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 57,
+     "f": 59
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 53,
+     "f": 55
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 69,
+     "f": 47
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 60,
+     "f": 52
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 80,
+     "f": 78
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 96,
+     "f": 106
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 118,
+     "f": 105
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 117,
+     "f": 104
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 108,
+     "f": 98
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 97,
+     "f": 97
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 94,
+     "f": 83
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 107,
+     "f": 106
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 108,
+     "f": 112
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 75,
+     "f": 76
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 80,
+     "f": 102
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 58,
+     "f": 45
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 30,
+     "f": 34
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 8,
+     "f": 17
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 5
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Samedan",
+   "nr": 3786,
+   "total": 2901,
+   "maenner": 1445,
+   "frauen": 1456,
+   "avg_age": 44.96,
+   "male_pct": 49.81,
+   "youth_pct": 15.93,
+   "senior_pct": 20.92,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 47,
+     "f": 45
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 56,
+     "f": 54
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 68,
+     "f": 60
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 71,
+     "f": 61
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 87,
+     "f": 91
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 103,
+     "f": 73
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 91,
+     "f": 81
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 97,
+     "f": 96
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 91,
+     "f": 95
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 115,
+     "f": 103
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 118,
+     "f": 118
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 130,
+     "f": 114
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 100,
+     "f": 129
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 78,
+     "f": 82
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 72,
+     "f": 75
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 45,
+     "f": 65
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 49,
+     "f": 59
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 18,
+     "f": 35
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 7,
+     "f": 16
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 4
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Felsberg",
+   "nr": 3731,
+   "total": 2886,
+   "maenner": 1436,
+   "frauen": 1450,
+   "avg_age": 40.15,
+   "male_pct": 49.76,
+   "youth_pct": 23.25,
+   "senior_pct": 16.25,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 78,
+     "f": 78
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 87,
+     "f": 92
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 89,
+     "f": 98
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 83,
+     "f": 66
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 83,
+     "f": 63
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 74,
+     "f": 83
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 87,
+     "f": 91
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 119,
+     "f": 118
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 126,
+     "f": 120
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 94,
+     "f": 112
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 99,
+     "f": 100
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 95,
+     "f": 93
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 87,
+     "f": 102
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 71,
+     "f": 79
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 57,
+     "f": 54
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 55,
+     "f": 49
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 37,
+     "f": 31
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 9,
+     "f": 16
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 5,
+     "f": 5
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Vaz/Obervaz",
+   "nr": 3506,
+   "total": 2732,
+   "maenner": 1403,
+   "frauen": 1329,
+   "avg_age": 46.08,
+   "male_pct": 51.35,
+   "youth_pct": 16.0,
+   "senior_pct": 25.48,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 43,
+     "f": 40
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 62,
+     "f": 51
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 70,
+     "f": 58
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 55,
+     "f": 58
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 58,
+     "f": 57
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 100,
+     "f": 88
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 85,
+     "f": 78
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 96,
+     "f": 86
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 96,
+     "f": 101
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 92,
+     "f": 70
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 103,
+     "f": 85
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 114,
+     "f": 99
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 91,
+     "f": 100
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 84,
+     "f": 100
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 94,
+     "f": 96
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 74,
+     "f": 75
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 52,
+     "f": 34
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 24,
+     "f": 34
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 10,
+     "f": 14
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 5
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Untervaz",
+   "nr": 3946,
+   "total": 2674,
+   "maenner": 1350,
+   "frauen": 1324,
+   "avg_age": 41.99,
+   "male_pct": 50.49,
+   "youth_pct": 20.04,
+   "senior_pct": 18.1,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 73,
+     "f": 59
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 80,
+     "f": 80
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 65,
+     "f": 58
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 57,
+     "f": 64
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 75,
+     "f": 73
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 91,
+     "f": 84
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 83,
+     "f": 75
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 101,
+     "f": 87
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 121,
+     "f": 108
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 87,
+     "f": 75
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 86,
+     "f": 106
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 115,
+     "f": 101
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 94,
+     "f": 92
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 64,
+     "f": 86
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 59,
+     "f": 52
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 43,
+     "f": 43
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 33,
+     "f": 43
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 19,
+     "f": 26
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 9
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Roveredo (GR)",
+   "nr": 3834,
+   "total": 2656,
+   "maenner": 1311,
+   "frauen": 1345,
+   "avg_age": 44.99,
+   "male_pct": 49.36,
+   "youth_pct": 18.26,
+   "senior_pct": 21.57,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 48,
+     "f": 43
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 59,
+     "f": 49
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 73,
+     "f": 76
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 70,
+     "f": 67
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 62,
+     "f": 74
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 70,
+     "f": 67
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 73,
+     "f": 67
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 65,
+     "f": 62
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 100,
+     "f": 88
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 102,
+     "f": 110
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 119,
+     "f": 124
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 125,
+     "f": 116
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 88,
+     "f": 86
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 80,
+     "f": 81
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 57,
+     "f": 53
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 45,
+     "f": 69
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 38,
+     "f": 63
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 25,
+     "f": 29
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 8,
+     "f": 18
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 4,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Malans",
+   "nr": 3954,
+   "total": 2529,
+   "maenner": 1246,
+   "frauen": 1283,
+   "avg_age": 43.92,
+   "male_pct": 49.27,
+   "youth_pct": 19.97,
+   "senior_pct": 20.01,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 72,
+     "f": 52
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 57,
+     "f": 60
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 68,
+     "f": 67
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 72,
+     "f": 57
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 55,
+     "f": 69
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 56,
+     "f": 43
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 65,
+     "f": 90
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 83,
+     "f": 89
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 79,
+     "f": 86
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 82,
+     "f": 79
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 88,
+     "f": 88
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 124,
+     "f": 127
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 102,
+     "f": 113
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 69,
+     "f": 63
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 54,
+     "f": 65
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 61,
+     "f": 55
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 36,
+     "f": 47
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 14,
+     "f": 16
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 8,
+     "f": 11
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 5
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Surses",
+   "nr": 3543,
+   "total": 2465,
+   "maenner": 1264,
+   "frauen": 1201,
+   "avg_age": 49.17,
+   "male_pct": 51.28,
+   "youth_pct": 14.08,
+   "senior_pct": 31.32,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 54,
+     "f": 42
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 44,
+     "f": 40
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 45,
+     "f": 44
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 38,
+     "f": 40
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 45,
+     "f": 55
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 65,
+     "f": 56
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 67,
+     "f": 48
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 86,
+     "f": 77
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 79,
+     "f": 83
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 82,
+     "f": 57
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 90,
+     "f": 62
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 88,
+     "f": 91
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 111,
+     "f": 104
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 94,
+     "f": 97
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 110,
+     "f": 112
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 79,
+     "f": 64
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 59,
+     "f": 76
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 19,
+     "f": 34
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 5,
+     "f": 18
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 4,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Cazis",
+   "nr": 3661,
+   "total": 2439,
+   "maenner": 1264,
+   "frauen": 1175,
+   "avg_age": 43.73,
+   "male_pct": 51.82,
+   "youth_pct": 20.46,
+   "senior_pct": 21.69,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 61,
+     "f": 46
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 63,
+     "f": 62
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 65,
+     "f": 54
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 96,
+     "f": 52
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 68,
+     "f": 48
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 73,
+     "f": 48
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 71,
+     "f": 78
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 90,
+     "f": 82
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 80,
+     "f": 77
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 64,
+     "f": 61
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 84,
+     "f": 91
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 97,
+     "f": 98
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 102,
+     "f": 99
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 78,
+     "f": 80
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 62,
+     "f": 70
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 52,
+     "f": 57
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 31,
+     "f": 38
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 25,
+     "f": 23
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 9
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Domleschg",
+   "nr": 3673,
+   "total": 2262,
+   "maenner": 1098,
+   "frauen": 1164,
+   "avg_age": 43.86,
+   "male_pct": 48.54,
+   "youth_pct": 21.26,
+   "senior_pct": 22.9,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 64,
+     "f": 81
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 60,
+     "f": 56
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 64,
+     "f": 59
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 51,
+     "f": 46
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 49,
+     "f": 41
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 45,
+     "f": 52
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 69,
+     "f": 65
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 73,
+     "f": 76
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 67,
+     "f": 80
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 61,
+     "f": 68
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 69,
+     "f": 66
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 86,
+     "f": 90
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 87,
+     "f": 119
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 89,
+     "f": 76
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 67,
+     "f": 73
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 68,
+     "f": 42
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 12,
+     "f": 30
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 12,
+     "f": 24
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 12
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 7
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Grüsch",
+   "nr": 3961,
+   "total": 2176,
+   "maenner": 1110,
+   "frauen": 1066,
+   "avg_age": 45.48,
+   "male_pct": 51.01,
+   "youth_pct": 17.92,
+   "senior_pct": 23.76,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 51,
+     "f": 25
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 52,
+     "f": 47
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 57,
+     "f": 58
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 53,
+     "f": 47
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 59,
+     "f": 49
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 57,
+     "f": 52
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 55,
+     "f": 63
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 69,
+     "f": 68
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 72,
+     "f": 61
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 54,
+     "f": 63
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 88,
+     "f": 68
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 93,
+     "f": 103
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 94,
+     "f": 101
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 80,
+     "f": 89
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 75,
+     "f": 65
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 52,
+     "f": 42
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 27,
+     "f": 30
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 13,
+     "f": 18
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 7,
+     "f": 15
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Churwalden",
+   "nr": 3911,
+   "total": 2114,
+   "maenner": 1113,
+   "frauen": 1001,
+   "avg_age": 43.97,
+   "male_pct": 52.65,
+   "youth_pct": 17.08,
+   "senior_pct": 21.24,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 42,
+     "f": 38
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 48,
+     "f": 47
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 47,
+     "f": 42
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 50,
+     "f": 47
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 83,
+     "f": 61
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 63,
+     "f": 53
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 71,
+     "f": 65
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 87,
+     "f": 73
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 91,
+     "f": 71
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 62,
+     "f": 67
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 75,
+     "f": 61
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 80,
+     "f": 75
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 94,
+     "f": 72
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 78,
+     "f": 56
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 47,
+     "f": 57
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 40,
+     "f": 43
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 31,
+     "f": 36
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 18,
+     "f": 25
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 6,
+     "f": 9
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Disentis/Mustér",
+   "nr": 3982,
+   "total": 2104,
+   "maenner": 1093,
+   "frauen": 1011,
+   "avg_age": 47.38,
+   "male_pct": 51.95,
+   "youth_pct": 17.06,
+   "senior_pct": 28.85,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 43,
+     "f": 28
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 48,
+     "f": 46
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 49,
+     "f": 55
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 57,
+     "f": 33
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 55,
+     "f": 44
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 62,
+     "f": 44
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 59,
+     "f": 50
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 66,
+     "f": 56
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 77,
+     "f": 54
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 67,
+     "f": 62
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 67,
+     "f": 69
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 78,
+     "f": 64
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 82,
+     "f": 82
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 77,
+     "f": 78
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 68,
+     "f": 72
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 58,
+     "f": 55
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 39,
+     "f": 66
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 30,
+     "f": 28
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 10,
+     "f": 21
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Laax",
+   "nr": 3575,
+   "total": 2102,
+   "maenner": 1145,
+   "frauen": 957,
+   "avg_age": 46.1,
+   "male_pct": 54.47,
+   "youth_pct": 13.84,
+   "senior_pct": 24.74,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 52,
+     "f": 31
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 55,
+     "f": 39
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 37,
+     "f": 32
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 26,
+     "f": 19
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 67,
+     "f": 34
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 57,
+     "f": 50
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 91,
+     "f": 79
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 92,
+     "f": 81
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 80,
+     "f": 79
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 72,
+     "f": 64
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 72,
+     "f": 48
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 81,
+     "f": 56
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 95,
+     "f": 93
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 76,
+     "f": 74
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 72,
+     "f": 66
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 63,
+     "f": 50
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 34,
+     "f": 36
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 18,
+     "f": 20
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 5
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Lumnezia",
+   "nr": 3618,
+   "total": 2075,
+   "maenner": 1094,
+   "frauen": 981,
+   "avg_age": 49.8,
+   "male_pct": 52.72,
+   "youth_pct": 13.3,
+   "senior_pct": 32.82,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 41,
+     "f": 33
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 37,
+     "f": 31
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 30,
+     "f": 26
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 45,
+     "f": 33
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 51,
+     "f": 40
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 59,
+     "f": 53
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 69,
+     "f": 58
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 62,
+     "f": 53
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 55,
+     "f": 41
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 53,
+     "f": 51
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 68,
+     "f": 57
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 88,
+     "f": 83
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 90,
+     "f": 87
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 108,
+     "f": 102
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 83,
+     "f": 68
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 72,
+     "f": 63
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 44,
+     "f": 47
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 30,
+     "f": 27
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 7,
+     "f": 20
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 7
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Pontresina",
+   "nr": 3784,
+   "total": 2072,
+   "maenner": 1011,
+   "frauen": 1061,
+   "avg_age": 46.4,
+   "male_pct": 48.79,
+   "youth_pct": 15.69,
+   "senior_pct": 22.92,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 35,
+     "f": 27
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 44,
+     "f": 44
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 45,
+     "f": 45
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 36,
+     "f": 49
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 51,
+     "f": 41
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 43,
+     "f": 51
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 47,
+     "f": 60
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 60,
+     "f": 71
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 86,
+     "f": 73
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 73,
+     "f": 89
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 69,
+     "f": 86
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 109,
+     "f": 94
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 81,
+     "f": 88
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 69,
+     "f": 59
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 61,
+     "f": 67
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 53,
+     "f": 46
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 29,
+     "f": 38
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 13,
+     "f": 22
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 5,
+     "f": 8
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 1,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Breil/Brigels",
+   "nr": 3981,
+   "total": 1706,
+   "maenner": 872,
+   "frauen": 834,
+   "avg_age": 46.48,
+   "male_pct": 51.11,
+   "youth_pct": 18.11,
+   "senior_pct": 27.14,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 30,
+     "f": 36
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 54,
+     "f": 44
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 29,
+     "f": 42
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 42,
+     "f": 32
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 40,
+     "f": 44
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 55,
+     "f": 31
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 62,
+     "f": 39
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 50,
+     "f": 41
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 47,
+     "f": 46
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 35,
+     "f": 44
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 54,
+     "f": 59
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 64,
+     "f": 74
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 76,
+     "f": 73
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 74,
+     "f": 53
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 60,
+     "f": 54
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 41,
+     "f": 39
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 35,
+     "f": 41
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 19,
+     "f": 20
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 21
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Luzein",
+   "nr": 3891,
+   "total": 1689,
+   "maenner": 885,
+   "frauen": 804,
+   "avg_age": 44.94,
+   "male_pct": 52.4,
+   "youth_pct": 18.77,
+   "senior_pct": 25.04,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 43,
+     "f": 34
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 43,
+     "f": 29
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 42,
+     "f": 29
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 52,
+     "f": 45
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 61,
+     "f": 37
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 54,
+     "f": 45
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 52,
+     "f": 35
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 47,
+     "f": 47
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 46,
+     "f": 54
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 44,
+     "f": 49
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 58,
+     "f": 60
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 73,
+     "f": 62
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 56,
+     "f": 69
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 58,
+     "f": 64
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 66,
+     "f": 52
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 49,
+     "f": 43
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 14,
+     "f": 31
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 23,
+     "f": 13
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 5
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Rhäzüns",
+   "nr": 3723,
+   "total": 1612,
+   "maenner": 843,
+   "frauen": 769,
+   "avg_age": 41.83,
+   "male_pct": 52.3,
+   "youth_pct": 21.59,
+   "senior_pct": 18.8,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 36,
+     "f": 28
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 44,
+     "f": 40
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 48,
+     "f": 43
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 61,
+     "f": 48
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 58,
+     "f": 44
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 47,
+     "f": 43
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 48,
+     "f": 40
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 53,
+     "f": 50
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 60,
+     "f": 59
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 59,
+     "f": 56
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 67,
+     "f": 62
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 58,
+     "f": 54
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 58,
+     "f": 45
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 47,
+     "f": 47
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 36,
+     "f": 36
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 31,
+     "f": 34
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 22,
+     "f": 22
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 8,
+     "f": 11
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 4
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Zernez",
+   "nr": 3746,
+   "total": 1592,
+   "maenner": 802,
+   "frauen": 790,
+   "avg_age": 46.46,
+   "male_pct": 50.38,
+   "youth_pct": 17.02,
+   "senior_pct": 24.25,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 24,
+     "f": 25
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 33,
+     "f": 34
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 40,
+     "f": 40
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 37,
+     "f": 38
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 25,
+     "f": 33
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 40,
+     "f": 41
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 55,
+     "f": 40
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 54,
+     "f": 43
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 49,
+     "f": 46
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 65,
+     "f": 73
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 66,
+     "f": 50
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 63,
+     "f": 56
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 69,
+     "f": 67
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 44,
+     "f": 51
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 41,
+     "f": 47
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 41,
+     "f": 37
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 28,
+     "f": 40
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 20,
+     "f": 19
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 6,
+     "f": 9
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Bregaglia",
+   "nr": 3792,
+   "total": 1591,
+   "maenner": 780,
+   "frauen": 811,
+   "avg_age": 48.39,
+   "male_pct": 49.03,
+   "youth_pct": 16.22,
+   "senior_pct": 30.99,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 36,
+     "f": 26
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 34,
+     "f": 34
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 33,
+     "f": 32
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 33,
+     "f": 30
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 34,
+     "f": 33
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 26,
+     "f": 38
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 49,
+     "f": 45
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 47,
+     "f": 40
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 49,
+     "f": 43
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 35,
+     "f": 42
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 56,
+     "f": 58
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 45,
+     "f": 59
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 71,
+     "f": 70
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 80,
+     "f": 74
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 67,
+     "f": 53
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 35,
+     "f": 47
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 25,
+     "f": 38
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 20,
+     "f": 32
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 11
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 6
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Grono",
+   "nr": 3832,
+   "total": 1580,
+   "maenner": 839,
+   "frauen": 741,
+   "avg_age": 44.71,
+   "male_pct": 53.1,
+   "youth_pct": 16.52,
+   "senior_pct": 20.25,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 27,
+     "f": 30
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 30,
+     "f": 26
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 33,
+     "f": 34
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 42,
+     "f": 39
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 38,
+     "f": 35
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 49,
+     "f": 49
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 60,
+     "f": 62
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 56,
+     "f": 37
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 66,
+     "f": 43
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 61,
+     "f": 51
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 70,
+     "f": 60
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 82,
+     "f": 62
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 72,
+     "f": 46
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 41,
+     "f": 37
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 32,
+     "f": 42
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 38,
+     "f": 36
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 23,
+     "f": 31
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 14,
+     "f": 13
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 7
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Trin",
+   "nr": 3734,
+   "total": 1557,
+   "maenner": 776,
+   "frauen": 781,
+   "avg_age": 43.91,
+   "male_pct": 49.84,
+   "youth_pct": 20.17,
+   "senior_pct": 23.31,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 45,
+     "f": 42
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 42,
+     "f": 47
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 32,
+     "f": 42
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 33,
+     "f": 31
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 34,
+     "f": 23
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 37,
+     "f": 37
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 36,
+     "f": 33
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 68,
+     "f": 70
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 65,
+     "f": 60
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 50,
+     "f": 48
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 49,
+     "f": 59
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 74,
+     "f": 58
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 41,
+     "f": 38
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 52,
+     "f": 62
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 40,
+     "f": 44
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 40,
+     "f": 37
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 16,
+     "f": 27
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 17,
+     "f": 14
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 8
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Seewis im Prättigau",
+   "nr": 3972,
+   "total": 1450,
+   "maenner": 741,
+   "frauen": 709,
+   "avg_age": 43.06,
+   "male_pct": 51.1,
+   "youth_pct": 19.72,
+   "senior_pct": 19.86,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 29,
+     "f": 32
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 37,
+     "f": 35
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 44,
+     "f": 41
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 35,
+     "f": 33
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 34,
+     "f": 43
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 37,
+     "f": 45
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 47,
+     "f": 45
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 58,
+     "f": 48
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 50,
+     "f": 47
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 55,
+     "f": 44
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 47,
+     "f": 42
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 56,
+     "f": 66
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 56,
+     "f": 56
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 50,
+     "f": 36
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 31,
+     "f": 27
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 33,
+     "f": 34
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 28,
+     "f": 19
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 11,
+     "f": 10
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Val Müstair",
+   "nr": 3847,
+   "total": 1430,
+   "maenner": 696,
+   "frauen": 734,
+   "avg_age": 51.8,
+   "male_pct": 48.67,
+   "youth_pct": 12.17,
+   "senior_pct": 34.69,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 21,
+     "f": 17
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 27,
+     "f": 17
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 16,
+     "f": 24
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 22,
+     "f": 30
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 29,
+     "f": 27
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 37,
+     "f": 30
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 25,
+     "f": 37
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 40,
+     "f": 36
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 32,
+     "f": 32
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 35,
+     "f": 45
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 42,
+     "f": 48
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 69,
+     "f": 49
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 75,
+     "f": 72
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 73,
+     "f": 57
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 51,
+     "f": 61
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 48,
+     "f": 63
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 31,
+     "f": 43
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 18,
+     "f": 30
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 5,
+     "f": 13
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Celerina/Schlarigna",
+   "nr": 3782,
+   "total": 1415,
+   "maenner": 718,
+   "frauen": 697,
+   "avg_age": 48.18,
+   "male_pct": 50.74,
+   "youth_pct": 12.72,
+   "senior_pct": 25.3,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 16,
+     "f": 19
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 15,
+     "f": 18
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 26,
+     "f": 21
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 31,
+     "f": 34
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 45,
+     "f": 26
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 38,
+     "f": 49
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 51,
+     "f": 29
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 49,
+     "f": 47
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 47,
+     "f": 33
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 37,
+     "f": 27
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 51,
+     "f": 61
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 66,
+     "f": 72
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 73,
+     "f": 76
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 52,
+     "f": 50
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 36,
+     "f": 43
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 45,
+     "f": 43
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 23,
+     "f": 23
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 12,
+     "f": 19
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 6
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Mesocco",
+   "nr": 3822,
+   "total": 1414,
+   "maenner": 742,
+   "frauen": 672,
+   "avg_age": 48.68,
+   "male_pct": 52.48,
+   "youth_pct": 14.43,
+   "senior_pct": 26.8,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 29,
+     "f": 23
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 18,
+     "f": 26
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 29,
+     "f": 28
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 28,
+     "f": 23
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 30,
+     "f": 34
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 35,
+     "f": 28
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 40,
+     "f": 39
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 32,
+     "f": 36
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 33,
+     "f": 26
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 52,
+     "f": 45
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 71,
+     "f": 52
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 85,
+     "f": 61
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 67,
+     "f": 65
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 60,
+     "f": 44
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 45,
+     "f": 33
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 39,
+     "f": 43
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 30,
+     "f": 26
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 14,
+     "f": 21
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 15
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Albula/Alvra",
+   "nr": 3542,
+   "total": 1354,
+   "maenner": 695,
+   "frauen": 659,
+   "avg_age": 47.13,
+   "male_pct": 51.33,
+   "youth_pct": 15.36,
+   "senior_pct": 24.82,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 29,
+     "f": 21
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 28,
+     "f": 23
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 33,
+     "f": 20
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 26,
+     "f": 28
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 29,
+     "f": 33
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 40,
+     "f": 29
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 40,
+     "f": 36
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 42,
+     "f": 31
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 61,
+     "f": 43
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 37,
+     "f": 43
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 53,
+     "f": 46
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 59,
+     "f": 66
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 61,
+     "f": 61
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 41,
+     "f": 50
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 38,
+     "f": 43
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 32,
+     "f": 27
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 27,
+     "f": 22
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 13,
+     "f": 24
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 6,
+     "f": 9
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 4
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Zuoz",
+   "nr": 3791,
+   "total": 1224,
+   "maenner": 622,
+   "frauen": 602,
+   "avg_age": 44.12,
+   "male_pct": 50.82,
+   "youth_pct": 23.69,
+   "senior_pct": 23.94,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 23,
+     "f": 13
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 22,
+     "f": 19
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 33,
+     "f": 23
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 89,
+     "f": 68
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 31,
+     "f": 27
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 23,
+     "f": 24
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 28,
+     "f": 32
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 32,
+     "f": 24
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 39,
+     "f": 40
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 41,
+     "f": 44
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 43,
+     "f": 49
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 46,
+     "f": 42
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 34,
+     "f": 42
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 43,
+     "f": 42
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 36,
+     "f": 42
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 28,
+     "f": 29
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 18,
+     "f": 19
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 8,
+     "f": 14
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 3,
+     "f": 9
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Tamins",
+   "nr": 3733,
+   "total": 1223,
+   "maenner": 619,
+   "frauen": 604,
+   "avg_age": 45.03,
+   "male_pct": 50.61,
+   "youth_pct": 18.89,
+   "senior_pct": 23.79,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 29,
+     "f": 24
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 40,
+     "f": 31
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 33,
+     "f": 26
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 24,
+     "f": 24
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 26,
+     "f": 25
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 13,
+     "f": 37
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 43,
+     "f": 29
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 37,
+     "f": 34
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 42,
+     "f": 53
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 57,
+     "f": 40
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 42,
+     "f": 35
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 45,
+     "f": 49
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 44,
+     "f": 50
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 44,
+     "f": 43
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 36,
+     "f": 30
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 27,
+     "f": 34
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 25,
+     "f": 23
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 10,
+     "f": 6
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 10
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Tujetsch",
+   "nr": 3986,
+   "total": 1199,
+   "maenner": 623,
+   "frauen": 576,
+   "avg_age": 49.9,
+   "male_pct": 51.96,
+   "youth_pct": 13.93,
+   "senior_pct": 32.44,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 14,
+     "f": 16
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 17,
+     "f": 19
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 28,
+     "f": 19
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 32,
+     "f": 22
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 36,
+     "f": 30
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 33,
+     "f": 21
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 29,
+     "f": 25
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 29,
+     "f": 23
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 31,
+     "f": 31
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 33,
+     "f": 38
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 55,
+     "f": 46
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 50,
+     "f": 46
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 45,
+     "f": 42
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 44,
+     "f": 54
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 51,
+     "f": 39
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 43,
+     "f": 51
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 34,
+     "f": 23
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 15,
+     "f": 17
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 11
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Jenaz",
+   "nr": 3863,
+   "total": 1164,
+   "maenner": 595,
+   "frauen": 569,
+   "avg_age": 46.49,
+   "male_pct": 51.12,
+   "youth_pct": 17.35,
+   "senior_pct": 26.12,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 19,
+     "f": 19
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 25,
+     "f": 24
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 29,
+     "f": 29
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 29,
+     "f": 28
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 28,
+     "f": 33
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 35,
+     "f": 32
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 26,
+     "f": 21
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 32,
+     "f": 31
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 29,
+     "f": 37
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 44,
+     "f": 37
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 46,
+     "f": 37
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 55,
+     "f": 46
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 44,
+     "f": 45
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 44,
+     "f": 41
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 45,
+     "f": 37
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 30,
+     "f": 26
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 16,
+     "f": 21
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 12,
+     "f": 15
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Obersaxen Mundaun",
+   "nr": 3988,
+   "total": 1160,
+   "maenner": 595,
+   "frauen": 565,
+   "avg_age": 48.53,
+   "male_pct": 51.29,
+   "youth_pct": 16.12,
+   "senior_pct": 30.69,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 26,
+     "f": 22
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 29,
+     "f": 23
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 27,
+     "f": 18
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 22,
+     "f": 20
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 24,
+     "f": 22
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 27,
+     "f": 21
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 30,
+     "f": 17
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 39,
+     "f": 45
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 32,
+     "f": 28
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 28,
+     "f": 23
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 31,
+     "f": 42
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 46,
+     "f": 48
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 54,
+     "f": 60
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 56,
+     "f": 53
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 52,
+     "f": 45
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 33,
+     "f": 30
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 23,
+     "f": 26
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 11,
+     "f": 17
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 3
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Trun",
+   "nr": 3987,
+   "total": 1141,
+   "maenner": 568,
+   "frauen": 573,
+   "avg_age": 47.88,
+   "male_pct": 49.78,
+   "youth_pct": 15.6,
+   "senior_pct": 27.17,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 27,
+     "f": 19
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 26,
+     "f": 21
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 12,
+     "f": 21
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 21,
+     "f": 31
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 31,
+     "f": 31
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 32,
+     "f": 24
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 29,
+     "f": 28
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 35,
+     "f": 29
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 31,
+     "f": 26
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 25,
+     "f": 38
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 40,
+     "f": 35
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 55,
+     "f": 47
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 58,
+     "f": 59
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 46,
+     "f": 52
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 40,
+     "f": 22
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 20,
+     "f": 24
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 23,
+     "f": 23
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 10,
+     "f": 30
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 10
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Silvaplana",
+   "nr": 3790,
+   "total": 1124,
+   "maenner": 588,
+   "frauen": 536,
+   "avg_age": 48.87,
+   "male_pct": 52.31,
+   "youth_pct": 12.9,
+   "senior_pct": 27.94,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 22,
+     "f": 14
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 25,
+     "f": 22
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 15,
+     "f": 17
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 17,
+     "f": 13
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 22,
+     "f": 15
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 30,
+     "f": 23
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 43,
+     "f": 26
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 30,
+     "f": 37
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 39,
+     "f": 41
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 38,
+     "f": 29
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 57,
+     "f": 52
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 55,
+     "f": 45
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 43,
+     "f": 40
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 41,
+     "f": 44
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 36,
+     "f": 37
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 31,
+     "f": 37
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 27,
+     "f": 24
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 11,
+     "f": 13
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Brusio",
+   "nr": 3551,
+   "total": 1099,
+   "maenner": 579,
+   "frauen": 520,
+   "avg_age": 49.83,
+   "male_pct": 52.68,
+   "youth_pct": 14.38,
+   "senior_pct": 29.57,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 14,
+     "f": 12
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 20,
+     "f": 21
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 22,
+     "f": 25
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 25,
+     "f": 19
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 25,
+     "f": 20
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 19,
+     "f": 28
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 31,
+     "f": 14
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 31,
+     "f": 30
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 35,
+     "f": 27
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 44,
+     "f": 28
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 51,
+     "f": 33
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 55,
+     "f": 36
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 58,
+     "f": 51
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 43,
+     "f": 30
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 29,
+     "f": 43
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 38,
+     "f": 37
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 24,
+     "f": 28
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 10,
+     "f": 22
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 13
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Sumvitg",
+   "nr": 3985,
+   "total": 1063,
+   "maenner": 526,
+   "frauen": 537,
+   "avg_age": 50.17,
+   "male_pct": 49.48,
+   "youth_pct": 12.51,
+   "senior_pct": 30.67,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 14,
+     "f": 13
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 16,
+     "f": 20
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 16,
+     "f": 20
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 17,
+     "f": 17
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 27,
+     "f": 24
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 32,
+     "f": 36
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 35,
+     "f": 25
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 30,
+     "f": 23
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 29,
+     "f": 23
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 14,
+     "f": 23
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 27,
+     "f": 33
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 52,
+     "f": 53
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 59,
+     "f": 59
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 43,
+     "f": 38
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 39,
+     "f": 38
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 39,
+     "f": 30
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 16,
+     "f": 28
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 14,
+     "f": 15
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 5,
+     "f": 17
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Sils im Domleschg",
+   "nr": 3640,
+   "total": 976,
+   "maenner": 487,
+   "frauen": 489,
+   "avg_age": 44.11,
+   "male_pct": 49.9,
+   "youth_pct": 20.49,
+   "senior_pct": 22.34,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 20,
+     "f": 20
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 26,
+     "f": 28
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 29,
+     "f": 27
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 32,
+     "f": 18
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 29,
+     "f": 26
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 23,
+     "f": 23
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 20,
+     "f": 20
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 34,
+     "f": 32
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 32,
+     "f": 36
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 26,
+     "f": 37
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 36,
+     "f": 38
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 44,
+     "f": 35
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 32,
+     "f": 35
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 28,
+     "f": 26
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 21,
+     "f": 21
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 21,
+     "f": 35
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 20,
+     "f": 17
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 10,
+     "f": 10
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Jenins",
+   "nr": 3952,
+   "total": 964,
+   "maenner": 492,
+   "frauen": 472,
+   "avg_age": 43.36,
+   "male_pct": 51.04,
+   "youth_pct": 18.26,
+   "senior_pct": 20.44,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 27,
+     "f": 31
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 13,
+     "f": 19
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 25,
+     "f": 19
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 25,
+     "f": 17
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 27,
+     "f": 26
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 41,
+     "f": 28
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 33,
+     "f": 29
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 25,
+     "f": 36
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 28,
+     "f": 29
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 31,
+     "f": 28
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 33,
+     "f": 32
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 38,
+     "f": 42
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 45,
+     "f": 40
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 32,
+     "f": 29
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 30,
+     "f": 27
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 21,
+     "f": 22
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 11,
+     "f": 9
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 6,
+     "f": 5
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Safiental",
+   "nr": 3672,
+   "total": 964,
+   "maenner": 502,
+   "frauen": 462,
+   "avg_age": 45.8,
+   "male_pct": 52.07,
+   "youth_pct": 19.29,
+   "senior_pct": 25.62,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 17,
+     "f": 24
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 31,
+     "f": 21
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 19,
+     "f": 22
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 28,
+     "f": 24
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 20,
+     "f": 18
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 30,
+     "f": 27
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 32,
+     "f": 29
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 31,
+     "f": 20
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 28,
+     "f": 25
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 26,
+     "f": 31
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 31,
+     "f": 34
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 44,
+     "f": 34
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 39,
+     "f": 32
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 26,
+     "f": 26
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 30,
+     "f": 29
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 31,
+     "f": 21
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 19,
+     "f": 16
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 13,
+     "f": 18
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "San Vittore",
+   "nr": 3835,
+   "total": 961,
+   "maenner": 496,
+   "frauen": 465,
+   "avg_age": 44.94,
+   "male_pct": 51.61,
+   "youth_pct": 13.53,
+   "senior_pct": 20.81,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 21,
+     "f": 26
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 13,
+     "f": 17
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 13,
+     "f": 14
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 13,
+     "f": 13
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 21,
+     "f": 21
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 36,
+     "f": 35
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 42,
+     "f": 47
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 45,
+     "f": 30
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 35,
+     "f": 21
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 35,
+     "f": 22
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 35,
+     "f": 37
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 41,
+     "f": 39
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 48,
+     "f": 41
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 39,
+     "f": 36
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 22,
+     "f": 23
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 14,
+     "f": 17
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 16,
+     "f": 11
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 7,
+     "f": 11
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 4
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Vals",
+   "nr": 3603,
+   "total": 958,
+   "maenner": 507,
+   "frauen": 451,
+   "avg_age": 45.83,
+   "male_pct": 52.92,
+   "youth_pct": 15.14,
+   "senior_pct": 23.9,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 30,
+     "f": 18
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 16,
+     "f": 13
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 12,
+     "f": 13
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 20,
+     "f": 23
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 30,
+     "f": 21
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 37,
+     "f": 26
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 34,
+     "f": 37
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 43,
+     "f": 34
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 32,
+     "f": 20
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 29,
+     "f": 20
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 36,
+     "f": 28
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 35,
+     "f": 37
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 41,
+     "f": 44
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 30,
+     "f": 27
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 25,
+     "f": 24
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 27,
+     "f": 26
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 16,
+     "f": 17
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 7,
+     "f": 15
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 6,
+     "f": 7
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Andeer",
+   "nr": 3701,
+   "total": 923,
+   "maenner": 435,
+   "frauen": 488,
+   "avg_age": 46.96,
+   "male_pct": 47.13,
+   "youth_pct": 19.39,
+   "senior_pct": 28.49,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 21,
+     "f": 15
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 15,
+     "f": 17
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 34,
+     "f": 33
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 18,
+     "f": 26
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 19,
+     "f": 23
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 23,
+     "f": 13
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 10,
+     "f": 18
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 20,
+     "f": 27
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 27,
+     "f": 31
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 33,
+     "f": 32
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 46,
+     "f": 37
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 32,
+     "f": 34
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 25,
+     "f": 31
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 33,
+     "f": 35
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 25,
+     "f": 35
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 22,
+     "f": 33
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 20,
+     "f": 21
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 9,
+     "f": 19
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 3,
+     "f": 7
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Küblis",
+   "nr": 3882,
+   "total": 910,
+   "maenner": 454,
+   "frauen": 456,
+   "avg_age": 45.64,
+   "male_pct": 49.89,
+   "youth_pct": 18.46,
+   "senior_pct": 24.07,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 20,
+     "f": 16
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 27,
+     "f": 25
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 18,
+     "f": 19
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 22,
+     "f": 21
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 16,
+     "f": 10
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 19,
+     "f": 24
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 26,
+     "f": 27
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 32,
+     "f": 34
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 31,
+     "f": 28
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 35,
+     "f": 31
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 41,
+     "f": 32
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 42,
+     "f": 38
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 30,
+     "f": 27
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 24,
+     "f": 34
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 25,
+     "f": 29
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 21,
+     "f": 18
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 16,
+     "f": 20
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 5,
+     "f": 16
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Bergün Filisur",
+   "nr": 3544,
+   "total": 898,
+   "maenner": 444,
+   "frauen": 454,
+   "avg_age": 47.63,
+   "male_pct": 49.44,
+   "youth_pct": 15.26,
+   "senior_pct": 27.84,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 12,
+     "f": 19
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 12,
+     "f": 20
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 16,
+     "f": 22
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 21,
+     "f": 15
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 15,
+     "f": 15
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 24,
+     "f": 29
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 27,
+     "f": 24
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 28,
+     "f": 32
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 40,
+     "f": 26
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 26,
+     "f": 24
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 31,
+     "f": 30
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 28,
+     "f": 29
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 33,
+     "f": 50
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 39,
+     "f": 31
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 32,
+     "f": 28
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 34,
+     "f": 23
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 12,
+     "f": 17
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 11,
+     "f": 14
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 3,
+     "f": 5
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Fläsch",
+   "nr": 3951,
+   "total": 879,
+   "maenner": 439,
+   "frauen": 440,
+   "avg_age": 43.33,
+   "male_pct": 49.94,
+   "youth_pct": 17.75,
+   "senior_pct": 18.32,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 21,
+     "f": 24
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 18,
+     "f": 26
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 22,
+     "f": 15
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 16,
+     "f": 14
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 13,
+     "f": 10
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 24,
+     "f": 24
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 34,
+     "f": 45
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 34,
+     "f": 38
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 39,
+     "f": 30
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 36,
+     "f": 30
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 32,
+     "f": 21
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 40,
+     "f": 36
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 37,
+     "f": 39
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 24,
+     "f": 30
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 22,
+     "f": 17
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 12,
+     "f": 17
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 12,
+     "f": 15
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 3,
+     "f": 5
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Lostallo",
+   "nr": 3821,
+   "total": 866,
+   "maenner": 455,
+   "frauen": 411,
+   "avg_age": 45.37,
+   "male_pct": 52.54,
+   "youth_pct": 15.24,
+   "senior_pct": 21.36,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 16,
+     "f": 13
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 18,
+     "f": 11
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 18,
+     "f": 16
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 25,
+     "f": 15
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 23,
+     "f": 25
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 35,
+     "f": 20
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 26,
+     "f": 28
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 30,
+     "f": 25
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 26,
+     "f": 27
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 36,
+     "f": 33
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 42,
+     "f": 41
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 35,
+     "f": 31
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 34,
+     "f": 32
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 23,
+     "f": 20
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 28,
+     "f": 23
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 17,
+     "f": 25
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 15,
+     "f": 9
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 5,
+     "f": 9
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 7
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Scharans",
+   "nr": 3638,
+   "total": 836,
+   "maenner": 403,
+   "frauen": 433,
+   "avg_age": 44.25,
+   "male_pct": 48.21,
+   "youth_pct": 20.45,
+   "senior_pct": 25.24,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 16,
+     "f": 20
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 29,
+     "f": 33
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 22,
+     "f": 24
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 12,
+     "f": 15
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 24,
+     "f": 20
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 15,
+     "f": 17
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 24,
+     "f": 20
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 32,
+     "f": 35
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 25,
+     "f": 32
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 20,
+     "f": 20
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 22,
+     "f": 28
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 36,
+     "f": 36
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 27,
+     "f": 21
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 35,
+     "f": 34
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 28,
+     "f": 23
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 12,
+     "f": 19
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 16,
+     "f": 16
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 4,
+     "f": 14
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 4,
+     "f": 3
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Valsot",
+   "nr": 3764,
+   "total": 801,
+   "maenner": 407,
+   "frauen": 394,
+   "avg_age": 48.04,
+   "male_pct": 50.81,
+   "youth_pct": 16.1,
+   "senior_pct": 27.97,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 11,
+     "f": 7
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 16,
+     "f": 21
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 15,
+     "f": 15
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 15,
+     "f": 29
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 28,
+     "f": 17
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 20,
+     "f": 10
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 13,
+     "f": 14
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 28,
+     "f": 19
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 21,
+     "f": 26
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 29,
+     "f": 20
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 32,
+     "f": 33
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 29,
+     "f": 26
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 40,
+     "f": 43
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 30,
+     "f": 38
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 36,
+     "f": 23
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 21,
+     "f": 14
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 13,
+     "f": 25
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 7,
+     "f": 12
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 3,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Sagogn",
+   "nr": 3581,
+   "total": 769,
+   "maenner": 401,
+   "frauen": 368,
+   "avg_age": 45.99,
+   "male_pct": 52.15,
+   "youth_pct": 20.29,
+   "senior_pct": 25.23,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 15,
+     "f": 9
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 25,
+     "f": 14
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 20,
+     "f": 22
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 26,
+     "f": 25
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 13,
+     "f": 20
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 11,
+     "f": 8
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 28,
+     "f": 18
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 22,
+     "f": 21
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 29,
+     "f": 25
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 19,
+     "f": 32
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 30,
+     "f": 21
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 34,
+     "f": 31
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 29,
+     "f": 28
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 23,
+     "f": 20
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 28,
+     "f": 19
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 20,
+     "f": 18
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 21,
+     "f": 16
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 6,
+     "f": 13
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Samnaun",
+   "nr": 3752,
+   "total": 750,
+   "maenner": 409,
+   "frauen": 341,
+   "avg_age": 46.73,
+   "male_pct": 54.53,
+   "youth_pct": 13.73,
+   "senior_pct": 21.73,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 11,
+     "f": 2
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 19,
+     "f": 17
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 12,
+     "f": 18
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 10,
+     "f": 14
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 21,
+     "f": 12
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 23,
+     "f": 20
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 28,
+     "f": 13
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 29,
+     "f": 24
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 33,
+     "f": 25
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 20,
+     "f": 19
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 26,
+     "f": 30
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 41,
+     "f": 32
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 50,
+     "f": 38
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 35,
+     "f": 31
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 23,
+     "f": 17
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 13,
+     "f": 10
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 5,
+     "f": 7
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 3,
+     "f": 7
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 5,
+     "f": 5
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 1,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "La Punt Chamues-ch",
+   "nr": 3785,
+   "total": 750,
+   "maenner": 375,
+   "frauen": 375,
+   "avg_age": 47.89,
+   "male_pct": 50.0,
+   "youth_pct": 13.33,
+   "senior_pct": 27.87,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 19,
+     "f": 17
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 13,
+     "f": 14
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 13,
+     "f": 8
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 19,
+     "f": 21
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 26,
+     "f": 17
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 16,
+     "f": 24
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 26,
+     "f": 24
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 18,
+     "f": 17
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 23,
+     "f": 17
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 19,
+     "f": 25
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 40,
+     "f": 36
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 26,
+     "f": 47
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 38,
+     "f": 30
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 27,
+     "f": 24
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 25,
+     "f": 24
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 13,
+     "f": 14
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 4,
+     "f": 8
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Cama",
+   "nr": 3831,
+   "total": 720,
+   "maenner": 381,
+   "frauen": 339,
+   "avg_age": 44.0,
+   "male_pct": 52.92,
+   "youth_pct": 16.25,
+   "senior_pct": 18.06,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 15,
+     "f": 19
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 11,
+     "f": 9
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 18,
+     "f": 15
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 21,
+     "f": 9
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 18,
+     "f": 17
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 27,
+     "f": 26
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 17,
+     "f": 18
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 18,
+     "f": 26
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 35,
+     "f": 25
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 36,
+     "f": 27
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 35,
+     "f": 30
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 43,
+     "f": 36
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 21,
+     "f": 18
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 19,
+     "f": 15
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 14,
+     "f": 17
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 15,
+     "f": 12
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 10,
+     "f": 8
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 6,
+     "f": 9
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "S-chanf",
+   "nr": 3788,
+   "total": 713,
+   "maenner": 375,
+   "frauen": 338,
+   "avg_age": 44.89,
+   "male_pct": 52.59,
+   "youth_pct": 16.97,
+   "senior_pct": 21.74,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 10,
+     "f": 14
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 25,
+     "f": 11
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 16,
+     "f": 11
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 14,
+     "f": 20
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 19,
+     "f": 15
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 28,
+     "f": 19
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 20,
+     "f": 20
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 27,
+     "f": 25
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 27,
+     "f": 26
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 19,
+     "f": 20
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 20,
+     "f": 21
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 35,
+     "f": 30
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 40,
+     "f": 26
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 20,
+     "f": 24
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 21,
+     "f": 16
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 17,
+     "f": 19
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 11,
+     "f": 14
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Sils im Engadin/Segl",
+   "nr": 3789,
+   "total": 708,
+   "maenner": 365,
+   "frauen": 343,
+   "avg_age": 44.87,
+   "male_pct": 51.55,
+   "youth_pct": 15.96,
+   "senior_pct": 19.77,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 12,
+     "f": 6
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 17,
+     "f": 19
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 17,
+     "f": 14
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 16,
+     "f": 12
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 25,
+     "f": 16
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 22,
+     "f": 27
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 19,
+     "f": 16
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 15,
+     "f": 23
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 27,
+     "f": 23
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 20,
+     "f": 29
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 35,
+     "f": 33
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 42,
+     "f": 29
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 31,
+     "f": 23
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 17,
+     "f": 15
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 18,
+     "f": 21
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 17,
+     "f": 15
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 9,
+     "f": 12
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 6,
+     "f": 7
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Falera",
+   "nr": 3572,
+   "total": 635,
+   "maenner": 339,
+   "frauen": 296,
+   "avg_age": 48.1,
+   "male_pct": 53.39,
+   "youth_pct": 15.43,
+   "senior_pct": 27.87,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 9,
+     "f": 6
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 14,
+     "f": 13
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 18,
+     "f": 14
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 15,
+     "f": 9
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 19,
+     "f": 12
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 14,
+     "f": 11
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 22,
+     "f": 15
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 21,
+     "f": 17
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 19,
+     "f": 18
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 20,
+     "f": 24
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 24,
+     "f": 19
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 22,
+     "f": 26
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 28,
+     "f": 29
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 18,
+     "f": 21
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 27,
+     "f": 21
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 19,
+     "f": 17
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 17,
+     "f": 12
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 7,
+     "f": 7
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Fideris",
+   "nr": 3861,
+   "total": 626,
+   "maenner": 308,
+   "frauen": 318,
+   "avg_age": 44.92,
+   "male_pct": 49.2,
+   "youth_pct": 18.53,
+   "senior_pct": 24.44,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 22,
+     "f": 19
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 20,
+     "f": 16
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 14,
+     "f": 11
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 10,
+     "f": 4
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 16,
+     "f": 13
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 14,
+     "f": 17
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 30,
+     "f": 28
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 17,
+     "f": 19
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 11,
+     "f": 18
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 15,
+     "f": 11
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 20,
+     "f": 21
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 29,
+     "f": 28
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 21,
+     "f": 29
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 15,
+     "f": 19
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 22,
+     "f": 21
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 13,
+     "f": 13
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 11,
+     "f": 18
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 4,
+     "f": 6
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 3,
+     "f": 4
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Bever",
+   "nr": 3781,
+   "total": 618,
+   "maenner": 294,
+   "frauen": 324,
+   "avg_age": 47.42,
+   "male_pct": 47.57,
+   "youth_pct": 15.86,
+   "senior_pct": 26.05,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 13,
+     "f": 16
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 11,
+     "f": 10
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 9,
+     "f": 11
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 15,
+     "f": 13
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 13,
+     "f": 9
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 12,
+     "f": 17
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 12,
+     "f": 13
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 15,
+     "f": 22
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 28,
+     "f": 23
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 12,
+     "f": 27
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 22,
+     "f": 17
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 30,
+     "f": 26
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 29,
+     "f": 32
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 25,
+     "f": 29
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 14,
+     "f": 20
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 19,
+     "f": 15
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 15,
+     "f": 12
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 0,
+     "f": 7
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 4
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Schluein",
+   "nr": 3582,
+   "total": 616,
+   "maenner": 338,
+   "frauen": 278,
+   "avg_age": 44.57,
+   "male_pct": 54.87,
+   "youth_pct": 16.4,
+   "senior_pct": 19.97,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 14,
+     "f": 13
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 20,
+     "f": 12
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 16,
+     "f": 8
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 9,
+     "f": 9
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 13,
+     "f": 13
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 14,
+     "f": 14
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 29,
+     "f": 15
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 29,
+     "f": 25
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 19,
+     "f": 16
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 22,
+     "f": 21
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 26,
+     "f": 20
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 29,
+     "f": 25
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 27,
+     "f": 35
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 25,
+     "f": 12
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 26,
+     "f": 17
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 12,
+     "f": 10
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 6,
+     "f": 6
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Rheinwald",
+   "nr": 3714,
+   "total": 570,
+   "maenner": 297,
+   "frauen": 273,
+   "avg_age": 48.63,
+   "male_pct": 52.11,
+   "youth_pct": 14.39,
+   "senior_pct": 30.35,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 13,
+     "f": 12
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 13,
+     "f": 8
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 9,
+     "f": 6
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 9,
+     "f": 12
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 20,
+     "f": 15
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 12,
+     "f": 12
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 13,
+     "f": 14
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 15,
+     "f": 22
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 20,
+     "f": 10
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 19,
+     "f": 16
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 21,
+     "f": 24
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 25,
+     "f": 20
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 21,
+     "f": 16
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 15,
+     "f": 17
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 17,
+     "f": 20
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 29,
+     "f": 23
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 13,
+     "f": 14
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 11,
+     "f": 8
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 4
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Masein",
+   "nr": 3663,
+   "total": 531,
+   "maenner": 257,
+   "frauen": 274,
+   "avg_age": 41.37,
+   "male_pct": 48.4,
+   "youth_pct": 25.61,
+   "senior_pct": 20.34,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 12,
+     "f": 18
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 12,
+     "f": 17
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 20,
+     "f": 29
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 15,
+     "f": 13
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 8,
+     "f": 9
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 12,
+     "f": 8
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 6,
+     "f": 13
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 24,
+     "f": 21
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 29,
+     "f": 21
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 11,
+     "f": 17
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 12,
+     "f": 18
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 18,
+     "f": 22
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 20,
+     "f": 18
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 21,
+     "f": 19
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 17,
+     "f": 12
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 16,
+     "f": 13
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Lantsch/Lenz",
+   "nr": 3513,
+   "total": 518,
+   "maenner": 260,
+   "frauen": 258,
+   "avg_age": 47.89,
+   "male_pct": 50.19,
+   "youth_pct": 16.41,
+   "senior_pct": 27.41,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 11,
+     "f": 6
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 13,
+     "f": 15
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 9,
+     "f": 13
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 11,
+     "f": 7
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 6,
+     "f": 6
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 12,
+     "f": 9
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 15,
+     "f": 15
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 11,
+     "f": 15
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 22,
+     "f": 18
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 19,
+     "f": 18
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 13,
+     "f": 19
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 25,
+     "f": 18
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 29,
+     "f": 21
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 24,
+     "f": 24
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 15,
+     "f": 18
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 13,
+     "f": 14
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 7,
+     "f": 8
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 3,
+     "f": 5
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 2,
+     "f": 7
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Zillis-Reischen",
+   "nr": 3712,
+   "total": 426,
+   "maenner": 234,
+   "frauen": 192,
+   "avg_age": 45.99,
+   "male_pct": 54.93,
+   "youth_pct": 15.96,
+   "senior_pct": 21.6,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 12,
+     "f": 10
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 8,
+     "f": 1
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 9,
+     "f": 6
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 12,
+     "f": 10
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 10,
+     "f": 14
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 21,
+     "f": 6
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 10,
+     "f": 13
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 14,
+     "f": 9
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 6,
+     "f": 5
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 13,
+     "f": 13
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 21,
+     "f": 15
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 25,
+     "f": 28
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 24,
+     "f": 19
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 15,
+     "f": 16
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 14,
+     "f": 8
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 6,
+     "f": 6
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Muntogna da Schons",
+   "nr": 3715,
+   "total": 368,
+   "maenner": 188,
+   "frauen": 180,
+   "avg_age": 45.49,
+   "male_pct": 51.09,
+   "youth_pct": 20.65,
+   "senior_pct": 25.82,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 10,
+     "f": 13
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 10,
+     "f": 14
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 9,
+     "f": 10
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 8,
+     "f": 2
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 7,
+     "f": 6
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 12,
+     "f": 7
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 8,
+     "f": 8
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 12,
+     "f": 14
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 8,
+     "f": 9
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 10,
+     "f": 6
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 10,
+     "f": 13
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 18,
+     "f": 16
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 18,
+     "f": 15
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 14,
+     "f": 16
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 16,
+     "f": 8
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 6,
+     "f": 6
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Fürstenau",
+   "nr": 3633,
+   "total": 353,
+   "maenner": 162,
+   "frauen": 191,
+   "avg_age": 46.53,
+   "male_pct": 45.89,
+   "youth_pct": 17.28,
+   "senior_pct": 26.91,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 4,
+     "f": 6
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 5,
+     "f": 7
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 11,
+     "f": 10
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 11,
+     "f": 7
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 13,
+     "f": 5
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 10,
+     "f": 13
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 12,
+     "f": 9
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 10,
+     "f": 12
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 8,
+     "f": 14
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 20,
+     "f": 18
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 11,
+     "f": 12
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 9,
+     "f": 16
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 5,
+     "f": 17
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 13,
+     "f": 15
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 5,
+     "f": 9
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Medel (Lucmagn)",
+   "nr": 3983,
+   "total": 328,
+   "maenner": 165,
+   "frauen": 163,
+   "avg_age": 51.7,
+   "male_pct": 50.3,
+   "youth_pct": 7.62,
+   "senior_pct": 28.66,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 3,
+     "f": 5
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 1,
+     "f": 8
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 12,
+     "f": 13
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 10,
+     "f": 10
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 4,
+     "f": 10
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 7,
+     "f": 2
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 8,
+     "f": 6
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 11,
+     "f": 18
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 21,
+     "f": 21
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 26,
+     "f": 14
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 19,
+     "f": 15
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 12,
+     "f": 8
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 6,
+     "f": 3
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 2,
+     "f": 5
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 8,
+     "f": 10
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Soazza",
+   "nr": 3823,
+   "total": 324,
+   "maenner": 171,
+   "frauen": 153,
+   "avg_age": 53.28,
+   "male_pct": 52.78,
+   "youth_pct": 7.72,
+   "senior_pct": 33.64,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 1,
+     "f": 4
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 4,
+     "f": 2
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 8,
+     "f": 14
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 10,
+     "f": 6
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 5,
+     "f": 5
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 10,
+     "f": 5
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 5,
+     "f": 7
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 9,
+     "f": 9
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 16,
+     "f": 13
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 25,
+     "f": 16
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 17,
+     "f": 10
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 15,
+     "f": 13
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 12,
+     "f": 12
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 11,
+     "f": 7
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 8,
+     "f": 10
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 6,
+     "f": 3
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 9
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Tschiertschen-Praden",
+   "nr": 3932,
+   "total": 309,
+   "maenner": 159,
+   "frauen": 150,
+   "avg_age": 47.13,
+   "male_pct": 51.46,
+   "youth_pct": 18.77,
+   "senior_pct": 28.8,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 4,
+     "f": 4
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 15,
+     "f": 12
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 9,
+     "f": 6
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 6,
+     "f": 4
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 17,
+     "f": 19
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 10,
+     "f": 10
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 7,
+     "f": 6
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 14,
+     "f": 9
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 13,
+     "f": 8
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 14,
+     "f": 14
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 17,
+     "f": 17
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 8,
+     "f": 12
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 9,
+     "f": 9
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 6,
+     "f": 7
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 2,
+     "f": 0
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Rothenbrunnen",
+   "nr": 3637,
+   "total": 304,
+   "maenner": 164,
+   "frauen": 140,
+   "avg_age": 43.92,
+   "male_pct": 53.95,
+   "youth_pct": 20.39,
+   "senior_pct": 23.36,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 10,
+     "f": 8
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 7,
+     "f": 7
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 9,
+     "f": 5
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 12,
+     "f": 5
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 5,
+     "f": 5
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 9,
+     "f": 6
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 10,
+     "f": 12
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 11,
+     "f": 10
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 10,
+     "f": 7
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 20,
+     "f": 17
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 5,
+     "f": 11
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 11,
+     "f": 9
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 12,
+     "f": 11
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 8,
+     "f": 6
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 5,
+     "f": 5
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Flerden",
+   "nr": 3662,
+   "total": 255,
+   "maenner": 126,
+   "frauen": 129,
+   "avg_age": 42.96,
+   "male_pct": 49.41,
+   "youth_pct": 20.39,
+   "senior_pct": 20.78,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 4,
+     "f": 3
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 9,
+     "f": 6
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 13,
+     "f": 8
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 4,
+     "f": 6
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 3,
+     "f": 4
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 9,
+     "f": 6
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 10,
+     "f": 13
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 7,
+     "f": 6
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 11,
+     "f": 15
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 8,
+     "f": 13
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 10,
+     "f": 4
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 10,
+     "f": 9
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Castaneda",
+   "nr": 3805,
+   "total": 254,
+   "maenner": 119,
+   "frauen": 135,
+   "avg_age": 53.4,
+   "male_pct": 46.85,
+   "youth_pct": 10.63,
+   "senior_pct": 33.07,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 4,
+     "f": 1
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 6,
+     "f": 7
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 6,
+     "f": 7
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 4,
+     "f": 5
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 1,
+     "f": 4
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 7,
+     "f": 6
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 14,
+     "f": 13
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 13,
+     "f": 12
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 15,
+     "f": 11
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 10,
+     "f": 8
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 8,
+     "f": 10
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 5,
+     "f": 13
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 2,
+     "f": 7
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 4
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Conters im Prättigau",
+   "nr": 3881,
+   "total": 224,
+   "maenner": 114,
+   "frauen": 110,
+   "avg_age": 46.89,
+   "male_pct": 50.89,
+   "youth_pct": 19.64,
+   "senior_pct": 26.79,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 2,
+     "f": 0
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 9,
+     "f": 2
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 7,
+     "f": 13
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 5,
+     "f": 6
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 4,
+     "f": 4
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 6,
+     "f": 3
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 4,
+     "f": 5
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 11,
+     "f": 10
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 6,
+     "f": 4
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 4,
+     "f": 10
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 17,
+     "f": 6
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 10,
+     "f": 8
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 11,
+     "f": 13
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 4,
+     "f": 1
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 5,
+     "f": 11
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 1,
+     "f": 4
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Schmitten (GR)",
+   "nr": 3514,
+   "total": 205,
+   "maenner": 114,
+   "frauen": 91,
+   "avg_age": 52.71,
+   "male_pct": 55.61,
+   "youth_pct": 11.22,
+   "senior_pct": 36.59,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 5,
+     "f": 6
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 4,
+     "f": 4
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 3,
+     "f": 0
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 6,
+     "f": 0
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 4,
+     "f": 5
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 4,
+     "f": 5
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 7,
+     "f": 5
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 11,
+     "f": 7
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 7,
+     "f": 6
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 10,
+     "f": 13
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 11,
+     "f": 8
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 7,
+     "f": 7
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 11,
+     "f": 12
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 9,
+     "f": 4
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 3,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 1
+    }
+   ]
+  },
+  {
+   "gemeinde": "Calanca",
+   "nr": 3837,
+   "total": 204,
+   "maenner": 106,
+   "frauen": 98,
+   "avg_age": 54.06,
+   "male_pct": 51.96,
+   "youth_pct": 10.29,
+   "senior_pct": 38.24,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 7,
+     "f": 4
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 2,
+     "f": 0
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 4,
+     "f": 7
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 4,
+     "f": 3
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 6,
+     "f": 6
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 12,
+     "f": 6
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 11,
+     "f": 11
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 10,
+     "f": 7
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 9,
+     "f": 11
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 12,
+     "f": 11
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 4,
+     "f": 7
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Furna",
+   "nr": 3862,
+   "total": 203,
+   "maenner": 102,
+   "frauen": 101,
+   "avg_age": 43.55,
+   "male_pct": 50.25,
+   "youth_pct": 21.18,
+   "senior_pct": 25.12,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 6,
+     "f": 5
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 7,
+     "f": 7
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 5,
+     "f": 5
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 8,
+     "f": 6
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 6,
+     "f": 6
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 4,
+     "f": 5
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 4,
+     "f": 7
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 7,
+     "f": 5
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 8,
+     "f": 6
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 6,
+     "f": 10
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 6,
+     "f": 6
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 11,
+     "f": 6
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 9,
+     "f": 8
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 1,
+     "f": 6
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 1,
+     "f": 4
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Madulain",
+   "nr": 3783,
+   "total": 196,
+   "maenner": 101,
+   "frauen": 95,
+   "avg_age": 50.34,
+   "male_pct": 51.53,
+   "youth_pct": 12.76,
+   "senior_pct": 31.63,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 7,
+     "f": 2
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 4,
+     "f": 1
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 4,
+     "f": 4
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 7,
+     "f": 7
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 9,
+     "f": 6
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 8,
+     "f": 11
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 12,
+     "f": 7
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 9,
+     "f": 12
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 8,
+     "f": 12
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 7,
+     "f": 6
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 4,
+     "f": 3
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Avers",
+   "nr": 3681,
+   "total": 169,
+   "maenner": 79,
+   "frauen": 90,
+   "avg_age": 44.75,
+   "male_pct": 46.75,
+   "youth_pct": 21.89,
+   "senior_pct": 29.59,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 8,
+     "f": 5
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 7,
+     "f": 6
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 0,
+     "f": 7
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 6,
+     "f": 4
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 3,
+     "f": 5
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 1,
+     "f": 7
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 9,
+     "f": 4
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 4,
+     "f": 4
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 7,
+     "f": 4
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 5,
+     "f": 7
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 7,
+     "f": 7
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 10,
+     "f": 3
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 2,
+     "f": 8
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 3,
+     "f": 4
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Rossa",
+   "nr": 3808,
+   "total": 168,
+   "maenner": 94,
+   "frauen": 74,
+   "avg_age": 55.6,
+   "male_pct": 55.95,
+   "youth_pct": 6.55,
+   "senior_pct": 39.88,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 3,
+     "f": 0
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 0,
+     "f": 2
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 3,
+     "f": 0
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 4,
+     "f": 0
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 6,
+     "f": 3
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 4,
+     "f": 2
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 6,
+     "f": 3
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 5,
+     "f": 1
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 8,
+     "f": 7
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 9,
+     "f": 8
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 8,
+     "f": 11
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 12,
+     "f": 9
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 13,
+     "f": 10
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 6,
+     "f": 6
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 1,
+     "f": 4
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Urmein",
+   "nr": 3670,
+   "total": 163,
+   "maenner": 82,
+   "frauen": 81,
+   "avg_age": 52.06,
+   "male_pct": 50.31,
+   "youth_pct": 17.18,
+   "senior_pct": 39.26,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 4,
+     "f": 3
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 5,
+     "f": 2
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 4,
+     "f": 7
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 3,
+     "f": 0
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 5,
+     "f": 1
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 1,
+     "f": 5
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 6,
+     "f": 9
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 7,
+     "f": 3
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 6,
+     "f": 7
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 2,
+     "f": 6
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 7,
+     "f": 6
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 6,
+     "f": 8
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 10,
+     "f": 8
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 6,
+     "f": 5
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 4,
+     "f": 3
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Sufers",
+   "nr": 3695,
+   "total": 147,
+   "maenner": 78,
+   "frauen": 69,
+   "avg_age": 44.62,
+   "male_pct": 53.06,
+   "youth_pct": 25.17,
+   "senior_pct": 26.53,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 6,
+     "f": 4
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 5,
+     "f": 7
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 5,
+     "f": 7
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 4,
+     "f": 1
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 2,
+     "f": 5
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 6,
+     "f": 3
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 4,
+     "f": 4
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 7,
+     "f": 8
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 8,
+     "f": 3
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 2,
+     "f": 4
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 6,
+     "f": 4
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 6,
+     "f": 1
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 5,
+     "f": 5
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Tschappina",
+   "nr": 3669,
+   "total": 146,
+   "maenner": 78,
+   "frauen": 68,
+   "avg_age": 49.43,
+   "male_pct": 53.42,
+   "youth_pct": 17.12,
+   "senior_pct": 32.88,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 7,
+     "f": 2
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 5,
+     "f": 2
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 3,
+     "f": 1
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 2,
+     "f": 5
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 4,
+     "f": 4
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 4,
+     "f": 9
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 9,
+     "f": 3
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 8,
+     "f": 5
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 4,
+     "f": 8
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 10,
+     "f": 9
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Santa Maria in Calanca",
+   "nr": 3810,
+   "total": 113,
+   "maenner": 61,
+   "frauen": 52,
+   "avg_age": 57.18,
+   "male_pct": 53.98,
+   "youth_pct": 6.19,
+   "senior_pct": 39.82,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 2,
+     "f": 0
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 2,
+     "f": 4
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 4,
+     "f": 2
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 3,
+     "f": 4
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 9,
+     "f": 8
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 7,
+     "f": 5
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 9,
+     "f": 8
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 7,
+     "f": 3
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 5,
+     "f": 4
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Buseno",
+   "nr": 3804,
+   "total": 91,
+   "maenner": 43,
+   "frauen": 48,
+   "avg_age": 57.44,
+   "male_pct": 47.25,
+   "youth_pct": 5.49,
+   "senior_pct": 38.46,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 3,
+     "f": 1
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 2,
+     "f": 3
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 5,
+     "f": 6
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 9,
+     "f": 7
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 6,
+     "f": 4
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 5,
+     "f": 3
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 4
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Ferrera",
+   "nr": 3713,
+   "total": 76,
+   "maenner": 43,
+   "frauen": 33,
+   "avg_age": 41.01,
+   "male_pct": 56.58,
+   "youth_pct": 21.05,
+   "senior_pct": 21.05,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 6,
+     "f": 2
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 1,
+     "f": 3
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 3,
+     "f": 4
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 3,
+     "f": 3
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 3,
+     "f": 0
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 4,
+     "f": 6
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 3,
+     "f": 1
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 2,
+     "f": 0
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 2,
+     "f": 2
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  },
+  {
+   "gemeinde": "Rongellen",
+   "nr": 3711,
+   "total": 59,
+   "maenner": 33,
+   "frauen": 26,
+   "avg_age": 45.64,
+   "male_pct": 55.93,
+   "youth_pct": 15.25,
+   "senior_pct": 25.42,
+   "pyramid": [
+    {
+     "klasse": "0-4 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "5-9 Jahre",
+     "m": 3,
+     "f": 1
+    },
+    {
+     "klasse": "10-14 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "15-19 Jahre",
+     "m": 1,
+     "f": 1
+    },
+    {
+     "klasse": "20-24 Jahre",
+     "m": 3,
+     "f": 1
+    },
+    {
+     "klasse": "25-29 Jahre",
+     "m": 2,
+     "f": 1
+    },
+    {
+     "klasse": "30-34 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "35-39 Jahre",
+     "m": 0,
+     "f": 3
+    },
+    {
+     "klasse": "40-44 Jahre",
+     "m": 6,
+     "f": 4
+    },
+    {
+     "klasse": "45-49 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "50-54 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "55-59 Jahre",
+     "m": 3,
+     "f": 2
+    },
+    {
+     "klasse": "60-64 Jahre",
+     "m": 4,
+     "f": 2
+    },
+    {
+     "klasse": "65-69 Jahre",
+     "m": 5,
+     "f": 5
+    },
+    {
+     "klasse": "70-74 Jahre",
+     "m": 1,
+     "f": 0
+    },
+    {
+     "klasse": "75-79 Jahre",
+     "m": 1,
+     "f": 2
+    },
+    {
+     "klasse": "80-84 Jahre",
+     "m": 0,
+     "f": 1
+    },
+    {
+     "klasse": "85-89 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "90-94 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "95-99 Jahre",
+     "m": 0,
+     "f": 0
+    },
+    {
+     "klasse": "100 Jahre und mehr",
+     "m": 0,
+     "f": 0
+    }
+   ]
+  }
+ ]
+}

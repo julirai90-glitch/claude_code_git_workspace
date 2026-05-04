@@ -1,0 +1,13 @@
+# Python cache
+**/__pycache__/
+*.pyc
+
+# Raw data (re-fetchable via Scripts 06/07/08)
+grenzgaenger_raw.csv
+
+# Research scratch files (not part of published stories)
+_research/bev_raw.json
+_research/ggs_test.xml
+_research/gr_gemeinden.geojson
+_research/_calanca_dataset_meta.json
+_research/quellen-fahrzeuge/

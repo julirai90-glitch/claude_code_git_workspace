@@ -1,0 +1,95 @@
+bfs_nr,quote_prozent,gemeinde,region,grenzgaenger_2023,beschaeftigte_2023,grenzgaenger_2025
+3506,1.3,Vaz/Obervaz,Albula,37,2788,40
+3513,0.4,Lantsch/Lenz,Albula,1,194,1
+3514,1.1,Schmitten (GR),Albula,0,46,0
+3542,1.3,Albula/Alvra,Albula,10,728,8
+3543,4.4,Surses,Albula,69,1563,57
+3544,3.0,Bergün Filisur,Albula,18,575,21
+3551,54.7,Brusio,Bernina,515,942,519
+3561,33.4,Poschiavo,Bernina,784,2346,821
+3572,0.4,Falera,Surselva,1,266,2
+3575,0.3,Laax,Surselva,6,1724,6
+3582,0.2,Schluein,Surselva,0,305,1
+3603,2.0,Vals,Surselva,13,658,7
+3618,0.0,Lumnezia,Surselva,0,917,0
+3619,0.4,Ilanz/Glion,Surselva,15,3478,10
+3633,0.0,Fürstenau,Viamala,0,184,0
+3637,0.8,Rothenbrunnen,Viamala,4,479,4
+3638,0.0,Scharans,Viamala,0,420,1
+3640,0.0,Sils im Domleschg,Viamala,0,320,0
+3661,0.0,Cazis,Viamala,0,1567,3
+3663,1.4,Masein,Viamala,2,127,2
+3668,1.4,Thusis,Viamala,34,2452,43
+3672,0.0,Safiental,Surselva,0,424,0
+3673,0.0,Domleschg,Viamala,0,549,0
+3681,0.7,Avers,Viamala,1,136,2
+3695,7.3,Sufers,Viamala,6,82,6
+3701,3.8,Andeer,Viamala,19,495,22
+3712,4.0,Zillis-Reischen,Viamala,8,202,5
+3714,4.9,Rheinwald,Viamala,18,362,15
+3715,0.0,Muntogna da Schons,Viamala,0,258,0
+3721,1.5,Bonaduz,Imboden,26,1803,32
+3722,0.8,Domat/Ems,Imboden,31,3951,42
+3723,0.6,Rhäzüns,Imboden,2,392,2
+3731,0.2,Felsberg,Imboden,1,564,3
+3732,0.8,Flims,Imboden,14,1816,12
+3733,0.2,Tamins,Imboden,0,256,4
+3734,0.6,Trin,Imboden,2,353,2
+3746,19.9,Zernez,Engiadina Bassa/Val Müstair,201,1010,230
+3752,21.9,Samnaun,Engiadina Bassa/Val Müstair,258,1181,225
+3762,15.9,Scuol,Engiadina Bassa/Val Müstair,540,3389,531
+3764,24.2,Valsot,Engiadina Bassa/Val Müstair,105,433,105
+3781,26.0,Bever,Maloja,90,345,91
+3782,22.1,Celerina/Schlarigna,Maloja,213,963,201
+3783,18.7,Madulain,Maloja,16,83,14
+3784,25.7,Pontresina,Maloja,552,2147,565
+3785,18.0,La Punt Chamues-ch,Maloja,50,276,53
+3786,14.4,Samedan,Maloja,426,2957,483
+3787,24.2,St. Moritz,Maloja,2044,8439,1856
+3788,16.9,S-chanf,Maloja,51,303,79
+3789,44.2,Sils im Engadin/Segl,Maloja,461,1043,463
+3790,41.1,Silvaplana,Maloja,391,952,363
+3791,15.3,Zuoz,Maloja,136,893,118
+3792,44.5,Bregaglia,Maloja,516,1160,530
+3804,0.0,Buseno,Moesa,0,17,0
+3805,17.0,Castaneda,Moesa,18,104,12
+3808,4.8,Rossa,Moesa,1,27,5
+3810,0.0,Santa Maria in Calanca,Moesa,0,15,1
+3821,8.9,Lostallo,Moesa,28,310,36
+3822,7.9,Mesocco,Moesa,50,641,60
+3823,15.4,Soazza,Moesa,18,117,26
+3831,8.9,Cama,Moesa,19,210,35
+3832,16.8,Grono,Moesa,204,1213,212
+3834,11.1,Roveredo (GR),Moesa,142,1274,196
+3835,30.5,San Vittore,Moesa,157,514,155
+3837,11.8,Calanca,Moesa,14,120,13
+3847,42.0,Val Müstair,Engiadina Bassa/Val Müstair,514,1224,500
+3851,0.9,Davos,Prättigau/Davos,86,9699,81
+3861,0.0,Fideris,Prättigau/Davos,0,219,0
+3862,1.6,Furna,Prättigau/Davos,2,95,0
+3863,0.4,Jenaz,Prättigau/Davos,2,411,0
+3871,0.7,Klosters,Prättigau/Davos,18,2405,20
+3881,0.2,Conters im Prättigau,Prättigau/Davos,0,98,0
+3882,0.5,Küblis,Prättigau/Davos,3,583,4
+3891,0.2,Luzein,Prättigau/Davos,1,543,1
+3901,1.1,Chur,Plessur,389,34967,371
+3911,0.8,Churwalden,Plessur,8,967,8
+3921,0.9,Arosa,Plessur,27,2941,29
+3945,1.2,Trimmis,Landquart,14,1174,14
+3946,2.0,Untervaz,Landquart,22,1094,23
+3947,1.5,Zizers,Landquart,34,2324,36
+3951,1.2,Fläsch,Landquart,5,440,5
+3952,1.4,Jenins,Landquart,4,283,3
+3953,1.3,Maienfeld,Landquart,29,2208,35
+3954,0.2,Malans,Landquart,2,951,6
+3955,2.7,Landquart,Landquart,166,6225,177
+3961,1.0,Grüsch,Prättigau/Davos,13,1348,15
+3962,0.7,Schiers,Prättigau/Davos,11,1553,17
+3972,0.5,Seewis im Prättigau,Prättigau/Davos,4,637,7
+3981,0.1,Breil/Brigels,Surselva,0,747,0
+3982,1.0,Disentis/Mustér,Surselva,12,1196,9
+3983,0.0,Medel (Lucmagn),Surselva,0,150,0
+3985,0.3,Sumvitg,Surselva,2,444,3
+3986,0.6,Tujetsch,Surselva,4,621,3
+3987,1.7,Trun,Surselva,12,669,5
+3988,0.0,Obersaxen Mundaun,Surselva,0,651,1

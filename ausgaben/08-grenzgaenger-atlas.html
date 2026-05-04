@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grenzgänger-Atlas Graubünden – Wer Italien jeden Morgen ins Bündnerland holt</title>
+<meta name="description" content="Wo arbeiten die ausländischen Grenzgänger in Graubünden? Eine Datengeschichte zum Engadin, zum übrigen Kanton und zur eigenen Gemeinde – seit 1996.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #ffffff; color: #1a1a1a; line-height: 1.6; }
+
+  .wrap { max-width: 696px; margin: 0 auto; padding: 0 24px; }
+  .wide { max-width: 696px; margin: 0 auto; padding: 0 24px; }
+
+  .hero { padding: 56px 24px 24px; max-width: 696px; margin: 0 auto; }
+  .hero .kicker { color: #0068A4; font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 12px; }
+  .hero h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+  .hero .lead { font-size: 18px; color: #444; line-height: 1.55; max-width: 600px; }
+  .hero .lead strong { color: #0068A4; }
+
+  section { padding: 48px 0; }
+  section h2 { font-size: clamp(22px, 3vw, 30px); font-weight: 800; margin-bottom: 16px; }
+  section p { font-size: 16px; color: #333; margin-bottom: 14px; }
+  section p strong { color: #0068A4; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin: 24px 0; }
+  .stat { padding: 16px; background: #eef5fb; border-left: 4px solid #0068A4; border-radius: 4px; }
+  .stat .num { font-size: 28px; font-weight: 800; color: #0068A4; }
+  .stat .num.gray { color: #888; }
+  .stat .lbl { font-size: 12px; color: #666; margin-top: 4px; }
+
+  /* Definition box */
+  .def-box { margin: 32px auto 16px; padding: 18px 22px; background: #f6f4ee; border-left: 4px solid #1E3A5F; border-radius: 4px; max-width: 696px; }
+  .def-box .def-head { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1E3A5F; margin-bottom: 6px; }
+  .def-box .def-body { font-size: 14px; line-height: 1.55; color: #333; }
+  .def-box .def-body strong { color: #1a1a1a; }
+  .def-box .def-source { font-size: 11px; color: #888; margin-top: 8px; }
+  .def-box .def-source a { color: #1E3A5F; text-decoration: underline; text-underline-offset: 2px; }
+
+  /* charts */
+  .chart-wrap { background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: 20px; margin: 24px 0; }
+  .chart-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 4px; }
+  .chart-sub { font-size: 12px; color: #888; margin-bottom: 16px; }
+  svg { width: 100%; height: auto; display: block; }
+  .axis text { fill: #888; font-size: 11px; }
+  .axis path, .axis line { stroke: #ccc; }
+  .grid line { stroke: #eee; stroke-dasharray: 2 2; }
+  .line-engadin { fill: none; stroke: #0068A4; stroke-width: 2.5; }
+  .line-rest { fill: none; stroke: #EE7733; stroke-width: 2.5; }
+  .line-frau { fill: none; stroke: #d04a8e; stroke-width: 2.5; }
+  .line-mann { fill: none; stroke: #2b6cb0; stroke-width: 2.5; }
+  .area-it { fill: #0068A4; }
+  .area-at { fill: #EE7733; }
+  .area-de { fill: #B5001E; }
+  .area-li { fill: #1E3A5F; }
+  .area-fr { fill: #6B6763; }
+  .area-other { fill: #C8C5C0; }
+
+  /* Tooltip + Hover */
+  .chart-wrap { position: relative; }
+  .tooltip { position: absolute; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; font-size: 12px; line-height: 1.55; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; max-width: 240px; transform: translate(-50%, calc(-100% - 12px)); display: none; }
+  .tooltip.visible { display: block; }
+  .tooltip .tt-title { font-weight: 700; margin-bottom: 4px; color: #1a1a1a; font-size: 13px; }
+  .tooltip .tt-row { display: flex; justify-content: space-between; gap: 12px; }
+  .tooltip .tt-row .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+  .tooltip .tt-row .k { color: #555; }
+  .tooltip .tt-row .v { font-weight: 700; color: #1a1a1a; font-variant-numeric: tabular-nums; }
+  .tooltip .tt-total { margin-top: 6px; padding-top: 6px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 700; }
+  .hover-line { stroke: #888; stroke-width: 1; stroke-dasharray: 3 3; pointer-events: none; }
+  .hover-dot { stroke: #fff; stroke-width: 2; pointer-events: none; }
+  .bar-row { cursor: default; transition: background 0.1s ease; }
+  .bar-row:hover { background: rgba(0,104,164,0.06); }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: #555; margin-top: 12px; }
+  .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+  /* bars */
+  .bar-row { display: flex; align-items: center; margin: 6px 0; font-size: 13px; }
+  .bar-name { width: 180px; flex-shrink: 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px; }
+  .bar-track { flex: 1; height: 18px; background: #f0f0f0; border-radius: 3px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; transition: width 0.5s ease; }
+  .bar-fill.eng { background: linear-gradient(90deg, #0068A4, #5b9fce); }
+  .bar-fill.rest { background: linear-gradient(90deg, #EE7733, #f9a872); }
+  .bar-val { width: 70px; flex-shrink: 0; text-align: right; padding-left: 10px; font-weight: 700; color: #333; font-variant-numeric: tabular-nums; }
+
+  /* search */
+  .search-box { margin: 32px 0 24px; }
+  #search { width: 100%; padding: 14px 18px; font-size: 16px; border: 2px solid #0068A4; border-radius: 8px; outline: none; }
+  #search:focus { border-color: #003F66; box-shadow: 0 0 0 3px rgba(0,104,164,0.15); }
+  .search-hint { font-size: 12px; color: #888; margin-top: 6px; }
+  .search-results { max-height: 220px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; margin-top: 6px; display: none; background: #fff; }
+  .search-results.open { display: block; }
+  .search-item { padding: 10px 14px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f5f5f5; }
+  .search-item:hover, .search-item.active { background: #e0eef7; }
+  .search-item:last-child { border-bottom: none; }
+  .search-item .meta { color: #999; font-size: 11px; margin-left: 8px; }
+
+  .commune-card { display: none; margin-top: 16px; padding: 24px; background: #fff; border: 2px solid #0068A4; border-radius: 12px; }
+  .commune-card.visible { display: block; }
+  .cc-name { font-size: 26px; font-weight: 800; }
+  .cc-region { font-size: 13px; color: #888; margin-top: 2px; }
+  .cc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px; margin: 18px 0; }
+  .cc-stat { background: #eef5fb; padding: 12px; border-radius: 6px; }
+  .cc-stat .v { font-size: 22px; font-weight: 800; color: #0068A4; }
+  .cc-stat .v.muted { color: #888; }
+  .cc-stat .l { font-size: 11px; color: #666; margin-top: 2px; }
+  .cc-spark { margin-top: 16px; }
+  .cc-spark-title { font-size: 12px; color: #555; margin-bottom: 4px; }
+
+  .footer { padding: 40px 24px 80px; max-width: 696px; margin: 0 auto; font-size: 13px; color: #888; line-height: 1.6; border-top: 1px solid #eee; margin-top: 40px; }
+  .footer a { color: #0068A4; }
+  .footer h3 { font-size: 14px; color: #333; margin: 16px 0 8px; font-weight: 700; }
+
+  @media (max-width: 600px) {
+    .bar-name { width: 130px; font-size: 12px; }
+    .bar-val { width: 56px; font-size: 12px; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">Datenstory · Graubünden in Zahlen</div>
+  <h1>Engadin und Südtäler ziehen die italienischen Arbeitskräfte an – während der Rest des Kantons aufholt</h1>
+  <p class="lead">In Graubünden arbeiten 2025 im Quartalsdurchschnitt fast <strong>10'000 ausländische Grenzgängerinnen und Grenzgänger</strong> – über dreimal so viele wie 1996. Knapp neun von zehn davon arbeiten in den vier südlichen Bündner Regionen direkt an der italienischen Grenze: Engadin und Bergell (Maloja), Puschlav (Bernina), Unterengadin und Val Müstair (Engiadina Bassa/Val Müstair) sowie Misox und Calanca (Moesa). Aber im «übrigen Kanton» hat sich die Zahl seit 1996 fast verdreissigfacht. Eine Atlas-Geschichte zur eigenen Gemeinde.</p>
+</header>
+
+<div class="def-box">
+  <div class="def-head">Wer ist Grenzgängerin oder Grenzgänger?</div>
+  <div class="def-body">Eine Person, die <strong>in einem Nachbarstaat wohnt und in der Schweiz arbeitet</strong> – mit einer Grenzgängerbewilligung (Ausweis G) und der Pflicht, mindestens einmal pro Woche an den Wohnort im Ausland zurückzukehren. Schweizer Pendlerinnen und Pendler aus anderen Kantonen sind <em>nicht</em> mitgezählt. Bis 2007 mussten Grenzgänger im Grenzgebiet wohnen; seit dem 1. Juni 2007 dürfen EU-17/EFTA-Bürger:innen ihren Wohnsitz im ganzen EU-17/EFTA-Raum frei wählen. In Graubünden kommen rund <strong>91 % aus Italien</strong>, gut 4 % aus Österreich, der Rest aus Deutschland, Liechtenstein und übrigen Staaten.</div>
+  <div class="def-source">Quelle: <a href="https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/eu_efta/ausweis_g_eu_efta.html" target="_blank" rel="noopener">Staatssekretariat für Migration (SEM)</a> – Ausweis G EU/EFTA; Anteile Wohnsitzstaat aus <a href="https://www.bfs.admin.ch/bfs/de/home/statistiken/arbeit-erwerb/erhebungen/ggs.html" target="_blank" rel="noopener">BFS-Grenzgängerstatistik (GGS)</a>.</div>
+</div>
+
+<section class="wide">
+  <div class="wrap">
+    <h2>Die Verdreifachung in 30 Jahren</h2>
+    <p>Zu jedem Stichtag im Jahr 2025 arbeiten im Mittel rund <strong>9'700 Grenzgängerinnen und Grenzgänger</strong> in Graubünden – 1996 waren es 3'151. Die Werte stammen aus den Quartalsmessungen des Amts für Wirtschaft und Tourismus: Wer durchgehend arbeitet, ist in jedem Quartal einmal gezählt; Saisonarbeitskräfte erscheinen nur in den Quartalen, in denen sie tatsächlich beschäftigt sind. Zwei Daten markieren institutionelle Wendepunkte: das Inkrafttreten des Freizügigkeitsabkommens Schweiz–EU am 1. Juni 2002 und der Wegfall der Grenzzonen-Pflicht für EU-17/EFTA-Bürger:innen am 1. Juni 2007. Davor mussten Grenzgänger im Grenzgebiet wohnen, danach im ganzen EU-17/EFTA-Raum.</p>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">9'729</div><div class="lbl">Grenzgänger 2025 (Quartalsmittel)</div></div>
+      <div class="stat"><div class="num">+209&nbsp;%</div><div class="lbl">Wachstum seit 1996</div></div>
+      <div class="stat"><div class="num">87.4&nbsp;%</div><div class="lbl">davon im Engadin und in den Südtälern</div></div>
+      <div class="stat"><div class="num">94</div><div class="lbl">Bündner Arbeitsgemeinden</div></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="chart-wrap">
+      <div class="chart-title">Grenzgänger pro Jahr: Engadin und Südtäler vs. übriger Kanton</div>
+      <div class="chart-sub">«Engadin und Südtäler» = Regionen Maloja (Oberengadin und Bergell), Bernina (Puschlav), Engiadina Bassa/Val Müstair (Unterengadin und Münstertal), Moesa (Misox und Calanca). Die fünf historischen Bündner Südtäler im engeren Sinne sind Bergell, Puschlav, Münstertal, Misox und Calanca.</div>
+      <svg id="chart-engadin-rest" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#0068A4"></span>Engadin und Südtäler</span>
+        <span><span class="dot" style="background:#EE7733"></span>Übriger Kanton</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wide">
+  <div class="wrap">
+    <h2>Aufholjagd im nördlichen Kanton – aber Engadin und Südtäler bleiben der Magnet</h2>
+    <p>1996 stellten Engadin und Südtäler zusammen ganze <strong>98.6 %</strong> aller Bündner Grenzgänger. 2025 sind es noch <strong>87.4 %</strong>. Heisst: Im «übrigen Kanton» (Plessur, Imboden, Landquart, Surselva, Viamala, Prättigau/Davos, Albula) hat sich die Zahl in 30 Jahren rund <strong>28-fach</strong> erhöht – während sie sich in den südlichen Regionen «nur» etwa <strong>2,7-fach</strong> vergrösserte. Engadin und Südtäler bleiben das Schwergewicht, aber die Verteilung wird breiter.</p>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">2.7×</div><div class="lbl">Wachstum Engadin und Südtäler seit 1996</div></div>
+      <div class="stat"><div class="num">28×</div><div class="lbl">Wachstum übriger Kanton</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="wide">
+  <div class="wrap">
+    <h2>Wo mehr als jeder zweite Job aus Italien kommt</h2>
+    <p>Der absolute Spitzenreiter ist <strong>Brusio</strong>: 2023 kamen auf 942 Beschäftigte 515 Grenzgängerinnen und Grenzgänger – eine Quote von <strong>54.7 %</strong>. Mehr als jede zweite Arbeitskraft im Puschlav-Dorf pendelt morgens aus Italien. Auch <strong>Bregaglia (44.5 %), Sils im Engadin (44.2 %) und das Val Müstair (42.0 %)</strong> liegen über 40 %. Die Top-15 der Quoten sind ein klares Bild: alle 15 Gemeinden liegen im Engadin oder in einem der Südtäler – also direkt an der italienischen Grenze.</p>
+  </div>
+  <div class="wrap">
+    <div class="chart-wrap">
+      <div class="chart-title">Top 15 Bündner Gemeinden nach Grenzgänger-Quote 2023</div>
+      <div class="chart-sub">Grenzgänger pro 100 Beschäftigte. Bezugsjahr 2023, weil das BFS Beschäftigtendaten erst im Sommer/Herbst des Folgejahres publiziert.</div>
+      <div id="bars-quote"></div>
+    </div>
+  </div>
+</section>
+
+<section class="wide">
+  <div class="wrap">
+    <h2>Hat <em>meine</em> Gemeinde Grenzgänger?</h2>
+    <p>Eine Suchhilfe für alle 94 Bündner Arbeitsgemeinden. Beachten Sie: «0» bedeutet meist, dass die Gemeinde keine ausländischen Grenzgänger registriert hat – nicht, dass die Daten fehlen.</p>
+    <div class="search-box">
+      <input id="search" type="text" placeholder="Gemeinde suchen, z. B. «Chur» oder «Brusio»…" autocomplete="off">
+      <div class="search-hint">94 Gemeinden verfügbar. Mit Pfeiltasten navigieren, Enter zum Auswählen.</div>
+      <div id="search-results" class="search-results"></div>
+    </div>
+    <div id="commune-card" class="commune-card">
+      <div class="cc-name" id="cc-name">–</div>
+      <div class="cc-region" id="cc-region">–</div>
+      <div class="cc-stats" id="cc-stats"></div>
+      <div class="cc-spark">
+        <div class="cc-spark-title">Verlauf 1996–2025 (Jahresdurchschnitt aus Quartalswerten)</div>
+        <svg id="cc-sparkline" viewBox="0 0 600 140" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wide">
+  <div class="wrap">
+    <h2>Drei von zehn sind Frauen – und das hat sich kaum verändert</h2>
+    <p>Bei aller Verdreifachung der absoluten Zahlen ist der Frauenanteil unter den Grenzgängerinnen erstaunlich stabil: <strong>33 % im Jahr 1996, 31 % im Jahr 2025</strong>. Während die männlichen Grenzgänger im Schnitt um den Faktor 3.2 zugenommen haben, sind es bei den Frauen 2.8. Die italienische Pendel-Welle ist eine Männer-Welle geblieben – mit leicht abnehmendem Frauenanteil über die Jahre.</p>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">2'983</div><div class="lbl">Grenzgängerinnen (Frauen) 2025</div></div>
+      <div class="stat"><div class="num">6'745</div><div class="lbl">Grenzgänger (Männer) 2025</div></div>
+      <div class="stat"><div class="num">30.7&nbsp;%</div><div class="lbl">Frauenanteil 2025</div></div>
+      <div class="stat"><div class="num gray">33.4&nbsp;%</div><div class="lbl">Frauenanteil 1996</div></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Männer und Frauen unter den Grenzgängern, 1996–2025</div>
+      <svg id="chart-gender" viewBox="0 0 720 280" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#2b6cb0"></span>Männer</span>
+        <span><span class="dot" style="background:#d04a8e"></span>Frauen</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wide">
+  <div class="wrap">
+    <h2>Neun von zehn kommen aus Italien</h2>
+    <p>Was der Bündner Datensatz nicht zeigt – aber die nationale Grenzgängerstatistik des Bundesamts für Statistik schon: Wo wohnen sie? <strong>Italien stellt 91 % aller Bündner Grenzgängerinnen und Grenzgänger</strong> (8'822 von 9'728 im Jahr 2025). Geografisch logisch – die Lombardei und die Provinz Sondrio liegen direkt vor Puschlav, Bergell und Münstertal.</p>
+    <p>Auffällig: Die <strong>österreichische</strong> Grenzgänger-Zahl ist seit 2002 quasi konstant (446 → 418), während ihr <strong>Anteil von 13 % auf 4 %</strong> geschmolzen ist. <strong>Deutsche</strong> Grenzgänger gab es vor 2007 praktisch nicht – mit dem Wegfall der EU-17/EFTA-Grenzzonen sind sie auf 246 gewachsen, bleiben aber eine Randgrösse. Auch <strong>Liechtenstein</strong> (93) und «übrige» Wohnstaaten (124) sind erst nach der Personenfreizügigkeitsreform in den Daten sichtbar.</p>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">90.7&nbsp;%</div><div class="lbl">Wohnsitz Italien (2025)</div></div>
+      <div class="stat"><div class="num">4.3&nbsp;%</div><div class="lbl">Wohnsitz Österreich</div></div>
+      <div class="stat"><div class="num">2.5&nbsp;%</div><div class="lbl">Wohnsitz Deutschland</div></div>
+      <div class="stat"><div class="num gray">+240</div><div class="lbl">Deutsche seit 2002 (von 6 auf 246)</div></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Bündner Grenzgänger nach Wohnsitzstaat, 2002–2025</div>
+      <div class="chart-sub">Quelle: BFS Grenzgängerstatistik GGS, Dataflow CH1.GGS:DF_GGS_1. Jahresdurchschnitt aus Quartalswerten.</div>
+      <svg id="chart-wohnstaat" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#0068A4"></span>Italien</span>
+        <span><span class="dot" style="background:#EE7733"></span>Österreich</span>
+        <span><span class="dot" style="background:#B5001E"></span>Deutschland</span>
+        <span><span class="dot" style="background:#1E3A5F"></span>Liechtenstein</span>
+        <span><span class="dot" style="background:#6B6763"></span>Frankreich</span>
+        <span><span class="dot" style="background:#C8C5C0"></span>übrige</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <h3>Methodik</h3>
+  <p>Datenquellen:</p>
+  <ul style="margin: 6px 0 12px 24px;">
+    <li>Kanton Graubünden, Amt für Wirtschaft und Tourismus: <a href="https://data.gr.ch/explore/dataset/dvs_awt_econ_20250513/" target="_blank" rel="noopener">«Ausländische Grenzgänger nach Geschlecht, Arbeitsgemeinde und Quartal, seit 1996»</a> – für die kommunale Verteilung.</li>
+    <li>Bundesamt für Statistik: <a href="https://www.bfs.admin.ch/bfs/de/home/statistiken/arbeit-erwerb/erhebungen/ggs.html" target="_blank" rel="noopener">Grenzgängerstatistik GGS</a>, abgerufen über die SDMX-API (Dataflow <code>CH1.GGS:DF_GGS_1</code>) – für die Wohnsitzstaaten. Quartalsdaten ab Q3 2002.</li>
+    <li>Beschäftigtenzahlen: <a href="https://data.gr.ch/explore/dataset/dvs_awt_econ_20250812/" target="_blank" rel="noopener">«Arbeitsstätten und Beschäftigte nach Bündner Gemeinde»</a> (Stand 2023).</li>
+    <li>Region-Zuordnung: <a href="https://data.gr.ch/explore/dataset/dvs_awt_regi_20250325/" target="_blank" rel="noopener">«Übersicht institutionelle Gliederung Graubünden 2025»</a>.</li>
+  </ul>
+  <p><strong>Berechnung:</strong> Die AWT publiziert pro Quartal eine Bestandszahl – also die Anzahl Grenzgänger, die in diesem Quartal tatsächlich in der jeweiligen Gemeinde arbeiten (keine kumulierten Personentage). Wir mitteln Q1 bis Q4 zur Jahreszahl – das entspricht der offiziellen AWT- und BFS-Lesart und liefert den durchschnittlichen Bestand pro Stichtag im Jahr. Quote = Grenzgänger 2023 / Beschäftigte 2023 × 100, also identisches Bezugsjahr für beide Grössen. 2023, weil das BFS die Beschäftigtenstatistik (STATENT) mit rund eineinhalb Jahren Verzögerung publiziert; die 2024er-Daten erscheinen erst Ende 2026. Der Verlauf der Grenzgängerzahlen wird trotzdem bis 2025 gezeigt – nur die Quote bezieht sich auf das letzte vollständige Bezugsjahr 2023. Beschäftigte pro Gemeinde: ausschliesslich der «Wirtschaftssektor – Total»-Eintrag aus dem AWT-Datensatz, nicht die Summe der drei Sektorenzeilen (sonst würde doppelt gezählt).</p>
+  <p><strong>Plausibilitätsprüfung:</strong> Die kantonale Summe aus dem AWT-Datensatz (94 Bündner Gemeinden, 9'728 Grenzgänger 2025) deckt sich auf eine Nachkommastelle mit der unabhängigen BFS-Grenzgängerstatistik (9'728). Die Beschäftigtenzahlen aus dem AWT-Datensatz sind in sich konsistent (Primär + Sekundär + Tertiär = «Wirtschaftssektor – Total»).</p>
+  <p><strong>Definitionen:</strong> «Engadin und Südtäler» umfasst die vier Bündner Regionen entlang der italienischen Grenze: Maloja (Oberengadin und Bergell), Bernina (Puschlav), Engiadina Bassa/Val Müstair (Unterengadin und Münstertal) sowie Moesa (Misox und Calanca). Die fünf <em>historischen Bündner Südtäler</em> im engeren Sinne sind Bergell, Puschlav, Münstertal, Misox und Calanca – also die Täler, die nach Süden zum Po oder zur Etsch entwässern. Engadin und Samnaun liegen geografisch am Inn (Donau-System), grenzen aber direkt an Italien. «Übriger Kanton» = die sieben weiteren Bündner Regionen (Plessur, Imboden, Landquart, Surselva, Viamala, Prättigau/Davos, Albula).</p>
+  <h3>Caveats</h3>
+  <p>Der Datensatz wird seit 2010 aus dem zentralen Migrations-Informationssystem SIMIC generiert; ältere Werte stammen aus der Beschäftigungsstatistik BESTA und sind methodisch nicht direkt vergleichbar. Die AWT publiziert die Werte mit einer Nachkommastelle – wir runden für die Lesbarkeit auf ganze Personen.</p>
+</footer>
+
+<script src="grenzgaenger_data.js?v=12"></script>
+<script>
+(() => {
+  const D = window.GZ_DATA;
+  const fmt = n => Math.round(n).toLocaleString('de-CH');
+  const yearsAll = Object.keys(D.kanton_total).map(Number).sort((a,b)=>a-b);
+
+  // ---------- Chart 1: Engadin vs Rest ----------
+  function lineChart(svgId, series, xs, ymax, opts = {}) {
+    const svg = document.getElementById(svgId);
+    const W = 720, H = svg.viewBox.baseVal.height || 320;
+    const m = { t: 14, r: 16, b: 36, l: 60 };
+    const innerW = W - m.l - m.r, innerH = H - m.t - m.b;
+    const xScale = x => m.l + (x - xs[0]) / (xs[xs.length - 1] - xs[0]) * innerW;
+    const yScale = y => m.t + innerH - (y / ymax) * innerH;
+
+    let html = '';
+    // grid + y-axis
+    const ticks = [];
+    const step = Math.pow(10, Math.floor(Math.log10(ymax)));
+    let s = step;
+    if (ymax / step < 3) s = step / 2;
+    else if (ymax / step > 7) s = step * 2;
+    for (let v = 0; v <= ymax; v += s) ticks.push(v);
+    for (const v of ticks) {
+      const y = yScale(v);
+      html += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${y}" y2="${y}" stroke="#eee"></line>`;
+      html += `<text x="${m.l - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#888">${fmt(v)}</text>`;
+    }
+    // x-axis ticks
+    const xTicks = [1996, 2002, 2008, 2014, 2020, 2025].filter(y => y >= xs[0] && y <= xs[xs.length-1]);
+    for (const t of xTicks) {
+      const x = xScale(t);
+      html += `<line x1="${x}" x2="${x}" y1="${m.t}" y2="${H - m.b}" stroke="#eee"></line>`;
+      html += `<text x="${x}" y="${H - m.b + 16}" text-anchor="middle" font-size="11" fill="#888">${t}</text>`;
+    }
+    // axis line
+    html += `<line x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}" stroke="#bbb"></line>`;
+    html += `<line x1="${m.l}" x2="${m.l}" y1="${m.t}" y2="${H - m.b}" stroke="#bbb"></line>`;
+
+    // structural breaks markers
+    if (opts.markers) {
+      for (const mk of opts.markers) {
+        const x = xScale(mk.year);
+        if (x < m.l || x > W - m.r) continue;
+        html += `<line x1="${x}" x2="${x}" y1="${m.t}" y2="${H - m.b}" stroke="#ddd" stroke-dasharray="3 3"></line>`;
+        html += `<text x="${x}" y="${m.t + 10}" text-anchor="middle" font-size="9" fill="#aaa">${mk.label}</text>`;
+      }
+    }
+
+    // lines
+    for (const s of series) {
+      let path = '';
+      for (let i = 0; i < xs.length; i++) {
+        const x = xScale(xs[i]);
+        const y = yScale(s.values[i]);
+        path += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+      }
+      html += `<path d="${path}" fill="none" stroke="${s.color}" stroke-width="2.5"></path>`;
+    }
+    svg.innerHTML = html;
+  }
+
+  const yearsKanton = yearsAll;
+  const sueVals = yearsKanton.map(y => D.suedtaeler_total[y] || 0);
+  const restVals = yearsKanton.map(y => D.rest_total[y] || 0);
+  lineChart('chart-engadin-rest',
+    [
+      { color: '#0068A4', values: sueVals },
+      { color: '#EE7733', values: restVals },
+    ],
+    yearsKanton,
+    Math.max(...sueVals) * 1.05,
+    {
+      markers: [
+        { year: 2002, label: 'FZA Schweiz–EU' },
+        { year: 2007, label: 'Grenzzonen-Pflicht EU-17 fällt' },
+      ]
+    }
+  );
+
+  // ---------- Chart 2: Bars Top-15 quote ----------
+  const allCommunes = Object.entries(D.pro_gemeinde);
+  const withQuote = allCommunes
+    .filter(([c, info]) => typeof info.quote_prozent === 'number')
+    .sort((a, b) => b[1].quote_prozent - a[1].quote_prozent);
+
+  const top15 = withQuote.slice(0, 15);
+  const maxQuote = top15[0][1].quote_prozent;
+  const SUEDTAELER_REGIONS = new Set(['Maloja', 'Bernina', 'Engiadina Bassa/Val Müstair', 'Moesa']);
+  const barsHtml = top15.map(([c, info]) => {
+    const w = (info.quote_prozent / maxQuote * 100).toFixed(1);
+    const cls = SUEDTAELER_REGIONS.has(info.region) ? 'eng' : 'rest';
+    return `<div class="bar-row">
+      <div class="bar-name" title="${info.region || ''}">${c}</div>
+      <div class="bar-track"><div class="bar-fill ${cls}" style="width:${w}%"></div></div>
+      <div class="bar-val">${info.quote_prozent.toFixed(1)} %</div>
+    </div>`;
+  }).join('');
+  document.getElementById('bars-quote').innerHTML = barsHtml + `
+    <div class="legend" style="margin-top:14px">
+      <span><span class="dot" style="background:#0068A4"></span>Engadin und Südtäler (Maloja, Bernina, Engiadina Bassa/Val Müstair, Moesa)</span>
+      <span><span class="dot" style="background:#EE7733"></span>Übriger Kanton</span>
+    </div>`;
+
+  // ---------- Chart 3: Gender lines ----------
+  const genderYears = Object.keys(D.geschlecht_kanton.Mann).map(Number).sort((a,b)=>a-b);
+  const mannVals = genderYears.map(y => D.geschlecht_kanton.Mann[y] || 0);
+  const frauVals = genderYears.map(y => D.geschlecht_kanton.Frau[y] || 0);
+  lineChart('chart-gender',
+    [
+      { color: '#2b6cb0', values: mannVals },
+      { color: '#d04a8e', values: frauVals },
+    ],
+    genderYears,
+    Math.max(...mannVals) * 1.05
+  );
+
+  // ---------- Chart 4: Stacked area - Wohnsitzstaat ----------
+  function stackedAreaChart(svgId, data, xs, codes, colors) {
+    const svg = document.getElementById(svgId);
+    const W = 720, H = svg.viewBox.baseVal.height || 320;
+    const m = { t: 14, r: 16, b: 36, l: 60 };
+    const innerW = W - m.l - m.r, innerH = H - m.t - m.b;
+    const totals = xs.map((_, i) => codes.reduce((s, c) => s + (data[c][i] || 0), 0));
+    const ymax = Math.max(...totals) * 1.05;
+    const xScale = x => m.l + (x - xs[0]) / (xs[xs.length - 1] - xs[0]) * innerW;
+    const yScale = y => m.t + innerH - (y / ymax) * innerH;
+    let html = '';
+    // grid + y axis
+    const ticks = [];
+    const step = Math.pow(10, Math.floor(Math.log10(ymax)));
+    let s = ymax / step < 3 ? step / 2 : (ymax / step > 7 ? step * 2 : step);
+    for (let v = 0; v <= ymax; v += s) ticks.push(v);
+    for (const v of ticks) {
+      const y = yScale(v);
+      html += `<line x1="${m.l}" x2="${W - m.r}" y1="${y}" y2="${y}" stroke="#eee"></line>`;
+      html += `<text x="${m.l - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="#888">${fmt(v)}</text>`;
+    }
+    // x ticks
+    for (const t of [2002, 2007, 2010, 2015, 2020, 2025]) {
+      if (t < xs[0] || t > xs[xs.length-1]) continue;
+      const x = xScale(t);
+      html += `<text x="${x}" y="${H - m.b + 16}" text-anchor="middle" font-size="11" fill="#888">${t}</text>`;
+    }
+    html += `<line x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}" stroke="#bbb"></line>`;
+    html += `<line x1="${m.l}" x2="${m.l}" y1="${m.t}" y2="${H - m.b}" stroke="#bbb"></line>`;
+    // 2007 reference line
+    const x07 = xScale(2007);
+    html += `<line x1="${x07}" x2="${x07}" y1="${m.t}" y2="${H - m.b}" stroke="#999" stroke-dasharray="3 3"></line>`;
+    html += `<text x="${x07}" y="${m.t + 10}" text-anchor="middle" font-size="9" fill="#888">EU-17/EFTA-Grenzzonen aufgehoben</text>`;
+    // stacks (bottom-up: IT, AT, DE, LI, FR, others)
+    const cum = xs.map(() => 0);
+    for (let ci = 0; ci < codes.length; ci++) {
+      const code = codes[ci];
+      const vals = data[code];
+      let path = 'M' + xScale(xs[0]) + ',' + yScale(cum[0]);
+      for (let i = 0; i < xs.length; i++) {
+        cum[i] += vals[i] || 0;
+        path += ' L' + xScale(xs[i]).toFixed(1) + ',' + yScale(cum[i]).toFixed(1);
+      }
+      for (let i = xs.length - 1; i >= 0; i--) {
+        const below = cum[i] - (vals[i] || 0);
+        path += ' L' + xScale(xs[i]).toFixed(1) + ',' + yScale(below).toFixed(1);
+      }
+      path += ' Z';
+      html += `<path d="${path}" fill="${colors[ci]}" stroke="#fff" stroke-width="0.5"></path>`;
+    }
+    svg.innerHTML = html;
+  }
+
+  let wsYears = [], wsCodes = [], wsColors = [], wsData = {};
+  if (D.wohnstaat_gr) {
+    wsYears = Object.keys(D.wohnstaat_gr.pro_jahr.IT || {}).map(Number).sort((a,b)=>a-b);
+    wsCodes = ['IT', 'AT', 'DE', 'LI', 'FR', 'UEBRIGE'];
+    wsColors = ['#0068A4', '#EE7733', '#B5001E', '#1E3A5F', '#6B6763', '#C8C5C0'];
+    for (const c of wsCodes) {
+      wsData[c] = wsYears.map(y => D.wohnstaat_gr.pro_jahr[c]?.[y] || 0);
+    }
+    stackedAreaChart('chart-wohnstaat', wsData, wsYears, wsCodes, wsColors);
+  }
+
+  // ---------- Interactive tooltips ----------
+  function ensureTooltip(svg) {
+    const wrap = svg.closest('.chart-wrap');
+    let tip = wrap.querySelector('.tooltip');
+    if (!tip) { tip = document.createElement('div'); tip.className = 'tooltip'; wrap.appendChild(tip); }
+    return { wrap, tip };
+  }
+
+  function attachLineHover(svgId, xs, series, ymax, opts = {}) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    const { tip } = ensureTooltip(svg);
+    const W = 720, H = svg.viewBox.baseVal.height || 320;
+    const m = { t: 14, r: 16, b: 36, l: 60 };
+    const innerW = W - m.l - m.r, innerH = H - m.t - m.b;
+    const xScale = x => m.l + (x - xs[0]) / (xs[xs.length - 1] - xs[0]) * innerW;
+    const yScale = y => m.t + innerH - (y / ymax) * innerH;
+    const staticHtml = svg.innerHTML;
+
+    function onMove(e) {
+      const rect = svg.getBoundingClientRect();
+      const vbX = ((e.clientX - rect.left) / rect.width) * W;
+      if (vbX < m.l - 8 || vbX > W - m.r + 8) { onLeave(); return; }
+      const ratio = (vbX - m.l) / innerW;
+      const yr = xs[0] + ratio * (xs[xs.length-1] - xs[0]);
+      let nI = 0, best = Infinity;
+      for (let i = 0; i < xs.length; i++) {
+        const d = Math.abs(xs[i] - yr);
+        if (d < best) { best = d; nI = i; }
+      }
+      const hx = xScale(xs[nI]);
+      let extra = `<line class="hover-line" x1="${hx}" x2="${hx}" y1="${m.t}" y2="${H - m.b}"></line>`;
+      const rows = [];
+      for (const s of series) {
+        const v = s.values[nI];
+        const hy = yScale(v);
+        extra += `<circle class="hover-dot" cx="${hx}" cy="${hy}" r="4" fill="${s.color}"></circle>`;
+        rows.push(`<div class="tt-row"><span class="k"><span class="swatch" style="background:${s.color}"></span>${s.label}</span><span class="v">${fmt(v)}</span></div>`);
+      }
+      svg.innerHTML = staticHtml + extra;
+      const title = opts.titleFn ? opts.titleFn(xs[nI]) : xs[nI];
+      tip.innerHTML = `<div class="tt-title">${title}</div>${rows.join('')}`;
+      const tipLeft = (hx / W) * rect.width;
+      const tipTop = (m.t / H) * rect.height + svg.offsetTop;
+      tip.style.left = (tipLeft + svg.offsetLeft) + 'px';
+      tip.style.top = tipTop + 'px';
+      tip.classList.add('visible');
+    }
+    function onLeave() {
+      tip.classList.remove('visible');
+      svg.innerHTML = staticHtml;
+    }
+    svg.addEventListener('mousemove', onMove);
+    svg.addEventListener('mouseleave', onLeave);
+    svg.addEventListener('touchmove', e => { if (e.touches[0]) onMove(e.touches[0]); }, { passive: true });
+    svg.addEventListener('touchend', onLeave);
+  }
+
+  function attachStackedHover(svgId, xs, codes, data, colors, labels) {
+    const svg = document.getElementById(svgId);
+    if (!svg) return;
+    const { tip } = ensureTooltip(svg);
+    const W = 720, H = svg.viewBox.baseVal.height || 320;
+    const m = { t: 14, r: 16, b: 36, l: 60 };
+    const innerW = W - m.l - m.r, innerH = H - m.t - m.b;
+    const totals = xs.map((_, i) => codes.reduce((s, c) => s + (data[c][i] || 0), 0));
+    const ymax = Math.max(...totals) * 1.05;
+    const xScale = x => m.l + (x - xs[0]) / (xs[xs.length - 1] - xs[0]) * innerW;
+    const yScale = y => m.t + innerH - (y / ymax) * innerH;
+    const staticHtml = svg.innerHTML;
+
+    function onMove(e) {
+      const rect = svg.getBoundingClientRect();
+      const vbX = ((e.clientX - rect.left) / rect.width) * W;
+      if (vbX < m.l - 8 || vbX > W - m.r + 8) { onLeave(); return; }
+      const ratio = (vbX - m.l) / innerW;
+      const yr = xs[0] + ratio * (xs[xs.length-1] - xs[0]);
+      let nI = 0, best = Infinity;
+      for (let i = 0; i < xs.length; i++) {
+        const d = Math.abs(xs[i] - yr);
+        if (d < best) { best = d; nI = i; }
+      }
+      const hx = xScale(xs[nI]);
+      let extra = `<line class="hover-line" x1="${hx}" x2="${hx}" y1="${m.t}" y2="${H - m.b}"></line>`;
+      let cum = 0;
+      for (let ci = 0; ci < codes.length; ci++) {
+        const v = data[codes[ci]][nI] || 0;
+        cum += v;
+        if (v > 0) {
+          extra += `<circle class="hover-dot" cx="${hx}" cy="${yScale(cum)}" r="3" fill="${colors[ci]}"></circle>`;
+        }
+      }
+      const total = totals[nI];
+      const rows = codes.map((c, ci) => {
+        const v = data[c][nI] || 0;
+        if (v < 0.5) return '';
+        const pct = total > 0 ? (v / total * 100).toFixed(1) : '0';
+        return `<div class="tt-row"><span class="k"><span class="swatch" style="background:${colors[ci]}"></span>${labels[ci]}</span><span class="v">${fmt(v)} (${pct}&nbsp;%)</span></div>`;
+      }).filter(Boolean).join('');
+      svg.innerHTML = staticHtml + extra;
+      tip.innerHTML = `<div class="tt-title">${xs[nI]}</div>${rows}<div class="tt-total"><span>Total</span><span>${fmt(total)}</span></div>`;
+      const tipLeft = (hx / W) * rect.width;
+      const tipTop = (m.t / H) * rect.height + svg.offsetTop;
+      tip.style.left = (tipLeft + svg.offsetLeft) + 'px';
+      tip.style.top = tipTop + 'px';
+      tip.classList.add('visible');
+    }
+    function onLeave() {
+      tip.classList.remove('visible');
+      svg.innerHTML = staticHtml;
+    }
+    svg.addEventListener('mousemove', onMove);
+    svg.addEventListener('mouseleave', onLeave);
+    svg.addEventListener('touchmove', e => { if (e.touches[0]) onMove(e.touches[0]); }, { passive: true });
+    svg.addEventListener('touchend', onLeave);
+  }
+
+  // Attach hovers
+  attachLineHover('chart-engadin-rest', yearsKanton,
+    [{label:'Engadin und Südtäler', color:'#0068A4', values: sueVals},
+     {label:'Übriger Kanton', color:'#EE7733', values: restVals}],
+    Math.max(...sueVals) * 1.05);
+
+  attachLineHover('chart-gender', genderYears,
+    [{label:'Männer', color:'#2b6cb0', values: mannVals},
+     {label:'Frauen', color:'#d04a8e', values: frauVals}],
+    Math.max(...mannVals) * 1.05);
+
+  if (D.wohnstaat_gr) {
+    const wsLabels = ['Italien', 'Österreich', 'Deutschland', 'Liechtenstein', 'Frankreich', 'übrige'];
+    attachStackedHover('chart-wohnstaat', wsYears, wsCodes, wsData, wsColors, wsLabels);
+  }
+
+  // Bar-row tooltips (Top-15)
+  document.querySelectorAll('#bars-quote .bar-row').forEach(row => {
+    row.addEventListener('mouseenter', () => {
+      const name = row.querySelector('.bar-name').textContent;
+      const info = D.pro_gemeinde[name];
+      if (!info) return;
+      const wrap = row.closest('.chart-wrap');
+      let tip = wrap.querySelector('.tooltip');
+      if (!tip) { tip = document.createElement('div'); tip.className = 'tooltip'; wrap.appendChild(tip); }
+      const latest = D.meta.latest_year;
+      const gz = info.jahresreihe[latest];
+      const ben = info.beschaeftigte;
+      tip.innerHTML = `<div class="tt-title">${name}</div>
+        <div class="tt-row"><span class="k">Region</span><span class="v">${info.region || '–'}</span></div>
+        <div class="tt-row"><span class="k">Grenzgänger ${latest}</span><span class="v">${fmt(gz)}</span></div>
+        <div class="tt-row"><span class="k">Beschäftigte ${info.beschaeftigte_jahr || ''}</span><span class="v">${fmt(ben)}</span></div>
+        <div class="tt-total"><span>Quote</span><span>${info.quote_prozent.toFixed(1)} %</span></div>`;
+      const r = row.getBoundingClientRect();
+      const wr = wrap.getBoundingClientRect();
+      tip.style.left = (r.left - wr.left + r.width / 2) + 'px';
+      tip.style.top = (r.top - wr.top) + 'px';
+      tip.classList.add('visible');
+    });
+    row.addEventListener('mouseleave', () => {
+      const tip = row.closest('.chart-wrap').querySelector('.tooltip');
+      if (tip) tip.classList.remove('visible');
+    });
+  });
+
+  // ---------- Search ----------
+  const input = document.getElementById('search');
+  const results = document.getElementById('search-results');
+  const card = document.getElementById('commune-card');
+  const communeNames = Object.keys(D.pro_gemeinde).sort((a, b) => a.localeCompare(b, 'de-CH'));
+  let activeIndex = -1;
+  let currentList = [];
+
+  function renderList(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) { results.classList.remove('open'); return; }
+    currentList = communeNames.filter(n => n.toLowerCase().includes(q)).slice(0, 12);
+    if (!currentList.length) { results.classList.remove('open'); return; }
+    activeIndex = -1;
+    results.innerHTML = currentList.map((n, i) => {
+      const info = D.pro_gemeinde[n];
+      const last = info.jahresreihe[D.meta.latest_year];
+      const region = info.region || '';
+      return `<div class="search-item" data-name="${n}" data-i="${i}">${n}<span class="meta">${region} · ${last ? fmt(last) + ' GZ' : 'keine Daten'}</span></div>`;
+    }).join('');
+    results.classList.add('open');
+  }
+
+  function showCommune(name) {
+    const info = D.pro_gemeinde[name];
+    if (!info) return;
+    const yrs = Object.keys(info.jahresreihe).map(Number).sort((a,b)=>a-b);
+    const latest = D.meta.latest_year;
+    const valLatest = info.jahresreihe[latest];
+    const val1996 = info.jahresreihe['1996'];
+
+    document.getElementById('cc-name').textContent = name;
+    document.getElementById('cc-region').textContent = info.region
+      ? `${info.region}${info.destination ? ' · Destination ' + info.destination : ''}`
+      : 'Region unbekannt';
+
+    const stats = [];
+    stats.push({ v: valLatest != null ? fmt(valLatest) : '–', l: `Grenzgänger ${latest}` });
+    if (typeof info.quote_prozent === 'number') {
+      stats.push({ v: info.quote_prozent.toFixed(1) + ' %', l: `Anteil an Beschäftigten (${info.beschaeftigte_jahr})` });
+    } else {
+      stats.push({ v: '–', l: 'Keine Beschäftigtenzahl', muted: true });
+    }
+    if (val1996 != null && valLatest != null && val1996 > 0) {
+      const factor = valLatest / val1996;
+      stats.push({ v: factor.toFixed(1) + '×', l: `Wachstum seit 1996` });
+    } else if (valLatest != null && valLatest > 0 && (val1996 == null || val1996 === 0)) {
+      stats.push({ v: 'neu', l: 'Erst nach 1996 erfasst', muted: true });
+    } else {
+      stats.push({ v: '0', l: 'Nie Grenzgänger', muted: true });
+    }
+    if (info.geschlecht && info.geschlecht.Frau && info.geschlecht.Mann) {
+      const f = info.geschlecht.Frau[latest] || 0;
+      const m = info.geschlecht.Mann[latest] || 0;
+      const tot = f + m;
+      stats.push({ v: tot > 0 ? Math.round(f/tot*100) + ' %' : '–', l: 'Frauenanteil ' + latest });
+    }
+    document.getElementById('cc-stats').innerHTML = stats.map(s =>
+      `<div class="cc-stat"><div class="v ${s.muted ? 'muted' : ''}">${s.v}</div><div class="l">${s.l}</div></div>`
+    ).join('');
+
+    // Sparkline
+    const svg = document.getElementById('cc-sparkline');
+    const W = 600, H = 140;
+    const m = { t: 10, r: 10, b: 22, l: 36 };
+    const innerW = W - m.l - m.r, innerH = H - m.t - m.b;
+    const vals = yrs.map(y => info.jahresreihe[y]);
+    const ymax = Math.max(1, ...vals) * 1.1;
+    const xScale = x => m.l + (x - yrs[0]) / (yrs[yrs.length - 1] - yrs[0]) * innerW;
+    const yScale = y => m.t + innerH - (y / ymax) * innerH;
+    let path = '';
+    for (let i = 0; i < yrs.length; i++) {
+      path += (i === 0 ? 'M' : 'L') + xScale(yrs[i]).toFixed(1) + ',' + yScale(vals[i]).toFixed(1);
+    }
+    let html = '';
+    [0, ymax/2, ymax].forEach(v => {
+      const y = yScale(v);
+      html += `<line x1="${m.l}" x2="${W-m.r}" y1="${y}" y2="${y}" stroke="#eee"></line>`;
+      html += `<text x="${m.l-6}" y="${y+4}" text-anchor="end" font-size="10" fill="#999">${fmt(v)}</text>`;
+    });
+    [yrs[0], yrs[yrs.length-1]].forEach(t => {
+      html += `<text x="${xScale(t)}" y="${H-m.b+14}" text-anchor="middle" font-size="10" fill="#999">${t}</text>`;
+    });
+    html += `<path d="${path}" fill="none" stroke="#0068A4" stroke-width="2"></path>`;
+    // dots at first and last
+    html += `<circle cx="${xScale(yrs[0])}" cy="${yScale(vals[0])}" r="3" fill="#0068A4"></circle>`;
+    html += `<circle cx="${xScale(yrs[yrs.length-1])}" cy="${yScale(vals[vals.length-1])}" r="3" fill="#0068A4"></circle>`;
+    svg.innerHTML = html;
+
+    card.classList.add('visible');
+    results.classList.remove('open');
+  }
+
+  input.addEventListener('input', e => renderList(e.target.value));
+  input.addEventListener('focus', e => renderList(e.target.value));
+  input.addEventListener('keydown', e => {
+    if (!results.classList.contains('open')) return;
+    const items = results.querySelectorAll('.search-item');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      items.forEach((it, i) => it.classList.toggle('active', i === activeIndex));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+      items.forEach((it, i) => it.classList.toggle('active', i === activeIndex));
+    } else if (e.key === 'Enter' && activeIndex >= 0) {
+      e.preventDefault();
+      const name = items[activeIndex].dataset.name;
+      input.value = name;
+      showCommune(name);
+    } else if (e.key === 'Escape') {
+      results.classList.remove('open');
+    }
+  });
+  results.addEventListener('click', e => {
+    const item = e.target.closest('.search-item');
+    if (!item) return;
+    const name = item.dataset.name;
+    input.value = name;
+    showCommune(name);
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-box')) results.classList.remove('open');
+  });
+
+  // pre-load Brusio as teaser
+  showCommune('Brusio');
+})();
+</script>
+
+</body>
+</html>

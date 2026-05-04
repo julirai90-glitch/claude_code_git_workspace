@@ -1,0 +1,313 @@
+{
+  "chur": {
+    "name": "Chur",
+    "pop": 39177
+  },
+  "fitting": [
+    {
+      "name": "Rongellen",
+      "pop": 59,
+      "cumsum": 59
+    },
+    {
+      "name": "Ferrera",
+      "pop": 76,
+      "cumsum": 135
+    },
+    {
+      "name": "Buseno",
+      "pop": 91,
+      "cumsum": 226
+    },
+    {
+      "name": "Santa Maria in Calanca",
+      "pop": 113,
+      "cumsum": 339
+    },
+    {
+      "name": "Tschappina",
+      "pop": 146,
+      "cumsum": 485
+    },
+    {
+      "name": "Sufers",
+      "pop": 147,
+      "cumsum": 632
+    },
+    {
+      "name": "Urmein",
+      "pop": 163,
+      "cumsum": 795
+    },
+    {
+      "name": "Rossa",
+      "pop": 168,
+      "cumsum": 963
+    },
+    {
+      "name": "Avers",
+      "pop": 169,
+      "cumsum": 1132
+    },
+    {
+      "name": "Madulain",
+      "pop": 196,
+      "cumsum": 1328
+    },
+    {
+      "name": "Furna",
+      "pop": 203,
+      "cumsum": 1531
+    },
+    {
+      "name": "Calanca",
+      "pop": 204,
+      "cumsum": 1735
+    },
+    {
+      "name": "Schmitten (GR)",
+      "pop": 205,
+      "cumsum": 1940
+    },
+    {
+      "name": "Conters im Prättigau",
+      "pop": 224,
+      "cumsum": 2164
+    },
+    {
+      "name": "Castaneda",
+      "pop": 254,
+      "cumsum": 2418
+    },
+    {
+      "name": "Flerden",
+      "pop": 255,
+      "cumsum": 2673
+    },
+    {
+      "name": "Rothenbrunnen",
+      "pop": 304,
+      "cumsum": 2977
+    },
+    {
+      "name": "Tschiertschen-Praden",
+      "pop": 309,
+      "cumsum": 3286
+    },
+    {
+      "name": "Soazza",
+      "pop": 324,
+      "cumsum": 3610
+    },
+    {
+      "name": "Medel (Lucmagn)",
+      "pop": 328,
+      "cumsum": 3938
+    },
+    {
+      "name": "Fürstenau",
+      "pop": 353,
+      "cumsum": 4291
+    },
+    {
+      "name": "Muntogna da Schons",
+      "pop": 368,
+      "cumsum": 4659
+    },
+    {
+      "name": "Zillis-Reischen",
+      "pop": 426,
+      "cumsum": 5085
+    },
+    {
+      "name": "Lantsch/Lenz",
+      "pop": 518,
+      "cumsum": 5603
+    },
+    {
+      "name": "Masein",
+      "pop": 531,
+      "cumsum": 6134
+    },
+    {
+      "name": "Rheinwald",
+      "pop": 570,
+      "cumsum": 6704
+    },
+    {
+      "name": "Schluein",
+      "pop": 616,
+      "cumsum": 7320
+    },
+    {
+      "name": "Bever",
+      "pop": 618,
+      "cumsum": 7938
+    },
+    {
+      "name": "Fideris",
+      "pop": 626,
+      "cumsum": 8564
+    },
+    {
+      "name": "Falera",
+      "pop": 635,
+      "cumsum": 9199
+    },
+    {
+      "name": "Sils im Engadin/Segl",
+      "pop": 708,
+      "cumsum": 9907
+    },
+    {
+      "name": "S-chanf",
+      "pop": 713,
+      "cumsum": 10620
+    },
+    {
+      "name": "Cama",
+      "pop": 720,
+      "cumsum": 11340
+    },
+    {
+      "name": "Samnaun",
+      "pop": 750,
+      "cumsum": 12090
+    },
+    {
+      "name": "La Punt Chamues-ch",
+      "pop": 750,
+      "cumsum": 12840
+    },
+    {
+      "name": "Sagogn",
+      "pop": 769,
+      "cumsum": 13609
+    },
+    {
+      "name": "Valsot",
+      "pop": 801,
+      "cumsum": 14410
+    },
+    {
+      "name": "Scharans",
+      "pop": 836,
+      "cumsum": 15246
+    },
+    {
+      "name": "Lostallo",
+      "pop": 866,
+      "cumsum": 16112
+    },
+    {
+      "name": "Fläsch",
+      "pop": 879,
+      "cumsum": 16991
+    },
+    {
+      "name": "Bergün Filisur",
+      "pop": 898,
+      "cumsum": 17889
+    },
+    {
+      "name": "Küblis",
+      "pop": 910,
+      "cumsum": 18799
+    },
+    {
+      "name": "Andeer",
+      "pop": 923,
+      "cumsum": 19722
+    },
+    {
+      "name": "Vals",
+      "pop": 958,
+      "cumsum": 20680
+    },
+    {
+      "name": "San Vittore",
+      "pop": 961,
+      "cumsum": 21641
+    },
+    {
+      "name": "Jenins",
+      "pop": 964,
+      "cumsum": 22605
+    },
+    {
+      "name": "Safiental",
+      "pop": 964,
+      "cumsum": 23569
+    },
+    {
+      "name": "Sils im Domleschg",
+      "pop": 976,
+      "cumsum": 24545
+    },
+    {
+      "name": "Sumvitg",
+      "pop": 1063,
+      "cumsum": 25608
+    },
+    {
+      "name": "Brusio",
+      "pop": 1099,
+      "cumsum": 26707
+    },
+    {
+      "name": "Silvaplana",
+      "pop": 1124,
+      "cumsum": 27831
+    },
+    {
+      "name": "Trun",
+      "pop": 1141,
+      "cumsum": 28972
+    },
+    {
+      "name": "Obersaxen Mundaun",
+      "pop": 1160,
+      "cumsum": 30132
+    },
+    {
+      "name": "Jenaz",
+      "pop": 1164,
+      "cumsum": 31296
+    },
+    {
+      "name": "Tujetsch",
+      "pop": 1199,
+      "cumsum": 32495
+    },
+    {
+      "name": "Tamins",
+      "pop": 1223,
+      "cumsum": 33718
+    },
+    {
+      "name": "Zuoz",
+      "pop": 1224,
+      "cumsum": 34942
+    },
+    {
+      "name": "Albula/Alvra",
+      "pop": 1354,
+      "cumsum": 36296
+    },
+    {
+      "name": "Mesocco",
+      "pop": 1414,
+      "cumsum": 37710
+    },
+    {
+      "name": "Celerina/Schlarigna",
+      "pop": 1415,
+      "cumsum": 39125
+    }
+  ],
+  "stats": {
+    "n_municipalities": 60,
+    "cumulative": 39125,
+    "gap": 52
+  }
+}
