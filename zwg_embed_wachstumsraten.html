@@ -30,7 +30,7 @@
   <svg id="rate-svg"></svg>
   <div id="rate-detail">Hover auf einen Balken für Details.</div>
 
-  <p class="zwg-note" style="margin-top:10px;">Basis: März-Stichtag. Zweitwohnungen i.e.S. = Total − Erstwohnungen − Erst-gleichgestellt (Art. 3 ZWG). * 2019→2020: Calanca-Anomalie im GWR (+98 Whg., Effekt ca. +0,12 Pp auf Kantonsaggregat). Quelle: ARE/GWR, data.gr.ch, Datensatz dvs_awt_soci_20260112.</p>
+  <p class="zwg-note" style="margin-top:10px;">Basis: März-Stichtag. Zweitwohnungen i.e.S. = Total − Erstwohnungen − Erst-gleichgestellt (Art. 3 ZWG). Quelle: ARE/GWR, data.gr.ch, Datensatz dvs_awt_soci_20260112.</p>
 
   <div id="source"></div>
 </div>
@@ -96,17 +96,6 @@ ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DA
   svg.append('g').attr('class', 'zwg-axis').attr('transform', 'translate(0,' + (H - m.b) + ')')
     .call(d3.axisBottom(x0).tickFormat(function (d, i) { return rates[i].shortLabel; }));
 
-  // Calanca-Stern
-  var calIdx = rates.findIndex(function (r) { return r.calanca; });
-  if (calIdx >= 0) {
-    var r = rates[calIdx];
-    var cx = x0(r.label) + x0.bandwidth() / 2;
-    svg.append('text')
-      .attr('x', cx).attr('y', H - m.b + 32)
-      .attr('text-anchor', 'middle').attr('font-size', 9).attr('fill', '#aaa')
-      .text('*');
-  }
-
   // Balken
   var grps = svg.append('g').selectAll('g').data(rates).enter().append('g')
     .attr('transform', function (r) { return 'translate(' + x0(r.label) + ',0)'; });
@@ -129,7 +118,7 @@ ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DA
           + '<span style="color:#EE7733;">Zweitwohnungen</span><span style="font-weight:600;">' + r.zweit.toFixed(2).replace('.', ',') + ' %</span>'
           + '<span style="color:#888;">Differenz</span><span style="font-weight:600;">' + (diff >= 0 ? '+' : '') + diff.toFixed(2).replace('.', ',') + ' Pp</span>'
           + '</div>'
-          + (r.calanca ? '<div style="font-size:10px;color:#aaa;margin-top:4px;">* Calanca-Anomalie</div>' : ''),
+          ,
           evt
         );
         document.getElementById('rate-detail').innerHTML =
@@ -138,7 +127,7 @@ ZWG.loadData('zweitwohnungen_kanton_zeitreihe.json', document.body, function (DA
           + '(+' + ZWG.fmtN(r.erstAbs) + ' Wohnungen), '
           + 'Zweitwohnungen <strong>' + r.zweit.toFixed(2).replace('.', ',') + ' %</strong> '
           + '(+' + ZWG.fmtN(r.zweitAbs) + ' Wohnungen)'
-          + (r.calanca ? ' <span style="color:#aaa;">* Calanca-Anomalie</span>' : '');
+          ;
       })
       .on('mousemove', ZWG.positionTooltip)
       .on('mouseleave', ZWG.hideTooltip);
