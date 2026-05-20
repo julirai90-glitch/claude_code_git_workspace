@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meldungstool</title>
+<style>
+:root {
+  --bg: #f0f2f4;
+  --accent: #1a5f9e;
+  --accent-dark: #124778;
+  --accent-tint: #e8f0f9;
+  --ink: #1c2024;
+  --text: #2a2e35;
+  --text-dim: #5a6470;
+  --text-soft: #8a9099;
+  --panel: #ffffff;
+  --panel-soft: #f4f6f8;
+  --border: #d0d5db;
+  --border-strong: #9eaab0;
+  --ok: #1e6f3a;
+  --ok-bg: #e6f5ec;
+  --err: #c0392b;
+  --err-bg: #fbe9e7;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; min-height: 100vh; font-size: 14px; line-height: 1.55; }
+body { padding: 28px 24px 60px; }
+
+header { max-width: 1320px; margin: 0 auto 24px; }
+h1 { font-size: 26px; font-weight: 700; color: var(--ink); margin: 0 0 4px; letter-spacing: -0.01em; }
+p.sub { color: var(--text-dim); font-size: 14px; margin: 0; }
+
+main { max-width: 1320px; margin: 0 auto; }
+
+/* Settings */
+details.settings { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; }
+details.settings > summary { padding: 14px 20px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px; color: var(--ink); list-style: none; user-select: none; }
+details.settings > summary::-webkit-details-marker { display: none; }
+details.settings > summary::before { content: '▶'; font-size: 10px; color: var(--text-dim); transition: transform .2s; display: inline-block; }
+details[open].settings > summary::before { transform: rotate(90deg); }
+.settings-badge { font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 10px; background: var(--err-bg); color: var(--err); margin-left: auto; }
+.settings-badge.ok { background: var(--ok-bg); color: var(--ok); }
+.settings-body { padding: 0 20px 20px; }
+.settings-grid { display: grid; grid-template-columns: 130px 1fr auto; gap: 8px 10px; align-items: center; }
+.settings-grid label { font-size: 13px; font-weight: 600; color: var(--text-dim); }
+select, input[type=text], input[type=password], textarea { font: inherit; font-size: 13.5px; border: 1px solid var(--border); border-radius: 5px; padding: 7px 10px; width: 100%; background: var(--panel); color: var(--text); }
+select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26,95,158,0.12); }
+.clear-btn { background: none; border: 1px solid var(--border); border-radius: 5px; padding: 7px 10px; font: inherit; font-size: 12px; cursor: pointer; color: var(--text-dim); white-space: nowrap; }
+.clear-btn:hover { border-color: var(--err); color: var(--err); }
+.danger-zone { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
+
+/* Slots */
+.slot { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; }
+.slot-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.slot-num { background: var(--accent); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.slot-title { font-weight: 600; font-size: 14px; color: var(--ink); }
+.slot-remove { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--text-soft); font-size: 20px; line-height: 1; padding: 2px 7px; border-radius: 4px; }
+.slot-remove:hover { color: var(--err); background: var(--err-bg); }
+.field { margin-bottom: 10px; }
+.field:last-child { margin-bottom: 0; }
+.field label { font-size: 12.5px; font-weight: 600; color: var(--ink); display: block; margin-bottom: 5px; }
+.hint { color: var(--text-dim); font-weight: 400; font-size: 12px; margin-left: 6px; }
+.url-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.fetch-btn { padding: 0 14px; background: white; border: 1px solid var(--border-strong); border-radius: 5px; color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.fetch-btn:hover { border-color: var(--accent); color: var(--accent); }
+.fetch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+textarea.slot-text { min-height: 140px; resize: vertical; }
+
+.add-slot { width: 100%; background: white; border: 1px dashed var(--border-strong); border-radius: 10px; padding: 14px; cursor: pointer; font: inherit; font-size: 13.5px; color: var(--text-dim); font-weight: 500; margin-bottom: 16px; transition: border-color .15s, color .15s, background .15s; }
+.add-slot:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-tint); }
+.add-slot:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Actions */
+.actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 24px; }
+.btn-primary { padding: 11px 22px; font: inherit; font-weight: 600; font-size: 14.5px; border-radius: 6px; cursor: pointer; background: var(--accent); color: white; border: 1px solid var(--accent); }
+.btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+.btn-primary:disabled { background: var(--text-soft); border-color: var(--text-soft); cursor: not-allowed; }
+.btn-secondary { padding: 11px 22px; font: inherit; font-weight: 600; font-size: 14.5px; border-radius: 6px; cursor: pointer; background: white; color: var(--ink); border: 1px solid var(--border-strong); }
+.btn-secondary:hover { background: var(--panel-soft); }
+
+/* Gen status */
+.gen-status { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; display: none; }
+.gen-status.active { display: block; }
+.gen-status h3 { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: var(--ink); }
+.gen-list { list-style: none; padding: 0; margin: 0; font-size: 13px; }
+.gen-list li { padding: 4px 0; display: flex; align-items: center; gap: 8px; color: var(--text-dim); }
+.gen-list li.done { color: var(--ok); }
+.gen-list li.fail { color: var(--err); }
+
+/* View toggle */
+.view-input { display: block; }
+.view-edit { display: none; }
+body.view-edit-mode .view-input { display: none; }
+body.view-edit-mode .view-edit { display: block; }
+
+/* Twin pane */
+.twin-pane { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pane { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.pane-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: var(--panel-soft); flex-shrink: 0; }
+.pane-label { font-weight: 700; font-size: 13px; color: var(--ink); }
+.pane-url { font-size: 12px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.pane-body { padding: 16px; flex: 1; }
+.pane-source { white-space: pre-wrap; font-size: 13px; line-height: 1.65; color: var(--text); max-height: 520px; overflow-y: auto; }
+textarea.meldung-edit { width: 100%; min-height: 300px; resize: vertical; font-size: 14px; line-height: 1.7; border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: Georgia, "Times New Roman", serif; color: var(--ink); }
+.char-count { font-size: 11px; color: var(--text-soft); margin-top: 5px; text-align: right; }
+
+/* Slot tabs */
+.slot-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.slot-tab { padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px; font: inherit; font-size: 13px; cursor: pointer; background: white; color: var(--text-dim); transition: background .1s, color .1s, border-color .1s; }
+.slot-tab:hover { border-color: var(--accent); color: var(--accent); }
+.slot-tab.active { background: var(--accent); color: white; border-color: var(--accent); font-weight: 600; }
+.slot-tab.has-result::after { content: ' ✓'; font-size: 11px; opacity: 0.85; }
+
+.edit-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+.regen-row { display: flex; gap: 8px; margin-top: 10px; }
+.regen-input { flex: 1; }
+
+/* Flash */
+.flash { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--ink); color: white; padding: 11px 20px; border-radius: 6px; font-size: 13.5px; font-weight: 500; opacity: 0; transition: opacity .15s; pointer-events: none; z-index: 100; max-width: 90%; text-align: center; box-shadow: 0 4px 18px rgba(0,0,0,0.15); }
+.flash.show { opacity: 1; }
+.flash.success { background: var(--ok); }
+.flash.error { background: var(--err); }
+
+footer { max-width: 1320px; margin: 36px auto 0; text-align: center; color: var(--text-soft); font-size: 12px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+@media (max-width: 900px) {
+  .twin-pane { grid-template-columns: 1fr; }
+  .settings-grid { grid-template-columns: 1fr 1fr auto; }
+}
+@media (max-width: 600px) {
+  body { padding: 16px 14px 48px; }
+  h1 { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Meldungstool</h1>
+  <p class="sub">Pressemitteilungen &rarr; Kurzmeldungen &mdash; API-Key und Texte bleiben nur im Browser.</p>
+</header>
+
+<main>
+
+  <!-- Settings -->
+  <details class="settings" id="settings-panel">
+    <summary>
+      Einstellungen
+      <span class="settings-badge" id="settings-status">Schlüssel fehlt</span>
+    </summary>
+    <div class="settings-body">
+      <div class="settings-grid">
+        <label>Anbieter</label>
+        <select id="provider-select">
+          <option value="anthropic">Claude (Anthropic)</option>
+          <option value="openai">ChatGPT (OpenAI)</option>
+          <option value="google">Gemini (Google)</option>
+        </select>
+        <div></div>
+
+        <label>Modell</label>
+        <select id="model-select"></select>
+        <div></div>
+
+        <label>Claude-Key</label>
+        <input type="password" id="key-anthropic" placeholder="sk-ant-…" autocomplete="off">
+        <button class="clear-btn" data-clear="anthropic">Löschen</button>
+
+        <label>OpenAI-Key</label>
+        <input type="password" id="key-openai" placeholder="sk-…" autocomplete="off">
+        <button class="clear-btn" data-clear="openai">Löschen</button>
+
+        <label>Google-Key</label>
+        <input type="password" id="key-google" placeholder="AIza…" autocomplete="off">
+        <button class="clear-btn" data-clear="google">Löschen</button>
+      </div>
+      <div class="danger-zone">
+        <button class="clear-btn" id="clear-all-btn">Alle Browser-Daten löschen</button>
+      </div>
+    </div>
+  </details>
+
+  <!-- Input view -->
+  <div class="view-input">
+    <div id="slots-container"></div>
+    <button class="add-slot" id="add-slot-btn">+ Quelle hinzufügen (max. 5)</button>
+    <div class="actions">
+      <button class="btn-primary" id="generate-btn">Meldungen generieren</button>
+      <button class="btn-secondary" id="reset-btn">Zurücksetzen</button>
+    </div>
+  </div>
+
+  <!-- Generation status -->
+  <div class="gen-status" id="gen-status">
+    <h3>Generierung läuft&hellip;</h3>
+    <ul class="gen-list" id="gen-list"></ul>
+  </div>
+
+  <!-- Result / edit view -->
+  <div class="view-edit">
+    <div class="edit-actions">
+      <button class="btn-secondary" id="back-btn">&larr; Zurück zur Eingabe</button>
+      <button class="btn-primary" id="copy-btn">Kopieren</button>
+      <button class="btn-secondary" id="regen-btn">Neu generieren</button>
+    </div>
+    <div class="slot-tabs" id="slot-tabs"></div>
+    <div class="twin-pane">
+      <!-- Left: original -->
+      <div class="pane">
+        <div class="pane-header">
+          <span class="pane-label">Original</span>
+          <span class="pane-url" id="source-url"></span>
+        </div>
+        <div class="pane-body">
+          <div class="pane-source" id="source-text"></div>
+        </div>
+      </div>
+      <!-- Right: result -->
+      <div class="pane">
+        <div class="pane-header">
+          <span class="pane-label">Meldung</span>
+        </div>
+        <div class="pane-body">
+          <textarea class="meldung-edit" id="meldung-edit" placeholder="Hier erscheint die generierte Meldung&hellip;"></textarea>
+          <div class="char-count" id="char-count"></div>
+          <div class="regen-row">
+            <input type="text" class="regen-input" id="regen-hint" placeholder="Anweisung für Neu-Generierung (optional)&hellip;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="flash" id="flash"></div>
+
+<footer>Meldungstool &mdash; Texte und API-Keys werden ausschliesslich lokal in diesem Browser gespeichert.</footer>
+
+<script>
+/* ============================================================
+   Config
+============================================================ */
+const STORAGE_KEY = 'meldungstool_v1';
+const MAX_SLOTS = 5;
+
+const MODELS = {
+  anthropic: [
+    { id: 'claude-sonnet-4-6',          label: 'Claude Sonnet 4.6 (empfohlen)' },
+    { id: 'claude-haiku-4-5-20251001',  label: 'Claude Haiku 4.5 (günstig)' },
+    { id: 'claude-opus-4-7',            label: 'Claude Opus 4.7 (leistungsstark)' }
+  ],
+  openai: [
+    { id: 'gpt-4.1-mini', label: 'GPT-4.1 mini (günstig, empfohlen)' },
+    { id: 'gpt-4.1',      label: 'GPT-4.1 (leistungsstark)' }
+  ],
+  google: [
+    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (günstig, empfohlen)' },
+    { id: 'gemini-2.5-pro',   label: 'Gemini 2.5 Pro (leistungsstark)' }
+  ]
+};
+
+const SYSTEM_PROMPT = `Du bist Redaktionsassistenz für eine Schweizer Lokalredaktion. Aus der Pressemitteilung schreibst Du eine klassische Kurzmeldung im Nachrichtenstil.
+
+DEFINITION NACHRICHT
+Die Meldung beantwortet:
+- WER ist beteiligt?
+- WAS ist geschehen?
+- WANN ist es geschehen?
+- WO ist es geschehen?
+- WIE ist es geschehen?
+
+GRUNDREGELN
+- Reine Fakten ohne persönliche Meinungen oder Wertungen.
+- Kurze, klare, leicht verständliche Sätze.
+- Tempus: Präsens (Gegenwart) oder Präteritum (Vergangenheit).
+- Schweizer Hochdeutsch, kein ß (Strasse, weiss, Massstab).
+- Anführungszeichen Schweizer Stil: « ».
+- Gendern: NIEMALS mit Sternchen («*»). Wenn nötig, Doppelpunkt («:») oder ausgeschrieben («Bürgerinnen und Bürger», «Anwohnerinnen und Anwohner»). Generisches Maskulinum ist erlaubt, wo das Geschlecht nicht zentral ist.
+
+AUFBAU
+1. Überschrift: Fasst den Kern der Meldung in wenigen Worten zusammen, holt die Aufmerksamkeit. Knackig, prägnant. Akteur nennen. Aktivisch wo möglich. Keine Bindestriche ausser innerhalb von Zitaten in « ».
+2. Meldungstext: MAXIMAL 5 SÄTZE.
+   - Satz 1: Zentrale W-Fragen (Wer? Was? Wann? Wo?).
+   - Sätze 2–4: Wichtige Einzelheiten. Klärt Wie? und Warum? und nennt eventuelle Quellen.
+   - Letzter Satz (Satz 5): Bietet Kontext oder nennt mögliche Folgen.
+3. Quelle (PFLICHT, am Schluss in eigener Zeile): «Quelle: [URL]» – nur die URL, ohne zusätzliche Beschreibung.
+
+LOGIK
+Die Meldung ist so gebaut, dass sie theoretisch nach jedem Satz abgeschnitten werden könnte, ohne dass wichtige Information verloren geht. Das Wichtigste steht vorne, jeder weitere Satz ergänzt, ist aber nicht zwingend für das Verständnis des Vorhergehenden.
+
+SPRACHE
+1. Adjektive nur, wenn sie unterscheiden oder echte neue Information tragen.
+2. Keine tautologischen Beiwörter.
+3. Füllwörter und Worthülsen vermeiden.`;
+
+/* ============================================================
+   State
+============================================================ */
+let state = {
+  provider: 'anthropic',
+  model: 'claude-sonnet-4-6',
+  keys: { anthropic: '', openai: '', google: '' },
+  slots: [],
+  activeSlot: 0
+};
+
+function newSlot() {
+  return { id: Date.now() + Math.random(), url: '', text: '', focus: '', meldung: '' };
+}
+
+/* ============================================================
+   Persistence
+============================================================ */
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    provider: state.provider,
+    model: state.model,
+    keys: state.keys
+  }));
+}
+
+function persistSlots() {
+  localStorage.setItem(STORAGE_KEY + '_slots', JSON.stringify(state.slots));
+}
+
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    state.provider = d.provider || 'anthropic';
+    state.model    = d.model || MODELS[state.provider][0].id;
+    state.keys     = Object.assign({ anthropic: '', openai: '', google: '' }, d.keys || {});
+  } catch(e) {}
+  try {
+    const s = JSON.parse(localStorage.getItem(STORAGE_KEY + '_slots') || '[]');
+    state.slots = s.length ? s : [newSlot()];
+  } catch(e) {
+    state.slots = [newSlot()];
+  }
+}
+
+/* ============================================================
+   Escape HTML
+============================================================ */
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ============================================================
+   Render slots (input view)
+============================================================ */
+function renderSlots() {
+  const container = document.getElementById('slots-container');
+  container.innerHTML = '';
+  state.slots.forEach((slot, i) => {
+    const div = document.createElement('div');
+    div.className = 'slot';
+    div.innerHTML = `
+      <div class="slot-header">
+        <span class="slot-num">${i + 1}</span>
+        <span class="slot-title">Quelle ${i + 1}</span>
+        ${state.slots.length > 1 ? '<button class="slot-remove" title="Entfernen">&times;</button>' : ''}
+      </div>
+      <div class="field">
+        <label>URL <span class="hint">optional &ndash; für die Quellenangabe</span></label>
+        <div class="url-row">
+          <input type="text" class="slot-url" value="${esc(slot.url)}" placeholder="https://&hellip;">
+          <button class="fetch-btn">Text laden</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Text der Pressemitteilung <span class="hint">einfügen oder oben laden</span></label>
+        <textarea class="slot-text">${esc(slot.text)}</textarea>
+      </div>
+      <div class="field">
+        <label>Fokus / Akzent <span class="hint">optional &ndash; was soll hervorgehoben werden?</span></label>
+        <input type="text" class="slot-focus" value="${esc(slot.focus)}" placeholder="z.B. Konsequenzen für den Kanton">
+      </div>
+    `;
+    div.querySelector('.slot-url').addEventListener('input', e => { slot.url = e.target.value; persistSlots(); });
+    div.querySelector('.slot-text').addEventListener('input', e => { slot.text = e.target.value; persistSlots(); });
+    div.querySelector('.slot-focus').addEventListener('input', e => { slot.focus = e.target.value; persistSlots(); });
+    div.querySelector('.fetch-btn').addEventListener('click', () => tryFetchSlot(i, div));
+    if (state.slots.length > 1) {
+      div.querySelector('.slot-remove').addEventListener('click', () => {
+        state.slots.splice(i, 1);
+        if (state.activeSlot >= state.slots.length) state.activeSlot = state.slots.length - 1;
+        persistSlots();
+        renderSlots();
+      });
+    }
+    container.appendChild(div);
+  });
+  document.getElementById('add-slot-btn').disabled = state.slots.length >= MAX_SLOTS;
+}
+
+/* ============================================================
+   URL fetch (best-effort, CORS often blocks)
+============================================================ */
+async function tryFetchSlot(idx, el) {
+  const slot = state.slots[idx];
+  const url  = slot.url.trim();
+  if (!url) { flash('Bitte zuerst eine URL eintragen.', 'error'); return; }
+  const btn = el.querySelector('.fetch-btn');
+  btn.disabled = true; btn.textContent = 'Lade…';
+  try {
+    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const html = await res.text();
+    const text = extractText(html);
+    if (text.length < 80) throw new Error('Zu wenig Text gefunden');
+    slot.text = text;
+    el.querySelector('.slot-text').value = text;
+    persistSlots();
+    flash('Text geladen (' + text.length + ' Zeichen). Bitte prüfen.', 'success');
+  } catch(e) {
+    flash('URL konnte nicht geladen werden (meist CORS). Bitte Text manuell einfügen.', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Text laden';
+  }
+}
+
+function extractText(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('script, style, nav, header, footer, aside, noscript').forEach(n => n.remove());
+  const selectors = ['main', 'article', '[role=main]', '.content', '#content', '.main', '#main'];
+  let root = null;
+  for (const sel of selectors) {
+    const el = doc.querySelector(sel);
+    if (el && el.textContent.trim().length > 200) { root = el; break; }
+  }
+  if (!root) root = doc.body;
+  return (root.textContent || '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\s*\n\s*/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+/* ============================================================
+   API calls
+============================================================ */
+function buildUserMessage(slot) {
+  let s = 'URL der Pressemitteilung: ' + (slot.url.trim() || '(keine URL angegeben)') + '\n\n';
+  if (slot.focus && slot.focus.trim()) s += 'Fokus / Akzent: ' + slot.focus.trim() + '\n\n';
+  s += 'Originaltext der Pressemitteilung:\n\n' + slot.text.trim();
+  return s;
+}
+
+async function callAnthropic(system, user, key, model) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 800,
+      temperature: 0.5,
+      system,
+      messages: [{ role: 'user', content: user }]
+    })
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error('Anthropic ' + res.status + ': ' + t.slice(0, 220)); }
+  const d = await res.json();
+  return (d.content?.[0]?.text || '').trim();
+}
+
+async function callOpenAI(system, user, key, model) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'authorization': 'Bearer ' + key, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      model,
+      max_tokens: 800,
+      temperature: 0.5,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
+    })
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error('OpenAI ' + res.status + ': ' + t.slice(0, 220)); }
+  const d = await res.json();
+  return (d.choices?.[0]?.message?.content || '').trim();
+}
+
+async function callGoogle(system, user, key, model) {
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/'
+    + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ role: 'user', parts: [{ text: user }] }],
+      systemInstruction: { parts: [{ text: system }] },
+      generationConfig: { maxOutputTokens: 800, temperature: 0.5 }
+    })
+  });
+  if (!res.ok) { const t = await res.text(); throw new Error('Google ' + res.status + ': ' + t.slice(0, 220)); }
+  const d = await res.json();
+  return (d.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
+}
+
+async function generateOne(slot, hint = '') {
+  const key = state.keys[state.provider];
+  if (!key) throw new Error('Kein API-Schlüssel hinterlegt');
+  let user = buildUserMessage(slot);
+  if (hint.trim()) user += '\n\nZusätzliche Anweisung für diese Neu-Generierung: ' + hint.trim();
+  if (state.provider === 'anthropic') return callAnthropic(SYSTEM_PROMPT, user, key, state.model);
+  if (state.provider === 'openai')    return callOpenAI(SYSTEM_PROMPT, user, key, state.model);
+  if (state.provider === 'google')    return callGoogle(SYSTEM_PROMPT, user, key, state.model);
+  throw new Error('Unbekannter Provider');
+}
+
+/* ============================================================
+   Generate all
+============================================================ */
+async function generateAll() {
+  const filled = state.slots.filter(s => s.text.trim().length > 20);
+  if (!filled.length) { flash('Bitte mindestens einen Text einfügen.', 'error'); return; }
+  if (!state.keys[state.provider]) {
+    flash('Bitte zuerst API-Key hinterlegen.', 'error');
+    document.getElementById('settings-panel').open = true;
+    return;
+  }
+
+  const genStatus = document.getElementById('gen-status');
+  const genList   = document.getElementById('gen-list');
+  genStatus.classList.add('active');
+  genList.innerHTML = filled.map((slot, i) =>
+    `<li id="gl-${i}">⏳ Quelle ${state.slots.indexOf(slot) + 1}…</li>`
+  ).join('');
+  document.getElementById('generate-btn').disabled = true;
+
+  for (let i = 0; i < filled.length; i++) {
+    const slot = filled[i];
+    const li   = document.getElementById('gl-' + i);
+    try {
+      slot.meldung = await generateOne(slot);
+      li.textContent = '✓ Quelle ' + (state.slots.indexOf(slot) + 1) + ' fertig';
+      li.className = 'done';
+    } catch(e) {
+      li.textContent = '✗ Quelle ' + (state.slots.indexOf(slot) + 1) + ': ' + e.message;
+      li.className = 'fail';
+    }
+    persistSlots();
+  }
+
+  document.getElementById('generate-btn').disabled = false;
+  setTimeout(() => genStatus.classList.remove('active'), 1800);
+
+  state.activeSlot = state.slots.indexOf(filled[0]);
+  showEditView();
+}
+
+/* ============================================================
+   Edit / result view
+============================================================ */
+function showEditView() {
+  document.body.classList.add('view-edit-mode');
+  renderTabs();
+  renderActiveSlot();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderTabs() {
+  const container = document.getElementById('slot-tabs');
+  container.innerHTML = '';
+  state.slots.forEach((slot, i) => {
+    if (!slot.text.trim()) return;
+    const btn = document.createElement('button');
+    btn.className = 'slot-tab'
+      + (i === state.activeSlot ? ' active' : '')
+      + (slot.meldung ? ' has-result' : '');
+    btn.textContent = 'Quelle ' + (i + 1);
+    btn.addEventListener('click', () => {
+      state.activeSlot = i;
+      renderTabs();
+      renderActiveSlot();
+    });
+    container.appendChild(btn);
+  });
+}
+
+function renderActiveSlot() {
+  const slot = state.slots[state.activeSlot];
+  if (!slot) return;
+  document.getElementById('source-url').textContent  = slot.url || '';
+  document.getElementById('source-text').textContent = slot.text;
+  document.getElementById('meldung-edit').value       = slot.meldung || '';
+  document.getElementById('regen-hint').value         = '';
+  updateCharCount();
+}
+
+function updateCharCount() {
+  const val = document.getElementById('meldung-edit').value;
+  document.getElementById('char-count').textContent = val ? val.length + ' Zeichen' : '';
+}
+
+/* ============================================================
+   Regenerate
+============================================================ */
+async function regenerateActive() {
+  const slot = state.slots[state.activeSlot];
+  if (!slot) return;
+  if (!state.keys[state.provider]) { flash('Kein API-Key hinterlegt.', 'error'); return; }
+  const btn  = document.getElementById('regen-btn');
+  const hint = document.getElementById('regen-hint').value;
+  btn.disabled = true; btn.textContent = 'Generiere…';
+  try {
+    const result = await generateOne(slot, hint);
+    slot.meldung = result;
+    persistSlots();
+    document.getElementById('meldung-edit').value = result;
+    updateCharCount();
+    flash('Neu generiert.', 'success');
+  } catch(e) {
+    flash('Fehler: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Neu generieren';
+  }
+}
+
+/* ============================================================
+   Copy
+============================================================ */
+function copyActive() {
+  const text = document.getElementById('meldung-edit').value;
+  if (!text) { flash('Nichts zu kopieren.', 'error'); return; }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text)
+      .then(() => flash('Kopiert!', 'success'))
+      .catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); flash('Kopiert!', 'success'); }
+  catch(e) { flash('Kopieren fehlgeschlagen.', 'error'); }
+  ta.remove();
+}
+
+/* ============================================================
+   Flash
+============================================================ */
+let flashTimer = null;
+function flash(msg, kind) {
+  const el = document.getElementById('flash');
+  el.textContent = msg;
+  el.className = 'flash show' + (kind ? ' ' + kind : '');
+  if (flashTimer) clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+/* ============================================================
+   Settings
+============================================================ */
+function renderModelSelect() {
+  const sel = document.getElementById('model-select');
+  sel.innerHTML = '';
+  for (const m of MODELS[state.provider]) {
+    const opt = document.createElement('option');
+    opt.value = m.id; opt.textContent = m.label;
+    sel.appendChild(opt);
+  }
+  if (!MODELS[state.provider].some(m => m.id === state.model)) {
+    state.model = MODELS[state.provider][0].id;
+  }
+  sel.value = state.model;
+}
+
+function updateSettingsBadge() {
+  const badge = document.getElementById('settings-status');
+  const k     = state.keys[state.provider];
+  const ok    = k && k.length > 8;
+  badge.className  = 'settings-badge' + (ok ? ' ok' : '');
+  badge.textContent = ok ? 'bereit' : 'Schlüssel fehlt';
+}
+
+function initSettings() {
+  document.getElementById('provider-select').value  = state.provider;
+  renderModelSelect();
+  document.getElementById('key-anthropic').value = state.keys.anthropic;
+  document.getElementById('key-openai').value    = state.keys.openai;
+  document.getElementById('key-google').value    = state.keys.google;
+  updateSettingsBadge();
+
+  document.getElementById('provider-select').addEventListener('change', e => {
+    state.provider = e.target.value; renderModelSelect(); persist(); updateSettingsBadge();
+  });
+  document.getElementById('model-select').addEventListener('change', e => {
+    state.model = e.target.value; persist();
+  });
+  ['anthropic', 'openai', 'google'].forEach(p => {
+    document.getElementById('key-' + p).addEventListener('input', e => {
+      state.keys[p] = e.target.value.trim(); persist(); updateSettingsBadge();
+    });
+  });
+  document.querySelectorAll('.clear-btn[data-clear]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = btn.dataset.clear;
+      state.keys[p] = ''; document.getElementById('key-' + p).value = '';
+      persist(); updateSettingsBadge();
+    });
+  });
+  document.getElementById('clear-all-btn').addEventListener('click', () => {
+    if (!confirm('Wirklich alle Daten löschen (Keys, Eingaben, Meldungen)?')) return;
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('meldungstool_'))
+      .forEach(k => localStorage.removeItem(k));
+    location.reload();
+  });
+}
+
+/* ============================================================
+   Wire up
+============================================================ */
+function init() {
+  load();
+  initSettings();
+  renderSlots();
+
+  document.getElementById('add-slot-btn').addEventListener('click', () => {
+    if (state.slots.length >= MAX_SLOTS) return;
+    state.slots.push(newSlot()); persistSlots(); renderSlots();
+  });
+
+  document.getElementById('generate-btn').addEventListener('click', generateAll);
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (!confirm('Alle Eingaben und generierten Meldungen löschen?')) return;
+    state.slots = [newSlot()]; state.activeSlot = 0;
+    persistSlots(); renderSlots();
+    document.body.classList.remove('view-edit-mode');
+  });
+
+  document.getElementById('back-btn').addEventListener('click', () => {
+    document.body.classList.remove('view-edit-mode');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  document.getElementById('meldung-edit').addEventListener('input', e => {
+    const slot = state.slots[state.activeSlot];
+    if (slot) { slot.meldung = e.target.value; persistSlots(); }
+    updateCharCount();
+  });
+
+  document.getElementById('copy-btn').addEventListener('click', copyActive);
+  document.getElementById('regen-btn').addEventListener('click', regenerateActive);
+
+  if (!state.keys[state.provider]) document.getElementById('settings-panel').open = true;
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
