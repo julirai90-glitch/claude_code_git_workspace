@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wer kommt noch nach Graubünden? – Graubünden in Zahlen</title>
+<meta name="description" content="Logiernächte, Herkunftsländer, Gemeinden: Wie sich Graubündens Tourismus seit 1992 verändert hat – und wo die Deutschen und Chinesinnen geblieben sind.">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; line-height: 1.6; }
+
+.wrap { max-width: 696px; margin: 0 auto; padding: 0 24px; }
+
+.hero { padding: 56px 24px 32px; max-width: 696px; margin: 0 auto; }
+.hero .kicker { color: #0068A4; font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 12px; }
+.hero h1 { font-size: clamp(26px, 5vw, 42px); font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+.hero .lead { font-size: 17px; color: #444; line-height: 1.6; max-width: 620px; }
+.hero .lead strong { color: #0068A4; }
+
+section { padding: 40px 0; border-top: 1px solid #eee; }
+section .wrap h2 { font-size: clamp(20px, 3vw, 28px); font-weight: 800; margin-bottom: 14px; line-height: 1.25; }
+section .wrap p { font-size: 16px; color: #333; margin-bottom: 12px; }
+section .wrap p strong { color: #1a1a1a; }
+section .wrap p em { color: #0068A4; font-style: normal; font-weight: 700; }
+
+.stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
+.stat { padding: 16px 20px; background: #eef5fb; border-left: 4px solid #0068A4; border-radius: 4px; min-width: 130px; flex: 1; }
+.stat .num { font-size: 26px; font-weight: 800; color: #0068A4; line-height: 1.1; }
+.stat .num.orange { color: #EE7733; }
+.stat .num.red { color: #B5001E; }
+.stat .lbl { font-size: 12px; color: #666; margin-top: 4px; line-height: 1.3; }
+
+.def-box { margin: 24px 0; padding: 16px 20px; background: #f6f4ee; border-left: 4px solid #1E3A5F; border-radius: 4px; }
+.def-box .def-head { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #1E3A5F; margin-bottom: 6px; }
+.def-box .def-body { font-size: 14px; line-height: 1.55; color: #333; }
+.def-box .def-source { font-size: 11px; color: #888; margin-top: 8px; }
+.def-box .def-source a { color: #1E3A5F; }
+
+.chart-wrap { background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: 20px 20px 12px; margin: 20px 0; position: relative; }
+.chart-title { font-size: 14px; font-weight: 700; color: #222; margin-bottom: 3px; }
+.chart-sub { font-size: 11px; color: #999; margin-bottom: 16px; line-height: 1.4; }
+svg { width: 100%; height: auto; display: block; }
+.axis text { fill: #999; font-size: 11px; }
+.axis path, .axis line { stroke: #ddd; }
+.grid line { stroke: #eee; stroke-dasharray: 3 3; }
+
+.tooltip { position: absolute; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 10px 14px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; transform: translate(-50%, calc(-100% - 14px)); display: none; white-space: nowrap; }
+.tooltip.visible { display: block; }
+.tooltip .tt-title { font-weight: 700; margin-bottom: 6px; color: #1a1a1a; font-size: 13px; }
+.tooltip .tt-row { display: flex; justify-content: space-between; gap: 16px; }
+.tooltip .tt-row .k { color: #666; }
+.tooltip .tt-row .v { font-weight: 700; color: #1a1a1a; font-variant-numeric: tabular-nums; }
+.tooltip .tt-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: #555; margin-top: 10px; }
+.legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+.legend .dash { display: inline-block; width: 16px; height: 3px; border-radius: 1px; margin-right: 5px; vertical-align: middle; }
+
+/* Bar charts */
+.bar-list { margin-top: 8px; }
+.bar-row { display: flex; align-items: center; margin: 5px 0; font-size: 13px; gap: 8px; }
+.bar-label { width: 170px; flex-shrink: 0; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 16px; background: #f0f0f0; border-radius: 3px; overflow: hidden; position: relative; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.bar-val { width: 80px; flex-shrink: 0; text-align: right; font-weight: 700; color: #333; font-variant-numeric: tabular-nums; font-size: 12px; }
+.bar-delta { width: 50px; flex-shrink: 0; text-align: right; font-size: 11px; }
+.bar-delta.up { color: #1a7d3a; }
+.bar-delta.down { color: #B5001E; }
+.bar-delta.neu { color: #666; }
+
+/* Gemeinde search */
+.search-box { margin: 20px 0; }
+#gm-search { width: 100%; padding: 13px 16px; font-size: 16px; border: 2px solid #0068A4; border-radius: 8px; outline: none; }
+#gm-search:focus { box-shadow: 0 0 0 3px rgba(0,104,164,0.15); }
+.gm-hint { font-size: 12px; color: #999; margin-top: 5px; }
+.gm-selected-card { display: none; margin-top: 16px; padding: 20px; border: 2px solid #0068A4; border-radius: 10px; background: #fff; }
+.gm-selected-card.visible { display: block; }
+.gm-name { font-size: 24px; font-weight: 800; }
+.gm-stats { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.gm-stat { padding: 10px 14px; background: #eef5fb; border-radius: 6px; flex: 1; min-width: 110px; }
+.gm-stat .v { font-size: 20px; font-weight: 800; color: #0068A4; }
+.gm-stat .l { font-size: 11px; color: #666; margin-top: 2px; }
+
+.callout { background: #0068A4; color: #fff; padding: 20px 24px; border-radius: 8px; margin: 20px 0; display: flex; align-items: flex-start; gap: 20px; }
+.callout.orange { background: #EE7733; }
+.callout .c-num { font-size: 40px; font-weight: 800; flex-shrink: 0; line-height: 1; }
+.callout .c-text { font-size: 15px; line-height: 1.5; }
+
+.footer { padding: 40px 24px 60px; max-width: 696px; margin: 40px auto 0; font-size: 13px; color: #888; line-height: 1.6; border-top: 1px solid #eee; }
+.footer a { color: #0068A4; }
+.footer h3 { font-size: 14px; color: #333; margin: 14px 0 6px; font-weight: 700; }
+
+.annot { font-size: 10px; fill: #888; }
+.annot-line { stroke: #ccc; stroke-dasharray: 3 3; stroke-width: 1; }
+
+@media (max-width: 520px) {
+  .bar-label { width: 110px; font-size: 12px; }
+  .bar-val { width: 64px; }
+  .stat .num { font-size: 22px; }
+  .callout { flex-direction: column; gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">Datenstory · Graubünden in Zahlen</div>
+  <h1>Wer kommt noch nach Graubünden?</h1>
+  <p class="lead">Seit dreissig Jahren verändert sich, wer in Graubünden übernachtet. Heute kommen <strong>fast zwei von drei Gästen aus der Schweiz</strong> – 1992 war es weniger als die Hälfte. Die Deutschen sind weitgehend ausgeblieben. Und China hat seinen Vorkrisen-Höchststand noch nicht zurückerreicht.</p>
+</header>
+
+<div class="wrap">
+  <div class="def-box">
+    <div class="def-head">Was sind Logiernächte?</div>
+    <div class="def-body">Eine <strong>Logiernacht</strong> entspricht einer Übernachtung einer Person in einem Beherbergungsbetrieb. Wer drei Nächte in Davos verbringt, zählt als drei Logiernächte. Die Daten stammen aus der <strong>Beherbergungsstatistik HESTA</strong> des Bundesamts für Statistik und erfassen Hotels sowie vergleichbare Betriebe – nicht Ferienwohnungen, Camping oder private Übernachtungen.</div>
+    <div class="def-source">Quelle: <a href="https://data.gr.ch" target="_blank">data.gr.ch</a> – Amt für Wirtschaft und Tourismus GR, auf Basis BFS HESTA. Daten 1992–2025.</div>
+  </div>
+</div>
+
+<!-- SECTION 1: LANGZEITTREND -->
+<section>
+  <div class="wrap">
+    <h2>30 Jahre, ein langer Absturz – und eine zögerliche Erholung</h2>
+    <p>Das historische Hoch lag <em>1992</em> mit 6,9 Millionen Logiernächten. Dann folgte ein langer Rückgang: Franken-Aufwertungen, veränderte Reisemuster, der Franken-Schock von 2015. Im Tiefjahr 2016 zählte Graubünden noch 4,6 Millionen Logiernächte. Seither erholt sich der Kanton – 2025 wurden 5,7 Millionen erreicht. <strong>Das Niveau von 1992 bleibt unerreicht.</strong></p>
+    <div class="stat-row">
+      <div class="stat"><div class="num">6,9 Mio.</div><div class="lbl">Logiernächte 1992 (historisches Hoch)</div></div>
+      <div class="stat"><div class="num orange">4,6 Mio.</div><div class="lbl">Tiefpunkt 2016</div></div>
+      <div class="stat"><div class="num">5,7 Mio.</div><div class="lbl">Logiernächte 2025</div></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Logiernächte Graubünden 1992–2025</div>
+      <div class="chart-sub">Hotellerie (HESTA), alle Kategorien summiert. 2004 fehlt in Quelldata.</div>
+      <svg id="chart-trend" viewBox="0 0 660 280" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="tt-trend" class="tooltip"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: CH vs AUSLAND -->
+<section>
+  <div class="wrap">
+    <h2>Die stille Umkehrung: Graubünden wird zur Schweizer Feriendestination</h2>
+    <p>1992 kamen mehr als die Hälfte aller Gäste aus dem Ausland. Heute ist das Verhältnis umgekehrt: <em>63 Prozent der Logiernächte 2025</em> entfallen auf Schweizerinnen und Schweizer. Der Wendepunkt liegt um 2005. Die Corona-Jahre 2020 und 2021 haben den Trend vorübergehend stark übertrieben – 78 Prozent CH-Anteil im Jahr 2021 –, danach normalisiert er sich wieder leicht.</p>
+    <p>Hinter der Verschiebung stecken zwei Kräfte: Die Auslandsnachfrage ist eingebrochen, vor allem aus Deutschland. Und die Schweizer Nachfrage bleibt stabil, seit 2019 sogar leicht wachsend.</p>
+    <div class="chart-wrap">
+      <div class="chart-title">CH-Gäste vs. Auslandsgäste 1992–2025</div>
+      <div class="chart-sub">Absolute Logiernächte aus Herkunftsdaten (HESTA). Stacked Area.</div>
+      <svg id="chart-chausland" viewBox="0 0 660 280" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="tt-chausland" class="tooltip"></div>
+      <div class="legend">
+        <span><span class="dot" style="background:#0068A4"></span>Schweiz</span>
+        <span><span class="dot" style="background:#EE7733"></span>Ausland</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: DEUTSCHLAND -->
+<section>
+  <div class="wrap">
+    <h2>Wo sind die Deutschen hin?</h2>
+    <p>Deutschland war lange Graubündens wichtigster Auslandsmarkt. 1993 verbrachten Deutsche <em>2,45 Millionen Logiernächte</em> im Kanton. 2025 waren es noch 762'000. Das sind <strong>69 Prozent weniger</strong> als vor 32 Jahren.</p>
+    <p>Der Rückgang ist strukturell, nicht konjunkturell: Er verlief in drei Phasen. Erste Phase 1994–2005: gradueller Rückgang auf 1,4 Millionen. Zweite Phase 2010–2017: dramatischer Einbruch auf unter 800'000 – geprägt durch den starken Franken. Dritte Phase 2018–2025: Stagnation auf niedrigem Niveau, kein eigentlicher Aufschwung.</p>
+    <div class="callout">
+      <div class="c-num">–69%</div>
+      <div class="c-text">Deutsche Logiernächte in Graubünden seit 1993. Von 2,45 Millionen auf 762'000 – ein Rückgang, der die Tourismusstruktur des Kantons grundlegend verändert hat.</div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Deutsche Logiernächte in Graubünden 1992–2025</div>
+      <div class="chart-sub">Herkunftsdaten HESTA. Gestrichelte Linie: Niveaus 1992 und 2025 im Vergleich.</div>
+      <svg id="chart-de" viewBox="0 0 660 260" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="tt-de" class="tooltip"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: CHINA -->
+<section>
+  <div class="wrap">
+    <h2>Und die Chinesinnen? Ein Wachstum, ein Einbruch – und eine stockende Rückkehr</h2>
+    <p>China ist eine Geschichte in drei Akten. Von 1999 bis 2019 wuchs der chinesische Markt dramatisch: von wenigen Hundert auf fast 30'000 Logiernächte – ein <em>40-faches Wachstum</em> in zwanzig Jahren. Dann kam Corona: 2021 besuchten nur noch 825 Gäste aus China Graubünden.</p>
+    <p>Seit China 2023 seine Grenzen wieder vollständig öffnete, steigt die Zahl wieder – aber langsam. 2025 zählte Graubünden 16'225 chinesische Logiernächte. Das sind <strong>55 Prozent des Vorkrisenniveaus</strong> von 2019. Zum Vergleich: Die USA und Grossbritannien haben ihren Stand von 2019 längst übertroffen.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="num">29'307</div><div class="lbl">CN-Logiernächte 2019 (Höchststand)</div></div>
+      <div class="stat"><div class="num red">825</div><div class="lbl">CN-Logiernächte 2021 (Tiefpunkt)</div></div>
+      <div class="stat"><div class="num">16'225</div><div class="lbl">CN-Logiernächte 2025 (55% von 2019)</div></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Ausgewählte Herkunftsmärkte im Vergleich: Logiernächte 1992–2025</div>
+      <div class="chart-sub">Index: Wert 2019 = 100. Zeigt, wie stark verschiedene Märkte erholt haben.</div>
+      <svg id="chart-laender" viewBox="0 0 660 300" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="tt-laender" class="tooltip"></div>
+      <div class="legend" id="legend-laender"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: TOP MÄRKTE -->
+<section>
+  <div class="wrap">
+    <h2>Wer kommt 2025?</h2>
+    <p>Die zehn grössten Auslandsmärkte im Jahr 2025, mit Vergleich zu 2019. Deutschland bleibt weit vorne – aber mit rückläufiger Tendenz. Bemerkenswert: Die USA und Brasilien haben sich seit 2019 stark gesteigert. Japan hingegen liegt deutlich unter dem Vorkrisenniveau.</p>
+    <div class="chart-wrap">
+      <div class="chart-title">Top 15 Auslandsmärkte 2025 (Logiernächte)</div>
+      <div class="chart-sub">Balken = 2025. Raute = Wert 2019 zum Vergleich. Grün = über 2019, Rot = darunter.</div>
+      <div id="bars-maerkte" class="bar-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: GEMEINDEN -->
+<section>
+  <div class="wrap">
+    <h2>Wo übernachtet man in Graubünden?</h2>
+    <p>Die Beherbergungsstatistik erfasst 40 Gemeinden im Kanton – jene mit messbarer Hotellerie. Die übrigen 61 Bündner Gemeinden sind in der Statistik nicht vertreten. Davos und St. Moritz allein machen gut 30 Prozent aller Logiernächte aus. Die fünf grössten Gemeinden kommen auf die Hälfte.</p>
+    <div class="search-box">
+      <input type="text" id="gm-search" placeholder="Gemeinde suchen, z. B. «Davos» oder «Chur»…" autocomplete="off">
+      <div class="gm-hint">40 Gemeinden, Logiernächte 2024</div>
+      <div id="gm-card" class="gm-selected-card">
+        <div class="gm-name" id="gm-name">–</div>
+        <div class="gm-stats">
+          <div class="gm-stat"><div class="v" id="gm-logier">–</div><div class="l">Logiernächte 2024</div></div>
+          <div class="gm-stat"><div class="v" id="gm-rank">–</div><div class="l">Rang (von 40)</div></div>
+          <div class="gm-stat"><div class="v" id="gm-aufenthalt">–</div><div class="l">Ø Aufenthaltsdauer</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Logiernächte 2024 nach Gemeinde</div>
+      <div class="chart-sub">40 HESTA-Gemeinden. Angeklickt/gesucht = hervorgehoben.</div>
+      <div id="bars-gemeinden" class="bar-list"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <h3>Methodik</h3>
+  <p>Datenquelle: <a href="https://data.gr.ch" target="_blank">data.gr.ch</a> – Amt für Wirtschaft und Tourismus Graubünden, Datensätze dvs_awt_econ_20250203 (Gemeinden ab 2021), dvs_awt_econ_202502031 (Sternekategorien ab 1992), dvs_awt_econ_202502030 (Herkunftsländer ab 1992). Basis: Beherbergungsstatistik HESTA des Bundesamts für Statistik BFS.</p>
+  <p>Alle Zahlen beziehen sich auf Hotellerie und gleichwertige Betriebe. Ferienwohnungen, Camping und private Unterkünfte sind nicht erfasst. Das Jahr 2004 fehlt im Quellmaterial. Die Herkunftsdaten weisen für 2004 keine Einträge aus.</p>
+  <p>Visualisierung: <a href="https://julianreich.ch" target="_blank">Julian Reich</a>, Terra Grischuna / Südostschweiz, Mai 2026. Code: <a href="https://github.com/julirai90-glitch/claude_code_git_workspace" target="_blank">GitHub</a>.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+const DATA = {"trend":[{"jahr":1992,"ankunfte":1644704,"logiernachte":6880275},{"jahr":1993,"ankunfte":1618127,"logiernachte":6854871},{"jahr":1994,"ankunfte":1646096,"logiernachte":6854304},{"jahr":1995,"ankunfte":1538907,"logiernachte":6341321},{"jahr":1996,"ankunfte":1438452,"logiernachte":5814891},{"jahr":1997,"ankunfte":1525316,"logiernachte":5869134},{"jahr":1998,"ankunfte":1581303,"logiernachte":6051169},{"jahr":1999,"ankunfte":1592913,"logiernachte":6009039},{"jahr":2000,"ankunfte":1713803,"logiernachte":6259401},{"jahr":2001,"ankunfte":1739251,"logiernachte":6300711},{"jahr":2002,"ankunfte":1581314,"logiernachte":5732095},{"jahr":2003,"ankunfte":1670524,"logiernachte":5834659},{"jahr":2005,"ankunfte":1696711,"logiernachte":5569534},{"jahr":2006,"ankunfte":1748106,"logiernachte":5706535},{"jahr":2007,"ankunfte":1824122,"logiernachte":5867775},{"jahr":2008,"ankunfte":1971903,"logiernachte":6239848},{"jahr":2009,"ankunfte":1867303,"logiernachte":5878188},{"jahr":2010,"ankunfte":1882292,"logiernachte":5801693},{"jahr":2011,"ankunfte":1782847,"logiernachte":5351442},{"jahr":2012,"ankunfte":1736268,"logiernachte":5064195},{"jahr":2013,"ankunfte":1765956,"logiernachte":5160975},{"jahr":2014,"ankunfte":1743916,"logiernachte":5050159},{"jahr":2015,"ankunfte":1658854,"logiernachte":4717301},{"jahr":2016,"ankunfte":1681777,"logiernachte":4621690},{"jahr":2017,"ankunfte":1794354,"logiernachte":4847177},{"jahr":2018,"ankunfte":1925330,"logiernachte":5128680},{"jahr":2019,"ankunfte":1990960,"logiernachte":5252299},{"jahr":2020,"ankunfte":1662711,"logiernachte":4763962},{"jahr":2021,"ankunfte":1858237,"logiernachte":5129581},{"jahr":2022,"ankunfte":2045795,"logiernachte":5542100},{"jahr":2023,"ankunfte":2059257,"logiernachte":5393162},{"jahr":2024,"ankunfte":2112386,"logiernachte":5492694},{"jahr":2025,"ankunfte":2210435,"logiernachte":5679939}],"ch_ausland":[{"jahr":1992,"ch":3101680,"ausland":3835286,"total":6936966},{"jahr":1993,"ch":3042070,"ausland":3871185,"total":6913255},{"jahr":1994,"ch":3023065,"ausland":3831239,"total":6854304},{"jahr":1995,"ch":2864446,"ausland":3476875,"total":6341321},{"jahr":1996,"ch":2656157,"ausland":3158734,"total":5814891},{"jahr":1997,"ch":2733193,"ausland":3135941,"total":5869134},{"jahr":1998,"ch":2762850,"ausland":3288319,"total":6051169},{"jahr":1999,"ch":2775470,"ausland":3233552,"total":6009022},{"jahr":2000,"ch":2881604,"ausland":3377797,"total":6259401},{"jahr":2001,"ch":2990684,"ausland":3309984,"total":6300668},{"jahr":2002,"ch":2850541,"ausland":2881554,"total":5732095},{"jahr":2003,"ch":2985181,"ausland":2849478,"total":5834659},{"jahr":2005,"ch":2861073,"ausland":2708461,"total":5569534},{"jahr":2006,"ch":2893953,"ausland":2812582,"total":5706535},{"jahr":2007,"ch":2918781,"ausland":2948994,"total":5867775},{"jahr":2008,"ch":3101202,"ausland":3138646,"total":6239848},{"jahr":2009,"ch":2950163,"ausland":2935273,"total":5885436},{"jahr":2010,"ch":2951574,"ausland":2855881,"total":5807455},{"jahr":2011,"ch":2863056,"ausland":2502566,"total":5365622},{"jahr":2012,"ch":2852180,"ausland":2212015,"total":5064195},{"jahr":2013,"ch":2904212,"ausland":2256763,"total":5160975},{"jahr":2014,"ch":2868239,"ausland":2183986,"total":5052225},{"jahr":2015,"ch":2790412,"ausland":1926889,"total":4717301},{"jahr":2016,"ch":2830077,"ausland":1797370,"total":4627447},{"jahr":2017,"ch":2982123,"ausland":1871236,"total":4853359},{"jahr":2018,"ch":3122451,"ausland":2009761,"total":5132212},{"jahr":2019,"ch":3208122,"ausland":2047894,"total":5256016},{"jahr":2020,"ch":3599165,"ausland":1170805,"total":4769970},{"jahr":2021,"ch":4034883,"ausland":1118272,"total":5153155},{"jahr":2022,"ch":3742997,"ausland":1823583,"total":5566580},{"jahr":2023,"ch":3508516,"ausland":1917526,"total":5426042},{"jahr":2024,"ch":3514909,"ausland":2012129,"total":5527038},{"jahr":2025,"ch":3566179,"ausland":2113760,"total":5679939}],"top25":[{"iso_landercode":"DE","iso_landername":"Deutschland","v2025":761523,"v2019":845242},{"iso_landercode":"GB","iso_landername":"Vereinigtes Königreich","v2025":180323,"v2019":160355},{"iso_landercode":"US","iso_landername":"Vereinigte Staaten","v2025":177216,"v2019":121368},{"iso_landercode":"NL","iso_landername":"Niederlande","v2025":112373,"v2019":104237},{"iso_landercode":"IT","iso_landername":"Italien","v2025":111647,"v2019":96112},{"iso_landercode":"BE","iso_landername":"Belgien","v2025":86553,"v2019":93764},{"iso_landercode":"FR","iso_landername":"Frankreich","v2025":65718,"v2019":54504},{"iso_landercode":"AT","iso_landername":"Österreich","v2025":49713,"v2019":48953},{"iso_landercode":"IL","iso_landername":"Israel","v2025":38975,"v2019":41837},{"iso_landercode":"BR","iso_landername":"Brasilien","v2025":35652,"v2019":16400},{"iso_landercode":"PL","iso_landername":"Polen","v2025":35516,"v2019":27887},{"iso_landercode":"AU","iso_landername":"Australien","v2025":29470,"v2019":22148},{"iso_landercode":"CZ","iso_landername":"Tschechien","v2025":24455,"v2019":19193},{"iso_landercode":"JP","iso_landername":"Japan","v2025":21498,"v2019":35985},{"iso_landercode":"CA","iso_landername":"Kanada","v2025":19530,"v2019":12455}],"laender":{"DE":{"name":"Deutschland","data":[{"jahr":1992,"v":2289986},{"jahr":1993,"v":2448027},{"jahr":1994,"v":2429943},{"jahr":1995,"v":2235402},{"jahr":1996,"v":2024583},{"jahr":1997,"v":1956601},{"jahr":1998,"v":1986449},{"jahr":1999,"v":1937929},{"jahr":2000,"v":1994149},{"jahr":2001,"v":1977644},{"jahr":2002,"v":1716659},{"jahr":2003,"v":1640460},{"jahr":2005,"v":1424974},{"jahr":2006,"v":1428150},{"jahr":2007,"v":1518096},{"jahr":2008,"v":1621624},{"jahr":2009,"v":1572135},{"jahr":2010,"v":1530056},{"jahr":2011,"v":1294952},{"jahr":2012,"v":1109566},{"jahr":2013,"v":1124300},{"jahr":2014,"v":1056669},{"jahr":2015,"v":899321},{"jahr":2016,"v":796535},{"jahr":2017,"v":779536},{"jahr":2018,"v":841149},{"jahr":2019,"v":845242},{"jahr":2020,"v":537915},{"jahr":2021,"v":539578},{"jahr":2022,"v":746525},{"jahr":2023,"v":744436},{"jahr":2024,"v":770934},{"jahr":2025,"v":761523}]},"CN":{"name":"China","data":[{"jahr":1999,"v":750},{"jahr":2000,"v":1111},{"jahr":2001,"v":1477},{"jahr":2002,"v":1792},{"jahr":2003,"v":1444},{"jahr":2005,"v":2356},{"jahr":2006,"v":2664},{"jahr":2007,"v":3592},{"jahr":2008,"v":3770},{"jahr":2009,"v":4255},{"jahr":2010,"v":5306},{"jahr":2011,"v":8043},{"jahr":2012,"v":10541},{"jahr":2013,"v":11504},{"jahr":2014,"v":12675},{"jahr":2015,"v":13878},{"jahr":2016,"v":19529},{"jahr":2017,"v":27033},{"jahr":2018,"v":31018},{"jahr":2019,"v":29307},{"jahr":2020,"v":5538},{"jahr":2021,"v":825},{"jahr":2022,"v":2487},{"jahr":2023,"v":11090},{"jahr":2024,"v":15442},{"jahr":2025,"v":16225}]},"GB":{"name":"Grossbritannien","data":[{"jahr":1992,"v":179346},{"jahr":1993,"v":161997},{"jahr":1994,"v":157661},{"jahr":1995,"v":126260},{"jahr":1996,"v":105943},{"jahr":1997,"v":129432},{"jahr":1998,"v":148326},{"jahr":1999,"v":161375},{"jahr":2000,"v":184342},{"jahr":2001,"v":192654},{"jahr":2002,"v":178404},{"jahr":2003,"v":176395},{"jahr":2005,"v":190666},{"jahr":2006,"v":207977},{"jahr":2007,"v":216272},{"jahr":2008,"v":239383},{"jahr":2009,"v":182599},{"jahr":2010,"v":176337},{"jahr":2011,"v":149020},{"jahr":2012,"v":133757},{"jahr":2013,"v":143716},{"jahr":2014,"v":140032},{"jahr":2015,"v":144766},{"jahr":2016,"v":145245},{"jahr":2017,"v":147302},{"jahr":2018,"v":160945},{"jahr":2019,"v":160355},{"jahr":2020,"v":79768},{"jahr":2021,"v":27831},{"jahr":2022,"v":147862},{"jahr":2023,"v":151673},{"jahr":2024,"v":161369},{"jahr":2025,"v":180323}]},"US":{"name":"USA","data":[{"jahr":1992,"v":138134},{"jahr":1993,"v":121416},{"jahr":1994,"v":121567},{"jahr":1995,"v":110593},{"jahr":1996,"v":99538},{"jahr":1997,"v":100762},{"jahr":1998,"v":122529},{"jahr":1999,"v":125519},{"jahr":2000,"v":136440},{"jahr":2001,"v":119318},{"jahr":2002,"v":97633},{"jahr":2003,"v":89876},{"jahr":2005,"v":81500},{"jahr":2006,"v":91388},{"jahr":2007,"v":94582},{"jahr":2008,"v":79739},{"jahr":2009,"v":69854},{"jahr":2010,"v":77430},{"jahr":2011,"v":65563},{"jahr":2012,"v":64541},{"jahr":2013,"v":74926},{"jahr":2014,"v":80699},{"jahr":2015,"v":82400},{"jahr":2016,"v":86414},{"jahr":2017,"v":97049},{"jahr":2018,"v":111289},{"jahr":2019,"v":121368},{"jahr":2020,"v":36826},{"jahr":2021,"v":30756},{"jahr":2022,"v":104112},{"jahr":2023,"v":131597},{"jahr":2024,"v":151347},{"jahr":2025,"v":177216}]},"IL":{"name":"Israel","data":[{"jahr":1992,"v":35819},{"jahr":2000,"v":30519},{"jahr":2010,"v":19657},{"jahr":2015,"v":19468},{"jahr":2019,"v":41837},{"jahr":2020,"v":4506},{"jahr":2021,"v":6667},{"jahr":2022,"v":20690},{"jahr":2023,"v":28592},{"jahr":2024,"v":36316},{"jahr":2025,"v":38975}]},"IN":{"name":"Indien","data":[{"jahr":2005,"v":1848},{"jahr":2010,"v":4251},{"jahr":2015,"v":5738},{"jahr":2019,"v":17039},{"jahr":2020,"v":1999},{"jahr":2021,"v":2187},{"jahr":2022,"v":7309},{"jahr":2023,"v":11554},{"jahr":2024,"v":13388},{"jahr":2025,"v":17531}]}},"gemeinden":[{"gemeinde_name":"Davos","logiernachte":820728,"ankunfte":323506},{"gemeinde_name":"St. Moritz","logiernachte":768053,"ankunfte":294744},{"gemeinde_name":"Arosa","logiernachte":430599,"ankunfte":136999},{"gemeinde_name":"Pontresina","logiernachte":381487,"ankunfte":119372},{"gemeinde_name":"Vaz/Obervaz","logiernachte":263555,"ankunfte":104372},{"gemeinde_name":"Scuol","logiernachte":260041,"ankunfte":91825},{"gemeinde_name":"Laax","logiernachte":254402,"ankunfte":61425},{"gemeinde_name":"Chur","logiernachte":231708,"ankunfte":152499},{"gemeinde_name":"Sils im Engadin/Segl","logiernachte":228583,"ankunfte":58431},{"gemeinde_name":"Flims","logiernachte":194020,"ankunfte":66983},{"gemeinde_name":"Samnaun","logiernachte":157719,"ankunfte":47356},{"gemeinde_name":"Klosters","logiernachte":150865,"ankunfte":54426},{"gemeinde_name":"Celerina/Schlarigna","logiernachte":119055,"ankunfte":42449},{"gemeinde_name":"Silvaplana","logiernachte":81597,"ankunfte":26146},{"gemeinde_name":"Disentis/Mustér","logiernachte":76408,"ankunfte":31963},{"gemeinde_name":"Poschiavo","logiernachte":71680,"ankunfte":38464},{"gemeinde_name":"Surses","logiernachte":69864,"ankunfte":32186},{"gemeinde_name":"Zernez","logiernachte":69849,"ankunfte":35556},{"gemeinde_name":"Vals","logiernachte":65426,"ankunfte":33087},{"gemeinde_name":"Bergün Filisur","logiernachte":58240,"ankunfte":26864},{"gemeinde_name":"Val Müstair","logiernachte":54202,"ankunfte":24250},{"gemeinde_name":"Bregaglia","logiernachte":54029,"ankunfte":22307},{"gemeinde_name":"Churwalden","logiernachte":53419,"ankunfte":23331},{"gemeinde_name":"Tujetsch","logiernachte":49058,"ankunfte":16539},{"gemeinde_name":"Samedan","logiernachte":42880,"ankunfte":20191},{"gemeinde_name":"Maienfeld","logiernachte":38078,"ankunfte":21767},{"gemeinde_name":"Breil/Brigels","logiernachte":36727,"ankunfte":13790},{"gemeinde_name":"Zuoz","logiernachte":30224,"ankunfte":12015},{"gemeinde_name":"Bever","logiernachte":23317,"ankunfte":8910},{"gemeinde_name":"Albula/Alvra","logiernachte":23278,"ankunfte":10005},{"gemeinde_name":"Ilanz/Glion","logiernachte":22667,"ankunfte":13060},{"gemeinde_name":"Rheinwald","logiernachte":19189,"ankunfte":11049},{"gemeinde_name":"Mesocco","logiernachte":14920,"ankunfte":7895},{"gemeinde_name":"Luzein","logiernachte":14445,"ankunfte":7329},{"gemeinde_name":"Obersaxen Mundaun","logiernachte":14226,"ankunfte":6104},{"gemeinde_name":"Lumnezia","logiernachte":12150,"ankunfte":5306},{"gemeinde_name":"Safiental","logiernachte":11756,"ankunfte":6947},{"gemeinde_name":"Avers","logiernachte":9032,"ankunfte":4308},{"gemeinde_name":"La Punt Chamues-ch","logiernachte":8719,"ankunfte":3970},{"gemeinde_name":"Medel (Lucmagn)","logiernachte":6880,"ankunfte":3210}]};
+
+const fmt = d3.format(',.0f');
+const fmtM = v => (v / 1e6).toFixed(2) + ' Mio.';
+
+// ─── CHART 1: Langzeittrend ────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('chart-trend');
+  const tt = document.getElementById('tt-trend');
+  const W = 660, H = 280, m = {t:20, r:20, b:32, l:58};
+  const w = W - m.l - m.r, h = H - m.t - m.b;
+  const svg = d3.select(el).attr('viewBox',`0 0 ${W} ${H}`);
+  const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+  const x = d3.scaleLinear().domain([1992,2025]).range([0,w]);
+  const y = d3.scaleLinear().domain([0, 7.2e6]).range([h,0]);
+
+  // grid
+  g.append('g').attr('class','grid').selectAll('line')
+    .data(y.ticks(5)).join('line')
+    .attr('x1',0).attr('x2',w)
+    .attr('y1',d=>y(d)).attr('y2',d=>y(d));
+
+  // axes
+  g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+    .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
+  g.append('g').attr('class','axis')
+    .call(d3.axisLeft(y).ticks(5).tickFormat(v => (v/1e6).toFixed(1)+' Mio.'));
+
+  // annotations
+  const annots = [
+    {x:2008, label:'CHF-Boom'},
+    {x:2015, label:'Mindestkurs-Aufhebung'},
+    {x:2020, label:'Covid'},
+  ];
+  annots.forEach(a => {
+    const px = x(a.x);
+    g.append('line').attr('class','annot-line').attr('x1',px).attr('x2',px).attr('y1',0).attr('y2',h);
+    g.append('text').attr('class','annot').attr('x',px+3).attr('y',14).text(a.label);
+  });
+
+  // line
+  const line = d3.line().x(d=>x(d.jahr)).y(d=>y(d.logiernachte)).defined(d=>d.logiernachte>0);
+  g.append('path').datum(DATA.trend).attr('fill','none').attr('stroke','#0068A4').attr('stroke-width',2.5).attr('d',line);
+
+  // area under
+  const area = d3.area().x(d=>x(d.jahr)).y0(h).y1(d=>y(d.logiernachte)).defined(d=>d.logiernachte>0);
+  g.append('path').datum(DATA.trend).attr('fill','#0068A4').attr('fill-opacity',0.08).attr('d',area);
+
+  // hover overlay
+  const bisect = d3.bisector(d=>d.jahr).left;
+  const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
+  const hDot = g.append('circle').attr('r',5).attr('fill','#0068A4').attr('stroke','#fff').attr('stroke-width',2).style('display','none');
+
+  svg.append('rect').attr('fill','none').attr('pointer-events','all')
+    .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+    .on('mousemove', function(e) {
+      const [mx] = d3.pointer(e, this);
+      const rx = mx - m.l;
+      const yr = x.invert(rx);
+      const i = bisect(DATA.trend, yr);
+      const d = DATA.trend[Math.min(i, DATA.trend.length-1)];
+      if (!d) return;
+      const cx = x(d.jahr), cy = y(d.logiernachte);
+      hLine.attr('x1',cx).attr('x2',cx).style('display',null);
+      hDot.attr('cx',cx).attr('cy',cy).style('display',null);
+      tt.innerHTML = `<div class="tt-title">${d.jahr}</div><div class="tt-row"><span class="k">Logiernächte</span><span class="v">${fmt(d.logiernachte)}</span></div><div class="tt-row"><span class="k">Ankünfte</span><span class="v">${fmt(d.ankunfte)}</span></div>`;
+      tt.style.left = (m.l + cx) + 'px';
+      tt.style.top = (m.t + cy) + 'px';
+      tt.classList.add('visible');
+    })
+    .on('mouseleave', () => { hLine.style('display','none'); hDot.style('display','none'); tt.classList.remove('visible'); });
+})();
+
+// ─── CHART 2: CH vs Ausland ───────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('chart-chausland');
+  const tt = document.getElementById('tt-chausland');
+  const W = 660, H = 280, m = {t:20, r:20, b:32, l:58};
+  const w = W - m.l - m.r, h = H - m.t - m.b;
+  const svg = d3.select(el).attr('viewBox',`0 0 ${W} ${H}`);
+  const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+  const x = d3.scaleLinear().domain([1992,2025]).range([0,w]);
+  const y = d3.scaleLinear().domain([0, 7.5e6]).range([h,0]);
+
+  g.append('g').attr('class','grid').selectAll('line')
+    .data(y.ticks(5)).join('line').attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d));
+
+  g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+    .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
+  g.append('g').attr('class','axis')
+    .call(d3.axisLeft(y).ticks(5).tickFormat(v => (v/1e6).toFixed(1)+' Mio.'));
+
+  const stack = d3.stack().keys(['ch','ausland']);
+  const series = stack(DATA.ch_ausland);
+
+  const area = d3.area().x(d=>x(d.data.jahr)).y0(d=>y(d[0])).y1(d=>y(d[1]));
+  const colors = {ch:'#0068A4', ausland:'#EE7733'};
+
+  series.forEach(s => {
+    g.append('path').datum(s).attr('fill',colors[s.key]).attr('fill-opacity',0.75).attr('d',area);
+  });
+
+  // 50% reference line
+  g.append('text').attr('class','annot').attr('x',x(1992)+2).attr('y',y(3.5e6)-4).text('50% CH');
+
+  const bisect = d3.bisector(d=>d.jahr).left;
+  const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
+
+  svg.append('rect').attr('fill','none').attr('pointer-events','all')
+    .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+    .on('mousemove', function(e) {
+      const [mx] = d3.pointer(e, this);
+      const rx = mx - m.l;
+      const yr = x.invert(rx);
+      const i = bisect(DATA.ch_ausland, yr);
+      const d = DATA.ch_ausland[Math.min(i, DATA.ch_ausland.length-1)];
+      if (!d) return;
+      const cx = x(d.jahr);
+      hLine.attr('x1',cx).attr('x2',cx).style('display',null);
+      const chPct = (d.ch/d.total*100).toFixed(1);
+      tt.innerHTML = `<div class="tt-title">${d.jahr}</div><div class="tt-row"><span class="tt-swatch" style="background:#0068A4"></span><span class="k">Schweiz</span><span class="v">${chPct}% · ${fmt(d.ch)}</span></div><div class="tt-row"><span class="tt-swatch" style="background:#EE7733"></span><span class="k">Ausland</span><span class="v">${(100-+chPct).toFixed(1)}% · ${fmt(d.ausland)}</span></div>`;
+      tt.style.left = (m.l + cx) + 'px';
+      tt.style.top = m.t + 'px';
+      tt.classList.add('visible');
+    })
+    .on('mouseleave', () => { hLine.style('display','none'); tt.classList.remove('visible'); });
+})();
+
+// ─── CHART 3: Deutschland ─────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('chart-de');
+  const tt = document.getElementById('tt-de');
+  const data = DATA.laender.DE.data;
+  const W = 660, H = 260, m = {t:20, r:20, b:32, l:70};
+  const w = W - m.l - m.r, h = H - m.t - m.b;
+  const svg = d3.select(el).attr('viewBox',`0 0 ${W} ${H}`);
+  const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+  const x = d3.scaleLinear().domain([1992,2025]).range([0,w]);
+  const y = d3.scaleLinear().domain([0, 2.6e6]).range([h,0]);
+
+  g.append('g').attr('class','grid').selectAll('line')
+    .data(y.ticks(5)).join('line').attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d));
+  g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+    .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
+  g.append('g').attr('class','axis')
+    .call(d3.axisLeft(y).ticks(5).tickFormat(v => (v/1e6).toFixed(1)+' Mio.'));
+
+  // Reference lines
+  [2448027, 761523].forEach((v, i) => {
+    g.append('line').attr('stroke', i===0?'#ccc':'#0068A4').attr('stroke-dasharray','4 3').attr('stroke-width',1)
+      .attr('x1',0).attr('x2',w).attr('y1',y(v)).attr('y2',y(v));
+  });
+  g.append('text').attr('class','annot').attr('x',4).attr('y',y(2448027)-4).text('Peak 1993: 2,45 Mio.');
+  g.append('text').attr('class','annot').attr('x',4).attr('y',y(761523)-4).attr('fill','#0068A4').text('2025: 762\'000');
+
+  const line = d3.line().x(d=>x(d.jahr)).y(d=>y(d.v));
+  g.append('path').datum(data).attr('fill','none').attr('stroke','#B5001E').attr('stroke-width',2.5).attr('d',line);
+
+  const area = d3.area().x(d=>x(d.jahr)).y0(h).y1(d=>y(d.v));
+  g.append('path').datum(data).attr('fill','#B5001E').attr('fill-opacity',0.1).attr('d',area);
+
+  const bisect = d3.bisector(d=>d.jahr).left;
+  const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
+  const hDot = g.append('circle').attr('r',5).attr('fill','#B5001E').attr('stroke','#fff').attr('stroke-width',2).style('display','none');
+
+  svg.append('rect').attr('fill','none').attr('pointer-events','all')
+    .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+    .on('mousemove', function(e) {
+      const [mx] = d3.pointer(e, this);
+      const yr = x.invert(mx - m.l);
+      const i = bisect(data, yr);
+      const d = data[Math.min(i, data.length-1)];
+      if (!d) return;
+      const cx = x(d.jahr), cy = y(d.v);
+      hLine.attr('x1',cx).attr('x2',cx).style('display',null);
+      hDot.attr('cx',cx).attr('cy',cy).style('display',null);
+      tt.innerHTML = `<div class="tt-title">Deutschland ${d.jahr}</div><div class="tt-row"><span class="k">Logiernächte</span><span class="v">${fmt(d.v)}</span></div>`;
+      tt.style.left = (m.l + cx) + 'px';
+      tt.style.top = (m.t + cy) + 'px';
+      tt.classList.add('visible');
+    })
+    .on('mouseleave', () => { hLine.style('display','none'); hDot.style('display','none'); tt.classList.remove('visible'); });
+})();
+
+// ─── CHART 4: Länder-Vergleich (Index 2019=100) ───────────────────────────
+(function() {
+  const el = document.getElementById('chart-laender');
+  const tt = document.getElementById('tt-laender');
+  const W = 660, H = 300, m = {t:20, r:100, b:32, l:46};
+  const w = W - m.l - m.r, h = H - m.t - m.b;
+  const svg = d3.select(el).attr('viewBox',`0 0 ${W} ${H}`);
+  const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+  // Only show DE, CN, GB, US (cleaner story)
+  const KEYS = ['DE','CN','GB','US'];
+  const COLORS = {DE:'#B5001E', CN:'#EE7733', GB:'#0068A4', US:'#1E3A5F'};
+
+  // Get 2019 baseline for each
+  const base = {};
+  KEYS.forEach(k => {
+    const d2019 = DATA.laender[k].data.find(d=>d.jahr===2019);
+    base[k] = d2019 ? d2019.v : null;
+  });
+
+  // Build indexed series starting from 2012 for clarity
+  const allYears = [...new Set(KEYS.flatMap(k=>DATA.laender[k].data.map(d=>d.jahr)))].filter(y=>y>=2012&&y<=2025).sort();
+  const indexed = KEYS.map(k => ({
+    key: k,
+    name: DATA.laender[k].name,
+    data: allYears.map(yr => {
+      const pt = DATA.laender[k].data.find(d=>d.jahr===yr);
+      return {jahr: yr, idx: pt && base[k] ? (pt.v / base[k]) * 100 : null};
+    }).filter(d=>d.idx!==null)
+  }));
+
+  const x = d3.scaleLinear().domain([2012,2025]).range([0,w]);
+  const y = d3.scaleLinear().domain([0, 160]).range([h,0]);
+
+  g.append('g').attr('class','grid').selectAll('line')
+    .data([50,100,150]).join('line').attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d));
+  g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+    .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(7));
+  g.append('g').attr('class','axis')
+    .call(d3.axisLeft(y).ticks(4).tickFormat(v=>v+''));
+
+  // 100% reference label
+  g.append('text').attr('class','annot').attr('x',2).attr('y',y(100)-4).text('2019 = 100');
+
+  // lines
+  const line = d3.line().x(d=>x(d.jahr)).y(d=>y(d.idx)).defined(d=>d.idx!==null);
+  indexed.forEach(s => {
+    g.append('path').datum(s.data).attr('fill','none').attr('stroke',COLORS[s.key]).attr('stroke-width',2.2).attr('d',line);
+    // end label
+    const last = s.data[s.data.length-1];
+    g.append('text').attr('x',x(last.jahr)+6).attr('y',y(last.idx)+4).attr('fill',COLORS[s.key]).attr('font-size',11).attr('font-weight','700').text(s.name);
+  });
+
+  // legend
+  const leg = document.getElementById('legend-laender');
+  KEYS.forEach(k => {
+    leg.innerHTML += `<span><span class="dot" style="background:${COLORS[k]}"></span>${DATA.laender[k].name}</span>`;
+  });
+
+  // hover
+  const bisect = d3.bisector(d=>d.jahr).left;
+  const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
+
+  svg.append('rect').attr('fill','none').attr('pointer-events','all')
+    .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+    .on('mousemove', function(e) {
+      const [mx] = d3.pointer(e, this);
+      const yr = Math.round(x.invert(mx - m.l));
+      const cx = x(yr);
+      hLine.attr('x1',cx).attr('x2',cx).style('display',null);
+      let html = `<div class="tt-title">${yr}</div>`;
+      KEYS.forEach(k => {
+        const s = indexed.find(s=>s.key===k);
+        const pt = s.data.find(d=>d.jahr===yr);
+        if (pt) {
+          const raw = DATA.laender[k].data.find(d=>d.jahr===yr);
+          html += `<div class="tt-row"><span class="tt-swatch" style="background:${COLORS[k]}"></span><span class="k">${DATA.laender[k].name}</span><span class="v">${pt.idx.toFixed(0)} (${raw?fmt(raw.v):'-'})</span></div>`;
+        }
+      });
+      tt.innerHTML = html;
+      tt.style.left = (m.l + cx) + 'px';
+      tt.style.top = m.t + 'px';
+      tt.classList.add('visible');
+    })
+    .on('mouseleave', () => { hLine.style('display','none'); tt.classList.remove('visible'); });
+})();
+
+// ─── CHART 5: Top Märkte Balken ───────────────────────────────────────────
+(function() {
+  const el = document.getElementById('bars-maerkte');
+  const data = DATA.top25.slice(0, 15);
+  const maxV = d3.max(data, d=>d.v2025);
+
+  data.forEach((d, i) => {
+    const pct = (d.v2025 / maxV * 100).toFixed(1);
+    const delta = d.v2019 > 0 ? ((d.v2025 - d.v2019) / d.v2019 * 100) : 0;
+    const deltaClass = delta > 5 ? 'up' : delta < -5 ? 'down' : 'neu';
+    const deltaStr = delta > 0 ? `+${delta.toFixed(0)}%` : `${delta.toFixed(0)}%`;
+    // 2019 marker position
+    const pct2019 = (d.v2019 / maxV * 100).toFixed(1);
+
+    el.innerHTML += `
+      <div class="bar-row" title="${d.iso_landername}: ${fmt(d.v2025)} (2025) vs ${fmt(d.v2019)} (2019)">
+        <div class="bar-label">${d.iso_landername}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%;background:${delta<-5?'#B5001E':delta>5?'#1a7d3a':'#0068A4'}"></div>
+          <div style="position:absolute;top:0;left:${pct2019}%;width:2px;height:100%;background:#1a1a1a;opacity:0.5" title="2019: ${fmt(d.v2019)}"></div>
+        </div>
+        <div class="bar-val">${fmt(d.v2025)}</div>
+        <div class="bar-delta ${deltaClass}">${deltaStr}</div>
+      </div>`;
+  });
+})();
+
+// ─── CHART 6: Gemeinden Suche ─────────────────────────────────────────────
+(function() {
+  const data = DATA.gemeinden;
+  const maxV = data[0].logiernachte;
+  const el = document.getElementById('bars-gemeinden');
+  const search = document.getElementById('gm-search');
+  const card = document.getElementById('gm-card');
+  let highlighted = null;
+
+  function render(hl) {
+    el.innerHTML = '';
+    data.forEach((d, i) => {
+      const pct = (d.logiernachte / maxV * 100).toFixed(1);
+      const isHl = hl && d.gemeinde_name.toLowerCase().includes(hl.toLowerCase());
+      const dur = Math.round(d.logiernachte / d.ankunfte * 10) / 10;
+      el.innerHTML += `
+        <div class="bar-row" style="${isHl?'background:#eef5fb;border-radius:4px;':''}" data-name="${d.gemeinde_name}">
+          <div class="bar-label" style="${isHl?'font-weight:700;color:#0068A4':''}">${d.gemeinde_name}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${pct}%;background:${isHl?'#0068A4':'#94b8d4'}"></div>
+          </div>
+          <div class="bar-val">${(d.logiernachte/1000).toFixed(0)}k</div>
+        </div>`;
+    });
+
+    // click to highlight
+    el.querySelectorAll('.bar-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const name = row.dataset.name;
+        showCard(name);
+        render(name);
+        search.value = name;
+      });
+    });
+  }
+
+  function showCard(name) {
+    const d = data.find(g=>g.gemeinde_name===name);
+    if (!d) { card.classList.remove('visible'); return; }
+    const rank = data.indexOf(d) + 1;
+    const dur = (d.logiernachte / d.ankunfte).toFixed(1);
+    document.getElementById('gm-name').textContent = d.gemeinde_name;
+    document.getElementById('gm-logier').textContent = fmt(d.logiernachte);
+    document.getElementById('gm-rank').textContent = `Rang ${rank}`;
+    document.getElementById('gm-aufenthalt').textContent = dur + ' Nächte';
+    card.classList.add('visible');
+  }
+
+  search.addEventListener('input', () => {
+    const q = search.value.trim();
+    render(q || null);
+    if (q.length > 1) {
+      const match = data.find(g=>g.gemeinde_name.toLowerCase().includes(q.toLowerCase()));
+      if (match) showCard(match.gemeinde_name);
+    } else {
+      card.classList.remove('visible');
+    }
+  });
+
+  render(null);
+})();
+</script>
+</body>
+</html>
