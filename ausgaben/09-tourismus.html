@@ -213,9 +213,17 @@ svg { width: 100%; height: auto; display: block; }
   <div class="wrap">
     <h2>Wo übernachtet man in Graubünden?</h2>
     <p>Die Beherbergungsstatistik erfasst 40 Gemeinden im Kanton – jene mit messbarer Hotellerie. Die übrigen 61 Bündner Gemeinden sind in der Statistik nicht vertreten. Davos und St. Moritz allein machen gut 30 Prozent aller Logiernächte aus. Die fünf grössten Gemeinden kommen auf die Hälfte.</p>
+    <div id="gm-stories" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0"></div>
+
     <div class="search-box">
       <input type="text" id="gm-search" placeholder="Gemeinde suchen, z. B. «Davos» oder «Chur»…" autocomplete="off">
-      <div class="gm-hint">40 Gemeinden, Logiernächte 2024</div>
+      <div style="display:flex;gap:10px;margin-top:8px;align-items:center;flex-wrap:wrap">
+        <div class="gm-hint" style="margin:0">40 Gemeinden, Logiernächte 2024</div>
+        <div style="margin-left:auto;display:flex;gap:0;border:1px solid #ddd;border-radius:6px;overflow:hidden;font-size:12px">
+          <button id="sort-logier" onclick="setSort('logier')" style="padding:5px 12px;border:none;background:#0068A4;color:#fff;cursor:pointer;font-size:12px">Nach Grösse</button>
+          <button id="sort-delta" onclick="setSort('delta')" style="padding:5px 12px;border:none;background:#fff;color:#333;cursor:pointer;font-size:12px">Nach Wachstum</button>
+        </div>
+      </div>
       <div id="gm-card" class="gm-selected-card">
         <div class="gm-name" id="gm-name">–</div>
         <div class="gm-stats">
@@ -550,31 +558,52 @@ const fmtM = v => (v / 1e6).toFixed(2) + ' Mio.';
 
 // ─── CHART 6: Gemeinden Suche ─────────────────────────────────────────────
 (function() {
-  const data = DATA.gemeinden;
-  const maxV = data[0].logiernachte;
+  const allData = DATA.gemeinden;
   const el = document.getElementById('bars-gemeinden');
   const search = document.getElementById('gm-search');
   const card = document.getElementById('gm-card');
-  let highlighted = null;
+  let currentSort = 'logier';
+  let currentHl = null;
+
+  function deltaColor(d) {
+    if (d == null) return '#94b8d4';
+    if (d >= 20) return '#1a7d3a';
+    if (d >= 5)  return '#4caa6e';
+    if (d >= -5) return '#94b8d4';
+    if (d >= -20) return '#d46b6b';
+    return '#B5001E';
+  }
+
+  function sorted() {
+    if (currentSort === 'delta') return [...allData].sort((a,b)=>(b.delta_21_24||0)-(a.delta_21_24||0));
+    return allData;
+  }
 
   function render(hl) {
+    currentHl = hl;
     el.innerHTML = '';
-    data.forEach((d, i) => {
+    const data = sorted();
+    const maxV = Math.max(...data.map(d=>d.logiernachte));
+    data.forEach(d => {
       const pct = (d.logiernachte / maxV * 100).toFixed(1);
       const isHl = hl && d.gemeinde_name.toLowerCase().includes(hl.toLowerCase());
-      const dur = Math.round(d.logiernachte / d.ankunfte * 10) / 10;
+      const delta = d.delta_21_24;
+      const dc = deltaColor(delta);
+      const barColor = isHl ? '#0068A4' : dc;
+      const deltaStr = delta != null ? (delta>0?'+':'') + delta.toFixed(1)+'%' : '';
+      const dClass = delta == null ? '' : delta > 5 ? 'up' : delta < -5 ? 'down' : '';
       el.innerHTML += `
-        <div class="bar-row" style="${isHl?'background:#eef5fb;border-radius:4px;':''}" data-name="${d.gemeinde_name}">
-          <div class="bar-label" style="${isHl?'font-weight:700;color:#0068A4':''}">${d.gemeinde_name}</div>
+        <div class="bar-row" style="${isHl?'background:#eef5fb;border-radius:4px;padding:2px 4px;':''}" data-name="${d.gemeinde_name}">
+          <div class="bar-label" style="${isHl?'font-weight:700;color:#0068A4':''}font-size:12px">${d.gemeinde_name}</div>
           <div class="bar-track">
-            <div class="bar-fill" style="width:${pct}%;background:${isHl?'#0068A4':'#94b8d4'}"></div>
+            <div class="bar-fill" style="width:${pct}%;background:${barColor}"></div>
           </div>
-          <div class="bar-val">${(d.logiernachte/1000).toFixed(0)}k</div>
+          <div class="bar-val" style="font-size:11px">${(d.logiernachte/1000).toFixed(0)}k</div>
+          <div class="bar-delta ${dClass}" style="width:46px;font-size:11px">${deltaStr}</div>
         </div>`;
     });
-
-    // click to highlight
     el.querySelectorAll('.bar-row').forEach(row => {
+      row.style.cursor = 'pointer';
       row.addEventListener('click', () => {
         const name = row.dataset.name;
         showCard(name);
@@ -584,14 +613,36 @@ const fmtM = v => (v / 1e6).toFixed(2) + ' Mio.';
     });
   }
 
+  // Gewinner/Verlierer-Boxen
+  const byDelta = [...allData].sort((a,b)=>(b.delta_21_24||0)-(a.delta_21_24||0));
+  const top3 = byDelta.slice(0,3);
+  const bot3 = byDelta.slice(-3).reverse();
+  const storiesEl = document.getElementById('gm-stories');
+  storiesEl.innerHTML = `
+    <div style="background:#f0faf4;border:1px solid #b6e0c4;border-radius:8px;padding:14px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#1a7d3a;margin-bottom:8px">Stärkste Zunahme 2021→2024</div>
+      ${top3.map(d=>`<div style="display:flex;justify-content:space-between;font-size:13px;margin:4px 0"><span style="color:#333">${d.gemeinde_name}</span><span style="font-weight:700;color:#1a7d3a">+${d.delta_21_24.toFixed(1)}%</span></div>`).join('')}
+    </div>
+    <div style="background:#fff5f5;border:1px solid #f0b8b8;border-radius:8px;padding:14px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#B5001E;margin-bottom:8px">Stärkster Rückgang 2021→2024</div>
+      ${bot3.map(d=>`<div style="display:flex;justify-content:space-between;font-size:13px;margin:4px 0"><span style="color:#333">${d.gemeinde_name}</span><span style="font-weight:700;color:#B5001E">${d.delta_21_24.toFixed(1)}%</span></div>`).join('')}
+    </div>`;
+
+  // Klick auf Story-Namen → Gemeinde anzeigen
+  storiesEl.querySelectorAll('div[style*="justify-content:space-between"]').forEach(row => {
+    row.style.cursor = 'pointer';
+    const name = row.querySelector('span').textContent;
+    row.addEventListener('click', () => { showCard(name); render(name); search.value = name; });
+  });
+
   function showCard(name) {
-    const d = data.find(g=>g.gemeinde_name===name);
+    const d = allData.find(g=>g.gemeinde_name===name);
     if (!d) { card.classList.remove('visible'); return; }
-    const rank = data.indexOf(d) + 1;
+    const rank = allData.indexOf(d) + 1;
     const dur = (d.logiernachte / d.ankunfte).toFixed(1);
     const delta = d.delta_21_24;
-    const deltaStr = delta != null ? (delta > 0 ? '+' : '') + delta.toFixed(1) + '%' : '–';
-    const deltaColor = delta == null ? '#666' : delta > 0 ? '#1a7d3a' : '#B5001E';
+    const deltaStr = delta != null ? (delta>0?'+':'') + delta.toFixed(1)+'%' : '–';
+    const dColor = delta == null ? '#666' : delta > 0 ? '#1a7d3a' : '#B5001E';
     document.getElementById('gm-name').textContent = d.gemeinde_name;
     document.getElementById('gm-logier').textContent = fmt(d.logiernachte);
     document.getElementById('gm-ankunfte').textContent = fmt(d.ankunfte);
@@ -600,17 +651,26 @@ const fmtM = v => (v / 1e6).toFixed(2) + ' Mio.';
     document.getElementById('gm-betriebe').textContent = d.betriebe + ' Betriebe';
     const deltaEl = document.getElementById('gm-delta');
     deltaEl.textContent = deltaStr;
-    deltaEl.style.color = deltaColor;
+    deltaEl.style.color = dColor;
     document.getElementById('gm-saison').textContent = d.winter_pct + '% Winter';
     document.getElementById('gm-rank').textContent = `Rang ${rank}`;
     card.classList.add('visible');
   }
 
+  window.setSort = function(mode) {
+    currentSort = mode;
+    document.getElementById('sort-logier').style.background = mode==='logier' ? '#0068A4' : '#fff';
+    document.getElementById('sort-logier').style.color = mode==='logier' ? '#fff' : '#333';
+    document.getElementById('sort-delta').style.background = mode==='delta' ? '#0068A4' : '#fff';
+    document.getElementById('sort-delta').style.color = mode==='delta' ? '#fff' : '#333';
+    render(currentHl);
+  };
+
   search.addEventListener('input', () => {
     const q = search.value.trim();
     render(q || null);
     if (q.length > 1) {
-      const match = data.find(g=>g.gemeinde_name.toLowerCase().includes(q.toLowerCase()));
+      const match = allData.find(g=>g.gemeinde_name.toLowerCase().includes(q.toLowerCase()));
       if (match) showCard(match.gemeinde_name);
     } else {
       card.classList.remove('visible');
