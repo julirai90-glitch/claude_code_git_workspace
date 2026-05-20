@@ -446,7 +446,7 @@
     if (codes[0] === 'IT') {
       const midI = Math.floor(xs.length * 0.5);
       const itMidY = yScale((data['IT'][midI] || 0) * 0.5);
-      html += `<text x="${xScale(xs[midI])}" y="${itMidY + 5}" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(255,255,255,0.92)">91 % aus Italien — fast das gesamte Wachstum</text>`;
+      html += `<text x="${xScale(xs[midI])}" y="${itMidY + 5}" text-anchor="middle" font-size="13" font-weight="700" fill="rgba(255,255,255,0.92)">Italien · 91 % aller Grenzgänger (2025)</text>`;
       const lastI = xs.length - 1;
       const itLastV = data['IT'][lastI] || 0;
       const atLastV = (data['AT'] || [])[lastI] || 0;
