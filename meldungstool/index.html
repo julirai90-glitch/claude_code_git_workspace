@@ -127,7 +127,18 @@ html, body {
 }
 .badge.red { border-color: var(--red); color: var(--red); background: var(--red-glow); }
 .badge.green { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.badge.muted { border-color: var(--border-hi); color: var(--text-mute); }
 .badge .pip { width: 5px; height: 5px; background: currentColor; border-radius: 0; flex-shrink: 0; }
+
+/* ===== REVIEW PANEL ===== */
+.review-panel { margin-top: 12px; border: 1px solid var(--border); background: var(--surface); }
+.review-header { padding: 9px 12px; display: flex; align-items: center; gap: 8px; background: var(--surface-hi); border-bottom: 1px solid var(--border); }
+.review-label { font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-dim); flex: 1; }
+.review-panel details > summary { padding: 8px 12px; font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--text-mute); cursor: pointer; list-style: none; user-select: none; }
+.review-panel details > summary::-webkit-details-marker { display: none; }
+.review-panel details > summary::before { content: '▶ '; font-size: 8px; }
+.review-panel details[open] > summary::before { content: '▼ '; }
+.review-body { padding: 10px 12px; font-family: "JetBrains Mono", monospace; font-size: 11px; line-height: 1.6; color: var(--text-dim); white-space: pre-wrap; border-top: 1px solid var(--border); }
 
 /* ===== SETTINGS ===== */
 details.settings {
@@ -607,6 +618,7 @@ footer {
         </div>
         <div class="pane-body">
           <textarea class="meldung-edit" id="meldung-edit" placeholder="Hier erscheint die generierte Meldung…"></textarea>
+          <div id="review-panel"></div>
           <div class="regen-row">
             <input type="text" class="regen-input" id="regen-hint" placeholder="Anweisung für Neu-Generierung (optional)…">
           </div>
@@ -644,7 +656,8 @@ const MODELS = {
   ]
 };
 
-const SYSTEM_PROMPT = `Du bist Redaktionsassistenz für eine Schweizer Lokalredaktion. Aus der Pressemitteilung schreibst Du eine klassische Kurzmeldung im Nachrichtenstil.
+const SYSTEM_PROMPTS = {
+  meldung: `Du bist Redaktionsassistenz für eine Schweizer Lokalredaktion. Aus der Pressemitteilung schreibst Du eine klassische Kurzmeldung im Nachrichtenstil.
 
 DEFINITION NACHRICHT
 Die Meldung beantwortet:
@@ -676,7 +689,96 @@ Die Meldung ist so gebaut, dass sie theoretisch nach jedem Satz abgeschnitten we
 SPRACHE
 1. Adjektive nur, wenn sie unterscheiden oder echte neue Information tragen.
 2. Keine tautologischen Beiwörter.
-3. Füllwörter und Worthülsen vermeiden.`;
+3. Füllwörter und Worthülsen vermeiden.`,
+
+  vorschau: `Du bist Redaktionsassistenz beim Schweizer Kulturmagazin Terra Grischuna.
+Schreibe aus den vorliegenden Informationen eine Veranstaltungsvorschau.
+
+STIL UND SPRACHE
+– Neutral, klar, neugierig machend. Schweizer Hochdeutsch, kein ß.
+– Anführungszeichen Schweizer Stil: « ». Kein Gendern mit Sternchen.
+– Präsens oder Futur (das Konzert findet statt / ist zu erleben).
+
+AUFBAU
+1. Lead-Satz: Wer tritt/zeigt/spricht wo, wann und womit auf? (alle W in einem Satz)
+2. Hintergrund: Wer sind die Beteiligten, was ist der Kontext?
+3. Programm: Was erwartet das Publikum konkret?
+4. Praktische Infos am Schluss (NUR wenn im Quelltext vorhanden):
+   Datum, Uhrzeit, Ort, Eintritt/Preis, Ticketlink. Erfinde nichts.
+
+LÄNGE: 150–300 Wörter. Keine Bulletpoints. Kein «Kommen Sie vorbei!»-Call-to-Action.
+
+STRUKTUR DER AUSGABE:
+Überschrift: [kurzer, aktiver Titel]
+
+[Fliesstext]
+
+Quelle: [URL oder «keine URL angegeben»]`,
+
+  bericht: `Du bist Redaktionsassistenz beim Schweizer Kulturmagazin Terra Grischuna.
+Schreibe einen Bericht über ein bereits stattgefundenes Ereignis.
+
+STIL UND SPRACHE
+– Neutral, berichtend. Schweizer Hochdeutsch, kein ß.
+– Anführungszeichen Schweizer Stil: « ». Kein Gendern mit Sternchen.
+– Präteritum oder Perfekt. Kein Call-to-Action, keine Ticket-Infos.
+
+AUFBAU (umgekehrte Pyramide)
+1. Lead: Wichtigstes Ergebnis/Highlight zuerst (Was? Wer? Wann? Wo?)
+2. Verlauf: Wie lief es ab? Was wurde gezeigt/gespielt/gesagt?
+3. Reaktionen, Zahlen, Kontext (nur wenn im Quelltext vorhanden)
+
+LÄNGE: 250–500 Wörter. Keine Bulletpoints.
+
+STRUKTUR DER AUSGABE:
+Überschrift: [kurzer, aktiver Titel]
+
+[Fliesstext]
+
+Quelle: [URL oder «keine URL angegeben»]`,
+
+  rezension: `Du bist Redaktionsassistenz beim Schweizer Kulturmagazin Terra Grischuna.
+Schreibe eine Rezension.
+
+STIL UND SPRACHE
+– Einordnend, klar. Schweizer Hochdeutsch, kein ß.
+– Anführungszeichen Schweizer Stil: « ». Kein Gendern mit Sternchen.
+– Kein übertriebenes Lob, kein übermässiger Tadel.
+
+AUFBAU
+1. Lead: Autor / Titel / Medium + Kernthema in einem Satz.
+2. Inhalt: Worum geht es? Stil, Struktur, Besonderheiten.
+3. Einordnung: Kontext (Biografie, Zeitgeist, Vergleich).
+4. Fazit: Für wen ist das Werk geeignet?
+
+LÄNGE: 200–400 Wörter. Keine Bulletpoints.
+
+STRUKTUR DER AUSGABE:
+Überschrift: [kurzer, aktiver Titel]
+
+[Fliesstext]
+
+Quelle: [URL oder «keine URL angegeben»]`
+};
+
+const REVIEW_PROMPT = `Vergleiche den Eingabetext mit dem generierten Artikel.
+Bewerte, ob alle wesentlichen Informationen korrekt übernommen wurden und ob nicht im Eingabetext vorhandene Informationen erfunden wurden.
+
+VORGEHENSWEISE:
+1. Vollständigkeit: Sind alle relevanten Infos aus dem Eingabetext im Artikel?
+2. Genauigkeit: Wurde der Inhalt korrekt wiedergegeben?
+3. Halluzinationen: Wurden Inhalte erfunden, die nicht im Eingabetext stehen?
+
+AUSGABE (exakt dieses Format, nichts anderes):
+BEWERTUNG: [Zahl 1-5]
+BEGRÜNDUNG: [2-4 Sätze Analyse]
+
+Skala:
+1 = Sehr schlecht (viele Fehler oder Erfindungen)
+2 = Unzureichend (mehrere Auslassungen oder Fehler)
+3 = Mittelmässig (kleinere Fehler oder Ergänzungen)
+4 = Gut (fast vollständig korrekt)
+5 = Sehr gut (vollständige, korrekte Übereinstimmung)`;
 
 /* ============================================================
    State
@@ -690,7 +792,8 @@ let state = {
 };
 
 function newSlot() {
-  return { id: Date.now() + Math.random(), url: '', text: '', focus: '', meldung: '' };
+  return { id: Date.now() + Math.random(), url: '', text: '', focus: '', meldung: '',
+           type: 'meldung', reviewScore: null, reviewText: '', wasRetried: false };
 }
 
 /* ============================================================
@@ -746,6 +849,15 @@ function renderSlots() {
         ${state.slots.length > 1 ? '<button class="slot-remove" title="Entfernen">&times;</button>' : ''}
       </div>
       <div class="field">
+        <label>TYP <span class="hint">beeinflusst Stil und Struktur</span></label>
+        <select class="slot-type">
+          <option value="meldung"${slot.type === 'meldung' ? ' selected' : ''}>Meldung (Standard)</option>
+          <option value="vorschau"${slot.type === 'vorschau' ? ' selected' : ''}>Vorschau / Ankündigung</option>
+          <option value="bericht"${slot.type === 'bericht' ? ' selected' : ''}>Bericht (Vergangenes)</option>
+          <option value="rezension"${slot.type === 'rezension' ? ' selected' : ''}>Rezension</option>
+        </select>
+      </div>
+      <div class="field">
         <label>URL <span class="hint">optional – für die Quellenangabe</span></label>
         <div class="url-row">
           <input type="text" class="slot-url" value="${esc(slot.url)}" placeholder="https://…">
@@ -761,6 +873,7 @@ function renderSlots() {
         <input type="text" class="slot-focus" value="${esc(slot.focus)}" placeholder="z.B. Konsequenzen für den Kanton">
       </div>
     `;
+    div.querySelector('.slot-type').addEventListener('change', e => { slot.type = e.target.value; persistSlots(); });
     div.querySelector('.slot-url').addEventListener('input', e => { slot.url = e.target.value; persistSlots(); });
     div.querySelector('.slot-text').addEventListener('input', e => { slot.text = e.target.value; persistSlots(); });
     div.querySelector('.slot-focus').addEventListener('input', e => { slot.focus = e.target.value; persistSlots(); });
@@ -885,15 +998,45 @@ async function callGoogle(system, user, key, model) {
   return (d.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
 }
 
-async function generateOne(slot, hint = '') {
+async function callProvider(system, user) {
   const key = state.keys[state.provider];
   if (!key) throw new Error('Kein API-Schlüssel hinterlegt');
-  let user = buildUserMessage(slot);
-  if (hint.trim()) user += '\n\nZusätzliche Anweisung für diese Neu-Generierung: ' + hint.trim();
-  if (state.provider === 'anthropic') return callAnthropic(SYSTEM_PROMPT, user, key, state.model);
-  if (state.provider === 'openai')    return callOpenAI(SYSTEM_PROMPT, user, key, state.model);
-  if (state.provider === 'google')    return callGoogle(SYSTEM_PROMPT, user, key, state.model);
+  if (state.provider === 'anthropic') return callAnthropic(system, user, key, state.model);
+  if (state.provider === 'openai')    return callOpenAI(system, user, key, state.model);
+  if (state.provider === 'google')    return callGoogle(system, user, key, state.model);
   throw new Error('Unbekannter Provider');
+}
+
+async function generateOne(slot, hint = '') {
+  const system = SYSTEM_PROMPTS[slot.type] || SYSTEM_PROMPTS.meldung;
+  let user = buildUserMessage(slot);
+  if (hint && hint.trim()) user += '\n\nZusätzliche Anweisung: ' + hint.trim();
+  return callProvider(system, user);
+}
+
+async function reviewOne(slot, generatedText) {
+  const user = 'EINGABETEXT:\n' + slot.text.trim()
+    + '\n\n---\nGENERIERTER ARTIKEL:\n' + generatedText;
+  const raw = await callProvider(REVIEW_PROMPT, user);
+  const match = raw.match(/BEWERTUNG:\s*([1-5])/);
+  const score = match ? parseInt(match[1]) : 3;
+  return { score, text: raw };
+}
+
+async function generateWithReview(slot, hint = '') {
+  let result = await generateOne(slot, hint);
+  const review = await reviewOne(slot, result);
+  slot.reviewScore = review.score;
+  slot.reviewText  = review.text;
+  slot.wasRetried  = false;
+  if (review.score < 4) {
+    const retryHint = 'Erster Entwurf:\n' + result
+      + '\n\nSelbstkritik:\n' + review.text
+      + '\n\nBitte verbessere den Artikel entsprechend.';
+    result = await generateOne(slot, retryHint);
+    slot.wasRetried = true;
+  }
+  return result;
 }
 
 /* ============================================================
@@ -919,12 +1062,30 @@ async function generateAll() {
   for (let i = 0; i < filled.length; i++) {
     const slot = filled[i];
     const li   = document.getElementById('gl-' + i);
+    const num  = state.slots.indexOf(slot) + 1;
     try {
-      slot.meldung = await generateOne(slot);
-      li.textContent = '✓ Quelle ' + (state.slots.indexOf(slot) + 1) + ' fertig';
+      li.textContent = '⏳ Quelle ' + num + ' — Generierung…';
+      slot.reviewScore = null; slot.reviewText = ''; slot.wasRetried = false;
+      const first = await generateOne(slot);
+      li.textContent = '⏳ Quelle ' + num + ' — Selbstkritik…';
+      const review = await reviewOne(slot, first);
+      slot.reviewScore = review.score;
+      slot.reviewText  = review.text;
+      slot.wasRetried  = false;
+      let result = first;
+      if (review.score < 4) {
+        li.textContent = '⏳ Quelle ' + num + ' — Überarbeitung…';
+        const retryHint = 'Erster Entwurf:\n' + first
+          + '\n\nSelbstkritik:\n' + review.text
+          + '\n\nBitte verbessere den Artikel entsprechend.';
+        result = await generateOne(slot, retryHint);
+        slot.wasRetried = true;
+      }
+      slot.meldung = result;
+      li.textContent = '✓ Quelle ' + num + ' fertig (Score: ' + review.score + '/5' + (slot.wasRetried ? ', überarbeitet' : '') + ')';
       li.className = 'done';
     } catch(e) {
-      li.textContent = '✗ Quelle ' + (state.slots.indexOf(slot) + 1) + ': ' + e.message;
+      li.textContent = '✗ Quelle ' + num + ': ' + e.message;
       li.className = 'fail';
     }
     persistSlots();
@@ -974,6 +1135,25 @@ function renderActiveSlot() {
   document.getElementById('meldung-edit').value       = slot.meldung || '';
   document.getElementById('regen-hint').value         = '';
   updateCharCount();
+  renderReview(slot);
+}
+
+function renderReview(slot) {
+  const panel = document.getElementById('review-panel');
+  if (!slot || !slot.reviewScore) { panel.innerHTML = ''; return; }
+  const color   = slot.reviewScore >= 4 ? 'green' : 'red';
+  const retried = slot.wasRetried
+    ? '<span class="badge muted" style="font-size:9px;">ÜBERARBEITET</span>' : '';
+  panel.innerHTML = `
+    <div class="review-header">
+      <span class="review-label">SELBSTKRITIK</span>
+      <span class="badge ${color}"><span class="pip"></span>${slot.reviewScore}/5</span>
+      ${retried}
+    </div>
+    <details>
+      <summary>Begründung anzeigen</summary>
+      <div class="review-body">${esc(slot.reviewText)}</div>
+    </details>`;
 }
 
 function updateCharCount() {
@@ -992,12 +1172,28 @@ async function regenerateActive() {
   const hint = document.getElementById('regen-hint').value;
   btn.disabled = true; btn.textContent = 'GENERIERE…';
   try {
-    const result = await generateOne(slot, hint);
+    slot.reviewScore = null; slot.reviewText = ''; slot.wasRetried = false;
+    btn.textContent = 'GENERIERUNG…';
+    const first = await generateOne(slot, hint);
+    btn.textContent = 'SELBSTKRITIK…';
+    const review = await reviewOne(slot, first);
+    slot.reviewScore = review.score;
+    slot.reviewText  = review.text;
+    let result = first;
+    if (review.score < 4) {
+      btn.textContent = 'ÜBERARBEITUNG…';
+      const retryHint = 'Erster Entwurf:\n' + first
+        + '\n\nSelbstkritik:\n' + review.text
+        + '\n\nBitte verbessere den Artikel entsprechend.';
+      result = await generateOne(slot, retryHint);
+      slot.wasRetried = true;
+    }
     slot.meldung = result;
     persistSlots();
     document.getElementById('meldung-edit').value = result;
     updateCharCount();
-    flash('Neu generiert.', 'success');
+    renderReview(slot);
+    flash('Neu generiert (Score: ' + review.score + '/5).', 'success');
   } catch(e) {
     flash('Fehler: ' + e.message, 'error');
   } finally {
