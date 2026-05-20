@@ -1,0 +1,6187 @@
+{
+  "datenstand": "31.03.2025",
+  "quelle": "ASTRA, Marktanteile nach Region (Personenwagen)",
+  "ch_total": 4633299,
+  "ch_anteil_top20": {
+    "VW": 12.75,
+    "MERCEDES-BENZ": 7.53,
+    "BMW": 7.25,
+    "AUDI": 6.75,
+    "SKODA": 5.68,
+    "TOYOTA": 4.88,
+    "FORD": 4.08,
+    "RENAULT": 3.82,
+    "OPEL": 3.78,
+    "PEUGEOT": 3.2,
+    "SEAT": 2.99,
+    "FIAT": 2.86,
+    "VOLVO": 2.8,
+    "HYUNDAI": 2.75,
+    "SUZUKI": 2.47,
+    "CITROEN": 2.39,
+    "MAZDA": 2.3,
+    "SUBARU": 2.01,
+    "NISSAN": 1.82,
+    "DACIA": 1.78
+  },
+  "gemeinden": [
+    {
+      "id": "3.542",
+      "name": "Albula/Alvra",
+      "bezirk": "Region Albula",
+      "total": 854,
+      "b24": 54,
+      "erneuerung": 6.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 111,
+          "pct": 13.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 96,
+          "pct": 11.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 76,
+          "pct": 8.9
+        },
+        {
+          "marke": "SUBARU",
+          "n": 66,
+          "pct": 7.7
+        },
+        {
+          "marke": "AUDI",
+          "n": 49,
+          "pct": 5.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 96,
+          "gm_pct": 11.2,
+          "ch_pct": 2.47,
+          "ratio": 4.55
+        },
+        {
+          "marke": "SUBARU",
+          "n": 66,
+          "gm_pct": 7.7,
+          "ch_pct": 2.01,
+          "ratio": 3.85
+        },
+        {
+          "marke": "JEEP",
+          "n": 24,
+          "gm_pct": 2.8,
+          "ch_pct": 0.88,
+          "ratio": 3.19
+        }
+      ]
+    },
+    {
+      "id": "3.701",
+      "name": "Andeer",
+      "bezirk": "Region Viamala",
+      "total": 535,
+      "b24": 40,
+      "erneuerung": 7.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 75,
+          "pct": 14.0
+        },
+        {
+          "marke": "SKODA",
+          "n": 62,
+          "pct": 11.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 55,
+          "pct": 10.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 40,
+          "pct": 7.5
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 32,
+          "pct": 6.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 55,
+          "gm_pct": 10.3,
+          "ch_pct": 2.47,
+          "ratio": 4.16
+        },
+        {
+          "marke": "SKODA",
+          "n": 62,
+          "gm_pct": 11.6,
+          "ch_pct": 5.68,
+          "ratio": 2.04
+        },
+        {
+          "marke": "DACIA",
+          "n": 19,
+          "gm_pct": 3.6,
+          "ch_pct": 1.78,
+          "ratio": 1.99
+        }
+      ]
+    },
+    {
+      "id": "3.921",
+      "name": "Arosa",
+      "bezirk": "Region Plessur",
+      "total": 1676,
+      "b24": 117,
+      "erneuerung": 7.0,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 286,
+          "pct": 17.1
+        },
+        {
+          "marke": "VW",
+          "n": 182,
+          "pct": 10.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 163,
+          "pct": 9.7
+        },
+        {
+          "marke": "AUDI",
+          "n": 139,
+          "pct": 8.3
+        },
+        {
+          "marke": "BMW",
+          "n": 116,
+          "pct": 6.9
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 286,
+          "gm_pct": 17.1,
+          "ch_pct": 2.47,
+          "ratio": 6.91
+        },
+        {
+          "marke": "SUBARU",
+          "n": 102,
+          "gm_pct": 6.1,
+          "ch_pct": 2.01,
+          "ratio": 3.03
+        },
+        {
+          "marke": "JEEP",
+          "n": 28,
+          "gm_pct": 1.7,
+          "ch_pct": 0.88,
+          "ratio": 1.9
+        }
+      ]
+    },
+    {
+      "id": "3.681",
+      "name": "Avers",
+      "bezirk": "Region Viamala",
+      "total": 103,
+      "b24": 3,
+      "erneuerung": 2.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 21,
+          "pct": 20.4
+        },
+        {
+          "marke": "SKODA",
+          "n": 11,
+          "pct": 10.7
+        },
+        {
+          "marke": "SUBARU",
+          "n": 8,
+          "pct": 7.8
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 8,
+          "pct": 7.8
+        },
+        {
+          "marke": "BMW",
+          "n": 7,
+          "pct": 6.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUBARU",
+          "n": 8,
+          "gm_pct": 7.8,
+          "ch_pct": 2.01,
+          "ratio": 3.87
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 8,
+          "gm_pct": 7.8,
+          "ch_pct": 2.47,
+          "ratio": 3.15
+        },
+        {
+          "marke": "DACIA",
+          "n": 5,
+          "gm_pct": 4.9,
+          "ch_pct": 1.78,
+          "ratio": 2.72
+        }
+      ]
+    },
+    {
+      "id": "3.544",
+      "name": "Bergün Filisur",
+      "bezirk": "Region Albula",
+      "total": 502,
+      "b24": 35,
+      "erneuerung": 7.0,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 57,
+          "pct": 11.4
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 54,
+          "pct": 10.8
+        },
+        {
+          "marke": "SKODA",
+          "n": 50,
+          "pct": 10.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 30,
+          "pct": 6.0
+        },
+        {
+          "marke": "BMW",
+          "n": 30,
+          "pct": 6.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 54,
+          "gm_pct": 10.8,
+          "ch_pct": 2.47,
+          "ratio": 4.36
+        },
+        {
+          "marke": "JEEP",
+          "n": 14,
+          "gm_pct": 2.8,
+          "ch_pct": 0.88,
+          "ratio": 3.17
+        },
+        {
+          "marke": "DACIA",
+          "n": 25,
+          "gm_pct": 5.0,
+          "ch_pct": 1.78,
+          "ratio": 2.79
+        }
+      ]
+    },
+    {
+      "id": "3.781",
+      "name": "Bever",
+      "bezirk": "Region Maloja",
+      "total": 372,
+      "b24": 38,
+      "erneuerung": 10.2,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 48,
+          "pct": 12.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 41,
+          "pct": 11.0
+        },
+        {
+          "marke": "VW",
+          "n": 41,
+          "pct": 11.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 35,
+          "pct": 9.4
+        },
+        {
+          "marke": "BMW",
+          "n": 34,
+          "pct": 9.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 48,
+          "gm_pct": 12.9,
+          "ch_pct": 2.47,
+          "ratio": 5.23
+        },
+        {
+          "marke": "ALFA ROMEO",
+          "n": 10,
+          "gm_pct": 2.7,
+          "ch_pct": 0.88,
+          "ratio": 3.05
+        },
+        {
+          "marke": "LAND ROVER",
+          "n": 9,
+          "gm_pct": 2.4,
+          "ch_pct": 0.9,
+          "ratio": 2.67
+        }
+      ]
+    },
+    {
+      "id": "3.721",
+      "name": "Bonaduz",
+      "bezirk": "Region Imboden",
+      "total": 1942,
+      "b24": 154,
+      "erneuerung": 7.9,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 234,
+          "pct": 12.0
+        },
+        {
+          "marke": "VW",
+          "n": 227,
+          "pct": 11.7
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 148,
+          "pct": 7.6
+        },
+        {
+          "marke": "AUDI",
+          "n": 143,
+          "pct": 7.4
+        },
+        {
+          "marke": "BMW",
+          "n": 143,
+          "pct": 7.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 105,
+          "gm_pct": 5.4,
+          "ch_pct": 2.47,
+          "ratio": 2.19
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 51,
+          "gm_pct": 2.6,
+          "ch_pct": 1.22,
+          "ratio": 2.15
+        },
+        {
+          "marke": "SKODA",
+          "n": 234,
+          "gm_pct": 12.0,
+          "ch_pct": 5.68,
+          "ratio": 2.12
+        }
+      ]
+    },
+    {
+      "id": "3.792",
+      "name": "Bregaglia",
+      "bezirk": "Region Maloja",
+      "total": 1024,
+      "b24": 55,
+      "erneuerung": 5.4,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 157,
+          "pct": 15.3
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 115,
+          "pct": 11.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 96,
+          "pct": 9.4
+        },
+        {
+          "marke": "AUDI",
+          "n": 93,
+          "pct": 9.1
+        },
+        {
+          "marke": "BMW",
+          "n": 76,
+          "pct": 7.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 115,
+          "gm_pct": 11.2,
+          "ch_pct": 2.47,
+          "ratio": 4.55
+        },
+        {
+          "marke": "JEEP",
+          "n": 28,
+          "gm_pct": 2.7,
+          "ch_pct": 0.88,
+          "ratio": 3.1
+        },
+        {
+          "marke": "SUBARU",
+          "n": 56,
+          "gm_pct": 5.5,
+          "ch_pct": 2.01,
+          "ratio": 2.73
+        }
+      ]
+    },
+    {
+      "id": "3.981",
+      "name": "Breil/Brigels",
+      "bezirk": "Region Surselva",
+      "total": 948,
+      "b24": 51,
+      "erneuerung": 5.4,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 142,
+          "pct": 15.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 106,
+          "pct": 11.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 90,
+          "pct": 9.5
+        },
+        {
+          "marke": "BMW",
+          "n": 78,
+          "pct": 8.2
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 69,
+          "pct": 7.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 106,
+          "gm_pct": 11.2,
+          "ch_pct": 2.47,
+          "ratio": 4.53
+        },
+        {
+          "marke": "SUBARU",
+          "n": 47,
+          "gm_pct": 5.0,
+          "ch_pct": 2.01,
+          "ratio": 2.47
+        },
+        {
+          "marke": "MAZDA",
+          "n": 45,
+          "gm_pct": 4.7,
+          "ch_pct": 2.3,
+          "ratio": 2.07
+        }
+      ]
+    },
+    {
+      "id": "3.551",
+      "name": "Brusio",
+      "bezirk": "Region Bernina",
+      "total": 872,
+      "b24": 34,
+      "erneuerung": 3.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 121,
+          "pct": 13.9
+        },
+        {
+          "marke": "AUDI",
+          "n": 87,
+          "pct": 10.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 75,
+          "pct": 8.6
+        },
+        {
+          "marke": "BMW",
+          "n": 60,
+          "pct": 6.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 59,
+          "pct": 6.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 75,
+          "gm_pct": 8.6,
+          "ch_pct": 2.47,
+          "ratio": 3.48
+        },
+        {
+          "marke": "HONDA",
+          "n": 42,
+          "gm_pct": 4.8,
+          "ch_pct": 1.63,
+          "ratio": 2.95
+        },
+        {
+          "marke": "SUBARU",
+          "n": 45,
+          "gm_pct": 5.2,
+          "ch_pct": 2.01,
+          "ratio": 2.57
+        }
+      ]
+    },
+    {
+      "id": "3.804",
+      "name": "Buseno",
+      "bezirk": "Region Moesa",
+      "total": 59,
+      "b24": 5,
+      "erneuerung": 8.5,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 13,
+          "pct": 22.0
+        },
+        {
+          "marke": "VW",
+          "n": 7,
+          "pct": 11.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 5,
+          "pct": 8.5
+        },
+        {
+          "marke": "FIAT",
+          "n": 4,
+          "pct": 6.8
+        },
+        {
+          "marke": "DACIA",
+          "n": 3,
+          "pct": 5.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 13,
+          "gm_pct": 22.0,
+          "ch_pct": 2.47,
+          "ratio": 8.93
+        }
+      ]
+    },
+    {
+      "id": "3.837",
+      "name": "Calanca",
+      "bezirk": "Region Moesa",
+      "total": 136,
+      "b24": 15,
+      "erneuerung": 11.0,
+      "top5": [
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 13,
+          "pct": 9.6
+        },
+        {
+          "marke": "VW",
+          "n": 13,
+          "pct": 9.6
+        },
+        {
+          "marke": "SKODA",
+          "n": 12,
+          "pct": 8.8
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 12,
+          "pct": 8.8
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 10,
+          "pct": 7.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 12,
+          "gm_pct": 8.8,
+          "ch_pct": 2.47,
+          "ratio": 3.57
+        },
+        {
+          "marke": "DACIA",
+          "n": 6,
+          "gm_pct": 4.4,
+          "ch_pct": 1.78,
+          "ratio": 2.47
+        },
+        {
+          "marke": "SKODA",
+          "n": 12,
+          "gm_pct": 8.8,
+          "ch_pct": 5.68,
+          "ratio": 1.55
+        }
+      ]
+    },
+    {
+      "id": "3.831",
+      "name": "Cama",
+      "bezirk": "Region Moesa",
+      "total": 549,
+      "b24": 75,
+      "erneuerung": 13.7,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 68,
+          "pct": 12.4
+        },
+        {
+          "marke": "AUDI",
+          "n": 47,
+          "pct": 8.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 42,
+          "pct": 7.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 37,
+          "pct": 6.7
+        },
+        {
+          "marke": "BMW",
+          "n": 30,
+          "pct": 5.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "DACIA",
+          "n": 25,
+          "gm_pct": 4.6,
+          "ch_pct": 1.78,
+          "ratio": 2.55
+        },
+        {
+          "marke": "HYUNDAI",
+          "n": 30,
+          "gm_pct": 5.5,
+          "ch_pct": 2.75,
+          "ratio": 1.99
+        },
+        {
+          "marke": "JEEP",
+          "n": 9,
+          "gm_pct": 1.6,
+          "ch_pct": 0.88,
+          "ratio": 1.86
+        }
+      ]
+    },
+    {
+      "id": "3.805",
+      "name": "Castaneda",
+      "bezirk": "Region Moesa",
+      "total": 148,
+      "b24": 11,
+      "erneuerung": 7.4,
+      "top5": [
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 19,
+          "pct": 12.8
+        },
+        {
+          "marke": "VW",
+          "n": 17,
+          "pct": 11.5
+        },
+        {
+          "marke": "SKODA",
+          "n": 14,
+          "pct": 9.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 14,
+          "pct": 9.5
+        },
+        {
+          "marke": "HYUNDAI",
+          "n": 13,
+          "pct": 8.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 14,
+          "gm_pct": 9.5,
+          "ch_pct": 2.47,
+          "ratio": 3.83
+        },
+        {
+          "marke": "HYUNDAI",
+          "n": 13,
+          "gm_pct": 8.8,
+          "ch_pct": 2.75,
+          "ratio": 3.19
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 19,
+          "gm_pct": 12.8,
+          "ch_pct": 7.53,
+          "ratio": 1.71
+        }
+      ]
+    },
+    {
+      "id": "3.703",
+      "name": "Casti-Wergenstein",
+      "bezirk": "Region Viamala",
+      "total": 15,
+      "b24": 1,
+      "erneuerung": 6.7,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 3,
+          "pct": 20.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 3,
+          "pct": 20.0
+        },
+        {
+          "marke": "VW",
+          "n": 2,
+          "pct": 13.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 1,
+          "pct": 6.7
+        },
+        {
+          "marke": "DACIA",
+          "n": 1,
+          "pct": 6.7
+        }
+      ],
+      "outlier": []
+    },
+    {
+      "id": "3.661",
+      "name": "Cazis",
+      "bezirk": "Region Viamala",
+      "total": 1421,
+      "b24": 86,
+      "erneuerung": 6.1,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 162,
+          "pct": 11.4
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 142,
+          "pct": 10.0
+        },
+        {
+          "marke": "SKODA",
+          "n": 141,
+          "pct": 9.9
+        },
+        {
+          "marke": "AUDI",
+          "n": 91,
+          "pct": 6.4
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 90,
+          "pct": 6.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 142,
+          "gm_pct": 10.0,
+          "ch_pct": 2.47,
+          "ratio": 4.05
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 44,
+          "gm_pct": 3.1,
+          "ch_pct": 1.22,
+          "ratio": 2.54
+        },
+        {
+          "marke": "SUBARU",
+          "n": 60,
+          "gm_pct": 4.2,
+          "ch_pct": 2.01,
+          "ratio": 2.11
+        }
+      ]
+    },
+    {
+      "id": "3.782",
+      "name": "Celerina/Schlarigna",
+      "bezirk": "Region Maloja",
+      "total": 916,
+      "b24": 79,
+      "erneuerung": 8.6,
+      "top5": [
+        {
+          "marke": "AUDI",
+          "n": 125,
+          "pct": 13.6
+        },
+        {
+          "marke": "VW",
+          "n": 115,
+          "pct": 12.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 77,
+          "pct": 8.4
+        },
+        {
+          "marke": "BMW",
+          "n": 72,
+          "pct": 7.9
+        },
+        {
+          "marke": "FIAT",
+          "n": 62,
+          "pct": 6.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "PORSCHE",
+          "n": 38,
+          "gm_pct": 4.1,
+          "ch_pct": 1.44,
+          "ratio": 2.88
+        },
+        {
+          "marke": "LAND ROVER",
+          "n": 22,
+          "gm_pct": 2.4,
+          "ch_pct": 0.9,
+          "ratio": 2.65
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 59,
+          "gm_pct": 6.4,
+          "ch_pct": 2.47,
+          "ratio": 2.61
+        }
+      ]
+    },
+    {
+      "id": "3.901",
+      "name": "Chur",
+      "bezirk": "Region Plessur",
+      "total": 17234,
+      "b24": 1726,
+      "erneuerung": 10.0,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 2142,
+          "pct": 12.4
+        },
+        {
+          "marke": "SKODA",
+          "n": 1883,
+          "pct": 10.9
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 1648,
+          "pct": 9.6
+        },
+        {
+          "marke": "BMW",
+          "n": 1599,
+          "pct": 9.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 1428,
+          "pct": 8.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SKODA",
+          "n": 1883,
+          "gm_pct": 10.9,
+          "ch_pct": 5.68,
+          "ratio": 1.92
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 666,
+          "gm_pct": 3.9,
+          "ch_pct": 2.47,
+          "ratio": 1.57
+        }
+      ]
+    },
+    {
+      "id": "3.911",
+      "name": "Churwalden",
+      "bezirk": "Region Plessur",
+      "total": 1076,
+      "b24": 99,
+      "erneuerung": 9.2,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 128,
+          "pct": 11.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 113,
+          "pct": 10.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 91,
+          "pct": 8.5
+        },
+        {
+          "marke": "AUDI",
+          "n": 84,
+          "pct": 7.8
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 75,
+          "pct": 7.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUBARU",
+          "n": 75,
+          "gm_pct": 7.0,
+          "ch_pct": 2.01,
+          "ratio": 3.48
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 91,
+          "gm_pct": 8.5,
+          "ch_pct": 2.47,
+          "ratio": 3.43
+        },
+        {
+          "marke": "JEEP",
+          "n": 18,
+          "gm_pct": 1.7,
+          "ch_pct": 0.88,
+          "ratio": 1.9
+        }
+      ]
+    },
+    {
+      "id": "3.881",
+      "name": "Conters im Prättigau",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 130,
+      "b24": 4,
+      "erneuerung": 3.1,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 25,
+          "pct": 19.2
+        },
+        {
+          "marke": "VW",
+          "n": 21,
+          "pct": 16.2
+        },
+        {
+          "marke": "SUBARU",
+          "n": 14,
+          "pct": 10.8
+        },
+        {
+          "marke": "AUDI",
+          "n": 6,
+          "pct": 4.6
+        },
+        {
+          "marke": "FIAT",
+          "n": 6,
+          "pct": 4.6
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 25,
+          "gm_pct": 19.2,
+          "ch_pct": 2.47,
+          "ratio": 7.79
+        },
+        {
+          "marke": "SUBARU",
+          "n": 14,
+          "gm_pct": 10.8,
+          "ch_pct": 2.01,
+          "ratio": 5.37
+        },
+        {
+          "marke": "DACIA",
+          "n": 5,
+          "gm_pct": 3.8,
+          "ch_pct": 1.78,
+          "ratio": 2.16
+        }
+      ]
+    },
+    {
+      "id": "3.851",
+      "name": "Davos",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 5412,
+      "b24": 457,
+      "erneuerung": 8.4,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 850,
+          "pct": 15.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 655,
+          "pct": 12.1
+        },
+        {
+          "marke": "AUDI",
+          "n": 580,
+          "pct": 10.7
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 539,
+          "pct": 10.0
+        },
+        {
+          "marke": "BMW",
+          "n": 499,
+          "pct": 9.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 539,
+          "gm_pct": 10.0,
+          "ch_pct": 2.47,
+          "ratio": 4.03
+        },
+        {
+          "marke": "SUBARU",
+          "n": 315,
+          "gm_pct": 5.8,
+          "ch_pct": 2.01,
+          "ratio": 2.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 655,
+          "gm_pct": 12.1,
+          "ch_pct": 5.68,
+          "ratio": 2.13
+        }
+      ]
+    },
+    {
+      "id": "3.982",
+      "name": "Disentis/Mustér",
+      "bezirk": "Region Surselva",
+      "total": 1081,
+      "b24": 70,
+      "erneuerung": 6.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 203,
+          "pct": 18.8
+        },
+        {
+          "marke": "SKODA",
+          "n": 132,
+          "pct": 12.2
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 122,
+          "pct": 11.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 98,
+          "pct": 9.1
+        },
+        {
+          "marke": "BMW",
+          "n": 74,
+          "pct": 6.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 122,
+          "gm_pct": 11.3,
+          "ch_pct": 2.47,
+          "ratio": 4.57
+        },
+        {
+          "marke": "SUBARU",
+          "n": 55,
+          "gm_pct": 5.1,
+          "ch_pct": 2.01,
+          "ratio": 2.54
+        },
+        {
+          "marke": "JEEP",
+          "n": 23,
+          "gm_pct": 2.1,
+          "ch_pct": 0.88,
+          "ratio": 2.41
+        }
+      ]
+    },
+    {
+      "id": "3.722",
+      "name": "Domat/Ems",
+      "bezirk": "Region Imboden",
+      "total": 4267,
+      "b24": 311,
+      "erneuerung": 7.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 535,
+          "pct": 12.5
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 391,
+          "pct": 9.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 386,
+          "pct": 9.0
+        },
+        {
+          "marke": "BMW",
+          "n": 356,
+          "pct": 8.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 347,
+          "pct": 8.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "MITSUBISHI",
+          "n": 98,
+          "gm_pct": 2.3,
+          "ch_pct": 1.22,
+          "ratio": 1.88
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 185,
+          "gm_pct": 4.3,
+          "ch_pct": 2.47,
+          "ratio": 1.76
+        },
+        {
+          "marke": "SKODA",
+          "n": 386,
+          "gm_pct": 9.0,
+          "ch_pct": 5.68,
+          "ratio": 1.59
+        }
+      ]
+    },
+    {
+      "id": "3.673",
+      "name": "Domleschg",
+      "bezirk": "Region Viamala",
+      "total": 1309,
+      "b24": 72,
+      "erneuerung": 5.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 160,
+          "pct": 12.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 152,
+          "pct": 11.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 152,
+          "pct": 11.6
+        },
+        {
+          "marke": "AUDI",
+          "n": 85,
+          "pct": 6.5
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 65,
+          "pct": 5.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 152,
+          "gm_pct": 11.6,
+          "ch_pct": 2.47,
+          "ratio": 4.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 152,
+          "gm_pct": 11.6,
+          "ch_pct": 5.68,
+          "ratio": 2.04
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 30,
+          "gm_pct": 2.3,
+          "ch_pct": 1.22,
+          "ratio": 1.88
+        }
+      ]
+    },
+    {
+      "id": "3.705",
+      "name": "Donat",
+      "bezirk": "Region Viamala",
+      "total": 143,
+      "b24": 8,
+      "erneuerung": 5.6,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 23,
+          "pct": 16.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 14,
+          "pct": 9.8
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 13,
+          "pct": 9.1
+        },
+        {
+          "marke": "BMW",
+          "n": 10,
+          "pct": 7.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 9,
+          "pct": 6.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 13,
+          "gm_pct": 9.1,
+          "ch_pct": 2.47,
+          "ratio": 3.68
+        },
+        {
+          "marke": "SUBARU",
+          "n": 8,
+          "gm_pct": 5.6,
+          "ch_pct": 2.01,
+          "ratio": 2.79
+        },
+        {
+          "marke": "SKODA",
+          "n": 14,
+          "gm_pct": 9.8,
+          "ch_pct": 5.68,
+          "ratio": 1.72
+        }
+      ]
+    },
+    {
+      "id": "3.572",
+      "name": "Falera",
+      "bezirk": "Region Surselva",
+      "total": 348,
+      "b24": 31,
+      "erneuerung": 8.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 69,
+          "pct": 19.8
+        },
+        {
+          "marke": "BMW",
+          "n": 42,
+          "pct": 12.1
+        },
+        {
+          "marke": "AUDI",
+          "n": 30,
+          "pct": 8.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 26,
+          "pct": 7.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 22,
+          "pct": 6.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 22,
+          "gm_pct": 6.3,
+          "ch_pct": 2.47,
+          "ratio": 2.56
+        },
+        {
+          "marke": "JEEP",
+          "n": 6,
+          "gm_pct": 1.7,
+          "ch_pct": 0.88,
+          "ratio": 1.96
+        },
+        {
+          "marke": "BMW",
+          "n": 42,
+          "gm_pct": 12.1,
+          "ch_pct": 7.25,
+          "ratio": 1.67
+        }
+      ]
+    },
+    {
+      "id": "3.731",
+      "name": "Felsberg",
+      "bezirk": "Region Imboden",
+      "total": 1446,
+      "b24": 106,
+      "erneuerung": 7.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 195,
+          "pct": 13.5
+        },
+        {
+          "marke": "SKODA",
+          "n": 144,
+          "pct": 10.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 118,
+          "pct": 8.2
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 117,
+          "pct": 8.1
+        },
+        {
+          "marke": "BMW",
+          "n": 77,
+          "pct": 5.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 76,
+          "gm_pct": 5.3,
+          "ch_pct": 2.47,
+          "ratio": 2.13
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 35,
+          "gm_pct": 2.4,
+          "ch_pct": 1.22,
+          "ratio": 1.98
+        },
+        {
+          "marke": "SKODA",
+          "n": 144,
+          "gm_pct": 10.0,
+          "ch_pct": 5.68,
+          "ratio": 1.75
+        }
+      ]
+    },
+    {
+      "id": "3.713",
+      "name": "Ferrera",
+      "bezirk": "Region Viamala",
+      "total": 43,
+      "b24": 3,
+      "erneuerung": 7.0,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 7,
+          "pct": 16.3
+        },
+        {
+          "marke": "SKODA",
+          "n": 6,
+          "pct": 14.0
+        },
+        {
+          "marke": "VW",
+          "n": 6,
+          "pct": 14.0
+        },
+        {
+          "marke": "FIAT",
+          "n": 3,
+          "pct": 7.0
+        },
+        {
+          "marke": "HYUNDAI",
+          "n": 3,
+          "pct": 7.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 7,
+          "gm_pct": 16.3,
+          "ch_pct": 2.47,
+          "ratio": 6.6
+        },
+        {
+          "marke": "SKODA",
+          "n": 6,
+          "gm_pct": 14.0,
+          "ch_pct": 5.68,
+          "ratio": 2.46
+        }
+      ]
+    },
+    {
+      "id": "3.861",
+      "name": "Fideris",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 362,
+      "b24": 26,
+      "erneuerung": 7.2,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 89,
+          "pct": 24.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 56,
+          "pct": 15.5
+        },
+        {
+          "marke": "SUBARU",
+          "n": 31,
+          "pct": 8.6
+        },
+        {
+          "marke": "SKODA",
+          "n": 26,
+          "pct": 7.2
+        },
+        {
+          "marke": "BMW",
+          "n": 21,
+          "pct": 5.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 56,
+          "gm_pct": 15.5,
+          "ch_pct": 2.47,
+          "ratio": 6.27
+        },
+        {
+          "marke": "SUBARU",
+          "n": 31,
+          "gm_pct": 8.6,
+          "ch_pct": 2.01,
+          "ratio": 4.27
+        },
+        {
+          "marke": "JEEP",
+          "n": 10,
+          "gm_pct": 2.8,
+          "ch_pct": 0.88,
+          "ratio": 3.14
+        }
+      ]
+    },
+    {
+      "id": "3.662",
+      "name": "Flerden",
+      "bezirk": "Region Viamala",
+      "total": 162,
+      "b24": 12,
+      "erneuerung": 7.4,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 27,
+          "pct": 16.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 21,
+          "pct": 13.0
+        },
+        {
+          "marke": "VW",
+          "n": 20,
+          "pct": 12.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 13,
+          "pct": 8.0
+        },
+        {
+          "marke": "DACIA",
+          "n": 9,
+          "pct": 5.6
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 27,
+          "gm_pct": 16.7,
+          "ch_pct": 2.47,
+          "ratio": 6.75
+        },
+        {
+          "marke": "DACIA",
+          "n": 9,
+          "gm_pct": 5.6,
+          "ch_pct": 1.78,
+          "ratio": 3.11
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 5,
+          "gm_pct": 3.1,
+          "ch_pct": 1.22,
+          "ratio": 2.53
+        }
+      ]
+    },
+    {
+      "id": "3.732",
+      "name": "Flims",
+      "bezirk": "Region Imboden",
+      "total": 1640,
+      "b24": 130,
+      "erneuerung": 7.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 224,
+          "pct": 13.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 155,
+          "pct": 9.5
+        },
+        {
+          "marke": "AUDI",
+          "n": 144,
+          "pct": 8.8
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 126,
+          "pct": 7.7
+        },
+        {
+          "marke": "BMW",
+          "n": 122,
+          "pct": 7.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUBARU",
+          "n": 108,
+          "gm_pct": 6.6,
+          "ch_pct": 2.01,
+          "ratio": 3.28
+        },
+        {
+          "marke": "JEEP",
+          "n": 37,
+          "gm_pct": 2.3,
+          "ch_pct": 0.88,
+          "ratio": 2.56
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 102,
+          "gm_pct": 6.2,
+          "ch_pct": 2.47,
+          "ratio": 2.52
+        }
+      ]
+    },
+    {
+      "id": "3.951",
+      "name": "Fläsch",
+      "bezirk": "Region Landquart",
+      "total": 572,
+      "b24": 43,
+      "erneuerung": 7.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 75,
+          "pct": 13.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 60,
+          "pct": 10.5
+        },
+        {
+          "marke": "BMW",
+          "n": 54,
+          "pct": 9.4
+        },
+        {
+          "marke": "AUDI",
+          "n": 48,
+          "pct": 8.4
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 33,
+          "pct": 5.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 12,
+          "gm_pct": 2.1,
+          "ch_pct": 0.88,
+          "ratio": 2.38
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 33,
+          "gm_pct": 5.8,
+          "ch_pct": 2.47,
+          "ratio": 2.34
+        },
+        {
+          "marke": "SKODA",
+          "n": 60,
+          "gm_pct": 10.5,
+          "ch_pct": 5.68,
+          "ratio": 1.85
+        }
+      ]
+    },
+    {
+      "id": "3.862",
+      "name": "Furna",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 112,
+      "b24": 3,
+      "erneuerung": 2.7,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 20,
+          "pct": 17.9
+        },
+        {
+          "marke": "SUBARU",
+          "n": 14,
+          "pct": 12.5
+        },
+        {
+          "marke": "VW",
+          "n": 14,
+          "pct": 12.5
+        },
+        {
+          "marke": "SKODA",
+          "n": 8,
+          "pct": 7.1
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 7,
+          "pct": 6.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 20,
+          "gm_pct": 17.9,
+          "ch_pct": 2.47,
+          "ratio": 7.23
+        },
+        {
+          "marke": "SUBARU",
+          "n": 14,
+          "gm_pct": 12.5,
+          "ch_pct": 2.01,
+          "ratio": 6.23
+        }
+      ]
+    },
+    {
+      "id": "3.633",
+      "name": "Fürstenau",
+      "bezirk": "Region Viamala",
+      "total": 218,
+      "b24": 16,
+      "erneuerung": 7.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 34,
+          "pct": 15.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 21,
+          "pct": 9.6
+        },
+        {
+          "marke": "SKODA",
+          "n": 19,
+          "pct": 8.7
+        },
+        {
+          "marke": "BMW",
+          "n": 15,
+          "pct": 6.9
+        },
+        {
+          "marke": "MAZDA",
+          "n": 14,
+          "pct": 6.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 21,
+          "gm_pct": 9.6,
+          "ch_pct": 2.47,
+          "ratio": 3.9
+        },
+        {
+          "marke": "JEEP",
+          "n": 6,
+          "gm_pct": 2.8,
+          "ch_pct": 0.88,
+          "ratio": 3.12
+        },
+        {
+          "marke": "MAZDA",
+          "n": 14,
+          "gm_pct": 6.4,
+          "ch_pct": 2.3,
+          "ratio": 2.79
+        }
+      ]
+    },
+    {
+      "id": "3.832",
+      "name": "Grono",
+      "bezirk": "Region Moesa",
+      "total": 1244,
+      "b24": 178,
+      "erneuerung": 14.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 183,
+          "pct": 14.7
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 105,
+          "pct": 8.4
+        },
+        {
+          "marke": "AUDI",
+          "n": 99,
+          "pct": 8.0
+        },
+        {
+          "marke": "BMW",
+          "n": 80,
+          "pct": 6.4
+        },
+        {
+          "marke": "HYUNDAI",
+          "n": 69,
+          "pct": 5.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SMART",
+          "n": 26,
+          "gm_pct": 2.1,
+          "ch_pct": 0.64,
+          "ratio": 3.25
+        },
+        {
+          "marke": "HYUNDAI",
+          "n": 69,
+          "gm_pct": 5.5,
+          "ch_pct": 2.75,
+          "ratio": 2.02
+        },
+        {
+          "marke": "PORSCHE",
+          "n": 36,
+          "gm_pct": 2.9,
+          "ch_pct": 1.44,
+          "ratio": 2.01
+        }
+      ]
+    },
+    {
+      "id": "3.961",
+      "name": "Grüsch",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 1324,
+      "b24": 129,
+      "erneuerung": 9.7,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 253,
+          "pct": 19.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 135,
+          "pct": 10.2
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 123,
+          "pct": 9.3
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 81,
+          "pct": 6.1
+        },
+        {
+          "marke": "SUBARU",
+          "n": 73,
+          "pct": 5.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 123,
+          "gm_pct": 9.3,
+          "ch_pct": 2.47,
+          "ratio": 3.76
+        },
+        {
+          "marke": "SUBARU",
+          "n": 73,
+          "gm_pct": 5.5,
+          "ch_pct": 2.01,
+          "ratio": 2.75
+        },
+        {
+          "marke": "SKODA",
+          "n": 135,
+          "gm_pct": 10.2,
+          "ch_pct": 5.68,
+          "ratio": 1.79
+        }
+      ]
+    },
+    {
+      "id": "3.941",
+      "name": "Haldenstein",
+      "bezirk": "Region Plessur",
+      "total": 561,
+      "b24": 31,
+      "erneuerung": 5.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 78,
+          "pct": 13.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 68,
+          "pct": 12.1
+        },
+        {
+          "marke": "BMW",
+          "n": 46,
+          "pct": 8.2
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 44,
+          "pct": 7.8
+        },
+        {
+          "marke": "AUDI",
+          "n": 42,
+          "pct": 7.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 44,
+          "gm_pct": 7.8,
+          "ch_pct": 2.47,
+          "ratio": 3.18
+        },
+        {
+          "marke": "LAND ROVER",
+          "n": 11,
+          "gm_pct": 2.0,
+          "ch_pct": 0.9,
+          "ratio": 2.17
+        },
+        {
+          "marke": "SKODA",
+          "n": 68,
+          "gm_pct": 12.1,
+          "ch_pct": 5.68,
+          "ratio": 2.13
+        }
+      ]
+    },
+    {
+      "id": "3.691",
+      "name": "Hinterrhein",
+      "bezirk": "Region Viamala",
+      "total": 32,
+      "b24": 2,
+      "erneuerung": 6.2,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 5,
+          "pct": 15.6
+        },
+        {
+          "marke": "JEEP",
+          "n": 4,
+          "pct": 12.5
+        },
+        {
+          "marke": "VW",
+          "n": 4,
+          "pct": 12.5
+        },
+        {
+          "marke": "DACIA",
+          "n": 3,
+          "pct": 9.4
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 3,
+          "pct": 9.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SKODA",
+          "n": 5,
+          "gm_pct": 15.6,
+          "ch_pct": 5.68,
+          "ratio": 2.75
+        }
+      ]
+    },
+    {
+      "id": "3.619",
+      "name": "Ilanz/Glion",
+      "bezirk": "Region Surselva",
+      "total": 2677,
+      "b24": 151,
+      "erneuerung": 5.6,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 339,
+          "pct": 12.7
+        },
+        {
+          "marke": "BMW",
+          "n": 301,
+          "pct": 11.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 274,
+          "pct": 10.2
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 255,
+          "pct": 9.5
+        },
+        {
+          "marke": "AUDI",
+          "n": 193,
+          "pct": 7.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 255,
+          "gm_pct": 9.5,
+          "ch_pct": 2.47,
+          "ratio": 3.86
+        },
+        {
+          "marke": "SUBARU",
+          "n": 132,
+          "gm_pct": 4.9,
+          "ch_pct": 2.01,
+          "ratio": 2.46
+        },
+        {
+          "marke": "SKODA",
+          "n": 274,
+          "gm_pct": 10.2,
+          "ch_pct": 5.68,
+          "ratio": 1.8
+        }
+      ]
+    },
+    {
+      "id": "3.863",
+      "name": "Jenaz",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 682,
+      "b24": 50,
+      "erneuerung": 7.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 91,
+          "pct": 13.3
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 89,
+          "pct": 13.0
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 62,
+          "pct": 9.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 53,
+          "pct": 7.8
+        },
+        {
+          "marke": "SUBARU",
+          "n": 46,
+          "pct": 6.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 89,
+          "gm_pct": 13.0,
+          "ch_pct": 2.47,
+          "ratio": 5.29
+        },
+        {
+          "marke": "SUBARU",
+          "n": 46,
+          "gm_pct": 6.7,
+          "ch_pct": 2.01,
+          "ratio": 3.36
+        },
+        {
+          "marke": "JEEP",
+          "n": 12,
+          "gm_pct": 1.8,
+          "ch_pct": 0.88,
+          "ratio": 2.0
+        }
+      ]
+    },
+    {
+      "id": "3.952",
+      "name": "Jenins",
+      "bezirk": "Region Landquart",
+      "total": 588,
+      "b24": 33,
+      "erneuerung": 5.6,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 73,
+          "pct": 12.4
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 51,
+          "pct": 8.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 50,
+          "pct": 8.5
+        },
+        {
+          "marke": "BMW",
+          "n": 49,
+          "pct": 8.3
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 44,
+          "pct": 7.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 51,
+          "gm_pct": 8.7,
+          "ch_pct": 2.47,
+          "ratio": 3.51
+        },
+        {
+          "marke": "JEEP",
+          "n": 11,
+          "gm_pct": 1.9,
+          "ch_pct": 0.88,
+          "ratio": 2.12
+        },
+        {
+          "marke": "SUBARU",
+          "n": 20,
+          "gm_pct": 3.4,
+          "ch_pct": 2.01,
+          "ratio": 1.7
+        }
+      ]
+    },
+    {
+      "id": "3.871",
+      "name": "Klosters-Serneus",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 2666,
+      "b24": 194,
+      "erneuerung": 7.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 428,
+          "pct": 16.1
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 272,
+          "pct": 10.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 248,
+          "pct": 9.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 226,
+          "pct": 8.5
+        },
+        {
+          "marke": "BMW",
+          "n": 194,
+          "pct": 7.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 272,
+          "gm_pct": 10.2,
+          "ch_pct": 2.47,
+          "ratio": 4.13
+        },
+        {
+          "marke": "SUBARU",
+          "n": 140,
+          "gm_pct": 5.3,
+          "ch_pct": 2.01,
+          "ratio": 2.62
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 83,
+          "gm_pct": 3.1,
+          "ch_pct": 1.22,
+          "ratio": 2.55
+        }
+      ]
+    },
+    {
+      "id": "3.882",
+      "name": "Küblis",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 637,
+      "b24": 44,
+      "erneuerung": 6.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 125,
+          "pct": 19.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 84,
+          "pct": 13.2
+        },
+        {
+          "marke": "SUBARU",
+          "n": 62,
+          "pct": 9.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 59,
+          "pct": 9.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 50,
+          "pct": 7.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 84,
+          "gm_pct": 13.2,
+          "ch_pct": 2.47,
+          "ratio": 5.34
+        },
+        {
+          "marke": "SUBARU",
+          "n": 62,
+          "gm_pct": 9.7,
+          "ch_pct": 2.01,
+          "ratio": 4.85
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 16,
+          "gm_pct": 2.5,
+          "ch_pct": 1.22,
+          "ratio": 2.06
+        }
+      ]
+    },
+    {
+      "id": "3.785",
+      "name": "La Punt-Chamues-ch",
+      "bezirk": "Region Maloja",
+      "total": 526,
+      "b24": 47,
+      "erneuerung": 8.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 58,
+          "pct": 11.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 52,
+          "pct": 9.9
+        },
+        {
+          "marke": "AUDI",
+          "n": 48,
+          "pct": 9.1
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 46,
+          "pct": 8.7
+        },
+        {
+          "marke": "BMW",
+          "n": 39,
+          "pct": 7.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 52,
+          "gm_pct": 9.9,
+          "ch_pct": 2.47,
+          "ratio": 4.01
+        },
+        {
+          "marke": "LAND ROVER",
+          "n": 13,
+          "gm_pct": 2.5,
+          "ch_pct": 0.9,
+          "ratio": 2.73
+        },
+        {
+          "marke": "SUBARU",
+          "n": 24,
+          "gm_pct": 4.6,
+          "ch_pct": 2.01,
+          "ratio": 2.28
+        }
+      ]
+    },
+    {
+      "id": "3.575",
+      "name": "Laax",
+      "bezirk": "Region Surselva",
+      "total": 1143,
+      "b24": 106,
+      "erneuerung": 9.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 138,
+          "pct": 12.1
+        },
+        {
+          "marke": "BMW",
+          "n": 117,
+          "pct": 10.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 91,
+          "pct": 8.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 90,
+          "pct": 7.9
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 70,
+          "pct": 6.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "PORSCHE",
+          "n": 58,
+          "gm_pct": 5.1,
+          "ch_pct": 1.44,
+          "ratio": 3.52
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 62,
+          "gm_pct": 5.4,
+          "ch_pct": 2.47,
+          "ratio": 2.2
+        },
+        {
+          "marke": "JEEP",
+          "n": 20,
+          "gm_pct": 1.7,
+          "ch_pct": 0.88,
+          "ratio": 1.99
+        }
+      ]
+    },
+    {
+      "id": "3.955",
+      "name": "Landquart",
+      "bezirk": "Region Landquart",
+      "total": 4857,
+      "b24": 420,
+      "erneuerung": 8.6,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 643,
+          "pct": 13.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 534,
+          "pct": 11.0
+        },
+        {
+          "marke": "BMW",
+          "n": 371,
+          "pct": 7.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 364,
+          "pct": 7.5
+        },
+        {
+          "marke": "AUDI",
+          "n": 343,
+          "pct": 7.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 306,
+          "gm_pct": 6.3,
+          "ch_pct": 2.47,
+          "ratio": 2.55
+        },
+        {
+          "marke": "SKODA",
+          "n": 534,
+          "gm_pct": 11.0,
+          "ch_pct": 5.68,
+          "ratio": 1.93
+        }
+      ]
+    },
+    {
+      "id": "3.513",
+      "name": "Lantsch/Lenz",
+      "bezirk": "Region Albula",
+      "total": 295,
+      "b24": 28,
+      "erneuerung": 9.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 39,
+          "pct": 13.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 30,
+          "pct": 10.2
+        },
+        {
+          "marke": "AUDI",
+          "n": 28,
+          "pct": 9.5
+        },
+        {
+          "marke": "SUBARU",
+          "n": 28,
+          "pct": 9.5
+        },
+        {
+          "marke": "BMW",
+          "n": 21,
+          "pct": 7.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUBARU",
+          "n": 28,
+          "gm_pct": 9.5,
+          "ch_pct": 2.01,
+          "ratio": 4.73
+        },
+        {
+          "marke": "LAND ROVER",
+          "n": 8,
+          "gm_pct": 2.7,
+          "ch_pct": 0.9,
+          "ratio": 3.0
+        },
+        {
+          "marke": "JEEP",
+          "n": 6,
+          "gm_pct": 2.0,
+          "ch_pct": 0.88,
+          "ratio": 2.31
+        }
+      ]
+    },
+    {
+      "id": "3.707",
+      "name": "Lohn (GR)",
+      "bezirk": "Region Viamala",
+      "total": 34,
+      "b24": 2,
+      "erneuerung": 5.9,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 8,
+          "pct": 23.5
+        },
+        {
+          "marke": "SUBARU",
+          "n": 5,
+          "pct": 14.7
+        },
+        {
+          "marke": "VW",
+          "n": 5,
+          "pct": 14.7
+        },
+        {
+          "marke": "HYUNDAI",
+          "n": 2,
+          "pct": 5.9
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 2,
+          "pct": 5.9
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 8,
+          "gm_pct": 23.5,
+          "ch_pct": 2.47,
+          "ratio": 9.53
+        },
+        {
+          "marke": "SUBARU",
+          "n": 5,
+          "gm_pct": 14.7,
+          "ch_pct": 2.01,
+          "ratio": 7.33
+        }
+      ]
+    },
+    {
+      "id": "3.821",
+      "name": "Lostallo",
+      "bezirk": "Region Moesa",
+      "total": 602,
+      "b24": 74,
+      "erneuerung": 12.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 98,
+          "pct": 16.3
+        },
+        {
+          "marke": "SKODA",
+          "n": 55,
+          "pct": 9.1
+        },
+        {
+          "marke": "RENAULT",
+          "n": 39,
+          "pct": 6.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 36,
+          "pct": 6.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 31,
+          "pct": 5.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 36,
+          "gm_pct": 6.0,
+          "ch_pct": 2.47,
+          "ratio": 2.42
+        },
+        {
+          "marke": "DACIA",
+          "n": 24,
+          "gm_pct": 4.0,
+          "ch_pct": 1.78,
+          "ratio": 2.24
+        },
+        {
+          "marke": "RENAULT",
+          "n": 39,
+          "gm_pct": 6.5,
+          "ch_pct": 3.82,
+          "ratio": 1.7
+        }
+      ]
+    },
+    {
+      "id": "3.618",
+      "name": "Lumnezia",
+      "bezirk": "Region Surselva",
+      "total": 1180,
+      "b24": 76,
+      "erneuerung": 6.4,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 178,
+          "pct": 15.1
+        },
+        {
+          "marke": "VW",
+          "n": 155,
+          "pct": 13.1
+        },
+        {
+          "marke": "BMW",
+          "n": 143,
+          "pct": 12.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 100,
+          "pct": 8.5
+        },
+        {
+          "marke": "SUBARU",
+          "n": 80,
+          "pct": 6.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 178,
+          "gm_pct": 15.1,
+          "ch_pct": 2.47,
+          "ratio": 6.11
+        },
+        {
+          "marke": "SUBARU",
+          "n": 80,
+          "gm_pct": 6.8,
+          "ch_pct": 2.01,
+          "ratio": 3.38
+        },
+        {
+          "marke": "VOLVO",
+          "n": 58,
+          "gm_pct": 4.9,
+          "ch_pct": 2.8,
+          "ratio": 1.75
+        }
+      ]
+    },
+    {
+      "id": "3.891",
+      "name": "Luzein",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 816,
+      "b24": 41,
+      "erneuerung": 5.0,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 134,
+          "pct": 16.4
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 126,
+          "pct": 15.4
+        },
+        {
+          "marke": "SKODA",
+          "n": 89,
+          "pct": 10.9
+        },
+        {
+          "marke": "BMW",
+          "n": 73,
+          "pct": 8.9
+        },
+        {
+          "marke": "SUBARU",
+          "n": 58,
+          "pct": 7.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 126,
+          "gm_pct": 15.4,
+          "ch_pct": 2.47,
+          "ratio": 6.26
+        },
+        {
+          "marke": "SUBARU",
+          "n": 58,
+          "gm_pct": 7.1,
+          "ch_pct": 2.01,
+          "ratio": 3.54
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 35,
+          "gm_pct": 4.3,
+          "ch_pct": 1.22,
+          "ratio": 3.52
+        }
+      ]
+    },
+    {
+      "id": "3.783",
+      "name": "Madulain",
+      "bezirk": "Region Maloja",
+      "total": 149,
+      "b24": 13,
+      "erneuerung": 8.7,
+      "top5": [
+        {
+          "marke": "BMW",
+          "n": 17,
+          "pct": 11.4
+        },
+        {
+          "marke": "VW",
+          "n": 16,
+          "pct": 10.7
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 15,
+          "pct": 10.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 12,
+          "pct": 8.1
+        },
+        {
+          "marke": "AUDI",
+          "n": 11,
+          "pct": 7.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 5,
+          "gm_pct": 3.4,
+          "ch_pct": 0.88,
+          "ratio": 3.81
+        },
+        {
+          "marke": "MINI",
+          "n": 6,
+          "gm_pct": 4.0,
+          "ch_pct": 1.58,
+          "ratio": 2.56
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 8,
+          "gm_pct": 5.4,
+          "ch_pct": 2.47,
+          "ratio": 2.18
+        }
+      ]
+    },
+    {
+      "id": "3.953",
+      "name": "Maienfeld",
+      "bezirk": "Region Landquart",
+      "total": 2142,
+      "b24": 259,
+      "erneuerung": 12.1,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 290,
+          "pct": 13.5
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 194,
+          "pct": 9.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 193,
+          "pct": 9.0
+        },
+        {
+          "marke": "BMW",
+          "n": 185,
+          "pct": 8.6
+        },
+        {
+          "marke": "AUDI",
+          "n": 161,
+          "pct": 7.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 102,
+          "gm_pct": 4.8,
+          "ch_pct": 2.47,
+          "ratio": 1.93
+        },
+        {
+          "marke": "PORSCHE",
+          "n": 57,
+          "gm_pct": 2.7,
+          "ch_pct": 1.44,
+          "ratio": 1.85
+        },
+        {
+          "marke": "JEEP",
+          "n": 33,
+          "gm_pct": 1.5,
+          "ch_pct": 0.88,
+          "ratio": 1.75
+        }
+      ]
+    },
+    {
+      "id": "3.926",
+      "name": "Maladers",
+      "bezirk": "Region Plessur",
+      "total": 280,
+      "b24": 17,
+      "erneuerung": 6.1,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 38,
+          "pct": 13.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 36,
+          "pct": 12.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 28,
+          "pct": 10.0
+        },
+        {
+          "marke": "SUBARU",
+          "n": 17,
+          "pct": 6.1
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 17,
+          "pct": 6.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 36,
+          "gm_pct": 12.9,
+          "ch_pct": 2.47,
+          "ratio": 5.21
+        },
+        {
+          "marke": "JEEP",
+          "n": 11,
+          "gm_pct": 3.9,
+          "ch_pct": 0.88,
+          "ratio": 4.46
+        },
+        {
+          "marke": "SUBARU",
+          "n": 17,
+          "gm_pct": 6.1,
+          "ch_pct": 2.01,
+          "ratio": 3.03
+        }
+      ]
+    },
+    {
+      "id": "3.954",
+      "name": "Malans",
+      "bezirk": "Region Landquart",
+      "total": 1402,
+      "b24": 132,
+      "erneuerung": 9.4,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 191,
+          "pct": 13.6
+        },
+        {
+          "marke": "SKODA",
+          "n": 137,
+          "pct": 9.8
+        },
+        {
+          "marke": "BMW",
+          "n": 121,
+          "pct": 8.6
+        },
+        {
+          "marke": "AUDI",
+          "n": 114,
+          "pct": 8.1
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 112,
+          "pct": 8.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 97,
+          "gm_pct": 6.9,
+          "ch_pct": 2.47,
+          "ratio": 2.8
+        },
+        {
+          "marke": "SKODA",
+          "n": 137,
+          "gm_pct": 9.8,
+          "ch_pct": 5.68,
+          "ratio": 1.72
+        },
+        {
+          "marke": "VOLVO",
+          "n": 66,
+          "gm_pct": 4.7,
+          "ch_pct": 2.8,
+          "ratio": 1.68
+        }
+      ]
+    },
+    {
+      "id": "3.663",
+      "name": "Masein",
+      "bezirk": "Region Viamala",
+      "total": 281,
+      "b24": 16,
+      "erneuerung": 5.7,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 35,
+          "pct": 12.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 34,
+          "pct": 12.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 31,
+          "pct": 11.0
+        },
+        {
+          "marke": "BMW",
+          "n": 21,
+          "pct": 7.5
+        },
+        {
+          "marke": "VOLVO",
+          "n": 16,
+          "pct": 5.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 34,
+          "gm_pct": 12.1,
+          "ch_pct": 2.47,
+          "ratio": 4.9
+        },
+        {
+          "marke": "SUBARU",
+          "n": 14,
+          "gm_pct": 5.0,
+          "ch_pct": 2.01,
+          "ratio": 2.48
+        },
+        {
+          "marke": "VOLVO",
+          "n": 16,
+          "gm_pct": 5.7,
+          "ch_pct": 2.8,
+          "ratio": 2.03
+        }
+      ]
+    },
+    {
+      "id": "3.708",
+      "name": "Mathon",
+      "bezirk": "Region Viamala",
+      "total": 26,
+      "b24": 1,
+      "erneuerung": 3.8,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 6,
+          "pct": 23.1
+        },
+        {
+          "marke": "VW",
+          "n": 5,
+          "pct": 19.2
+        },
+        {
+          "marke": "JEEP",
+          "n": 3,
+          "pct": 11.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 3,
+          "pct": 11.5
+        },
+        {
+          "marke": "BMW",
+          "n": 2,
+          "pct": 7.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SKODA",
+          "n": 6,
+          "gm_pct": 23.1,
+          "ch_pct": 5.68,
+          "ratio": 4.06
+        },
+        {
+          "marke": "VW",
+          "n": 5,
+          "gm_pct": 19.2,
+          "ch_pct": 12.75,
+          "ratio": 1.51
+        }
+      ]
+    },
+    {
+      "id": "3.983",
+      "name": "Medel (Lucmagn)",
+      "bezirk": "Region Surselva",
+      "total": 195,
+      "b24": 12,
+      "erneuerung": 6.2,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 33,
+          "pct": 16.9
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 28,
+          "pct": 14.4
+        },
+        {
+          "marke": "AUDI",
+          "n": 19,
+          "pct": 9.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 17,
+          "pct": 8.7
+        },
+        {
+          "marke": "BMW",
+          "n": 16,
+          "pct": 8.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 28,
+          "gm_pct": 14.4,
+          "ch_pct": 2.47,
+          "ratio": 5.82
+        },
+        {
+          "marke": "SUBARU",
+          "n": 11,
+          "gm_pct": 5.6,
+          "ch_pct": 2.01,
+          "ratio": 2.81
+        },
+        {
+          "marke": "VOLVO",
+          "n": 10,
+          "gm_pct": 5.1,
+          "ch_pct": 2.8,
+          "ratio": 1.83
+        }
+      ]
+    },
+    {
+      "id": "3.822",
+      "name": "Mesocco",
+      "bezirk": "Region Moesa",
+      "total": 948,
+      "b24": 116,
+      "erneuerung": 12.2,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 141,
+          "pct": 14.9
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 84,
+          "pct": 8.9
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 75,
+          "pct": 7.9
+        },
+        {
+          "marke": "AUDI",
+          "n": 64,
+          "pct": 6.8
+        },
+        {
+          "marke": "SKODA",
+          "n": 59,
+          "pct": 6.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 75,
+          "gm_pct": 7.9,
+          "ch_pct": 2.47,
+          "ratio": 3.21
+        },
+        {
+          "marke": "DACIA",
+          "n": 45,
+          "gm_pct": 4.7,
+          "ch_pct": 1.78,
+          "ratio": 2.66
+        },
+        {
+          "marke": "JEEP",
+          "n": 21,
+          "gm_pct": 2.2,
+          "ch_pct": 0.88,
+          "ratio": 2.51
+        }
+      ]
+    },
+    {
+      "id": "3.693",
+      "name": "Nufenen",
+      "bezirk": "Region Viamala",
+      "total": 78,
+      "b24": 3,
+      "erneuerung": 3.8,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 11,
+          "pct": 14.1
+        },
+        {
+          "marke": "VW",
+          "n": 11,
+          "pct": 14.1
+        },
+        {
+          "marke": "SUBARU",
+          "n": 7,
+          "pct": 9.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 7,
+          "pct": 9.0
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 7,
+          "pct": 9.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUBARU",
+          "n": 7,
+          "gm_pct": 9.0,
+          "ch_pct": 2.01,
+          "ratio": 4.48
+        },
+        {
+          "marke": "DACIA",
+          "n": 6,
+          "gm_pct": 7.7,
+          "ch_pct": 1.78,
+          "ratio": 4.31
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 7,
+          "gm_pct": 9.0,
+          "ch_pct": 2.47,
+          "ratio": 3.64
+        }
+      ]
+    },
+    {
+      "id": "3.988",
+      "name": "Obersaxen Mundaun",
+      "bezirk": "Region Surselva",
+      "total": 731,
+      "b24": 40,
+      "erneuerung": 5.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 120,
+          "pct": 16.4
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 74,
+          "pct": 10.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 69,
+          "pct": 9.4
+        },
+        {
+          "marke": "BMW",
+          "n": 63,
+          "pct": 8.6
+        },
+        {
+          "marke": "AUDI",
+          "n": 52,
+          "pct": 7.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 74,
+          "gm_pct": 10.1,
+          "ch_pct": 2.47,
+          "ratio": 4.1
+        },
+        {
+          "marke": "JEEP",
+          "n": 17,
+          "gm_pct": 2.3,
+          "ch_pct": 0.88,
+          "ratio": 2.64
+        },
+        {
+          "marke": "SUBARU",
+          "n": 37,
+          "gm_pct": 5.1,
+          "ch_pct": 2.01,
+          "ratio": 2.52
+        }
+      ]
+    },
+    {
+      "id": "3.784",
+      "name": "Pontresina",
+      "bezirk": "Region Maloja",
+      "total": 1333,
+      "b24": 135,
+      "erneuerung": 10.1,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 180,
+          "pct": 13.5
+        },
+        {
+          "marke": "AUDI",
+          "n": 148,
+          "pct": 11.1
+        },
+        {
+          "marke": "BMW",
+          "n": 141,
+          "pct": 10.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 111,
+          "pct": 8.3
+        },
+        {
+          "marke": "SKODA",
+          "n": 97,
+          "pct": 7.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 32,
+          "gm_pct": 2.4,
+          "ch_pct": 0.88,
+          "ratio": 2.72
+        },
+        {
+          "marke": "PORSCHE",
+          "n": 48,
+          "gm_pct": 3.6,
+          "ch_pct": 1.44,
+          "ratio": 2.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 77,
+          "gm_pct": 5.8,
+          "ch_pct": 2.47,
+          "ratio": 2.34
+        }
+      ]
+    },
+    {
+      "id": "3.561",
+      "name": "Poschiavo",
+      "bezirk": "Region Bernina",
+      "total": 2255,
+      "b24": 174,
+      "erneuerung": 7.7,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 321,
+          "pct": 14.2
+        },
+        {
+          "marke": "VW",
+          "n": 299,
+          "pct": 13.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 219,
+          "pct": 9.7
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 166,
+          "pct": 7.4
+        },
+        {
+          "marke": "BMW",
+          "n": 146,
+          "pct": 6.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "MITSUBISHI",
+          "n": 83,
+          "gm_pct": 3.7,
+          "ch_pct": 1.22,
+          "ratio": 3.02
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 166,
+          "gm_pct": 7.4,
+          "ch_pct": 2.47,
+          "ratio": 2.98
+        },
+        {
+          "marke": "JEEP",
+          "n": 59,
+          "gm_pct": 2.6,
+          "ch_pct": 0.88,
+          "ratio": 2.97
+        }
+      ]
+    },
+    {
+      "id": "3.723",
+      "name": "Rhäzüns",
+      "bezirk": "Region Imboden",
+      "total": 857,
+      "b24": 57,
+      "erneuerung": 6.7,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 97,
+          "pct": 11.3
+        },
+        {
+          "marke": "SKODA",
+          "n": 82,
+          "pct": 9.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 73,
+          "pct": 8.5
+        },
+        {
+          "marke": "BMW",
+          "n": 69,
+          "pct": 8.1
+        },
+        {
+          "marke": "AUDI",
+          "n": 67,
+          "pct": 7.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "MITSUBISHI",
+          "n": 21,
+          "gm_pct": 2.5,
+          "ch_pct": 1.22,
+          "ratio": 2.01
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 42,
+          "gm_pct": 4.9,
+          "ch_pct": 2.47,
+          "ratio": 1.99
+        },
+        {
+          "marke": "SKODA",
+          "n": 82,
+          "gm_pct": 9.6,
+          "ch_pct": 5.68,
+          "ratio": 1.68
+        }
+      ]
+    },
+    {
+      "id": "3.711",
+      "name": "Rongellen",
+      "bezirk": "Region Viamala",
+      "total": 43,
+      "b24": 4,
+      "erneuerung": 9.3,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 7,
+          "pct": 16.3
+        },
+        {
+          "marke": "VW",
+          "n": 4,
+          "pct": 9.3
+        },
+        {
+          "marke": "SUBARU",
+          "n": 3,
+          "pct": 7.0
+        },
+        {
+          "marke": "VOLVO",
+          "n": 3,
+          "pct": 7.0
+        },
+        {
+          "marke": "FIAT",
+          "n": 2,
+          "pct": 4.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SKODA",
+          "n": 7,
+          "gm_pct": 16.3,
+          "ch_pct": 5.68,
+          "ratio": 2.86
+        }
+      ]
+    },
+    {
+      "id": "3.808",
+      "name": "Rossa",
+      "bezirk": "Region Moesa",
+      "total": 122,
+      "b24": 9,
+      "erneuerung": 7.4,
+      "top5": [
+        {
+          "marke": "BMW",
+          "n": 12,
+          "pct": 9.8
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 10,
+          "pct": 8.2
+        },
+        {
+          "marke": "AUDI",
+          "n": 9,
+          "pct": 7.4
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 9,
+          "pct": 7.4
+        },
+        {
+          "marke": "SKODA",
+          "n": 8,
+          "pct": 6.6
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 10,
+          "gm_pct": 8.2,
+          "ch_pct": 2.47,
+          "ratio": 3.32
+        },
+        {
+          "marke": "DACIA",
+          "n": 7,
+          "gm_pct": 5.7,
+          "ch_pct": 1.78,
+          "ratio": 3.22
+        },
+        {
+          "marke": "MINI",
+          "n": 5,
+          "gm_pct": 4.1,
+          "ch_pct": 1.58,
+          "ratio": 2.6
+        }
+      ]
+    },
+    {
+      "id": "3.637",
+      "name": "Rothenbrunnen",
+      "bezirk": "Region Viamala",
+      "total": 182,
+      "b24": 7,
+      "erneuerung": 3.8,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 31,
+          "pct": 17.0
+        },
+        {
+          "marke": "SKODA",
+          "n": 24,
+          "pct": 13.2
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 11,
+          "pct": 6.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 11,
+          "pct": 6.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 10,
+          "pct": 5.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "DACIA",
+          "n": 8,
+          "gm_pct": 4.4,
+          "ch_pct": 1.78,
+          "ratio": 2.46
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 11,
+          "gm_pct": 6.0,
+          "ch_pct": 2.47,
+          "ratio": 2.45
+        },
+        {
+          "marke": "SKODA",
+          "n": 24,
+          "gm_pct": 13.2,
+          "ch_pct": 5.68,
+          "ratio": 2.32
+        }
+      ]
+    },
+    {
+      "id": "3.834",
+      "name": "Roveredo (GR)",
+      "bezirk": "Region Moesa",
+      "total": 1723,
+      "b24": 217,
+      "erneuerung": 12.6,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 230,
+          "pct": 13.3
+        },
+        {
+          "marke": "SKODA",
+          "n": 139,
+          "pct": 8.1
+        },
+        {
+          "marke": "AUDI",
+          "n": 121,
+          "pct": 7.0
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 113,
+          "pct": 6.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 101,
+          "pct": 5.9
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "DACIA",
+          "n": 91,
+          "gm_pct": 5.3,
+          "ch_pct": 1.78,
+          "ratio": 2.96
+        },
+        {
+          "marke": "SMART",
+          "n": 28,
+          "gm_pct": 1.6,
+          "ch_pct": 0.64,
+          "ratio": 2.53
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 84,
+          "gm_pct": 4.9,
+          "ch_pct": 2.47,
+          "ratio": 1.98
+        }
+      ]
+    },
+    {
+      "id": "3.788",
+      "name": "S-chanf",
+      "bezirk": "Region Maloja",
+      "total": 507,
+      "b24": 20,
+      "erneuerung": 3.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 76,
+          "pct": 15.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 53,
+          "pct": 10.5
+        },
+        {
+          "marke": "AUDI",
+          "n": 49,
+          "pct": 9.7
+        },
+        {
+          "marke": "FIAT",
+          "n": 35,
+          "pct": 6.9
+        },
+        {
+          "marke": "BMW",
+          "n": 29,
+          "pct": 5.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 21,
+          "gm_pct": 4.1,
+          "ch_pct": 0.88,
+          "ratio": 4.7
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 53,
+          "gm_pct": 10.5,
+          "ch_pct": 2.47,
+          "ratio": 4.24
+        },
+        {
+          "marke": "FIAT",
+          "n": 35,
+          "gm_pct": 6.9,
+          "ch_pct": 2.86,
+          "ratio": 2.41
+        }
+      ]
+    },
+    {
+      "id": "3.672",
+      "name": "Safiental",
+      "bezirk": "Region Surselva",
+      "total": 513,
+      "b24": 33,
+      "erneuerung": 6.4,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 73,
+          "pct": 14.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 70,
+          "pct": 13.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 52,
+          "pct": 10.1
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 46,
+          "pct": 9.0
+        },
+        {
+          "marke": "DACIA",
+          "n": 32,
+          "pct": 6.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 52,
+          "gm_pct": 10.1,
+          "ch_pct": 2.47,
+          "ratio": 4.11
+        },
+        {
+          "marke": "DACIA",
+          "n": 32,
+          "gm_pct": 6.2,
+          "ch_pct": 1.78,
+          "ratio": 3.5
+        },
+        {
+          "marke": "JEEP",
+          "n": 15,
+          "gm_pct": 2.9,
+          "ch_pct": 0.88,
+          "ratio": 3.32
+        }
+      ]
+    },
+    {
+      "id": "3.581",
+      "name": "Sagogn",
+      "bezirk": "Region Surselva",
+      "total": 408,
+      "b24": 25,
+      "erneuerung": 6.1,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 66,
+          "pct": 16.2
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 48,
+          "pct": 11.8
+        },
+        {
+          "marke": "BMW",
+          "n": 29,
+          "pct": 7.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 28,
+          "pct": 6.9
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 25,
+          "pct": 6.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 48,
+          "gm_pct": 11.8,
+          "ch_pct": 2.47,
+          "ratio": 4.77
+        },
+        {
+          "marke": "VOLVO",
+          "n": 24,
+          "gm_pct": 5.9,
+          "ch_pct": 2.8,
+          "ratio": 2.1
+        },
+        {
+          "marke": "SUBARU",
+          "n": 14,
+          "gm_pct": 3.4,
+          "ch_pct": 2.01,
+          "ratio": 1.71
+        }
+      ]
+    },
+    {
+      "id": "3.786",
+      "name": "Samedan",
+      "bezirk": "Region Maloja",
+      "total": 1717,
+      "b24": 157,
+      "erneuerung": 9.1,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 194,
+          "pct": 11.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 179,
+          "pct": 10.4
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 160,
+          "pct": 9.3
+        },
+        {
+          "marke": "FIAT",
+          "n": 123,
+          "pct": 7.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 122,
+          "pct": 7.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 44,
+          "gm_pct": 2.6,
+          "ch_pct": 0.88,
+          "ratio": 2.91
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 119,
+          "gm_pct": 6.9,
+          "ch_pct": 2.47,
+          "ratio": 2.81
+        },
+        {
+          "marke": "FIAT",
+          "n": 123,
+          "gm_pct": 7.2,
+          "ch_pct": 2.86,
+          "ratio": 2.5
+        }
+      ]
+    },
+    {
+      "id": "3.752",
+      "name": "Samnaun",
+      "bezirk": "Region Engiadina Bassa / Val Müstair",
+      "total": 500,
+      "b24": 31,
+      "erneuerung": 6.2,
+      "top5": [
+        {
+          "marke": "BMW",
+          "n": 103,
+          "pct": 20.6
+        },
+        {
+          "marke": "VW",
+          "n": 90,
+          "pct": 18.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 57,
+          "pct": 11.4
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 44,
+          "pct": 8.8
+        },
+        {
+          "marke": "SKODA",
+          "n": 35,
+          "pct": 7.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 14,
+          "gm_pct": 2.8,
+          "ch_pct": 0.88,
+          "ratio": 3.18
+        },
+        {
+          "marke": "BMW",
+          "n": 103,
+          "gm_pct": 20.6,
+          "ch_pct": 7.25,
+          "ratio": 2.84
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 17,
+          "gm_pct": 3.4,
+          "ch_pct": 1.22,
+          "ratio": 2.79
+        }
+      ]
+    },
+    {
+      "id": "3.835",
+      "name": "San Vittore",
+      "bezirk": "Region Moesa",
+      "total": 678,
+      "b24": 80,
+      "erneuerung": 11.8,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 87,
+          "pct": 12.8
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 47,
+          "pct": 6.9
+        },
+        {
+          "marke": "AUDI",
+          "n": 46,
+          "pct": 6.8
+        },
+        {
+          "marke": "SKODA",
+          "n": 43,
+          "pct": 6.3
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 43,
+          "pct": 6.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "DACIA",
+          "n": 28,
+          "gm_pct": 4.1,
+          "ch_pct": 1.78,
+          "ratio": 2.32
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 38,
+          "gm_pct": 5.6,
+          "ch_pct": 2.47,
+          "ratio": 2.27
+        },
+        {
+          "marke": "JEEP",
+          "n": 12,
+          "gm_pct": 1.8,
+          "ch_pct": 0.88,
+          "ratio": 2.01
+        }
+      ]
+    },
+    {
+      "id": "3.810",
+      "name": "Santa Maria in Calanca",
+      "bezirk": "Region Moesa",
+      "total": 84,
+      "b24": 11,
+      "erneuerung": 13.1,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 12,
+          "pct": 14.3
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 10,
+          "pct": 11.9
+        },
+        {
+          "marke": "HONDA",
+          "n": 7,
+          "pct": 8.3
+        },
+        {
+          "marke": "VW",
+          "n": 7,
+          "pct": 8.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 4,
+          "pct": 4.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 12,
+          "gm_pct": 14.3,
+          "ch_pct": 2.47,
+          "ratio": 5.79
+        },
+        {
+          "marke": "HONDA",
+          "n": 7,
+          "gm_pct": 8.3,
+          "ch_pct": 1.63,
+          "ratio": 5.11
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 10,
+          "gm_pct": 11.9,
+          "ch_pct": 4.88,
+          "ratio": 2.44
+        }
+      ]
+    },
+    {
+      "id": "3.638",
+      "name": "Scharans",
+      "bezirk": "Region Viamala",
+      "total": 524,
+      "b24": 37,
+      "erneuerung": 7.1,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 73,
+          "pct": 13.9
+        },
+        {
+          "marke": "VW",
+          "n": 70,
+          "pct": 13.4
+        },
+        {
+          "marke": "SKODA",
+          "n": 42,
+          "pct": 8.0
+        },
+        {
+          "marke": "VOLVO",
+          "n": 37,
+          "pct": 7.1
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 35,
+          "pct": 6.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 73,
+          "gm_pct": 13.9,
+          "ch_pct": 2.47,
+          "ratio": 5.64
+        },
+        {
+          "marke": "VOLVO",
+          "n": 37,
+          "gm_pct": 7.1,
+          "ch_pct": 2.8,
+          "ratio": 2.52
+        },
+        {
+          "marke": "MAZDA",
+          "n": 30,
+          "gm_pct": 5.7,
+          "ch_pct": 2.3,
+          "ratio": 2.49
+        }
+      ]
+    },
+    {
+      "id": "3.962",
+      "name": "Schiers",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 1656,
+      "b24": 94,
+      "erneuerung": 5.7,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 243,
+          "pct": 14.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 171,
+          "pct": 10.3
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 167,
+          "pct": 10.1
+        },
+        {
+          "marke": "AUDI",
+          "n": 132,
+          "pct": 8.0
+        },
+        {
+          "marke": "BMW",
+          "n": 129,
+          "pct": 7.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 167,
+          "gm_pct": 10.1,
+          "ch_pct": 2.47,
+          "ratio": 4.09
+        },
+        {
+          "marke": "SUBARU",
+          "n": 79,
+          "gm_pct": 4.8,
+          "ch_pct": 2.01,
+          "ratio": 2.38
+        },
+        {
+          "marke": "SKODA",
+          "n": 171,
+          "gm_pct": 10.3,
+          "ch_pct": 5.68,
+          "ratio": 1.82
+        }
+      ]
+    },
+    {
+      "id": "3.582",
+      "name": "Schluein",
+      "bezirk": "Region Surselva",
+      "total": 457,
+      "b24": 32,
+      "erneuerung": 7.0,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 64,
+          "pct": 14.0
+        },
+        {
+          "marke": "BMW",
+          "n": 44,
+          "pct": 9.6
+        },
+        {
+          "marke": "AUDI",
+          "n": 33,
+          "pct": 7.2
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 33,
+          "pct": 7.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 32,
+          "pct": 7.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 33,
+          "gm_pct": 7.2,
+          "ch_pct": 2.47,
+          "ratio": 2.93
+        },
+        {
+          "marke": "JEEP",
+          "n": 9,
+          "gm_pct": 2.0,
+          "ch_pct": 0.88,
+          "ratio": 2.24
+        },
+        {
+          "marke": "SUBARU",
+          "n": 20,
+          "gm_pct": 4.4,
+          "ch_pct": 2.01,
+          "ratio": 2.18
+        }
+      ]
+    },
+    {
+      "id": "3.514",
+      "name": "Schmitten (GR)",
+      "bezirk": "Region Albula",
+      "total": 146,
+      "b24": 12,
+      "erneuerung": 8.2,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 23,
+          "pct": 15.8
+        },
+        {
+          "marke": "VW",
+          "n": 16,
+          "pct": 11.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 12,
+          "pct": 8.2
+        },
+        {
+          "marke": "SUBARU",
+          "n": 10,
+          "pct": 6.8
+        },
+        {
+          "marke": "DACIA",
+          "n": 8,
+          "pct": 5.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 23,
+          "gm_pct": 15.8,
+          "ch_pct": 2.47,
+          "ratio": 6.38
+        },
+        {
+          "marke": "SUBARU",
+          "n": 10,
+          "gm_pct": 6.8,
+          "ch_pct": 2.01,
+          "ratio": 3.42
+        },
+        {
+          "marke": "DACIA",
+          "n": 8,
+          "gm_pct": 5.5,
+          "ch_pct": 1.78,
+          "ratio": 3.07
+        }
+      ]
+    },
+    {
+      "id": "3.762",
+      "name": "Scuol",
+      "bezirk": "Region Engiadina Bassa / Val Müstair",
+      "total": 2479,
+      "b24": 140,
+      "erneuerung": 5.6,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 430,
+          "pct": 17.3
+        },
+        {
+          "marke": "BMW",
+          "n": 270,
+          "pct": 10.9
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 269,
+          "pct": 10.9
+        },
+        {
+          "marke": "SKODA",
+          "n": 266,
+          "pct": 10.7
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 165,
+          "pct": 6.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 269,
+          "gm_pct": 10.9,
+          "ch_pct": 2.47,
+          "ratio": 4.4
+        },
+        {
+          "marke": "JEEP",
+          "n": 53,
+          "gm_pct": 2.1,
+          "ch_pct": 0.88,
+          "ratio": 2.43
+        },
+        {
+          "marke": "SUBARU",
+          "n": 100,
+          "gm_pct": 4.0,
+          "ch_pct": 2.01,
+          "ratio": 2.01
+        }
+      ]
+    },
+    {
+      "id": "3.972",
+      "name": "Seewis im Prättigau",
+      "bezirk": "Region Prättigau / Davos",
+      "total": 808,
+      "b24": 51,
+      "erneuerung": 6.3,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 136,
+          "pct": 16.8
+        },
+        {
+          "marke": "VW",
+          "n": 103,
+          "pct": 12.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 86,
+          "pct": 10.6
+        },
+        {
+          "marke": "AUDI",
+          "n": 58,
+          "pct": 7.2
+        },
+        {
+          "marke": "BMW",
+          "n": 36,
+          "pct": 4.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 136,
+          "gm_pct": 16.8,
+          "ch_pct": 2.47,
+          "ratio": 6.82
+        },
+        {
+          "marke": "JEEP",
+          "n": 20,
+          "gm_pct": 2.5,
+          "ch_pct": 0.88,
+          "ratio": 2.81
+        },
+        {
+          "marke": "SUBARU",
+          "n": 35,
+          "gm_pct": 4.3,
+          "ch_pct": 2.01,
+          "ratio": 2.16
+        }
+      ]
+    },
+    {
+      "id": "3.640",
+      "name": "Sils im Domleschg",
+      "bezirk": "Region Viamala",
+      "total": 566,
+      "b24": 33,
+      "erneuerung": 5.8,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 74,
+          "pct": 13.1
+        },
+        {
+          "marke": "FORD",
+          "n": 48,
+          "pct": 8.5
+        },
+        {
+          "marke": "SKODA",
+          "n": 42,
+          "pct": 7.4
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 36,
+          "pct": 6.4
+        },
+        {
+          "marke": "BMW",
+          "n": 35,
+          "pct": 6.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 12,
+          "gm_pct": 2.1,
+          "ch_pct": 0.88,
+          "ratio": 2.41
+        },
+        {
+          "marke": "FORD",
+          "n": 48,
+          "gm_pct": 8.5,
+          "ch_pct": 4.08,
+          "ratio": 2.08
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 28,
+          "gm_pct": 4.9,
+          "ch_pct": 2.47,
+          "ratio": 2.0
+        }
+      ]
+    },
+    {
+      "id": "3.789",
+      "name": "Sils im Engadin/Segl",
+      "bezirk": "Region Maloja",
+      "total": 500,
+      "b24": 39,
+      "erneuerung": 7.8,
+      "top5": [
+        {
+          "marke": "AUDI",
+          "n": 64,
+          "pct": 12.8
+        },
+        {
+          "marke": "VW",
+          "n": 64,
+          "pct": 12.8
+        },
+        {
+          "marke": "BMW",
+          "n": 44,
+          "pct": 8.8
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 38,
+          "pct": 7.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 35,
+          "pct": 7.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "LAND ROVER",
+          "n": 14,
+          "gm_pct": 2.8,
+          "ch_pct": 0.9,
+          "ratio": 3.09
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 35,
+          "gm_pct": 7.0,
+          "ch_pct": 2.47,
+          "ratio": 2.84
+        },
+        {
+          "marke": "SUBARU",
+          "n": 26,
+          "gm_pct": 5.2,
+          "ch_pct": 2.01,
+          "ratio": 2.59
+        }
+      ]
+    },
+    {
+      "id": "3.790",
+      "name": "Silvaplana",
+      "bezirk": "Region Maloja",
+      "total": 722,
+      "b24": 61,
+      "erneuerung": 8.4,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 96,
+          "pct": 13.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 67,
+          "pct": 9.3
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 61,
+          "pct": 8.4
+        },
+        {
+          "marke": "FIAT",
+          "n": 54,
+          "pct": 7.5
+        },
+        {
+          "marke": "BMW",
+          "n": 52,
+          "pct": 7.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "PORSCHE",
+          "n": 34,
+          "gm_pct": 4.7,
+          "ch_pct": 1.44,
+          "ratio": 3.27
+        },
+        {
+          "marke": "LAND ROVER",
+          "n": 18,
+          "gm_pct": 2.5,
+          "ch_pct": 0.9,
+          "ratio": 2.75
+        },
+        {
+          "marke": "JEEP",
+          "n": 17,
+          "gm_pct": 2.4,
+          "ch_pct": 0.88,
+          "ratio": 2.67
+        }
+      ]
+    },
+    {
+      "id": "3.823",
+      "name": "Soazza",
+      "bezirk": "Region Moesa",
+      "total": 251,
+      "b24": 22,
+      "erneuerung": 8.8,
+      "top5": [
+        {
+          "marke": "AUDI",
+          "n": 26,
+          "pct": 10.4
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 26,
+          "pct": 10.4
+        },
+        {
+          "marke": "VW",
+          "n": 24,
+          "pct": 9.6
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 23,
+          "pct": 9.2
+        },
+        {
+          "marke": "BMW",
+          "n": 19,
+          "pct": 7.6
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 13,
+          "gm_pct": 5.2,
+          "ch_pct": 2.47,
+          "ratio": 2.1
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 23,
+          "gm_pct": 9.2,
+          "ch_pct": 4.88,
+          "ratio": 1.88
+        },
+        {
+          "marke": "AUDI",
+          "n": 26,
+          "gm_pct": 10.4,
+          "ch_pct": 6.75,
+          "ratio": 1.53
+        }
+      ]
+    },
+    {
+      "id": "3.694",
+      "name": "Splügen",
+      "bezirk": "Region Viamala",
+      "total": 200,
+      "b24": 17,
+      "erneuerung": 8.5,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 19,
+          "pct": 9.5
+        },
+        {
+          "marke": "VW",
+          "n": 18,
+          "pct": 9.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 16,
+          "pct": 8.0
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 16,
+          "pct": 8.0
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 16,
+          "pct": 8.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUBARU",
+          "n": 14,
+          "gm_pct": 7.0,
+          "ch_pct": 2.01,
+          "ratio": 3.49
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 16,
+          "gm_pct": 8.0,
+          "ch_pct": 2.47,
+          "ratio": 3.24
+        },
+        {
+          "marke": "VOLVO",
+          "n": 16,
+          "gm_pct": 8.0,
+          "ch_pct": 2.8,
+          "ratio": 2.85
+        }
+      ]
+    },
+    {
+      "id": "3.787",
+      "name": "St. Moritz",
+      "bezirk": "Region Maloja",
+      "total": 3871,
+      "b24": 460,
+      "erneuerung": 11.9,
+      "top5": [
+        {
+          "marke": "AUDI",
+          "n": 533,
+          "pct": 13.8
+        },
+        {
+          "marke": "VW",
+          "n": 454,
+          "pct": 11.7
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 443,
+          "pct": 11.4
+        },
+        {
+          "marke": "BMW",
+          "n": 273,
+          "pct": 7.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 253,
+          "pct": 6.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "LAND ROVER",
+          "n": 105,
+          "gm_pct": 2.7,
+          "ch_pct": 0.9,
+          "ratio": 3.0
+        },
+        {
+          "marke": "PORSCHE",
+          "n": 164,
+          "gm_pct": 4.2,
+          "ch_pct": 1.44,
+          "ratio": 2.94
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 242,
+          "gm_pct": 6.3,
+          "ch_pct": 2.47,
+          "ratio": 2.53
+        }
+      ]
+    },
+    {
+      "id": "3.695",
+      "name": "Sufers",
+      "bezirk": "Region Viamala",
+      "total": 72,
+      "b24": 4,
+      "erneuerung": 5.6,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 9,
+          "pct": 12.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 8,
+          "pct": 11.1
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 7,
+          "pct": 9.7
+        },
+        {
+          "marke": "MAZDA",
+          "n": 5,
+          "pct": 6.9
+        },
+        {
+          "marke": "BMW",
+          "n": 4,
+          "pct": 5.6
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 8,
+          "gm_pct": 11.1,
+          "ch_pct": 2.47,
+          "ratio": 4.5
+        },
+        {
+          "marke": "MAZDA",
+          "n": 5,
+          "gm_pct": 6.9,
+          "ch_pct": 2.3,
+          "ratio": 3.02
+        },
+        {
+          "marke": "SKODA",
+          "n": 9,
+          "gm_pct": 12.5,
+          "ch_pct": 5.68,
+          "ratio": 2.2
+        }
+      ]
+    },
+    {
+      "id": "3.985",
+      "name": "Sumvitg",
+      "bezirk": "Region Surselva",
+      "total": 668,
+      "b24": 22,
+      "erneuerung": 3.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 124,
+          "pct": 18.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 99,
+          "pct": 14.8
+        },
+        {
+          "marke": "AUDI",
+          "n": 55,
+          "pct": 8.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 51,
+          "pct": 7.6
+        },
+        {
+          "marke": "SUBARU",
+          "n": 45,
+          "pct": 6.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 99,
+          "gm_pct": 14.8,
+          "ch_pct": 2.47,
+          "ratio": 6.0
+        },
+        {
+          "marke": "SUBARU",
+          "n": 45,
+          "gm_pct": 6.7,
+          "ch_pct": 2.01,
+          "ratio": 3.36
+        },
+        {
+          "marke": "JEEP",
+          "n": 11,
+          "gm_pct": 1.6,
+          "ch_pct": 0.88,
+          "ratio": 1.87
+        }
+      ]
+    },
+    {
+      "id": "3.543",
+      "name": "Surses",
+      "bezirk": "Region Albula",
+      "total": 1530,
+      "b24": 99,
+      "erneuerung": 6.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 194,
+          "pct": 12.7
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 187,
+          "pct": 12.2
+        },
+        {
+          "marke": "SKODA",
+          "n": 169,
+          "pct": 11.0
+        },
+        {
+          "marke": "BMW",
+          "n": 113,
+          "pct": 7.4
+        },
+        {
+          "marke": "AUDI",
+          "n": 100,
+          "pct": 6.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 187,
+          "gm_pct": 12.2,
+          "ch_pct": 2.47,
+          "ratio": 4.95
+        },
+        {
+          "marke": "SUBARU",
+          "n": 81,
+          "gm_pct": 5.3,
+          "ch_pct": 2.01,
+          "ratio": 2.64
+        },
+        {
+          "marke": "JEEP",
+          "n": 28,
+          "gm_pct": 1.8,
+          "ch_pct": 0.88,
+          "ratio": 2.08
+        }
+      ]
+    },
+    {
+      "id": "3.733",
+      "name": "Tamins",
+      "bezirk": "Region Imboden",
+      "total": 701,
+      "b24": 47,
+      "erneuerung": 6.7,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 101,
+          "pct": 14.4
+        },
+        {
+          "marke": "SKODA",
+          "n": 61,
+          "pct": 8.7
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 49,
+          "pct": 7.0
+        },
+        {
+          "marke": "BMW",
+          "n": 44,
+          "pct": 6.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 43,
+          "pct": 6.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 49,
+          "gm_pct": 7.0,
+          "ch_pct": 2.47,
+          "ratio": 2.83
+        },
+        {
+          "marke": "JEEP",
+          "n": 17,
+          "gm_pct": 2.4,
+          "ch_pct": 0.88,
+          "ratio": 2.75
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 22,
+          "gm_pct": 3.1,
+          "ch_pct": 1.22,
+          "ratio": 2.57
+        }
+      ]
+    },
+    {
+      "id": "3.668",
+      "name": "Thusis",
+      "bezirk": "Region Viamala",
+      "total": 1907,
+      "b24": 132,
+      "erneuerung": 6.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 258,
+          "pct": 13.5
+        },
+        {
+          "marke": "AUDI",
+          "n": 182,
+          "pct": 9.5
+        },
+        {
+          "marke": "SKODA",
+          "n": 181,
+          "pct": 9.5
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 143,
+          "pct": 7.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 127,
+          "pct": 6.7
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 127,
+          "gm_pct": 6.7,
+          "ch_pct": 2.47,
+          "ratio": 2.7
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 46,
+          "gm_pct": 2.4,
+          "ch_pct": 1.22,
+          "ratio": 1.98
+        },
+        {
+          "marke": "JEEP",
+          "n": 28,
+          "gm_pct": 1.5,
+          "ch_pct": 0.88,
+          "ratio": 1.67
+        }
+      ]
+    },
+    {
+      "id": "3.945",
+      "name": "Trimmis",
+      "bezirk": "Region Landquart",
+      "total": 2010,
+      "b24": 163,
+      "erneuerung": 8.1,
+      "top5": [
+        {
+          "marke": "SKODA",
+          "n": 248,
+          "pct": 12.3
+        },
+        {
+          "marke": "VW",
+          "n": 237,
+          "pct": 11.8
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 157,
+          "pct": 7.8
+        },
+        {
+          "marke": "BMW",
+          "n": 130,
+          "pct": 6.5
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 130,
+          "pct": 6.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 130,
+          "gm_pct": 6.5,
+          "ch_pct": 2.47,
+          "ratio": 2.62
+        },
+        {
+          "marke": "SKODA",
+          "n": 248,
+          "gm_pct": 12.3,
+          "ch_pct": 5.68,
+          "ratio": 2.17
+        },
+        {
+          "marke": "JEEP",
+          "n": 34,
+          "gm_pct": 1.7,
+          "ch_pct": 0.88,
+          "ratio": 1.92
+        }
+      ]
+    },
+    {
+      "id": "3.734",
+      "name": "Trin",
+      "bezirk": "Region Imboden",
+      "total": 825,
+      "b24": 64,
+      "erneuerung": 7.8,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 113,
+          "pct": 13.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 92,
+          "pct": 11.2
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 79,
+          "pct": 9.6
+        },
+        {
+          "marke": "BMW",
+          "n": 60,
+          "pct": 7.3
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 48,
+          "pct": 5.8
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 79,
+          "gm_pct": 9.6,
+          "ch_pct": 2.47,
+          "ratio": 3.88
+        },
+        {
+          "marke": "JEEP",
+          "n": 21,
+          "gm_pct": 2.5,
+          "ch_pct": 0.88,
+          "ratio": 2.89
+        },
+        {
+          "marke": "SUBARU",
+          "n": 47,
+          "gm_pct": 5.7,
+          "ch_pct": 2.01,
+          "ratio": 2.84
+        }
+      ]
+    },
+    {
+      "id": "3.987",
+      "name": "Trun",
+      "bezirk": "Region Surselva",
+      "total": 683,
+      "b24": 43,
+      "erneuerung": 6.3,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 122,
+          "pct": 17.9
+        },
+        {
+          "marke": "VW",
+          "n": 89,
+          "pct": 13.0
+        },
+        {
+          "marke": "SKODA",
+          "n": 65,
+          "pct": 9.5
+        },
+        {
+          "marke": "SUBARU",
+          "n": 60,
+          "pct": 8.8
+        },
+        {
+          "marke": "BMW",
+          "n": 56,
+          "pct": 8.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 122,
+          "gm_pct": 17.9,
+          "ch_pct": 2.47,
+          "ratio": 7.24
+        },
+        {
+          "marke": "SUBARU",
+          "n": 60,
+          "gm_pct": 8.8,
+          "ch_pct": 2.01,
+          "ratio": 4.38
+        },
+        {
+          "marke": "SKODA",
+          "n": 65,
+          "gm_pct": 9.5,
+          "ch_pct": 5.68,
+          "ratio": 1.67
+        }
+      ]
+    },
+    {
+      "id": "3.669",
+      "name": "Tschappina",
+      "bezirk": "Region Viamala",
+      "total": 82,
+      "b24": 4,
+      "erneuerung": 4.9,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 14,
+          "pct": 17.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 13,
+          "pct": 15.9
+        },
+        {
+          "marke": "VW",
+          "n": 10,
+          "pct": 12.2
+        },
+        {
+          "marke": "DACIA",
+          "n": 5,
+          "pct": 6.1
+        },
+        {
+          "marke": "SUBARU",
+          "n": 5,
+          "pct": 6.1
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 14,
+          "gm_pct": 17.1,
+          "ch_pct": 2.47,
+          "ratio": 6.92
+        },
+        {
+          "marke": "DACIA",
+          "n": 5,
+          "gm_pct": 6.1,
+          "ch_pct": 1.78,
+          "ratio": 3.42
+        },
+        {
+          "marke": "SUBARU",
+          "n": 5,
+          "gm_pct": 6.1,
+          "ch_pct": 2.01,
+          "ratio": 3.04
+        }
+      ]
+    },
+    {
+      "id": "3.932",
+      "name": "Tschiertschen-Praden",
+      "bezirk": "Region Plessur",
+      "total": 155,
+      "b24": 13,
+      "erneuerung": 8.4,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 23,
+          "pct": 14.8
+        },
+        {
+          "marke": "SUBARU",
+          "n": 18,
+          "pct": 11.6
+        },
+        {
+          "marke": "SKODA",
+          "n": 15,
+          "pct": 9.7
+        },
+        {
+          "marke": "VW",
+          "n": 14,
+          "pct": 9.0
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 13,
+          "pct": 8.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 23,
+          "gm_pct": 14.8,
+          "ch_pct": 2.47,
+          "ratio": 6.01
+        },
+        {
+          "marke": "SUBARU",
+          "n": 18,
+          "gm_pct": 11.6,
+          "ch_pct": 2.01,
+          "ratio": 5.79
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 5,
+          "gm_pct": 3.2,
+          "ch_pct": 1.22,
+          "ratio": 2.64
+        }
+      ]
+    },
+    {
+      "id": "3.986",
+      "name": "Tujetsch",
+      "bezirk": "Region Surselva",
+      "total": 653,
+      "b24": 32,
+      "erneuerung": 4.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 94,
+          "pct": 14.4
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 91,
+          "pct": 13.9
+        },
+        {
+          "marke": "AUDI",
+          "n": 63,
+          "pct": 9.6
+        },
+        {
+          "marke": "SKODA",
+          "n": 62,
+          "pct": 9.5
+        },
+        {
+          "marke": "BMW",
+          "n": 60,
+          "pct": 9.2
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 91,
+          "gm_pct": 13.9,
+          "ch_pct": 2.47,
+          "ratio": 5.65
+        },
+        {
+          "marke": "SUBARU",
+          "n": 54,
+          "gm_pct": 8.3,
+          "ch_pct": 2.01,
+          "ratio": 4.12
+        },
+        {
+          "marke": "JEEP",
+          "n": 19,
+          "gm_pct": 2.9,
+          "ch_pct": 0.88,
+          "ratio": 3.3
+        }
+      ]
+    },
+    {
+      "id": "3.946",
+      "name": "Untervaz",
+      "bezirk": "Region Landquart",
+      "total": 1518,
+      "b24": 126,
+      "erneuerung": 8.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 202,
+          "pct": 13.3
+        },
+        {
+          "marke": "SKODA",
+          "n": 195,
+          "pct": 12.8
+        },
+        {
+          "marke": "BMW",
+          "n": 127,
+          "pct": 8.4
+        },
+        {
+          "marke": "AUDI",
+          "n": 104,
+          "pct": 6.9
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 96,
+          "pct": 6.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 96,
+          "gm_pct": 6.3,
+          "ch_pct": 2.47,
+          "ratio": 2.56
+        },
+        {
+          "marke": "SKODA",
+          "n": 195,
+          "gm_pct": 12.8,
+          "ch_pct": 5.68,
+          "ratio": 2.26
+        },
+        {
+          "marke": "MITSUBISHI",
+          "n": 33,
+          "gm_pct": 2.2,
+          "ch_pct": 1.22,
+          "ratio": 1.78
+        }
+      ]
+    },
+    {
+      "id": "3.670",
+      "name": "Urmein",
+      "bezirk": "Region Viamala",
+      "total": 103,
+      "b24": 7,
+      "erneuerung": 6.8,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 15,
+          "pct": 14.6
+        },
+        {
+          "marke": "VW",
+          "n": 12,
+          "pct": 11.7
+        },
+        {
+          "marke": "SKODA",
+          "n": 10,
+          "pct": 9.7
+        },
+        {
+          "marke": "AUDI",
+          "n": 6,
+          "pct": 5.8
+        },
+        {
+          "marke": "NISSAN",
+          "n": 5,
+          "pct": 4.9
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 15,
+          "gm_pct": 14.6,
+          "ch_pct": 2.47,
+          "ratio": 5.9
+        },
+        {
+          "marke": "NISSAN",
+          "n": 5,
+          "gm_pct": 4.9,
+          "ch_pct": 1.82,
+          "ratio": 2.66
+        },
+        {
+          "marke": "SUBARU",
+          "n": 5,
+          "gm_pct": 4.9,
+          "ch_pct": 2.01,
+          "ratio": 2.42
+        }
+      ]
+    },
+    {
+      "id": "3.847",
+      "name": "Val Müstair",
+      "bezirk": "Region Engiadina Bassa / Val Müstair",
+      "total": 967,
+      "b24": 53,
+      "erneuerung": 5.5,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 172,
+          "pct": 17.8
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 159,
+          "pct": 16.4
+        },
+        {
+          "marke": "AUDI",
+          "n": 88,
+          "pct": 9.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 63,
+          "pct": 6.5
+        },
+        {
+          "marke": "SUBARU",
+          "n": 62,
+          "pct": 6.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 159,
+          "gm_pct": 16.4,
+          "ch_pct": 2.47,
+          "ratio": 6.66
+        },
+        {
+          "marke": "JEEP",
+          "n": 29,
+          "gm_pct": 3.0,
+          "ch_pct": 0.88,
+          "ratio": 3.4
+        },
+        {
+          "marke": "SUBARU",
+          "n": 62,
+          "gm_pct": 6.4,
+          "ch_pct": 2.01,
+          "ratio": 3.2
+        }
+      ]
+    },
+    {
+      "id": "3.603",
+      "name": "Vals",
+      "bezirk": "Region Surselva",
+      "total": 488,
+      "b24": 20,
+      "erneuerung": 4.1,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 82,
+          "pct": 16.8
+        },
+        {
+          "marke": "SKODA",
+          "n": 65,
+          "pct": 13.3
+        },
+        {
+          "marke": "BMW",
+          "n": 43,
+          "pct": 8.8
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 42,
+          "pct": 8.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 34,
+          "pct": 7.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 42,
+          "gm_pct": 8.6,
+          "ch_pct": 2.47,
+          "ratio": 3.49
+        },
+        {
+          "marke": "SUBARU",
+          "n": 26,
+          "gm_pct": 5.3,
+          "ch_pct": 2.01,
+          "ratio": 2.66
+        },
+        {
+          "marke": "SKODA",
+          "n": 65,
+          "gm_pct": 13.3,
+          "ch_pct": 5.68,
+          "ratio": 2.34
+        }
+      ]
+    },
+    {
+      "id": "3.764",
+      "name": "Valsot",
+      "bezirk": "Region Engiadina Bassa / Val Müstair",
+      "total": 512,
+      "b24": 15,
+      "erneuerung": 2.9,
+      "top5": [
+        {
+          "marke": "SUZUKI",
+          "n": 85,
+          "pct": 16.6
+        },
+        {
+          "marke": "VW",
+          "n": 67,
+          "pct": 13.1
+        },
+        {
+          "marke": "SKODA",
+          "n": 64,
+          "pct": 12.5
+        },
+        {
+          "marke": "SUBARU",
+          "n": 33,
+          "pct": 6.4
+        },
+        {
+          "marke": "BMW",
+          "n": 27,
+          "pct": 5.3
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 85,
+          "gm_pct": 16.6,
+          "ch_pct": 2.47,
+          "ratio": 6.73
+        },
+        {
+          "marke": "JEEP",
+          "n": 19,
+          "gm_pct": 3.7,
+          "ch_pct": 0.88,
+          "ratio": 4.21
+        },
+        {
+          "marke": "SUBARU",
+          "n": 33,
+          "gm_pct": 6.4,
+          "ch_pct": 2.01,
+          "ratio": 3.21
+        }
+      ]
+    },
+    {
+      "id": "3.506",
+      "name": "Vaz/Obervaz",
+      "bezirk": "Region Albula",
+      "total": 1597,
+      "b24": 181,
+      "erneuerung": 11.3,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 233,
+          "pct": 14.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 150,
+          "pct": 9.4
+        },
+        {
+          "marke": "SKODA",
+          "n": 148,
+          "pct": 9.3
+        },
+        {
+          "marke": "AUDI",
+          "n": 130,
+          "pct": 8.1
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 121,
+          "pct": 7.6
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 121,
+          "gm_pct": 7.6,
+          "ch_pct": 2.47,
+          "ratio": 3.07
+        },
+        {
+          "marke": "PORSCHE",
+          "n": 59,
+          "gm_pct": 3.7,
+          "ch_pct": 1.44,
+          "ratio": 2.56
+        },
+        {
+          "marke": "JEEP",
+          "n": 31,
+          "gm_pct": 1.9,
+          "ch_pct": 0.88,
+          "ratio": 2.2
+        }
+      ]
+    },
+    {
+      "id": "3.746",
+      "name": "Zernez",
+      "bezirk": "Region Engiadina Bassa / Val Müstair",
+      "total": 928,
+      "b24": 55,
+      "erneuerung": 5.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 142,
+          "pct": 15.3
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 108,
+          "pct": 11.6
+        },
+        {
+          "marke": "SKODA",
+          "n": 89,
+          "pct": 9.6
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 75,
+          "pct": 8.1
+        },
+        {
+          "marke": "AUDI",
+          "n": 70,
+          "pct": 7.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 48,
+          "gm_pct": 5.2,
+          "ch_pct": 0.88,
+          "ratio": 5.87
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 108,
+          "gm_pct": 11.6,
+          "ch_pct": 2.47,
+          "ratio": 4.71
+        },
+        {
+          "marke": "SUBARU",
+          "n": 35,
+          "gm_pct": 3.8,
+          "ch_pct": 2.01,
+          "ratio": 1.88
+        }
+      ]
+    },
+    {
+      "id": "3.712",
+      "name": "Zillis-Reischen",
+      "bezirk": "Region Viamala",
+      "total": 291,
+      "b24": 15,
+      "erneuerung": 5.2,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 35,
+          "pct": 12.0
+        },
+        {
+          "marke": "SKODA",
+          "n": 33,
+          "pct": 11.3
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 29,
+          "pct": 10.0
+        },
+        {
+          "marke": "AUDI",
+          "n": 19,
+          "pct": 6.5
+        },
+        {
+          "marke": "TOYOTA",
+          "n": 19,
+          "pct": 6.5
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SUZUKI",
+          "n": 29,
+          "gm_pct": 10.0,
+          "ch_pct": 2.47,
+          "ratio": 4.04
+        },
+        {
+          "marke": "JEEP",
+          "n": 7,
+          "gm_pct": 2.4,
+          "ch_pct": 0.88,
+          "ratio": 2.73
+        },
+        {
+          "marke": "SUBARU",
+          "n": 14,
+          "gm_pct": 4.8,
+          "ch_pct": 2.01,
+          "ratio": 2.4
+        }
+      ]
+    },
+    {
+      "id": "3.947",
+      "name": "Zizers",
+      "bezirk": "Region Landquart",
+      "total": 2224,
+      "b24": 198,
+      "erneuerung": 8.9,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 299,
+          "pct": 13.4
+        },
+        {
+          "marke": "SKODA",
+          "n": 262,
+          "pct": 11.8
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 182,
+          "pct": 8.2
+        },
+        {
+          "marke": "AUDI",
+          "n": 170,
+          "pct": 7.6
+        },
+        {
+          "marke": "BMW",
+          "n": 143,
+          "pct": 6.4
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "SKODA",
+          "n": 262,
+          "gm_pct": 11.8,
+          "ch_pct": 5.68,
+          "ratio": 2.07
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 93,
+          "gm_pct": 4.2,
+          "ch_pct": 2.47,
+          "ratio": 1.69
+        },
+        {
+          "marke": "SEAT",
+          "n": 102,
+          "gm_pct": 4.6,
+          "ch_pct": 2.99,
+          "ratio": 1.54
+        }
+      ]
+    },
+    {
+      "id": "3.791",
+      "name": "Zuoz",
+      "bezirk": "Region Maloja",
+      "total": 733,
+      "b24": 50,
+      "erneuerung": 6.8,
+      "top5": [
+        {
+          "marke": "VW",
+          "n": 104,
+          "pct": 14.2
+        },
+        {
+          "marke": "AUDI",
+          "n": 86,
+          "pct": 11.7
+        },
+        {
+          "marke": "MERCEDES-BENZ",
+          "n": 76,
+          "pct": 10.4
+        },
+        {
+          "marke": "BMW",
+          "n": 56,
+          "pct": 7.6
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 51,
+          "pct": 7.0
+        }
+      ],
+      "outlier": [
+        {
+          "marke": "JEEP",
+          "n": 23,
+          "gm_pct": 3.1,
+          "ch_pct": 0.88,
+          "ratio": 3.56
+        },
+        {
+          "marke": "SUZUKI",
+          "n": 51,
+          "gm_pct": 7.0,
+          "ch_pct": 2.47,
+          "ratio": 2.82
+        },
+        {
+          "marke": "FIAT",
+          "n": 50,
+          "gm_pct": 6.8,
+          "ch_pct": 2.86,
+          "ratio": 2.38
+        }
+      ]
+    }
+  ]
+}
