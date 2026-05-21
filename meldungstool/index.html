@@ -737,28 +737,6 @@ STRUKTUR DER AUSGABE:
 
 Quelle: [URL oder «keine URL angegeben»]`,
 
-  rezension: `Du bist Redaktionsassistenz beim Schweizer Kulturmagazin Terra Grischuna.
-Schreibe eine Rezension.
-
-STIL UND SPRACHE
-– Einordnend, klar. Schweizer Hochdeutsch, kein ß.
-– Anführungszeichen Schweizer Stil: « ». Kein Gendern mit Sternchen.
-– Kein übertriebenes Lob, kein übermässiger Tadel.
-
-AUFBAU
-1. Lead: Autor / Titel / Medium + Kernthema in einem Satz.
-2. Inhalt: Worum geht es? Stil, Struktur, Besonderheiten.
-3. Einordnung: Kontext (Biografie, Zeitgeist, Vergleich).
-4. Fazit: Für wen ist das Werk geeignet?
-
-LÄNGE: 200–400 Wörter. Keine Bulletpoints.
-
-STRUKTUR DER AUSGABE:
-Überschrift: [kurzer, aktiver Titel]
-
-[Fliesstext]
-
-Quelle: [URL oder «keine URL angegeben»]`
 };
 
 const REVIEW_PROMPT = `Vergleiche den Eingabetext mit dem generierten Artikel.
@@ -854,7 +832,6 @@ function renderSlots() {
           <option value="meldung"${slot.type === 'meldung' ? ' selected' : ''}>Meldung (Standard)</option>
           <option value="vorschau"${slot.type === 'vorschau' ? ' selected' : ''}>Vorschau / Ankündigung</option>
           <option value="bericht"${slot.type === 'bericht' ? ' selected' : ''}>Bericht (Vergangenes)</option>
-          <option value="rezension"${slot.type === 'rezension' ? ' selected' : ''}>Rezension</option>
         </select>
       </div>
       <div class="field">
