@@ -467,6 +467,9 @@ textarea.meldung-edit {
 .slot-tab.has-result::after { content: ' ✓'; font-size: 9px; opacity: 0.85; }
 
 .edit-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.pane-copy-btn { background: none; border: 1px solid var(--border-hi); color: var(--text-dim); font-family: "JetBrains Mono", monospace; font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 3px 8px; cursor: pointer; white-space: nowrap; }
+.pane-copy-btn:hover { border-color: var(--text); color: var(--text); }
+.pane-copy-btn:active { background: var(--surface-hi); }
 
 /* ===== FLASH ===== */
 .flash {
@@ -615,6 +618,7 @@ footer {
         <div class="pane-header">
           <span class="pane-label">MELDUNG</span>
           <span class="char-count" id="char-count" style="margin:0;"></span>
+          <button class="pane-copy-btn" id="pane-copy-btn" onclick="copyActive()" title="Kopieren">⧉ KOPIEREN</button>
         </div>
         <div class="pane-body">
           <textarea class="meldung-edit" id="meldung-edit" placeholder="Hier erscheint die generierte Meldung…"></textarea>
@@ -718,23 +722,16 @@ GESCHLECHTER
 • Sonst ausschreiben: «Leserinnen und Leser», «Sportlerinnen und Sportler».
 • Keine Genderzeichen (*, :, /).
 
-AUSGABE (JSON, kein anderes Format)
-{
-  "results": [
-    {
-      "title": "",
-      "teaser": "",
-      "organizer": "",
-      "event_name": "",
-      "event_time": "",
-      "event_time_formatted": "",
-      "location": "",
-      "description": "",
-      "source": "",
-      "text": ""
-    }
-  ]
-}
+AUSGABE (Fliesstext, kein JSON, kein Markdown)
+Pro Ereignis:
+Titel: [Überschrift]
+Teaser: [Zwei Sätze]
+
+[Ortsmarke – Meldungstext]
+
+Quelle: [Institution]
+
+Bei mehreren Ereignissen durch «---» trennen.
 
 ABSCHLUSSPRÜFUNG
 • Beginnt der Text nach der Ortsmarke mit einem Datum? → Satzbau anpassen.
