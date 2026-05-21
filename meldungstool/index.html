@@ -931,9 +931,11 @@ async function tryFetchSlot(idx, el) {
   const btn = el.querySelector('.fetch-btn');
   btn.disabled = true; btn.textContent = 'LADE…';
   try {
-    const res = await fetch(url, { method: 'GET', redirect: 'follow' });
+    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+    const res = await fetch(proxyUrl);
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const html = await res.text();
+    const json = await res.json();
+    const html = json.contents;
     const text = extractText(html);
     if (text.length < 80) throw new Error('Zu wenig Text gefunden');
     slot.text = text;
