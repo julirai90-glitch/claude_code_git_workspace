@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!-- iframe height: 460px -->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; padding: 16px 20px 12px; }
+.chart-title { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 3px; }
+.chart-sub { font-size: 11px; color: #666; margin-bottom: 10px; line-height: 1.4; }
+.caveat { font-size: 10.5px; color: #888; background: #f7f7f7; border-left: 3px solid #ccc; padding: 5px 8px; margin-bottom: 12px; line-height: 1.45; }
+.caveat strong { color: #555; }
+.chart-source { font-size: 10px; color: #bbb; margin-top: 8px; }
+.legend { display: flex; gap: 20px; font-size: 12px; color: #555; margin-top: 10px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-line { display: inline-block; width: 20px; height: 3px; border-radius: 2px; }
+svg { width: 100%; height: auto; display: block; }
+.axis text { fill: #999; font-size: 11px; }
+.axis path, .axis line { stroke: #ddd; }
+.grid line { stroke: #eee; stroke-dasharray: 3 3; }
+.chart-wrap { position: relative; }
+.tooltip { position: absolute; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; display: none; white-space: nowrap; }
+.tooltip.visible { display: block; }
+.tt-title { font-weight: 700; margin-bottom: 4px; font-size: 13px; }
+.tt-row { display: flex; justify-content: space-between; gap: 14px; }
+.tt-row .k { color: #666; }
+.tt-row .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tt-swatch { display: inline-block; width: 8px; height: 3px; border-radius: 1px; margin-right: 5px; vertical-align: middle; }
+.tt-divider { border: none; border-top: 1px solid #eee; margin: 4px 0; }
+</style>
+</head>
+<body>
+<div class="chart-title">Mehr Gäste, kürzere Aufenthalte</div>
+<div class="chart-sub">Ankünfte und Logiernächte in Graubündner Hotels 1992–2025</div>
+<div class="caveat"><strong>Nur Hotellerie:</strong> Diese Zahlen erfassen ausschliesslich Hotels (BFS HESTA). Ferienwohnungen, Camping, Airbnb und andere Parahotellerie sind nicht enthalten — dort dürfte der Trend anders verlaufen.</div>
+<div class="chart-wrap">
+  <svg id="chart" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet"></svg>
+  <div id="tt" class="tooltip"></div>
+</div>
+<div class="legend">
+  <div class="legend-item"><span class="legend-line" style="background:#0068A4"></span><span>Ankünfte (linke Achse)</span></div>
+  <div class="legend-item"><span class="legend-line" style="background:#EE7733"></span><span>Logiernächte (rechte Achse)</span></div>
+  <div class="legend-item"><span class="legend-line" style="background:#aaa; height:2px; border-top: 2px dashed #aaa; background:none; border-radius:0"></span><span>Aufenthaltsdauer in Nächten (rechte Achse, gestrichelt)</span></div>
+</div>
+<div class="chart-source">Quelle: data.gr.ch – Amt für Wirtschaft und Tourismus GR / BFS HESTA &nbsp;·&nbsp; Grafik: Julian Reich</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+const DATA = [{"jahr":1992,"ankunfte":1644704,"logiernachte":6880275,"aufenthaltsdauer":4.18},{"jahr":1993,"ankunfte":1618127,"logiernachte":6854871,"aufenthaltsdauer":4.24},{"jahr":1994,"ankunfte":1646096,"logiernachte":6854304,"aufenthaltsdauer":4.16},{"jahr":1995,"ankunfte":1538907,"logiernachte":6341321,"aufenthaltsdauer":4.12},{"jahr":1996,"ankunfte":1438452,"logiernachte":5814891,"aufenthaltsdauer":4.04},{"jahr":1997,"ankunfte":1525316,"logiernachte":5869134,"aufenthaltsdauer":3.85},{"jahr":1998,"ankunfte":1581303,"logiernachte":6051169,"aufenthaltsdauer":3.83},{"jahr":1999,"ankunfte":1592913,"logiernachte":6009039,"aufenthaltsdauer":3.77},{"jahr":2000,"ankunfte":1713803,"logiernachte":6259401,"aufenthaltsdauer":3.65},{"jahr":2001,"ankunfte":1739251,"logiernachte":6300711,"aufenthaltsdauer":3.62},{"jahr":2002,"ankunfte":1581314,"logiernachte":5732095,"aufenthaltsdauer":3.62},{"jahr":2003,"ankunfte":1670524,"logiernachte":5834659,"aufenthaltsdauer":3.49},{"jahr":2005,"ankunfte":1696711,"logiernachte":5569534,"aufenthaltsdauer":3.28},{"jahr":2006,"ankunfte":1748106,"logiernachte":5706535,"aufenthaltsdauer":3.26},{"jahr":2007,"ankunfte":1824122,"logiernachte":5867775,"aufenthaltsdauer":3.22},{"jahr":2008,"ankunfte":1971903,"logiernachte":6239848,"aufenthaltsdauer":3.16},{"jahr":2009,"ankunfte":1867303,"logiernachte":5878188,"aufenthaltsdauer":3.15},{"jahr":2010,"ankunfte":1882292,"logiernachte":5801693,"aufenthaltsdauer":3.08},{"jahr":2011,"ankunfte":1782847,"logiernachte":5351442,"aufenthaltsdauer":3.0},{"jahr":2012,"ankunfte":1736268,"logiernachte":5064195,"aufenthaltsdauer":2.92},{"jahr":2013,"ankunfte":1765956,"logiernachte":5160975,"aufenthaltsdauer":2.92},{"jahr":2014,"ankunfte":1743916,"logiernachte":5050159,"aufenthaltsdauer":2.9},{"jahr":2015,"ankunfte":1658854,"logiernachte":4717301,"aufenthaltsdauer":2.84},{"jahr":2016,"ankunfte":1681777,"logiernachte":4621690,"aufenthaltsdauer":2.75},{"jahr":2017,"ankunfte":1794354,"logiernachte":4847177,"aufenthaltsdauer":2.7},{"jahr":2018,"ankunfte":1925330,"logiernachte":5128680,"aufenthaltsdauer":2.66},{"jahr":2019,"ankunfte":1990960,"logiernachte":5252299,"aufenthaltsdauer":2.64},{"jahr":2020,"ankunfte":1662711,"logiernachte":4763962,"aufenthaltsdauer":2.87},{"jahr":2021,"ankunfte":1858237,"logiernachte":5129581,"aufenthaltsdauer":2.76},{"jahr":2022,"ankunfte":2045795,"logiernachte":5542100,"aufenthaltsdauer":2.71},{"jahr":2023,"ankunfte":2059257,"logiernachte":5393162,"aufenthaltsdauer":2.62},{"jahr":2024,"ankunfte":2112386,"logiernachte":5492694,"aufenthaltsdauer":2.6},{"jahr":2025,"ankunfte":2210435,"logiernachte":5679939,"aufenthaltsdauer":2.57}];
+
+const fmtMio = v => (v/1e6).toFixed(2) + ' Mio.';
+const fmtN = v => v.toFixed(2) + ' N.';
+
+const W = 640, H = 300, m = {t:30, r:60, b:32, l:58};
+const w = W - m.l - m.r, h = H - m.t - m.b;
+const svg = d3.select('#chart').attr('viewBox', `0 0 ${W} ${H}`);
+const g = svg.append('g').attr('transform', `translate(${m.l},${m.t})`);
+
+const x = d3.scaleLinear().domain([1992, 2025]).range([0, w]);
+
+// Left axis: Ankünfte
+const yL = d3.scaleLinear().domain([0.8e6, 2.6e6]).range([h, 0]);
+// Right axis: Logiernächte
+const yR = d3.scaleLinear().domain([3.5e6, 7.5e6]).range([h, 0]);
+// Right axis 2: Aufenthaltsdauer (overlaid on right)
+const yD = d3.scaleLinear().domain([1.5, 5.0]).range([h, 0]);
+
+// Grid from left axis
+g.append('g').attr('class','grid').selectAll('line')
+  .data(yL.ticks(5)).join('line')
+  .attr('x1',0).attr('x2',w).attr('y1',d=>yL(d)).attr('y2',d=>yL(d));
+
+// Axes
+g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+  .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
+
+g.append('g').attr('class','axis')
+  .call(d3.axisLeft(yL).ticks(5).tickFormat(v => (v/1e6).toFixed(1) + ' Mio.'));
+
+g.append('g').attr('class','axis').attr('transform',`translate(${w},0)`)
+  .call(d3.axisRight(yR).ticks(5).tickFormat(v => (v/1e6).toFixed(1) + ' Mio.'));
+
+// Axis labels
+g.append('text').attr('x', -m.l + 2).attr('y', -10)
+  .attr('font-size', 10).attr('fill', '#0068A4').attr('font-weight', '600')
+  .text('Ankünfte');
+g.append('text').attr('x', w + m.r - 2).attr('y', -10)
+  .attr('font-size', 10).attr('fill', '#EE7733').attr('font-weight', '600')
+  .attr('text-anchor', 'end').text('Logiernächte');
+
+// Lines
+const lineL = d3.line().x(d => x(d.jahr)).y(d => yL(d.ankunfte)).curve(d3.curveMonotoneX);
+const lineR = d3.line().x(d => x(d.jahr)).y(d => yR(d.logiernachte)).curve(d3.curveMonotoneX);
+const lineD = d3.line().x(d => x(d.jahr)).y(d => yD(d.aufenthaltsdauer)).curve(d3.curveMonotoneX);
+
+g.append('path').datum(DATA).attr('fill','none')
+  .attr('stroke','#0068A4').attr('stroke-width', 2.5)
+  .attr('d', lineL);
+
+g.append('path').datum(DATA).attr('fill','none')
+  .attr('stroke','#EE7733').attr('stroke-width', 2.5)
+  .attr('d', lineR);
+
+g.append('path').datum(DATA).attr('fill','none')
+  .attr('stroke','#999').attr('stroke-width', 1.5)
+  .attr('stroke-dasharray','5 3')
+  .attr('d', lineD);
+
+// End labels
+const last = DATA[DATA.length - 1];
+g.append('text').attr('x', x(last.jahr) + 4).attr('y', yL(last.ankunfte))
+  .attr('font-size', 10).attr('fill', '#0068A4').attr('font-weight', '700')
+  .attr('dominant-baseline', 'middle').text('2025');
+
+// Annotations
+const annots = [
+  {yr: 2015, label: '«Frankenschock»', dy: -14},
+  {yr: 2020, label: 'Covid-19', dy: 14},
+];
+annots.forEach(a => {
+  const px = x(a.yr);
+  g.append('line').attr('x1',px).attr('x2',px).attr('y1',0).attr('y2',h)
+    .attr('stroke','#ccc').attr('stroke-dasharray','4 3').attr('stroke-width',1);
+  g.append('text').attr('x', px + 3).attr('y', a.dy < 0 ? 12 : h - 4)
+    .attr('font-size', 9.5).attr('fill','#999').text(a.label);
+});
+
+// Hover
+const bisect = d3.bisector(d => d.jahr).left;
+const hLine = g.append('line').attr('y1',0).attr('y2',h)
+  .attr('stroke','#ccc').attr('stroke-dasharray','3 3').attr('stroke-width',1)
+  .style('display','none');
+const tt = document.getElementById('tt');
+const chartWrap = document.querySelector('.chart-wrap');
+
+function showTooltip(e, d) {
+  tt.innerHTML = `
+    <div class="tt-title">${d.jahr}</div>
+    <div class="tt-row"><span style="display:inline-block;width:10px;height:3px;background:#0068A4;border-radius:1px;margin-right:5px;vertical-align:middle"></span><span class="k">Ankünfte</span><span class="v">${fmtMio(d.ankunfte)}</span></div>
+    <div class="tt-row"><span style="display:inline-block;width:10px;height:3px;background:#EE7733;border-radius:1px;margin-right:5px;vertical-align:middle"></span><span class="k">Logiernächte</span><span class="v">${fmtMio(d.logiernachte)}</span></div>
+    <hr class="tt-divider">
+    <div class="tt-row"><span class="k">Aufenthalt Ø</span><span class="v">${fmtN(d.aufenthaltsdauer)}</span></div>`;
+  tt.classList.add('visible');
+
+  const svgEl = document.getElementById('chart');
+  const svgRect = svgEl.getBoundingClientRect();
+  const wrapRect = chartWrap.getBoundingClientRect();
+  const scaleX = svgRect.width / W;
+  const dataPx = svgRect.left - wrapRect.left + (m.l + x(d.jahr)) * scaleX;
+  tt.style.top = '10px';
+  const ttW = tt.offsetWidth || 200;
+  tt.style.left = (dataPx + 14 + ttW > wrapRect.width)
+    ? (dataPx - ttW - 10) + 'px'
+    : (dataPx + 14) + 'px';
+}
+
+svg.append('rect').attr('fill','none').attr('pointer-events','all')
+  .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+  .on('mousemove', function(e) {
+    const [mx] = d3.pointer(e, this);
+    const yr = x.invert(mx - m.l);
+    const i = Math.min(Math.max(bisect(DATA, yr), 0), DATA.length - 1);
+    const d = DATA[i];
+    if (!d) return;
+    hLine.attr('x1',x(d.jahr)).attr('x2',x(d.jahr)).style('display',null);
+    showTooltip(e, d);
+  })
+  .on('mouseleave', () => { hLine.style('display','none'); tt.classList.remove('visible'); });
+</script>
+</body>
+</html>
