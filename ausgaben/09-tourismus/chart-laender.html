@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!-- iframe height: 430px -->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; padding: 16px 20px 12px; }
+.chart-title { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 3px; }
+.chart-sub { font-size: 11px; color: #999; margin-bottom: 12px; line-height: 1.4; }
+.chart-source { font-size: 10px; color: #bbb; margin-top: 8px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: #555; margin-top: 10px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+svg { width: 100%; height: auto; display: block; }
+.axis text { fill: #999; font-size: 11px; }
+.axis path, .axis line { stroke: #ddd; }
+.grid line { stroke: #eee; stroke-dasharray: 3 3; }
+.annot { font-size: 10px; fill: #aaa; }
+.annot-line { stroke: #ddd; stroke-dasharray: 3 3; stroke-width: 1; }
+.tooltip { position: fixed; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; display: none; white-space: nowrap; }
+.tooltip.visible { display: block; }
+.tt-title { font-weight: 700; margin-bottom: 4px; font-size: 13px; }
+.tt-row { display: flex; justify-content: space-between; gap: 14px; }
+.tt-row .k { color: #666; }
+.tt-row .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tt-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div class="chart-title">Herkunftsmärkte im Vergleich: Index 2019 = 100</div>
+<div class="chart-sub">Zeigt, wie weit sich die Märkte nach Covid von ihrem Vorkrisen-Niveau erholt haben.</div>
+<svg id="chart" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet"></svg>
+<div class="legend">
+  <span><span class="dot" style="background:#B5001E"></span>Deutschland</span>
+  <span><span class="dot" style="background:#EE7733"></span>China</span>
+  <span><span class="dot" style="background:#0068A4"></span>Grossbritannien</span>
+  <span><span class="dot" style="background:#1E3A5F"></span>USA</span>
+</div>
+<div class="chart-source">Quelle: data.gr.ch – AWT GR / BFS HESTA</div>
+<div id="tt" class="tooltip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+const RAW = {
+  DE:{name:'Deutschland',color:'#B5001E',base:845242,data:[{"j":2012,"v":1109566},{"j":2013,"v":1124300},{"j":2014,"v":1056669},{"j":2015,"v":899321},{"j":2016,"v":796535},{"j":2017,"v":779536},{"j":2018,"v":841149},{"j":2019,"v":845242},{"j":2020,"v":537915},{"j":2021,"v":539578},{"j":2022,"v":746525},{"j":2023,"v":744436},{"j":2024,"v":770934},{"j":2025,"v":761523}]},
+  CN:{name:'China',color:'#EE7733',base:29307,data:[{"j":2012,"v":10541},{"j":2013,"v":11504},{"j":2014,"v":12675},{"j":2015,"v":13878},{"j":2016,"v":19529},{"j":2017,"v":27033},{"j":2018,"v":31018},{"j":2019,"v":29307},{"j":2020,"v":5538},{"j":2021,"v":825},{"j":2022,"v":2487},{"j":2023,"v":11090},{"j":2024,"v":15442},{"j":2025,"v":16225}]},
+  GB:{name:'Grossbritannien',color:'#0068A4',base:160355,data:[{"j":2012,"v":133757},{"j":2013,"v":143716},{"j":2014,"v":140032},{"j":2015,"v":144766},{"j":2016,"v":145245},{"j":2017,"v":147302},{"j":2018,"v":160945},{"j":2019,"v":160355},{"j":2020,"v":79768},{"j":2021,"v":27831},{"j":2022,"v":147862},{"j":2023,"v":151673},{"j":2024,"v":161369},{"j":2025,"v":180323}]},
+  US:{name:'USA',color:'#1E3A5F',base:121368,data:[{"j":2012,"v":64541},{"j":2013,"v":74926},{"j":2014,"v":80699},{"j":2015,"v":82400},{"j":2016,"v":86414},{"j":2017,"v":97049},{"j":2018,"v":111289},{"j":2019,"v":121368},{"j":2020,"v":36826},{"j":2021,"v":30756},{"j":2022,"v":104112},{"j":2023,"v":131597},{"j":2024,"v":151347},{"j":2025,"v":177216}]}
+};
+const KEYS = ['DE','CN','GB','US'];
+const fmt = d3.format(',.0f');
+
+// Index series
+const indexed = KEYS.map(k => ({
+  key: k, name: RAW[k].name, color: RAW[k].color,
+  data: RAW[k].data.map(d => ({j: d.j, idx: (d.v / RAW[k].base) * 100, raw: d.v}))
+}));
+
+const W = 640, H = 300, m = {t:20,r:100,b:32,l:46};
+const w = W-m.l-m.r, h = H-m.t-m.b;
+const svg = d3.select('#chart').attr('viewBox',`0 0 ${W} ${H}`);
+const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+const x = d3.scaleLinear().domain([2012,2025]).range([0,w]);
+const y = d3.scaleLinear().domain([0,170]).range([h,0]);
+
+g.append('g').attr('class','grid').selectAll('line').data([50,100,150]).join('line')
+  .attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d));
+g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+  .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(7));
+g.append('g').attr('class','axis')
+  .call(d3.axisLeft(y).ticks(4).tickFormat(v=>v+''));
+g.append('text').attr('class','annot').attr('x',2).attr('y',y(100)-5).text('2019 = 100');
+
+const line = d3.line().x(d=>x(d.j)).y(d=>y(d.idx)).defined(d=>d.idx!=null);
+indexed.forEach(s => {
+  g.append('path').datum(s.data).attr('fill','none').attr('stroke',s.color).attr('stroke-width',2.2).attr('d',line);
+  const last = s.data[s.data.length-1];
+  g.append('text').attr('x',x(last.j)+6).attr('y',y(last.idx)+4).attr('fill',s.color).attr('font-size',11).attr('font-weight','700').text(s.name);
+});
+
+const bisect = d3.bisector(d=>d.j).left;
+const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
+const tt = document.getElementById('tt');
+
+svg.append('rect').attr('fill','none').attr('pointer-events','all')
+  .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+  .on('mousemove', function(e) {
+    const [mx] = d3.pointer(e, this);
+    const yr = Math.round(x.invert(mx-m.l));
+    hLine.attr('x1',x(yr)).attr('x2',x(yr)).style('display',null);
+    let html = `<div class="tt-title">${yr}</div>`;
+    KEYS.forEach(k => {
+      const pt = indexed.find(s=>s.key===k).data.find(d=>d.j===yr);
+      if (pt) html += `<div class="tt-row"><span class="tt-swatch" style="background:${RAW[k].color}"></span><span class="k">${RAW[k].name}</span><span class="v">${pt.idx.toFixed(0)} (${fmt(pt.raw)})</span></div>`;
+    });
+    tt.innerHTML = html;
+    tt.style.left = (e.clientX+14)+'px'; tt.style.top = (e.clientY-60)+'px';
+    tt.classList.add('visible');
+  })
+  .on('mouseleave', ()=>{ hLine.style('display','none'); tt.classList.remove('visible'); });
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!-- iframe height: 400px -->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; padding: 16px 20px 12px; }
+.chart-title { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 3px; }
+.chart-sub { font-size: 11px; color: #999; margin-bottom: 12px; line-height: 1.4; }
+.chart-source { font-size: 10px; color: #bbb; margin-top: 8px; }
+.legend { display: flex; gap: 16px; font-size: 12px; color: #555; margin-top: 10px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+svg { width: 100%; height: auto; display: block; }
+.axis text { fill: #999; font-size: 11px; }
+.axis path, .axis line { stroke: #ddd; }
+.grid line { stroke: #eee; stroke-dasharray: 3 3; }
+.annot { font-size: 10px; fill: #aaa; }
+.annot-line { stroke: #ddd; stroke-dasharray: 3 3; stroke-width: 1; }
+.tooltip { position: fixed; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; display: none; white-space: nowrap; }
+.tooltip.visible { display: block; }
+.tt-title { font-weight: 700; margin-bottom: 4px; font-size: 13px; }
+.tt-row { display: flex; justify-content: space-between; gap: 14px; }
+.tt-row .k { color: #666; }
+.tt-row .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tt-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div class="chart-title">CH-Gäste vs. Auslandsgäste 1992–2025</div>
+<div class="chart-sub">Absolute Logiernächte nach Herkunft (HESTA). Gestapelte Flächen.</div>
+<svg id="chart" viewBox="0 0 640 280" preserveAspectRatio="xMidYMid meet"></svg>
+<div class="legend">
+  <span><span class="dot" style="background:#0068A4"></span>Schweiz</span>
+  <span><span class="dot" style="background:#EE7733"></span>Ausland</span>
+</div>
+<div class="chart-source">Quelle: data.gr.ch – AWT GR / BFS HESTA</div>
+<div id="tt" class="tooltip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+const DATA = [{"jahr":1992,"ch":3101680,"ausland":3835286},{"jahr":1993,"ch":3042070,"ausland":3871185},{"jahr":1994,"ch":3023065,"ausland":3831239},{"jahr":1995,"ch":2864446,"ausland":3476875},{"jahr":1996,"ch":2656157,"ausland":3158734},{"jahr":1997,"ch":2733193,"ausland":3135941},{"jahr":1998,"ch":2762850,"ausland":3288319},{"jahr":1999,"ch":2775470,"ausland":3233552},{"jahr":2000,"ch":2881604,"ausland":3377797},{"jahr":2001,"ch":2990684,"ausland":3309984},{"jahr":2002,"ch":2850541,"ausland":2881554},{"jahr":2003,"ch":2985181,"ausland":2849478},{"jahr":2005,"ch":2861073,"ausland":2708461},{"jahr":2006,"ch":2893953,"ausland":2812582},{"jahr":2007,"ch":2918781,"ausland":2948994},{"jahr":2008,"ch":3101202,"ausland":3138646},{"jahr":2009,"ch":2950163,"ausland":2935273},{"jahr":2010,"ch":2951574,"ausland":2855881},{"jahr":2011,"ch":2863056,"ausland":2502566},{"jahr":2012,"ch":2852180,"ausland":2212015},{"jahr":2013,"ch":2904212,"ausland":2256763},{"jahr":2014,"ch":2868239,"ausland":2183986},{"jahr":2015,"ch":2790412,"ausland":1926889},{"jahr":2016,"ch":2830077,"ausland":1797370},{"jahr":2017,"ch":2982123,"ausland":1871236},{"jahr":2018,"ch":3122451,"ausland":2009761},{"jahr":2019,"ch":3208122,"ausland":2047894},{"jahr":2020,"ch":3599165,"ausland":1170805},{"jahr":2021,"ch":4034883,"ausland":1118272},{"jahr":2022,"ch":3742997,"ausland":1823583},{"jahr":2023,"ch":3508516,"ausland":1917526},{"jahr":2024,"ch":3514909,"ausland":2012129},{"jahr":2025,"ch":3566179,"ausland":2113760}];
+
+const fmt = d3.format(',.0f');
+const W = 640, H = 280, m = {t:20,r:16,b:32,l:58};
+const w = W-m.l-m.r, h = H-m.t-m.b;
+const svg = d3.select('#chart').attr('viewBox',`0 0 ${W} ${H}`);
+const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+const x = d3.scaleLinear().domain([1992,2025]).range([0,w]);
+const y = d3.scaleLinear().domain([0,7.5e6]).range([h,0]);
+
+g.append('g').attr('class','grid').selectAll('line').data(y.ticks(5)).join('line')
+  .attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d));
+g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+  .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
+g.append('g').attr('class','axis')
+  .call(d3.axisLeft(y).ticks(5).tickFormat(v=>(v/1e6).toFixed(1)+' Mio.'));
+
+const stack = d3.stack().keys(['ch','ausland']);
+const series = stack(DATA);
+const area = d3.area().x(d=>x(d.data.jahr)).y0(d=>y(d[0])).y1(d=>y(d[1]));
+const colors = {ch:'#0068A4', ausland:'#EE7733'};
+series.forEach(s=>{
+  g.append('path').datum(s).attr('fill',colors[s.key]).attr('fill-opacity',0.75).attr('d',area);
+});
+
+const bisect = d3.bisector(d=>d.jahr).left;
+const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
+const tt = document.getElementById('tt');
+
+svg.append('rect').attr('fill','none').attr('pointer-events','all')
+  .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+  .on('mousemove', function(e) {
+    const [mx] = d3.pointer(e, this);
+    const yr = x.invert(mx-m.l);
+    const i = bisect(DATA, yr);
+    const d = DATA[Math.min(i, DATA.length-1)];
+    if (!d) return;
+    const total = d.ch + d.ausland;
+    const chPct = (d.ch/total*100).toFixed(1);
+    hLine.attr('x1',x(d.jahr)).attr('x2',x(d.jahr)).style('display',null);
+    tt.innerHTML = `<div class="tt-title">${d.jahr}</div><div class="tt-row"><span class="tt-swatch" style="background:#0068A4"></span><span class="k">Schweiz</span><span class="v">${chPct}% · ${fmt(d.ch)}</span></div><div class="tt-row"><span class="tt-swatch" style="background:#EE7733"></span><span class="k">Ausland</span><span class="v">${(100-+chPct).toFixed(1)}% · ${fmt(d.ausland)}</span></div>`;
+    tt.style.left = (e.clientX+14)+'px'; tt.style.top = (e.clientY-60)+'px';
+    tt.classList.add('visible');
+  })
+  .on('mouseleave', ()=>{ hLine.style('display','none'); tt.classList.remove('visible'); });
+</script>
+</body>
+</html>

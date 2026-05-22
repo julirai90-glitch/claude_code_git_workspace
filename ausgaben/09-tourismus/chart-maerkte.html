@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- iframe height: 600px -->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; padding: 16px 20px 12px; }
+.chart-title { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 3px; }
+.chart-sub { font-size: 11px; color: #999; margin-bottom: 14px; line-height: 1.4; }
+.chart-source { font-size: 10px; color: #bbb; margin-top: 10px; }
+.bar-row { display: flex; align-items: center; margin: 4px 0; font-size: 13px; gap: 8px; }
+.bar-label { width: 180px; flex-shrink: 0; color: #333; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 18px; background: #f0f0f0; border-radius: 3px; overflow: hidden; position: relative; }
+.bar-fill { height: 100%; border-radius: 3px; }
+.bar-val { width: 68px; flex-shrink: 0; text-align: right; font-weight: 700; color: #333; font-variant-numeric: tabular-nums; font-size: 11px; }
+.bar-delta { width: 46px; flex-shrink: 0; text-align: right; font-size: 11px; }
+.up { color: #1a7d3a; }
+.down { color: #B5001E; }
+.neu { color: #888; }
+.legend-row { display: flex; gap: 18px; font-size: 11px; color: #666; margin-bottom: 10px; flex-wrap: wrap; }
+.legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+.marker-legend { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #666; }
+.marker-line { display: inline-block; width: 2px; height: 14px; background: #555; opacity: 0.5; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div class="chart-title">Top 15 Auslandsmärkte 2025 (Logiernächte)</div>
+<div class="chart-sub">Balken = 2025. Senkrechter Strich = Wert 2019.</div>
+<div class="legend-row">
+  <span><span class="legend-dot" style="background:#1a7d3a"></span>über Vorkrisen-Niveau 2019</span>
+  <span><span class="legend-dot" style="background:#0068A4"></span>nahe 2019 (±5%)</span>
+  <span><span class="legend-dot" style="background:#B5001E"></span>unter Vorkrisen-Niveau 2019</span>
+  <span class="marker-legend"><span class="marker-line"></span> Niveau 2019</span>
+</div>
+<div id="bars"></div>
+<div class="chart-source">Quelle: data.gr.ch – AWT GR / BFS HESTA</div>
+
+<script>
+const DATA = [
+  {land:'Deutschland',v2025:761523,v2019:845242},
+  {land:'Vereinigtes Königreich',v2025:180323,v2019:160355},
+  {land:'Vereinigte Staaten',v2025:177216,v2019:121368},
+  {land:'Niederlande',v2025:112373,v2019:104237},
+  {land:'Italien',v2025:111647,v2019:96112},
+  {land:'Belgien',v2025:86553,v2019:93764},
+  {land:'Frankreich',v2025:65718,v2019:54504},
+  {land:'Österreich',v2025:49713,v2019:48953},
+  {land:'Israel',v2025:38975,v2019:41837},
+  {land:'Brasilien',v2025:35652,v2019:16400},
+  {land:'Polen',v2025:35516,v2019:27887},
+  {land:'Australien',v2025:29470,v2019:22148},
+  {land:'Tschechien',v2025:24455,v2019:19193},
+  {land:'Japan',v2025:21498,v2019:35985},
+  {land:'Kanada',v2025:19530,v2019:12455}
+];
+
+const fmt = v => v >= 1000 ? (v/1000).toFixed(0)+'\'000' : v;
+const maxV = Math.max(...DATA.map(d=>Math.max(d.v2025, d.v2019)));
+const el = document.getElementById('bars');
+
+DATA.forEach(d => {
+  const pct = (d.v2025 / maxV * 100).toFixed(1);
+  const pct2019 = (d.v2019 / maxV * 100).toFixed(1);
+  const delta = ((d.v2025 - d.v2019) / d.v2019 * 100);
+  const dClass = delta > 5 ? 'up' : delta < -5 ? 'down' : 'neu';
+  const color = delta > 5 ? '#1a7d3a' : delta < -5 ? '#B5001E' : '#0068A4';
+  const dStr = delta > 0 ? `+${delta.toFixed(0)}%` : `${delta.toFixed(0)}%`;
+  el.innerHTML += `
+    <div class="bar-row" title="${d.land}: ${fmt(d.v2025)} (2025) vs. ${fmt(d.v2019)} (2019)">
+      <div class="bar-label">${d.land}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${color}"></div>
+        <div style="position:absolute;top:0;left:${pct2019}%;width:2px;height:100%;background:#333;opacity:0.45"></div>
+      </div>
+      <div class="bar-val">${fmt(d.v2025)}</div>
+      <div class="bar-delta ${dClass}">${dStr}</div>
+    </div>`;
+});
+</script>
+</body>
+</html>

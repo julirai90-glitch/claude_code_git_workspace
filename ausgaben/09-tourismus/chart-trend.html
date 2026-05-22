@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!-- iframe height: 380px -->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; padding: 16px 20px 12px; }
+.chart-title { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 3px; }
+.chart-sub { font-size: 11px; color: #999; margin-bottom: 12px; line-height: 1.4; }
+.chart-source { font-size: 10px; color: #bbb; margin-top: 8px; }
+svg { width: 100%; height: auto; display: block; }
+.axis text { fill: #999; font-size: 11px; }
+.axis path, .axis line { stroke: #ddd; }
+.grid line { stroke: #eee; stroke-dasharray: 3 3; }
+.annot { font-size: 10px; fill: #aaa; }
+.annot-line { stroke: #ddd; stroke-dasharray: 3 3; stroke-width: 1; }
+.tooltip { position: fixed; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; display: none; white-space: nowrap; }
+.tooltip.visible { display: block; }
+.tt-title { font-weight: 700; margin-bottom: 4px; color: #1a1a1a; font-size: 13px; }
+.tt-row { display: flex; justify-content: space-between; gap: 14px; }
+.tt-row .k { color: #666; }
+.tt-row .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="chart-title">Logiernächte Graubünden 1992–2025</div>
+<div class="chart-sub">Hotellerie (HESTA), alle Kategorien. 2004 fehlt in Quelldaten.</div>
+<svg id="chart" viewBox="0 0 640 280" preserveAspectRatio="xMidYMid meet"></svg>
+<div class="chart-source">Quelle: data.gr.ch – AWT GR / BFS HESTA</div>
+<div id="tt" class="tooltip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+const DATA = [{"jahr":1992,"v":6880275},{"jahr":1993,"v":6854871},{"jahr":1994,"v":6854304},{"jahr":1995,"v":6341321},{"jahr":1996,"v":5814891},{"jahr":1997,"v":5869134},{"jahr":1998,"v":6051169},{"jahr":1999,"v":6009039},{"jahr":2000,"v":6259401},{"jahr":2001,"v":6300711},{"jahr":2002,"v":5732095},{"jahr":2003,"v":5834659},{"jahr":2005,"v":5569534},{"jahr":2006,"v":5706535},{"jahr":2007,"v":5867775},{"jahr":2008,"v":6239848},{"jahr":2009,"v":5878188},{"jahr":2010,"v":5801693},{"jahr":2011,"v":5351442},{"jahr":2012,"v":5064195},{"jahr":2013,"v":5160975},{"jahr":2014,"v":5050159},{"jahr":2015,"v":4717301},{"jahr":2016,"v":4621690},{"jahr":2017,"v":4847177},{"jahr":2018,"v":5128680},{"jahr":2019,"v":5252299},{"jahr":2020,"v":4763962},{"jahr":2021,"v":5129581},{"jahr":2022,"v":5542100},{"jahr":2023,"v":5393162},{"jahr":2024,"v":5492694},{"jahr":2025,"v":5679939}];
+
+const fmt = d3.format(',.0f');
+const W = 640, H = 280, m = {t:20,r:16,b:32,l:58};
+const w = W-m.l-m.r, h = H-m.t-m.b;
+const svg = d3.select('#chart').attr('viewBox',`0 0 ${W} ${H}`);
+const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
+
+const x = d3.scaleLinear().domain([1992,2025]).range([0,w]);
+const y = d3.scaleLinear().domain([0,7.2e6]).range([h,0]);
+
+g.append('g').attr('class','grid').selectAll('line').data(y.ticks(5)).join('line')
+  .attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d));
+g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+  .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
+g.append('g').attr('class','axis')
+  .call(d3.axisLeft(y).ticks(5).tickFormat(v=>(v/1e6).toFixed(1)+' Mio.'));
+
+[{x:2009,label:'Finanzkrise'},{x:2015,label:'Frankenschock'},{x:2020,label:'Covid'}].forEach(a=>{
+  const px = x(a.x);
+  g.append('line').attr('class','annot-line').attr('x1',px).attr('x2',px).attr('y1',0).attr('y2',h);
+  g.append('text').attr('class','annot').attr('x',px+3).attr('y',14).text(a.label);
+});
+
+const area = d3.area().x(d=>x(d.jahr)).y0(h).y1(d=>y(d.v)).defined(d=>d.v>0);
+const line = d3.line().x(d=>x(d.jahr)).y(d=>y(d.v)).defined(d=>d.v>0);
+g.append('path').datum(DATA).attr('fill','#0068A4').attr('fill-opacity',0.08).attr('d',area);
+g.append('path').datum(DATA).attr('fill','none').attr('stroke','#0068A4').attr('stroke-width',2.5).attr('d',line);
+
+const bisect = d3.bisector(d=>d.jahr).left;
+const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
+const hDot = g.append('circle').attr('r',5).attr('fill','#0068A4').attr('stroke','#fff').attr('stroke-width',2).style('display','none');
+const tt = document.getElementById('tt');
+
+svg.append('rect').attr('fill','none').attr('pointer-events','all')
+  .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+  .on('mousemove', function(e) {
+    const [mx] = d3.pointer(e, this);
+    const yr = x.invert(mx-m.l);
+    const i = bisect(DATA, yr);
+    const d = DATA[Math.min(i, DATA.length-1)];
+    if (!d) return;
+    const cx = x(d.jahr), cy = y(d.v);
+    hLine.attr('x1',cx).attr('x2',cx).style('display',null);
+    hDot.attr('cx',cx).attr('cy',cy).style('display',null);
+    tt.innerHTML = `<div class="tt-title">${d.jahr}</div><div class="tt-row"><span class="k">Logiernächte</span><span class="v">${fmt(d.v)}</span></div>`;
+    tt.style.left = (e.clientX+14)+'px'; tt.style.top = (e.clientY-40)+'px';
+    tt.classList.add('visible');
+  })
+  .on('mouseleave', ()=>{ hLine.style('display','none'); hDot.style('display','none'); tt.classList.remove('visible'); });
+</script>
+</body>
+</html>
