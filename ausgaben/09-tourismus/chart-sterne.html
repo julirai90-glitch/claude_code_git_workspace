@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!-- iframe height: 440px -->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1a1a1a; padding: 16px 20px 12px; }
+.chart-title { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 3px; }
+.chart-sub { font-size: 11px; color: #666; margin-bottom: 12px; line-height: 1.4; }
+.chart-source { font-size: 10px; color: #bbb; margin-top: 8px; }
+.legend { display: flex; gap: 14px; font-size: 11.5px; color: #555; margin-top: 10px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+svg { width: 100%; height: auto; display: block; }
+.axis text { fill: #999; font-size: 11px; }
+.axis path, .axis line { stroke: #ddd; }
+.grid line { stroke: #eee; stroke-dasharray: 3 3; }
+.chart-wrap { position: relative; }
+.tooltip { position: absolute; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.6; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; display: none; white-space: nowrap; }
+.tooltip.visible { display: block; }
+.tt-title { font-weight: 700; margin-bottom: 4px; font-size: 13px; }
+.tt-row { display: flex; justify-content: space-between; gap: 14px; }
+.tt-row .k { color: #666; }
+.tt-row .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tt-swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div class="chart-title">Das 4-Stern-Hotel überholt das 3-Stern-Hotel</div>
+<div class="chart-sub">Logiernächte in Graubündner Hotels nach Sternekategorie, 1994–2025</div>
+<div class="chart-wrap">
+  <svg id="chart" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet"></svg>
+  <div id="tt" class="tooltip"></div>
+</div>
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot" style="background:#EE7733"></span><span>5-Stern</span></div>
+  <div class="legend-item"><span class="legend-dot" style="background:#0068A4"></span><span>4-Stern</span></div>
+  <div class="legend-item"><span class="legend-dot" style="background:#6aaed6"></span><span>3-Stern</span></div>
+  <div class="legend-item"><span class="legend-dot" style="background:#b0c4d8"></span><span>2-Stern</span></div>
+  <div class="legend-item"><span class="legend-dot" style="background:#ddd"></span><span>Keine Kategorie</span></div>
+</div>
+<div class="chart-source">Quelle: data.gr.ch – Amt für Wirtschaft und Tourismus GR / BFS HESTA &nbsp;·&nbsp; Grafik: Julian Reich</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+// Start from 1994 — star classification not yet rolled out in 1992/1993
+const DATA_RAW = [{"jahr":1994,"2-Stern":414475,"3-Stern":1984805,"4-Stern":1589184,"5-Stern":375686,"Keine Kategorie":194943},{"jahr":1995,"2-Stern":326785,"3-Stern":1793406,"4-Stern":1412029,"5-Stern":302652,"Keine Kategorie":495713},{"jahr":1996,"2-Stern":314065,"3-Stern":1660677,"4-Stern":1320229,"5-Stern":273969,"Keine Kategorie":381891},{"jahr":1997,"2-Stern":300748,"3-Stern":1699457,"4-Stern":1365287,"5-Stern":302550,"Keine Kategorie":392800},{"jahr":1998,"2-Stern":289501,"3-Stern":1755296,"4-Stern":1440969,"5-Stern":322792,"Keine Kategorie":417264},{"jahr":1999,"2-Stern":298193,"3-Stern":1744516,"4-Stern":1495967,"5-Stern":324811,"Keine Kategorie":484830},{"jahr":2000,"2-Stern":311728,"3-Stern":1828903,"4-Stern":1591549,"5-Stern":342427,"Keine Kategorie":467858},{"jahr":2001,"2-Stern":240399,"3-Stern":1783629,"4-Stern":1572270,"5-Stern":347157,"Keine Kategorie":537864},{"jahr":2002,"2-Stern":203295,"3-Stern":1685436,"4-Stern":1391587,"5-Stern":327163,"Keine Kategorie":497130},{"jahr":2003,"2-Stern":211627,"3-Stern":1724063,"4-Stern":1433149,"5-Stern":342767,"Keine Kategorie":502821},{"jahr":2005,"2-Stern":117362,"3-Stern":1578460,"4-Stern":1292120,"5-Stern":365219,"Keine Kategorie":555432},{"jahr":2006,"2-Stern":200847,"3-Stern":1515668,"4-Stern":1465969,"5-Stern":378356,"Keine Kategorie":711609},{"jahr":2007,"2-Stern":215928,"3-Stern":1587542,"4-Stern":1483921,"5-Stern":384281,"Keine Kategorie":706420},{"jahr":2008,"2-Stern":281287,"3-Stern":1585330,"4-Stern":1602504,"5-Stern":434647,"Keine Kategorie":686340},{"jahr":2009,"2-Stern":268464,"3-Stern":1512434,"4-Stern":1470002,"5-Stern":376948,"Keine Kategorie":697615},{"jahr":2010,"2-Stern":252224,"3-Stern":1443890,"4-Stern":1387360,"5-Stern":385640,"Keine Kategorie":671414},{"jahr":2011,"2-Stern":261293,"3-Stern":1391171,"4-Stern":1266225,"5-Stern":347144,"Keine Kategorie":546432},{"jahr":2012,"2-Stern":245850,"3-Stern":1328788,"4-Stern":1183849,"5-Stern":331962,"Keine Kategorie":504674},{"jahr":2013,"2-Stern":294640,"3-Stern":1589942,"4-Stern":1372025,"5-Stern":327180,"Keine Kategorie":370145},{"jahr":2014,"2-Stern":262892,"3-Stern":1672918,"4-Stern":1361771,"5-Stern":385428,"Keine Kategorie":157807},{"jahr":2015,"2-Stern":233944,"3-Stern":1487263,"4-Stern":1270745,"5-Stern":344794,"Keine Kategorie":193889},{"jahr":2016,"2-Stern":204717,"3-Stern":1431899,"4-Stern":1212639,"5-Stern":397839,"Keine Kategorie":193316},{"jahr":2017,"2-Stern":217402,"3-Stern":1382482,"4-Stern":1335362,"5-Stern":402805,"Keine Kategorie":312126},{"jahr":2018,"2-Stern":218098,"3-Stern":1472707,"4-Stern":1427915,"5-Stern":395493,"Keine Kategorie":325416},{"jahr":2019,"2-Stern":179228,"3-Stern":1559254,"4-Stern":1412452,"5-Stern":455146,"Keine Kategorie":434429},{"jahr":2020,"2-Stern":168796,"3-Stern":1422858,"4-Stern":1386161,"5-Stern":340004,"Keine Kategorie":517241},{"jahr":2021,"2-Stern":157308,"3-Stern":1649728,"4-Stern":1459319,"5-Stern":323880,"Keine Kategorie":616804},{"jahr":2022,"2-Stern":187223,"3-Stern":1663524,"4-Stern":1602217,"5-Stern":447966,"Keine Kategorie":669692},{"jahr":2023,"2-Stern":159063,"3-Stern":1730128,"4-Stern":1716248,"5-Stern":415730,"Keine Kategorie":445347},{"jahr":2024,"2-Stern":129984,"3-Stern":1706074,"4-Stern":1748281,"5-Stern":471291,"Keine Kategorie":490142},{"jahr":2025,"2-Stern":124784,"3-Stern":1832135,"4-Stern":1839332,"5-Stern":445312,"Keine Kategorie":391956}];
+
+const KEYS = ['Keine Kategorie','2-Stern','3-Stern','4-Stern','5-Stern'];
+const COLORS = {'2-Stern':'#b0c4d8','3-Stern':'#6aaed6','4-Stern':'#0068A4','5-Stern':'#EE7733','Keine Kategorie':'#ddd'};
+const fmt = v => (v/1e6).toFixed(2) + ' Mio.';
+
+const W = 640, H = 290, m = {t:28, r:16, b:32, l:58};
+const w = W - m.l - m.r, h = H - m.t - m.b;
+const svg = d3.select('#chart').attr('viewBox', `0 0 ${W} ${H}`);
+const g = svg.append('g').attr('transform', `translate(${m.l},${m.t})`);
+
+const x = d3.scaleLinear().domain([1994, 2025]).range([0, w]);
+const y = d3.scaleLinear().domain([0, 5.5e6]).range([h, 0]);
+
+g.append('g').attr('class','grid').selectAll('line')
+  .data(y.ticks(5)).join('line')
+  .attr('x1',0).attr('x2',w).attr('y1',d=>y(d)).attr('y2',d=>y(d));
+
+g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
+  .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
+g.append('g').attr('class','axis')
+  .call(d3.axisLeft(y).ticks(5).tickFormat(v => (v/1e6).toFixed(1) + ' Mio.'));
+
+const stack = d3.stack().keys(KEYS);
+const series = stack(DATA_RAW);
+const area = d3.area()
+  .x(d => x(d.data.jahr))
+  .y0(d => y(d[0]))
+  .y1(d => y(d[1]))
+  .curve(d3.curveMonotoneX);
+
+series.forEach(s => {
+  g.append('path').datum(s)
+    .attr('fill', COLORS[s.key])
+    .attr('fill-opacity', 0.85)
+    .attr('d', area);
+});
+
+// Annotation: 2025 crossover
+const px2025 = x(2025);
+g.append('line').attr('x1', px2025 - 1).attr('x2', px2025 - 1)
+  .attr('y1', 0).attr('y2', h)
+  .attr('stroke', '#0068A4').attr('stroke-dasharray', '4 3').attr('stroke-width', 1.2).attr('opacity', 0.6);
+g.append('text').attr('x', px2025 - 4).attr('y', 12)
+  .attr('font-size', 9.5).attr('fill', '#0068A4').attr('font-weight', '700')
+  .attr('text-anchor', 'end').text('4-Stern überholt 3-Stern');
+
+// Hover
+const bisect = d3.bisector(d => d.jahr).left;
+const hLine = g.append('line').attr('y1',0).attr('y2',h)
+  .attr('stroke','#bbb').attr('stroke-dasharray','3 3').attr('stroke-width',1)
+  .style('display','none');
+const tt = document.getElementById('tt');
+const chartWrap = document.querySelector('.chart-wrap');
+
+function showTooltip(e, d) {
+  const total = KEYS.reduce((s,k) => s + d[k], 0);
+  const rows = ['5-Stern','4-Stern','3-Stern','2-Stern','Keine Kategorie'].map(k =>
+    `<div class="tt-row"><span class="tt-swatch" style="background:${COLORS[k]}"></span><span class="k">${k}</span><span class="v">${fmt(d[k])}</span></div>`
+  ).join('');
+  tt.innerHTML = `<div class="tt-title">${d.jahr}</div>${rows}<div style="border-top:1px solid #eee;margin:4px 0"></div><div class="tt-row"><span class="k">Total</span><span class="v">${fmt(total)}</span></div>`;
+  tt.classList.add('visible');
+  const svgEl = document.getElementById('chart');
+  const svgRect = svgEl.getBoundingClientRect();
+  const wrapRect = chartWrap.getBoundingClientRect();
+  const scaleX = svgRect.width / W;
+  const dataPx = svgRect.left - wrapRect.left + (m.l + x(d.jahr)) * scaleX;
+  tt.style.top = '10px';
+  const ttW = tt.offsetWidth || 200;
+  tt.style.left = (dataPx + 14 + ttW > wrapRect.width)
+    ? (dataPx - ttW - 10) + 'px'
+    : (dataPx + 14) + 'px';
+}
+
+svg.append('rect').attr('fill','none').attr('pointer-events','all')
+  .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
+  .on('mousemove', function(e) {
+    const [mx] = d3.pointer(e, this);
+    const yr = x.invert(mx - m.l);
+    const i = Math.min(Math.max(bisect(DATA_RAW, yr), 0), DATA_RAW.length - 1);
+    const d = DATA_RAW[i];
+    if (!d) return;
+    hLine.attr('x1',x(d.jahr)).attr('x2',x(d.jahr)).style('display',null);
+    showTooltip(e, d);
+  })
+  .on('mouseleave', () => { hLine.style('display','none'); tt.classList.remove('visible'); });
+</script>
+</body>
+</html>
