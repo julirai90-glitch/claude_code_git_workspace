@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- iframe height: 400px -->
+<!-- iframe height: 420px -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -16,8 +16,6 @@ svg { width: 100%; height: auto; display: block; }
 .axis text { fill: #999; font-size: 11px; }
 .axis path, .axis line { stroke: #ddd; }
 .grid line { stroke: #eee; stroke-dasharray: 3 3; }
-.annot { font-size: 10px; fill: #aaa; }
-.annot-line { stroke: #ddd; stroke-dasharray: 3 3; stroke-width: 1; }
 .chart-wrap { position: relative; }
 .tooltip { position: absolute; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; display: none; white-space: nowrap; }
 .tooltip.visible { display: block; }
@@ -33,7 +31,7 @@ svg { width: 100%; height: auto; display: block; }
 <div class="chart-title">Die Schweiz überholt das Ausland</div>
 <div class="chart-sub">Logiernächtezahlen nach Herkunft</div>
 <div class="chart-wrap">
-  <svg id="chart" viewBox="0 0 640 280" preserveAspectRatio="xMidYMid meet"></svg>
+  <svg id="chart" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet"></svg>
   <div id="tt" class="tooltip"></div>
 </div>
 <div class="legend">
@@ -47,7 +45,7 @@ svg { width: 100%; height: auto; display: block; }
 const DATA = [{"jahr":1992,"ch":3101680,"ausland":3835286},{"jahr":1993,"ch":3042070,"ausland":3871185},{"jahr":1994,"ch":3023065,"ausland":3831239},{"jahr":1995,"ch":2864446,"ausland":3476875},{"jahr":1996,"ch":2656157,"ausland":3158734},{"jahr":1997,"ch":2733193,"ausland":3135941},{"jahr":1998,"ch":2762850,"ausland":3288319},{"jahr":1999,"ch":2775470,"ausland":3233552},{"jahr":2000,"ch":2881604,"ausland":3377797},{"jahr":2001,"ch":2990684,"ausland":3309984},{"jahr":2002,"ch":2850541,"ausland":2881554},{"jahr":2003,"ch":2985181,"ausland":2849478},{"jahr":2005,"ch":2861073,"ausland":2708461},{"jahr":2006,"ch":2893953,"ausland":2812582},{"jahr":2007,"ch":2918781,"ausland":2948994},{"jahr":2008,"ch":3101202,"ausland":3138646},{"jahr":2009,"ch":2950163,"ausland":2935273},{"jahr":2010,"ch":2951574,"ausland":2855881},{"jahr":2011,"ch":2863056,"ausland":2502566},{"jahr":2012,"ch":2852180,"ausland":2212015},{"jahr":2013,"ch":2904212,"ausland":2256763},{"jahr":2014,"ch":2868239,"ausland":2183986},{"jahr":2015,"ch":2790412,"ausland":1926889},{"jahr":2016,"ch":2830077,"ausland":1797370},{"jahr":2017,"ch":2982123,"ausland":1871236},{"jahr":2018,"ch":3122451,"ausland":2009761},{"jahr":2019,"ch":3208122,"ausland":2047894},{"jahr":2020,"ch":3599165,"ausland":1170805},{"jahr":2021,"ch":4034883,"ausland":1118272},{"jahr":2022,"ch":3742997,"ausland":1823583},{"jahr":2023,"ch":3508516,"ausland":1917526},{"jahr":2024,"ch":3514909,"ausland":2012129},{"jahr":2025,"ch":3566179,"ausland":2113760}];
 
 const fmt = d3.format(',.0f');
-const W = 640, H = 280, m = {t:20,r:16,b:32,l:58};
+const W = 640, H = 300, m = {t:40,r:16,b:32,l:58};
 const w = W-m.l-m.r, h = H-m.t-m.b;
 const svg = d3.select('#chart').attr('viewBox',`0 0 ${W} ${H}`);
 const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
@@ -62,6 +60,7 @@ g.append('g').attr('class','axis').attr('transform',`translate(0,${h})`)
 g.append('g').attr('class','axis')
   .call(d3.axisLeft(y).ticks(5).tickFormat(v=>(v/1e6).toFixed(1)+' Mio.'));
 
+// Stacked areas
 const stack = d3.stack().keys(['ch','ausland']);
 const series = stack(DATA);
 const area = d3.area().x(d=>x(d.data.jahr)).y0(d=>y(d[0])).y1(d=>y(d[1]));
@@ -70,8 +69,50 @@ series.forEach(s=>{
   g.append('path').datum(s).attr('fill',colors[s.key]).attr('fill-opacity',0.75).attr('d',area);
 });
 
+// ── Annotations ───────────────────────────────────────────────────────────
+// Two levels: top (y=-28 relative to chart top) and second (y=-14)
+const annots = [
+  { yr: 2003, label: 'CH überholt Ausland', color: '#0068A4', level: 0 },
+  { yr: 2009, label: 'Finanzkrise',          color: '#888',    level: 1 },
+  { yr: 2015, label: '«Frankenschock»',       color: '#888',    level: 0 },
+  { yr: 2020, label: 'Covid-19',              color: '#888',    level: 1 },
+];
+
+annots.forEach(a => {
+  const px = x(a.yr);
+  const labelY = a.level === 0 ? -26 : -12;
+
+  // Vertical line (full chart height)
+  g.append('line')
+    .attr('x1', px).attr('x2', px).attr('y1', 0).attr('y2', h)
+    .attr('stroke', a.color === '#0068A4' ? '#0068A4' : '#ccc')
+    .attr('stroke-dasharray', '4 3').attr('stroke-width', a.color === '#0068A4' ? 1.5 : 1);
+
+  // Label above chart area
+  g.append('text')
+    .attr('x', px + 3).attr('y', labelY)
+    .attr('font-size', 10).attr('fill', a.color)
+    .attr('font-weight', a.color === '#0068A4' ? '700' : '400')
+    .text(a.label);
+
+  // Small tick at top of chart
+  g.append('line')
+    .attr('x1', px).attr('x2', px).attr('y1', labelY + 2).attr('y2', 0)
+    .attr('stroke', a.color).attr('stroke-width', 1).attr('opacity', 0.5);
+});
+
+// Crossover dot at 2003: mark where CH = Ausland boundary
+const d2003 = DATA.find(d=>d.jahr===2003);
+const crossY = y(d2003.ch); // top of CH band = bottom of Ausland band
+g.append('circle').attr('cx', x(2003)).attr('cy', crossY)
+  .attr('r', 4).attr('fill', '#fff').attr('stroke', '#0068A4').attr('stroke-width', 2);
+
+// ── Hover ──────────────────────────────────────────────────────────────────
 const bisect = d3.bisector(d=>d.jahr).left;
-const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
+const hLine = g.append('line')
+  .attr('y1',0).attr('y2',h)
+  .attr('stroke','#999').attr('stroke-dasharray','3 3').attr('stroke-width',1)
+  .style('display','none');
 const tt = document.getElementById('tt');
 const chartWrap = document.querySelector('.chart-wrap');
 
@@ -86,25 +127,17 @@ function showTooltip(e, d) {
     <div class="tt-row"><span class="k">Total</span><span class="v">${fmt(total)}</span></div>`;
   tt.classList.add('visible');
 
-  // Position: use SVG-relative coordinates for correct placement
   const svgEl = document.getElementById('chart');
   const svgRect = svgEl.getBoundingClientRect();
   const wrapRect = chartWrap.getBoundingClientRect();
-  const svgW = svgRect.width;
-  const scaleX = svgW / W;
-
-  const dataPxInSvg = (m.l + x(d.jahr)) * scaleX;
-  const dataPxInWrap = svgRect.left - wrapRect.left + dataPxInSvg;
+  const scaleX = svgRect.width / W;
+  const dataPxInWrap = svgRect.left - wrapRect.left + (m.l + x(d.jahr)) * scaleX;
 
   tt.style.top = '10px';
-
-  // Flip to left if close to right edge
-  const ttW = tt.offsetWidth || 200;
-  if (dataPxInWrap + 14 + ttW > wrapRect.width) {
-    tt.style.left = (dataPxInWrap - ttW - 10) + 'px';
-  } else {
-    tt.style.left = (dataPxInWrap + 14) + 'px';
-  }
+  const ttW = tt.offsetWidth || 210;
+  tt.style.left = (dataPxInWrap + 14 + ttW > wrapRect.width)
+    ? (dataPxInWrap - ttW - 10) + 'px'
+    : (dataPxInWrap + 14) + 'px';
 }
 
 svg.append('rect').attr('fill','none').attr('pointer-events','all')
@@ -112,7 +145,6 @@ svg.append('rect').attr('fill','none').attr('pointer-events','all')
   .on('mousemove', function(e) {
     const [mx] = d3.pointer(e, this);
     const yr = x.invert(mx - m.l);
-    // Clamp to data range so first/last year always trigger
     const i = Math.min(Math.max(bisect(DATA, yr), 0), DATA.length - 1);
     const d = DATA[i];
     if (!d) return;
