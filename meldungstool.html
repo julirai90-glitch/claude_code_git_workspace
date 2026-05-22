@@ -160,7 +160,8 @@ footer { max-width: 1320px; margin: 36px auto 0; text-align: center; color: var(
         <div></div>
 
         <label>Modell</label>
-        <select id="model-select"></select>
+        <input type="text" id="model-input" list="model-datalist" autocomplete="off" placeholder="Modell-ID eingeben oder wählen…">
+        <datalist id="model-datalist"></datalist>
         <div></div>
 
         <label>Claude-Key</label>
@@ -247,17 +248,22 @@ const MAX_SLOTS = 5;
 
 const MODELS = {
   anthropic: [
-    { id: 'claude-sonnet-4-6',          label: 'Claude Sonnet 4.6 (empfohlen)' },
-    { id: 'claude-haiku-4-5-20251001',  label: 'Claude Haiku 4.5 (günstig)' },
-    { id: 'claude-opus-4-7',            label: 'Claude Opus 4.7 (leistungsstark)' }
+    { id: 'claude-sonnet-4-6',         label: 'claude-sonnet-4-6 — Sonnet 4.6 (empfohlen)' },
+    { id: 'claude-opus-4-7',           label: 'claude-opus-4-7 — Opus 4.7 (leistungsstark)' },
+    { id: 'claude-haiku-4-5-20251001', label: 'claude-haiku-4-5-20251001 — Haiku 4.5 (günstig)' }
   ],
   openai: [
-    { id: 'gpt-4.1-mini', label: 'GPT-4.1 mini (günstig, empfohlen)' },
-    { id: 'gpt-4.1',      label: 'GPT-4.1 (leistungsstark)' }
+    { id: 'gpt-4o',       label: 'gpt-4o' },
+    { id: 'gpt-4o-mini',  label: 'gpt-4o-mini — günstig' },
+    { id: 'gpt-4.1',      label: 'gpt-4.1' },
+    { id: 'gpt-4.1-mini', label: 'gpt-4.1-mini — günstig' },
+    { id: 'o3',           label: 'o3 — Reasoning' },
+    { id: 'o4-mini',      label: 'o4-mini — Reasoning, günstig' }
   ],
   google: [
-    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (günstig, empfohlen)' },
-    { id: 'gemini-2.5-pro',   label: 'Gemini 2.5 Pro (leistungsstark)' }
+    { id: 'gemini-2.5-flash', label: 'gemini-2.5-flash — günstig, empfohlen' },
+    { id: 'gemini-2.5-pro',   label: 'gemini-2.5-pro — leistungsstark' },
+    { id: 'gemini-2.0-flash', label: 'gemini-2.0-flash' }
   ]
 };
 
@@ -662,17 +668,18 @@ function flash(msg, kind) {
    Settings
 ============================================================ */
 function renderModelSelect() {
-  const sel = document.getElementById('model-select');
-  sel.innerHTML = '';
+  const dl  = document.getElementById('model-datalist');
+  const inp = document.getElementById('model-input');
+  dl.innerHTML = '';
   for (const m of MODELS[state.provider]) {
     const opt = document.createElement('option');
-    opt.value = m.id; opt.textContent = m.label;
-    sel.appendChild(opt);
+    opt.value = m.id; opt.label = m.label;
+    dl.appendChild(opt);
   }
   if (!MODELS[state.provider].some(m => m.id === state.model)) {
     state.model = MODELS[state.provider][0].id;
   }
-  sel.value = state.model;
+  inp.value = state.model;
 }
 
 function updateSettingsBadge() {
@@ -694,8 +701,8 @@ function initSettings() {
   document.getElementById('provider-select').addEventListener('change', e => {
     state.provider = e.target.value; renderModelSelect(); persist(); updateSettingsBadge();
   });
-  document.getElementById('model-select').addEventListener('change', e => {
-    state.model = e.target.value; persist();
+  document.getElementById('model-input').addEventListener('input', e => {
+    state.model = e.target.value.trim(); persist();
   });
   ['anthropic', 'openai', 'google'].forEach(p => {
     document.getElementById('key-' + p).addEventListener('input', e => {
