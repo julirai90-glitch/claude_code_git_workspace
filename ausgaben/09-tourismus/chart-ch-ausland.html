@@ -18,25 +18,29 @@ svg { width: 100%; height: auto; display: block; }
 .grid line { stroke: #eee; stroke-dasharray: 3 3; }
 .annot { font-size: 10px; fill: #aaa; }
 .annot-line { stroke: #ddd; stroke-dasharray: 3 3; stroke-width: 1; }
-.tooltip { position: fixed; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; display: none; white-space: nowrap; }
+.chart-wrap { position: relative; }
+.tooltip { position: absolute; background: rgba(255,255,255,0.98); border: 1px solid #ddd; border-radius: 6px; padding: 8px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 16px rgba(0,0,0,0.10); pointer-events: none; z-index: 20; display: none; white-space: nowrap; }
 .tooltip.visible { display: block; }
 .tt-title { font-weight: 700; margin-bottom: 4px; font-size: 13px; }
 .tt-row { display: flex; justify-content: space-between; gap: 14px; }
 .tt-row .k { color: #666; }
 .tt-row .v { font-weight: 700; font-variant-numeric: tabular-nums; }
 .tt-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+.tt-divider { border: none; border-top: 1px solid #eee; margin: 4px 0; }
 </style>
 </head>
 <body>
-<div class="chart-title">CH-Gäste vs. Auslandsgäste 1992–2025</div>
-<div class="chart-sub">Absolute Logiernächte nach Herkunft (HESTA). Gestapelte Flächen.</div>
-<svg id="chart" viewBox="0 0 640 280" preserveAspectRatio="xMidYMid meet"></svg>
+<div class="chart-title">Die Schweiz überholt das Ausland</div>
+<div class="chart-sub">Logiernächtezahlen nach Herkunft</div>
+<div class="chart-wrap">
+  <svg id="chart" viewBox="0 0 640 280" preserveAspectRatio="xMidYMid meet"></svg>
+  <div id="tt" class="tooltip"></div>
+</div>
 <div class="legend">
   <span><span class="dot" style="background:#0068A4"></span>Schweiz</span>
   <span><span class="dot" style="background:#EE7733"></span>Ausland</span>
 </div>
-<div class="chart-source">Quelle: data.gr.ch – AWT GR / BFS HESTA</div>
-<div id="tt" class="tooltip"></div>
+<div class="chart-source">Quelle: data.gr.ch – Amt für Wirtschaft und Tourismus GR / BFS HESTA &nbsp;·&nbsp; Grafik: Julian Reich/KI</div>
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script>
@@ -69,21 +73,51 @@ series.forEach(s=>{
 const bisect = d3.bisector(d=>d.jahr).left;
 const hLine = g.append('line').attr('class','annot-line').attr('y1',0).attr('y2',h).style('display','none');
 const tt = document.getElementById('tt');
+const chartWrap = document.querySelector('.chart-wrap');
+
+function showTooltip(e, d) {
+  const total = d.ch + d.ausland;
+  const chPct = (d.ch / total * 100).toFixed(1);
+  tt.innerHTML = `
+    <div class="tt-title">${d.jahr}</div>
+    <div class="tt-row"><span class="tt-swatch" style="background:#0068A4"></span><span class="k">Schweiz</span><span class="v">${chPct}% · ${fmt(d.ch)}</span></div>
+    <div class="tt-row"><span class="tt-swatch" style="background:#EE7733"></span><span class="k">Ausland</span><span class="v">${(100-+chPct).toFixed(1)}% · ${fmt(d.ausland)}</span></div>
+    <hr class="tt-divider">
+    <div class="tt-row"><span class="k">Total</span><span class="v">${fmt(total)}</span></div>`;
+  tt.classList.add('visible');
+
+  // Position: use SVG-relative coordinates for correct placement
+  const svgEl = document.getElementById('chart');
+  const svgRect = svgEl.getBoundingClientRect();
+  const wrapRect = chartWrap.getBoundingClientRect();
+  const svgW = svgRect.width;
+  const scaleX = svgW / W;
+
+  const dataPxInSvg = (m.l + x(d.jahr)) * scaleX;
+  const dataPxInWrap = svgRect.left - wrapRect.left + dataPxInSvg;
+
+  tt.style.top = '10px';
+
+  // Flip to left if close to right edge
+  const ttW = tt.offsetWidth || 200;
+  if (dataPxInWrap + 14 + ttW > wrapRect.width) {
+    tt.style.left = (dataPxInWrap - ttW - 10) + 'px';
+  } else {
+    tt.style.left = (dataPxInWrap + 14) + 'px';
+  }
+}
 
 svg.append('rect').attr('fill','none').attr('pointer-events','all')
   .attr('x',m.l).attr('y',m.t).attr('width',w).attr('height',h)
   .on('mousemove', function(e) {
     const [mx] = d3.pointer(e, this);
-    const yr = x.invert(mx-m.l);
-    const i = bisect(DATA, yr);
-    const d = DATA[Math.min(i, DATA.length-1)];
+    const yr = x.invert(mx - m.l);
+    // Clamp to data range so first/last year always trigger
+    const i = Math.min(Math.max(bisect(DATA, yr), 0), DATA.length - 1);
+    const d = DATA[i];
     if (!d) return;
-    const total = d.ch + d.ausland;
-    const chPct = (d.ch/total*100).toFixed(1);
     hLine.attr('x1',x(d.jahr)).attr('x2',x(d.jahr)).style('display',null);
-    tt.innerHTML = `<div class="tt-title">${d.jahr}</div><div class="tt-row"><span class="tt-swatch" style="background:#0068A4"></span><span class="k">Schweiz</span><span class="v">${chPct}% · ${fmt(d.ch)}</span></div><div class="tt-row"><span class="tt-swatch" style="background:#EE7733"></span><span class="k">Ausland</span><span class="v">${(100-+chPct).toFixed(1)}% · ${fmt(d.ausland)}</span></div>`;
-    tt.style.left = (e.clientX+14)+'px'; tt.style.top = (e.clientY-60)+'px';
-    tt.classList.add('visible');
+    showTooltip(e, d);
   })
   .on('mouseleave', ()=>{ hLine.style('display','none'); tt.classList.remove('visible'); });
 </script>
