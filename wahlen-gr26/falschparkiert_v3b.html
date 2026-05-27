@@ -354,10 +354,18 @@ Object.entries(COLORS).forEach(([name, color]) => {
   legend.appendChild(item);
 });
 
-// Render + responsive resize
+// Render + responsive resize (only re-render on WIDTH change, not height)
 render();
-let _rt;
-window.addEventListener('resize', () => { clearTimeout(_rt); _rt = setTimeout(render, 200); });
+let _rt, _lastW = window.innerWidth;
+window.addEventListener('resize', () => {
+  clearTimeout(_rt);
+  _rt = setTimeout(() => {
+    if (window.innerWidth !== _lastW) {
+      _lastW = window.innerWidth;
+      render();
+    }
+  }, 200);
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 </body>
