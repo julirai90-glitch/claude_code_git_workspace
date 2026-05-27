@@ -125,6 +125,9 @@ const flows = [
   {source:'Grüne',     target:'Die Mitte',value:1}
 ];
 
+const DISPLAY_NAME = { 'Die Mitte': 'Mitte' };
+const dn = n => DISPLAY_NAME[n] || n;
+
 const sources = [...new Set(flows.map(f => f.source))];
 const targets = [...new Set(flows.map(f => f.target))];
 const nodeNames = [...sources.map(p => p+'_von'), ...targets.map(p => p+'_zu')];
@@ -161,7 +164,7 @@ const linkPaths = svg.append('g').selectAll('path')
   .attr('d', d3.sankeyLinkHorizontal())
   .attr('fill', 'none')
   .attr('stroke', d => COLORS[d.key.split('→')[0]] || '#aaa')
-  .attr('stroke-width', d => Math.max(1.5, d.width))
+  .attr('stroke-width', d => Math.max(4, d.width))
   .attr('stroke-opacity', 0.32)
   .style('cursor', 'pointer')
   .on('mouseenter', function(e, d) {
@@ -202,7 +205,7 @@ svg.append('g').selectAll('text')
     const val = d.x0 < W/2
       ? d3.sum(graph.links.filter(l => l.source.index === d.index), l => l.value)
       : d3.sum(graph.links.filter(l => l.target.index === d.index), l => l.value);
-    return `${base} (${val})`;
+    return `${dn(base)} (${val})`;
   });
 
 svg.append('text').attr('x', W*0.18).attr('y', 12).attr('text-anchor','middle')
@@ -225,9 +228,9 @@ function showDetail(key) {
   document.getElementById('detail').innerHTML = `
     <div class="detail-box">
       <div class="detail-title">
-        <span class="swatch" style="background:${srcColor};"></span>${src}
+        <span class="swatch" style="background:${srcColor};"></span>${dn(src)}
         <span class="arrow">→ passt besser zu</span>
-        <span class="swatch" style="background:${tgtColor};"></span>${tgt}
+        <span class="swatch" style="background:${tgtColor};"></span>${dn(tgt)}
         <span style="color:var(--text-muted);font-weight:400;font-size:12px;">· ${names.length} ${names.length===1?'Person':'Personen'}</span>
       </div>
       <div>${chips}</div>
@@ -238,7 +241,7 @@ const legend = document.getElementById('legend');
 Object.entries(COLORS).forEach(([name, color]) => {
   const item = document.createElement('span');
   item.className = 'legend-item';
-  item.innerHTML = `<span class="swatch" style="background:${color};"></span>${name}`;
+  item.innerHTML = `<span class="swatch" style="background:${color};"></span>${dn(name)}`;
   legend.appendChild(item);
 });
 </script>
