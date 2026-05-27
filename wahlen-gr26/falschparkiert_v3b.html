@@ -281,10 +281,10 @@ function drawPortrait() {
 
   // Section labels
   svg.append('text').attr('x', PW / 2).attr('y', 13)
-    .attr('text-anchor', 'middle').attr('font-size', 10).attr('fill', mutedCol)
+    .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', mutedCol)
     .text('kandidiert bei ↓');
   svg.append('text').attr('x', PW / 2).attr('y', PH - 3)
-    .attr('text-anchor', 'middle').attr('font-size', 10).attr('fill', mutedCol)
+    .attr('text-anchor', 'middle').attr('font-size', 11).attr('fill', mutedCol)
     .text('↑ passt besser zu');
 
   // Links: vertical S-curves
@@ -329,10 +329,11 @@ function drawPortrait() {
     .attr('x', d => (d.y0 + d.y1) / 2)
     .attr('y', d => {
       const isSource = d.x0 < S_W / 2; // source nodes have smaller x in sankey space
-      return isSource ? d.x0 - 5 : d.x1 + 12;
+      return isSource ? d.x0 - 6 : d.x1 + 14;
     })
     .attr('text-anchor', 'middle')
-    .attr('font-size', 10)
+    .attr('font-size', 12)
+    .attr('font-weight', 500)
     .attr('fill', textCol)
     .text(d => {
       const base = d.name.replace('_von','').replace('_zu','');
