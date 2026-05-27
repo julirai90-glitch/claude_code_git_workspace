@@ -1,14 +1,45 @@
-# Embed-Codes — Zweitwohnungs-Datenstory Graubünden
+# Embed-Codes — Datenstories Graubünden
 
 Alle Embeds liegen unter `https://julirai90-glitch.github.io/claude_code_git_workspace/`.
-Daten werden aus den geschwister-Files `zweitwohnungen_data.json`, `zweitwohnungen_kanton_zeitreihe.json` sowie der Datawrapper-Karte `uzHEN` zur Laufzeit geladen — bei jedem Datenupdate auf gh-pages aktualisiert sich der Embed automatisch.
 
 Container-Breite: 696 px (Konvention Datenstory-Serie).
 Höhen-Sync: jeder Embed hat das iframe-resizer/contentWindow-Script — die responsive Variante (Code A) passt sich automatisch an, die einfache (Code B) nutzt eine feste Mindesthöhe.
 
 ---
 
-## Übersicht
+## Wahlen GR 2026
+
+| # | Embed | Was es zeigt | Direkt-Link |
+|---|---|---|---|
+| W1 | `wahlen-gr26/falschparkiert_v3.html` | Sankey: 57 Kandidierende die laut smartvote besser zu anderer Partei passen, klickbar mit Namen | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/wahlen-gr26/falschparkiert_v3.html) |
+
+### W1. Falschparkiert (Sankey)
+
+**A — responsive (empfohlen):**
+```html
+<iframe id="falschparkiert"
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/wahlen-gr26/falschparkiert_v3.html"
+  title="Falschparkiert: Wer kandidiert für die falsche Partei?"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; display:block;"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#falschparkiert');</script>
+```
+
+**B — einfach:**
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/wahlen-gr26/falschparkiert_v3.html"
+  title="Falschparkiert: Wer kandidiert für die falsche Partei?"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; min-height:700px; display:block;"></iframe>
+```
+
+---
+
+## Zweitwohnungs-Datenstory Graubünden
+
+Daten werden aus den geschwister-Files `zweitwohnungen_data.json`, `zweitwohnungen_kanton_zeitreihe.json` sowie der Datawrapper-Karte `uzHEN` zur Laufzeit geladen — bei jedem Datenupdate auf gh-pages aktualisiert sich der Embed automatisch.
 
 | # | Embed | Was es zeigt | Direkt-Link |
 |---|---|---|---|

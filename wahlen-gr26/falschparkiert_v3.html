@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falschparkiert – Smartvote GR 2026</title>
+<style>
+  :root {
+    --color-sp:       #F0554D;
+    --color-gruene:   #84B547;
+    --color-glp:      #C4C43D;
+    --color-mitte:    #D6862B;
+    --color-fdp:      #3872B5;
+    --color-svp:      #4B8A3E;
+    --color-parteilos:#B8B8B8;
+    --bg:             #ffffff;
+    --text-primary:   #1a1a1a;
+    --text-secondary: #666666;
+    --text-muted:     #999999;
+    --border:         #e5e5e5;
+    --chip-radius:    4px;
+    --font:           system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text-primary); padding: 1.25rem; max-width: 696px; }
+  h2 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
+  .subtitle { font-size: 12px; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
+  .hint { font-size: 12px; color: var(--text-muted); margin-bottom: 0.75rem; }
+  #sankey-wrap svg { display: block; width: 100%; }
+  #detail { margin-top: 0.75rem; min-height: 0; transition: all 0.2s; }
+  .detail-box { border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+  .detail-title { font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .detail-title .arrow { color: var(--text-secondary); font-weight: 400; font-size: 12px; }
+  .chip { display: inline-block; padding: 3px 8px; margin: 2px; border-radius: var(--chip-radius); font-size: 12px; }
+  .chip a { color: inherit; text-decoration: none; }
+  .chip a:hover { text-decoration: underline; }
+  .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1rem; font-size: 12px; color: var(--text-secondary); }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .source-note { font-size: 11px; color: var(--text-muted); margin-top: 1rem; }
+</style>
+</head>
+<body>
+
+<h2>Falschparkiert: Wer kandidiert für die falsche Partei?</h2>
+<p class="subtitle">
+  57 von 413 Kandidierenden (14%), die smartvote ausgefüllt haben, passen laut ihren eigenen Antworten
+  besser zu einer anderen Partei – mit mindestens 1 Prozentpunkt Unterschied zur eigenen Partei.
+  Basis: Graubündner Kantonsratswahlen 2026, 79% Beteiligung (413/522).
+</p>
+<p class="hint">→ Auf einen Fluss klicken, um die Kandidierenden zu sehen.</p>
+
+<div id="sankey-wrap"></div>
+<div id="detail"></div>
+<div class="legend" id="legend"></div>
+<p class="source-note">Datenquelle: smartvote.ch / Auswertung Südostschweiz</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+<script>
+const COLORS = {
+  'SP':        getComputedStyle(document.documentElement).getPropertyValue('--color-sp').trim(),
+  'Grüne':     getComputedStyle(document.documentElement).getPropertyValue('--color-gruene').trim(),
+  'glp':       getComputedStyle(document.documentElement).getPropertyValue('--color-glp').trim(),
+  'Die Mitte': getComputedStyle(document.documentElement).getPropertyValue('--color-mitte').trim(),
+  'FDP':       getComputedStyle(document.documentElement).getPropertyValue('--color-fdp').trim(),
+  'SVP':       getComputedStyle(document.documentElement).getPropertyValue('--color-svp').trim(),
+};
+
+const CANDIDATE_IDS = {
+  'Vera Oertli':78746,'Bettina Lampert':78766,'Sandra Gratzer-Taisch':78785,
+  'Jachen Andri Cajos':78774,
+  'Ciril Spescha':78826,'Martin Kreiliger':78855,'Rea Furrer':78856,
+  'Monika Baumgartner':78879,'Jöri Schwärzel':78881,'Evaristo Crameri':78898,
+  'Samuel Bislin':78877,
+  'Daniel Albertin':78931,'Daniel Ulber':78932,'Roman Hassler':79009,'Marcel Züger':79018,
+  'Urs Fliri':78933,'Renate Cadruvi-Lustenberger':78940,'Paola Cotti-Maurizio':78949,
+  'Ursina Jecklin Candrian':78979,'Helena Orlik':78986,'Martin Binkert':78991,
+  'Karin Metzger Biffi':78992,'Laura Caluori':79001,'Christian B. Eichholzer':79004,
+  'Noldi Heiz':79010,'Laura Koppenberg':79016,
+  'Sandra Maissen':78938,'Tino Schneider':78939,'Luzius Bütler':78946,
+  'Flurin Carigiet':78948,'Ernst Sax':78975,'Martin Bettinaglio':78980,
+  'Sarina Caduff':78983,'Erich Kohler-Zwicky':78999,'Georg Trepp-Ulber':79005,
+  'Veselin Stjepanovic':79020,
+  'Katja Bärenfaller':79043,'Selina Solèr':79055,
+  'Andrea Thür-Suter':79086,'Damian Markutt':79105,'Hanspeter Bundi':79119,
+  'Andras Zindel':79131,'Vincent Casty':79171,
+  'Lorenz Christian Raschein':79092,'Stephan Schwager':79147,'Thomas Paul Riedener':79166,
+  'Marica Juric-Susak':79113,'Anja Bisaz':79126,'Alexandra Marie Leake':79127,
+  'Claudia Jann':79136,'Salomè à Porta':79138,'Franco Giovanoli':79139,
+  'Yvonne Altmann':79155,'Peter Hartmann':79159,'Riet à Porta':79161,
+  'Marco Coray':79107,
+  'Marcel Levy':79382
+};
+
+const NAMES = {
+  "Die Mitte→glp":  ["Urs Fliri","Renate Cadruvi-Lustenberger","Paola Cotti-Maurizio","Ursina Jecklin Candrian","Helena Orlik","Martin Binkert","Karin Metzger Biffi","Laura Caluori","Christian B. Eichholzer","Noldi Heiz","Laura Koppenberg"],
+  "Die Mitte→FDP":  ["Sandra Maissen","Tino Schneider","Luzius Bütler","Flurin Carigiet","Ernst Sax","Martin Bettinaglio","Sarina Caduff","Erich Kohler-Zwicky","Georg Trepp-Ulber"],
+  "FDP→Die Mitte":  ["Marica Juric-Susak","Anja Bisaz","Alexandra Marie Leake","Claudia Jann","Salomè à Porta","Franco Giovanoli","Yvonne Altmann","Peter Hartmann","Riet à Porta"],
+  "SP→Grüne":       ["Ciril Spescha","Martin Kreiliger","Rea Furrer","Monika Baumgartner","Jöri Schwärzel","Evaristo Crameri"],
+  "FDP→SVP":        ["Andrea Thür-Suter","Damian Markutt","Hanspeter Bundi","Andras Zindel","Vincent Casty"],
+  "Die Mitte→SVP":  ["Daniel Albertin","Daniel Ulber","Roman Hassler","Marcel Züger"],
+  "SVP→Die Mitte":  ["Vera Oertli","Bettina Lampert","Sandra Gratzer-Taisch"],
+  "FDP→glp":        ["Lorenz Christian Raschein","Stephan Schwager","Thomas Paul Riedener"],
+  "glp→SP":         ["Katja Bärenfaller","Selina Solèr"],
+  "SVP→FDP":        ["Jachen Andri Cajos"],
+  "SP→glp":         ["Samuel Bislin"],
+  "Die Mitte→SP":   ["Veselin Stjepanovic"],
+  "FDP→SP":         ["Marco Coray"],
+  "Grüne→Die Mitte":["Marcel Levy"]
+};
+
+const flows = [
+  {source:'Die Mitte', target:'glp',      value:11},
+  {source:'Die Mitte', target:'FDP',      value:9},
+  {source:'FDP',       target:'Die Mitte',value:9},
+  {source:'SP',        target:'Grüne',    value:6},
+  {source:'FDP',       target:'SVP',      value:5},
+  {source:'Die Mitte', target:'SVP',      value:4},
+  {source:'SVP',       target:'Die Mitte',value:3},
+  {source:'FDP',       target:'glp',      value:3},
+  {source:'glp',       target:'SP',       value:2},
+  {source:'SVP',       target:'FDP',      value:1},
+  {source:'SP',        target:'glp',      value:1},
+  {source:'Die Mitte', target:'SP',       value:1},
+  {source:'FDP',       target:'SP',       value:1},
+  {source:'Grüne',     target:'Die Mitte',value:1}
+];
+
+const sources = [...new Set(flows.map(f => f.source))];
+const targets = [...new Set(flows.map(f => f.target))];
+const nodeNames = [...sources.map(p => p+'_von'), ...targets.map(p => p+'_zu')];
+const nodeIdx = Object.fromEntries(nodeNames.map((n,i) => [n,i]));
+const nodes = nodeNames.map(n => ({name: n}));
+const links = flows.map(f => ({
+  source: nodeIdx[f.source+'_von'],
+  target: nodeIdx[f.target+'_zu'],
+  value: f.value,
+  key: f.source+'→'+f.target
+}));
+
+const W = 680, H = 440;
+const textCol = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
+const mutedCol = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+
+const svg = d3.select('#sankey-wrap').append('svg')
+  .attr('viewBox', `0 0 ${W} ${H}`)
+  .attr('width', '100%');
+
+const sankey = d3.sankey()
+  .nodeWidth(16).nodePadding(12)
+  .extent([[58, 20], [W - 58, H - 20]]);
+
+const graph = sankey({
+  nodes: nodes.map(d => ({...d})),
+  links: links.map(d => ({...d}))
+});
+
+let selected = null;
+
+const linkPaths = svg.append('g').selectAll('path')
+  .data(graph.links).join('path')
+  .attr('d', d3.sankeyLinkHorizontal())
+  .attr('fill', 'none')
+  .attr('stroke', d => COLORS[d.key.split('→')[0]] || '#aaa')
+  .attr('stroke-width', d => Math.max(1.5, d.width))
+  .attr('stroke-opacity', 0.32)
+  .style('cursor', 'pointer')
+  .on('mouseenter', function(e, d) {
+    if (selected !== d.key) d3.select(this).attr('stroke-opacity', 0.6);
+  })
+  .on('mouseleave', function(e, d) {
+    if (selected !== d.key) d3.select(this).attr('stroke-opacity', 0.32);
+  })
+  .on('click', function(e, d) {
+    if (selected === d.key) {
+      selected = null;
+      linkPaths.attr('stroke-opacity', 0.32);
+      document.getElementById('detail').innerHTML = '';
+    } else {
+      selected = d.key;
+      linkPaths.attr('stroke-opacity', l => l.key === d.key ? 0.75 : 0.15);
+      showDetail(d.key);
+    }
+  });
+
+svg.append('g').selectAll('rect')
+  .data(graph.nodes).join('rect')
+  .attr('x', d => d.x0).attr('y', d => d.y0)
+  .attr('width', d => d.x1 - d.x0)
+  .attr('height', d => Math.max(1, d.y1 - d.y0))
+  .attr('fill', d => COLORS[d.name.replace('_von','').replace('_zu','')] || '#aaa')
+  .attr('rx', 2);
+
+svg.append('g').selectAll('text')
+  .data(graph.nodes).join('text')
+  .attr('x', d => d.x0 < W/2 ? d.x0 - 6 : d.x1 + 6)
+  .attr('y', d => (d.y0 + d.y1) / 2)
+  .attr('dy', '0.35em')
+  .attr('text-anchor', d => d.x0 < W/2 ? 'end' : 'start')
+  .attr('font-size', 12).attr('fill', textCol)
+  .text(d => {
+    const base = d.name.replace('_von','').replace('_zu','');
+    const val = d.x0 < W/2
+      ? d3.sum(graph.links.filter(l => l.source.index === d.index), l => l.value)
+      : d3.sum(graph.links.filter(l => l.target.index === d.index), l => l.value);
+    return `${base} (${val})`;
+  });
+
+svg.append('text').attr('x', W*0.18).attr('y', 12).attr('text-anchor','middle')
+  .attr('font-size', 11).attr('fill', mutedCol).text('kandidiert bei →');
+svg.append('text').attr('x', W*0.82).attr('y', 12).attr('text-anchor','middle')
+  .attr('font-size', 11).attr('fill', mutedCol).text('← passt besser zu');
+
+function showDetail(key) {
+  const [src, tgt] = key.split('→');
+  const names = NAMES[key] || [];
+  const srcColor = COLORS[src] || '#888';
+  const tgtColor = COLORS[tgt] || '#888';
+  const chips = names.map(n => {
+    const id = CANDIDATE_IDS[n];
+    const inner = id
+      ? `<a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/${id}" target="_blank" rel="noopener">${n}</a>`
+      : n;
+    return `<span class="chip" style="background:${srcColor}22;color:var(--text-primary);border:0.5px solid ${srcColor}55;">${inner}</span>`;
+  }).join('');
+  document.getElementById('detail').innerHTML = `
+    <div class="detail-box">
+      <div class="detail-title">
+        <span class="swatch" style="background:${srcColor};"></span>${src}
+        <span class="arrow">→ passt besser zu</span>
+        <span class="swatch" style="background:${tgtColor};"></span>${tgt}
+        <span style="color:var(--text-muted);font-weight:400;font-size:12px;">· ${names.length} ${names.length===1?'Person':'Personen'}</span>
+      </div>
+      <div>${chips}</div>
+    </div>`;
+}
+
+const legend = document.getElementById('legend');
+Object.entries(COLORS).forEach(([name, color]) => {
+  const item = document.createElement('span');
+  item.className = 'legend-item';
+  item.innerHTML = `<span class="swatch" style="background:${color};"></span>${name}`;
+  legend.appendChild(item);
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</body>
+</html>
