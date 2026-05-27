@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politische Extreme – Smartvote GR 2026</title>
+<style>
+  :root {
+    --color-sp:       #F0554D;
+    --color-gruene:   #84B547;
+    --color-glp:      #C4C43D;
+    --color-mitte:    #D6862B;
+    --color-fdp:      #3872B5;
+    --color-svp:      #4B8A3E;
+    --bg:             #ffffff;
+    --text-primary:   #1a1a1a;
+    --text-secondary: #666666;
+    --text-muted:     #999999;
+    --border:         #e5e5e5;
+    --font:           system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text-primary); padding: 1.25rem; max-width: 696px; }
+  h2 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 12px; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
+  .axis-section { margin-bottom: 1.25rem; }
+  .axis-label {
+    font-size: 11px; color: var(--text-muted); text-align: center;
+    margin-bottom: 0.6rem; display: flex; align-items: center; gap: 8px;
+  }
+  .axis-label::before, .axis-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 420px) { .two-col { grid-template-columns: 1fr; } }
+  .group { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .group-header {
+    padding: 6px 10px; font-size: 12px; font-weight: 600; color: white;
+  }
+  .candidate-list { }
+  .candidate {
+    display: flex; align-items: center; padding: 5px 10px; gap: 7px;
+    font-size: 12px; border-bottom: 1px solid var(--border);
+  }
+  .candidate:last-child { border-bottom: none; }
+  .rank { color: var(--text-muted); font-size: 11px; width: 13px; flex-shrink: 0; text-align: right; }
+  .cand-name { flex: 1; min-width: 0; }
+  .cand-name a { color: var(--text-primary); text-decoration: none; }
+  .cand-name a:hover { text-decoration: underline; }
+  .party-chip {
+    padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 500;
+    color: white; flex-shrink: 0; white-space: nowrap;
+  }
+  .source-note { font-size: 11px; color: var(--text-muted); margin-top: 1rem; }
+  .method-note { font-size: 10px; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<h2>Die politischen Extreme</h2>
+<p class="subtitle">
+  Jeweils die fünf Kandidierenden, die auf der Smartmap am weitesten links, rechts, liberal oder konservativ positioniert sind.
+</p>
+
+<div class="axis-section">
+  <div class="axis-label">← links · rechts →</div>
+  <div class="two-col">
+    <div class="group">
+      <div class="group-header" style="background:var(--color-sp)">Die 5 Linksten</div>
+      <div class="candidate-list">
+        <div class="candidate"><span class="rank">1</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78837" target="_blank" rel="noopener">Sara Andresen</a></span><span class="party-chip" style="background:var(--color-sp)">SP</span></div>
+        <div class="candidate"><span class="rank">2</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78828" target="_blank" rel="noopener">Ioanna Bachmann</a></span><span class="party-chip" style="background:var(--color-sp)">SP</span></div>
+        <div class="candidate"><span class="rank">3</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78907" target="_blank" rel="noopener">Kathrin Pfister-Steeb</a></span><span class="party-chip" style="background:var(--color-sp)">SP</span></div>
+        <div class="candidate"><span class="rank">4</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78824" target="_blank" rel="noopener">Seraina Schutz</a></span><span class="party-chip" style="background:var(--color-sp)">SP</span></div>
+        <div class="candidate"><span class="rank">5</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78914" target="_blank" rel="noopener">Andris Büsch</a></span><span class="party-chip" style="background:var(--color-sp)">SP</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-header" style="background:var(--color-svp)">Die 5 Rechtesten</div>
+      <div class="candidate-list">
+        <div class="candidate"><span class="rank">1</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78801" target="_blank" rel="noopener">Thomas Dal Ponte</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+        <div class="candidate"><span class="rank">2</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78719" target="_blank" rel="noopener">Romy Mayer</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+        <div class="candidate"><span class="rank">3</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78747" target="_blank" rel="noopener">Marco Ruchti</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+        <div class="candidate"><span class="rank">4</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78776" target="_blank" rel="noopener">Stefan Metzger</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+        <div class="candidate"><span class="rank">5</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78804" target="_blank" rel="noopener">Reto Rauch</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="axis-section">
+  <div class="axis-label">↑ liberal · konservativ ↓</div>
+  <div class="two-col">
+    <div class="group">
+      <div class="group-header" style="background:var(--color-fdp)">Die 5 Liberalsten</div>
+      <div class="candidate-list">
+        <div class="candidate"><span class="rank">1</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/79084" target="_blank" rel="noopener">Vera Stiffler</a></span><span class="party-chip" style="background:var(--color-fdp)">FDP</span></div>
+        <div class="candidate"><span class="rank">2</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/79152" target="_blank" rel="noopener">Peter Flütsch</a></span><span class="party-chip" style="background:var(--color-fdp)">FDP</span></div>
+        <div class="candidate"><span class="rank">3</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/79130" target="_blank" rel="noopener">Christof Kuoni</a></span><span class="party-chip" style="background:var(--color-fdp)">FDP</span></div>
+        <div class="candidate"><span class="rank">4</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/79124" target="_blank" rel="noopener">Christine Kocher</a></span><span class="party-chip" style="background:var(--color-fdp)">FDP</span></div>
+        <div class="candidate"><span class="rank">5</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/79116" target="_blank" rel="noopener">Marco Graf</a></span><span class="party-chip" style="background:var(--color-fdp)">FDP</span></div>
+      </div>
+    </div>
+    <div class="group">
+      <div class="group-header" style="background:var(--color-svp)">Die 5 Konservativsten</div>
+      <div class="candidate-list">
+        <div class="candidate"><span class="rank">1</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78724" target="_blank" rel="noopener">Urs Solèr</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+        <div class="candidate"><span class="rank">2</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78786" target="_blank" rel="noopener">Ronny Krättli</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+        <div class="candidate"><span class="rank">3</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78792" target="_blank" rel="noopener">Romano Losa</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+        <div class="candidate"><span class="rank">4</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78769" target="_blank" rel="noopener">Zahra Talebolhagh</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+        <div class="candidate"><span class="rank">5</span><span class="cand-name"><a href="https://www.smartvote.ch/de/elections/26_gr_leg/candidacies/78783" target="_blank" rel="noopener">Desi Brügger</a></span><span class="party-chip" style="background:var(--color-svp)">SVP</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="source-note">Quelle: smartvote.ch / Auswertung &amp; Grafik: Julian Reich</p>
+<p class="method-note">Methode: Korrespondenzanalyse der Fragebogen-Antworten (Smartmap). Die Achsenbezeichnungen sind inhaltliche Interpretationen; die liberal-konservativ-Achse ist statistisch schwächer als die links-rechts-Achse.</p>
+
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</body>
+</html>
