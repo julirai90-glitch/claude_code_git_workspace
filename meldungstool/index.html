@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de" data-theme="light">
 <head>
 <meta charset="UTF-8">
@@ -548,29 +548,13 @@ footer {
     </summary>
     <div class="settings-body">
       <div class="settings-grid">
-        <label>ANBIETER</label>
-        <select id="provider-select">
-          <option value="anthropic">Claude (Anthropic)</option>
-          <option value="openai">ChatGPT (OpenAI)</option>
-          <option value="google">Gemini (Google)</option>
-        </select>
-        <div></div>
-
         <label>MODELL</label>
         <select id="model-select"></select>
         <div></div>
 
-        <label>CLAUDE-KEY</label>
-        <input type="password" id="key-anthropic" placeholder="sk-ant-…" autocomplete="off">
-        <button class="clear-btn" data-clear="anthropic">LÖSCHEN</button>
-
-        <label>OPENAI-KEY</label>
+        <label>API-KEY</label>
         <input type="password" id="key-openai" placeholder="sk-…" autocomplete="off">
         <button class="clear-btn" data-clear="openai">LÖSCHEN</button>
-
-        <label>GOOGLE-KEY</label>
-        <input type="password" id="key-google" placeholder="AIza…" autocomplete="off">
-        <button class="clear-btn" data-clear="google">LÖSCHEN</button>
       </div>
       <div class="danger-zone">
         <button class="clear-btn" id="clear-all-btn">ALLE BROWSER-DATEN LÖSCHEN</button>
@@ -644,21 +628,10 @@ footer {
 const STORAGE_KEY = 'meldungstool_v1';
 const MAX_SLOTS = 5;
 
-const MODELS = {
-  anthropic: [
-    { id: 'claude-sonnet-4-6',          label: 'Claude Sonnet 4.6 (empfohlen)' },
-    { id: 'claude-haiku-4-5-20251001',  label: 'Claude Haiku 4.5 (günstig)' },
-    { id: 'claude-opus-4-7',            label: 'Claude Opus 4.7 (leistungsstark)' }
-  ],
-  openai: [
-    { id: 'gpt-4.1-mini', label: 'GPT-4.1 mini (günstig, empfohlen)' },
-    { id: 'gpt-4.1',      label: 'GPT-4.1 (leistungsstark)' }
-  ],
-  google: [
-    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (günstig, empfohlen)' },
-    { id: 'gemini-2.5-pro',   label: 'Gemini 2.5 Pro (leistungsstark)' }
-  ]
-};
+const MODELS = [
+  { id: 'gpt-4.1-mini', label: 'GPT-4.1 mini (günstig, empfohlen)' },
+  { id: 'gpt-4.1',      label: 'GPT-4.1 (leistungsstark)' }
+];
 
 const SYSTEM_PROMPTS = {
   meldung: `Du erhältst den Text einer Pressemitteilung oder E-Mail von Vereinen, Parteien, Fraktionen, Ämtern oder ähnlichen Institutionen aus den Regionen Graubünden, Glarus oder Zürichsee-Linth/Linthgebiet. Erstelle für jedes genannte Ereignis eine journalistische Kurzmeldung für die lokalen Titel der Medienfamilie «Südostschweiz».
@@ -812,9 +785,8 @@ Skala:
    State
 ============================================================ */
 let state = {
-  provider: 'anthropic',
-  model: 'claude-sonnet-4-6',
-  keys: { anthropic: '', openai: '', google: '' },
+  model: 'gpt-4.1-mini',
+  keys: { openai: '' },
   slots: [],
   activeSlot: 0
 };
@@ -829,7 +801,6 @@ function newSlot() {
 ============================================================ */
 function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    provider: state.provider,
     model: state.model,
     keys: state.keys
   }));
@@ -842,9 +813,8 @@ function persistSlots() {
 function load() {
   try {
     const d = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    state.provider = d.provider || 'anthropic';
-    state.model    = d.model || MODELS[state.provider][0].id;
-    state.keys     = Object.assign({ anthropic: '', openai: '', google: '' }, d.keys || {});
+    state.model = d.model || MODELS[0].id;
+    state.keys  = Object.assign({ openai: '' }, d.keys || {});
   } catch(e) {}
   try {
     const s = JSON.parse(localStorage.getItem(STORAGE_KEY + '_slots') || '[]');
@@ -978,27 +948,6 @@ function buildUserMessage(slot) {
   return s;
 }
 
-async function callAnthropic(system, user, key, model) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 800,
-      temperature: 0.5,
-      system,
-      messages: [{ role: 'user', content: user }]
-    })
-  });
-  if (!res.ok) { const t = await res.text(); throw new Error('Anthropic ' + res.status + ': ' + t.slice(0, 220)); }
-  const d = await res.json();
-  return (d.content?.[0]?.text || '').trim();
-}
-
 async function callOpenAI(system, user, key, model) {
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -1015,30 +964,10 @@ async function callOpenAI(system, user, key, model) {
   return (d.choices?.[0]?.message?.content || '').trim();
 }
 
-async function callGoogle(system, user, key, model) {
-  const url = 'https://generativelanguage.googleapis.com/v1beta/models/'
-    + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ role: 'user', parts: [{ text: user }] }],
-      systemInstruction: { parts: [{ text: system }] },
-      generationConfig: { maxOutputTokens: 800, temperature: 0.5 }
-    })
-  });
-  if (!res.ok) { const t = await res.text(); throw new Error('Google ' + res.status + ': ' + t.slice(0, 220)); }
-  const d = await res.json();
-  return (d.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
-}
-
 async function callProvider(system, user) {
-  const key = state.keys[state.provider];
+  const key = state.keys.openai;
   if (!key) throw new Error('Kein API-Schlüssel hinterlegt');
-  if (state.provider === 'anthropic') return callAnthropic(system, user, key, state.model);
-  if (state.provider === 'openai')    return callOpenAI(system, user, key, state.model);
-  if (state.provider === 'google')    return callGoogle(system, user, key, state.model);
-  throw new Error('Unbekannter Provider');
+  return callOpenAI(system, user, key, state.model);
 }
 
 async function generateOne(slot, hint = '') {
@@ -1079,7 +1008,7 @@ async function generateWithReview(slot, hint = '') {
 async function generateAll() {
   const filled = state.slots.filter(s => s.text.trim().length > 20);
   if (!filled.length) { flash('Bitte mindestens einen Text einfügen.', 'error'); return; }
-  if (!state.keys[state.provider]) {
+  if (!state.keys.openai) {
     flash('Bitte zuerst API-Key hinterlegen.', 'error');
     document.getElementById('settings-panel').open = true;
     return;
@@ -1201,7 +1130,7 @@ function updateCharCount() {
 async function regenerateActive() {
   const slot = state.slots[state.activeSlot];
   if (!slot) return;
-  if (!state.keys[state.provider]) { flash('Kein API-Key hinterlegt.', 'error'); return; }
+  if (!state.keys.openai) { flash('Kein API-Key hinterlegt.', 'error'); return; }
   const btn  = document.getElementById('regen-btn');
   const hint = document.getElementById('regen-hint').value;
   btn.disabled = true; btn.textContent = 'GENERIERE…';
@@ -1277,20 +1206,20 @@ function flash(msg, kind) {
 function renderModelSelect() {
   const sel = document.getElementById('model-select');
   sel.innerHTML = '';
-  for (const m of MODELS[state.provider]) {
+  for (const m of MODELS) {
     const opt = document.createElement('option');
     opt.value = m.id; opt.textContent = m.label;
     sel.appendChild(opt);
   }
-  if (!MODELS[state.provider].some(m => m.id === state.model)) {
-    state.model = MODELS[state.provider][0].id;
+  if (!MODELS.some(m => m.id === state.model)) {
+    state.model = MODELS[0].id;
   }
   sel.value = state.model;
 }
 
 function updateKeyBadge() {
   const badge = document.getElementById('key-badge');
-  const k     = state.keys[state.provider];
+  const k     = state.keys.openai;
   const ok    = k && k.length > 8;
   badge.className = 'badge' + (ok ? ' green' : ' red');
   badge.innerHTML = ok
@@ -1299,28 +1228,19 @@ function updateKeyBadge() {
 }
 
 function initSettings() {
-  document.getElementById('provider-select').value  = state.provider;
   renderModelSelect();
-  document.getElementById('key-anthropic').value = state.keys.anthropic;
-  document.getElementById('key-openai').value    = state.keys.openai;
-  document.getElementById('key-google').value    = state.keys.google;
+  document.getElementById('key-openai').value = state.keys.openai;
   updateKeyBadge();
 
-  document.getElementById('provider-select').addEventListener('change', e => {
-    state.provider = e.target.value; renderModelSelect(); persist(); updateKeyBadge();
-  });
   document.getElementById('model-select').addEventListener('change', e => {
     state.model = e.target.value; persist();
   });
-  ['anthropic', 'openai', 'google'].forEach(p => {
-    document.getElementById('key-' + p).addEventListener('input', e => {
-      state.keys[p] = e.target.value.trim(); persist(); updateKeyBadge();
-    });
+  document.getElementById('key-openai').addEventListener('input', e => {
+    state.keys.openai = e.target.value.trim(); persist(); updateKeyBadge();
   });
   document.querySelectorAll('.clear-btn[data-clear]').forEach(btn => {
     btn.addEventListener('click', () => {
-      const p = btn.dataset.clear;
-      state.keys[p] = ''; document.getElementById('key-' + p).value = '';
+      state.keys.openai = ''; document.getElementById('key-openai').value = '';
       persist(); updateKeyBadge();
     });
   });
@@ -1387,7 +1307,7 @@ function init() {
   document.getElementById('copy-btn').addEventListener('click', copyActive);
   document.getElementById('regen-btn').addEventListener('click', regenerateActive);
 
-  if (!state.keys[state.provider]) document.getElementById('settings-panel').open = true;
+  if (!state.keys.openai) document.getElementById('settings-panel').open = true;
 }
 
 document.addEventListener('DOMContentLoaded', init);
