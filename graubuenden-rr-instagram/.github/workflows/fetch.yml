@@ -1,0 +1,42 @@
+name: Fetch Instagram Posts
+
+on:
+  schedule:
+    # Every Monday at 09:00 UTC (after Scoutpost runs at 07:00)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:  # manual trigger
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch units from Scoutpost
+        env:
+          SCOUTPOST_TOKEN: ${{ secrets.SCOUTPOST_TOKEN }}
+        working-directory: graubuenden-rr-instagram
+        run: python fetch_units.py
+
+      - name: Classify themes via OpenAI
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        working-directory: graubuenden-rr-instagram
+        run: python analyze_themes.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add graubuenden-rr-instagram/data/
+          git diff --staged --quiet || git commit -m "chore: update instagram posts $(date -u +%Y-%m-%d)"
+          git push

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instagram-Tracker — Regierungsratswahlen GR 2026</title>
+<meta name="description" content="Wer postet was? Instagram-Aktivität der Kandidierenden für den Graubündner Regierungsrat 2026 — Posting-Frequenz, Themen und Archiv.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.no-ig { font-size: 0.8rem; color: var(--c-muted); font-style: italic; }
+.kandidaten-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.kandidat-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--partei-color, #ccc);
+}
+.kandidat-card .name { font-weight: 600; font-size: 0.95rem; }
+.kandidat-card .partei { font-size: 0.78rem; color: var(--c-muted); }
+.kandidat-card .ig { font-size: 0.78rem; margin-top: 0.3rem; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="https://julirai90-glitch.github.io/claude_code_git_workspace/" aria-label="Zurück">
+      <span class="logo-mark">GR</span>
+      <span>Graubünden · Wahlen 2026</span>
+    </a>
+    <span class="header-meta" id="last-update">Daten: wird geladen …</span>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <p class="hero-label">Wahlen 14. Juni 2026 · Instagram-Monitoring</p>
+      <h1>Wer postet was?</h1>
+      <p class="hero-sub">Instagram-Aktivität der Regierungsratskandidierenden in Graubünden — Posting-Frequenz, Themen und Post-Archiv. Datenerhebung wöchentlich via Scoutpost.</p>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="stats-grid" id="stats">
+      <div class="stat-card"><div class="label">Posts total</div><div class="value" id="stat-total">—</div></div>
+      <div class="stat-card"><div class="label">Kandidaturen verfolgt</div><div class="value" id="stat-scouts">6</div><div class="sublabel">von 9 mit öff. Instagram</div></div>
+      <div class="stat-card"><div class="label">Aktivste</div><div class="value" id="stat-top" style="font-size:1.1rem">—</div><div class="sublabel" id="stat-top-count"></div></div>
+      <div class="stat-card"><div class="label">Letzter Abruf</div><div class="value" id="stat-date" style="font-size:1rem">—</div></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Posting-Frequenz</h2>
+      <p class="section-sub">Posts pro Kandidatin/Kandidat und Woche</p>
+      <div class="embed-wrap">
+        <iframe src="embed/rr-frequenz.html"
+          style="width:100%;border:0;height:420px"
+          loading="lazy"
+          title="Instagram-Posting-Frequenz RR GR 2026">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Themen-Überblick</h2>
+      <p class="section-sub">Wovon handeln die Posts? (KI-Klassifikation, nicht redaktionell geprüft)</p>
+      <div class="embed-wrap">
+        <iframe src="embed/rr-themen.html"
+          style="width:100%;border:0;height:440px"
+          loading="lazy"
+          title="Instagram-Themen RR GR 2026">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Post-Archiv</h2>
+      <p class="section-sub">Alle erfassten Posts — durchsuchbar und filterbar nach Person</p>
+      <div class="embed-wrap">
+        <iframe src="embed/rr-archiv.html"
+          id="archiv-frame"
+          style="width:100%;border:0;height:600px"
+          loading="lazy"
+          title="Instagram-Post-Archiv RR GR 2026">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Kandidierende</h2>
+      <p class="section-sub">Übersicht aller 9 Kandidierenden — 6 mit öffentlichem Instagram-Profil erfasst</p>
+      <div class="kandidaten-grid" id="kandidaten-grid"></div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="methodik">
+      <strong>Methodik & Quellen:</strong>
+      Instagram-Posts werden wöchentlich (montags) über
+      <a href="https://scoutpost.ai" target="_blank" rel="noopener">Scoutpost</a>
+      von öffentlichen Profilen erhoben. Erfasst werden Caption-Texte und Post-URLs.
+      Engagement-Daten (Likes, Kommentare) werden von Scoutpost nicht erhoben.
+      Post-Datum wird aus dem Instagram-Shortcode dekodiert (Näherungswert ± Stunden).
+      Themen-Klassifikation erfolgt automatisch per OpenAI und ist nicht redaktionell geprüft.
+      Kandidaturen ohne öffentliches Instagram-Profil (Reto Bott, Maurizio Michael, Aita Zanetti)
+      werden nicht erfasst. Datenstand: wöchentlich aktualisiert.
+      <br><br>
+      <strong>Projekt:</strong> Südostschweiz / Julian Reich ·
+      <a href="https://github.com/julirai90-glitch/claude_code_git_workspace" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    © 2026 Südostschweiz / Julian Reich · Daten: Scoutpost / Instagram (öffentliche Profile) ·
+    Kein offizielles Wahlmaterial
+  </div>
+</footer>
+
+<script>
+// postMessage resize for archive iframe
+window.addEventListener('message', function(e) {
+  if (!e.data || e.data.type !== 'embed-size') return;
+  document.querySelectorAll('iframe').forEach(function(f) {
+    if (f.contentWindow === e.source) {
+      f.style.height = (e.data.height + 16) + 'px';
+    }
+  });
+});
+
+// Load stats from posts.json
+fetch('data/posts.json').then(r => r.json()).then(posts => {
+  document.getElementById('stat-total').textContent = posts.length;
+
+  // Last update
+  const dates = posts.map(p => p.extracted_at).filter(Boolean).sort();
+  if (dates.length) {
+    const d = new Date(dates[dates.length-1]);
+    document.getElementById('stat-date').textContent =
+      d.toLocaleDateString('de-CH', { day:'2-digit', month:'2-digit', year:'numeric' });
+    document.getElementById('last-update').textContent =
+      'Stand: ' + d.toLocaleDateString('de-CH');
+  }
+
+  // Top poster
+  const counts = {};
+  posts.forEach(p => { counts[p.kandidat] = (counts[p.kandidat]||0) + 1; });
+  const top = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
+  if (top) {
+    document.getElementById('stat-top').textContent = top[0].split(' ').slice(-1)[0];
+    document.getElementById('stat-top-count').textContent = top[1] + ' Posts';
+  }
+}).catch(() => {});
+
+// Build kandidaten grid from JSON
+fetch('kandidaten.json').then(r => r.json()).then(kandidaten => {
+  const grid = document.getElementById('kandidaten-grid');
+  kandidaten.forEach(k => {
+    const card = document.createElement('div');
+    card.className = 'kandidat-card';
+    card.style.setProperty('--partei-color', k.farbe);
+    const igLink = k.instagram
+      ? `<a href="https://www.instagram.com/${k.instagram}/" target="_blank" rel="noopener">@${k.instagram}</a>`
+      : '<span class="no-ig">kein öffentliches Profil</span>';
+    card.innerHTML = `
+      <div class="name">${k.name} ${k.bisher ? '<span style="font-size:0.7rem;color:#888">bisher</span>' : ''}</div>
+      <div class="partei">${k.partei}</div>
+      <div class="ig">${igLink}</div>`;
+    grid.appendChild(card);
+  });
+}).catch(() => {});
+</script>
+</body>
+</html>
