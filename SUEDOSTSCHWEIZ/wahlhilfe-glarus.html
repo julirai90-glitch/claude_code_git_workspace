@@ -123,9 +123,7 @@ const NODES = {
   q2:{type:'yn',step:2,q:'Gehen Sie wählen?',
     yes:'q3',no:'r_novote',crumbY:'Geht wählen',crumbN:'Geht nicht wählen'},
   q3:{type:'yn',step:3,q:'Sind Sie mit der heutigen Zusammensetzung des Landrates rundum zufrieden?',
-    yes:'q4',no:'q5',crumbY:'Zufrieden',crumbN:'Will Veränderung'},
-  q4:{type:'yn',step:4,q:'Wirklich?',
-    yes:'r_unch',no:'q5',crumbY:'Sehr zufrieden',crumbN:'Will Veränderung'},
+    yes:'r_unch',no:'q5',crumbY:'Zufrieden',crumbN:'Will Veränderung'},
   q5:{type:'radio',step:4,q:'Welche Veränderung ist Ihnen besonders wichtig?',
     opts:[
       {l:'Die Stärke der Parteien soll sich ändern.',next:'q6a',crumb:'Partei-Stärke'},
@@ -273,13 +271,13 @@ function nav(nextId, label) {
 
 function goBack() {
   if (!history.length) return;
-  history.pop();
+  const prev = history.pop();
   const body = document.getElementById('body');
   body.style.opacity='0';
-  setTimeout(()=>{ render(history.length ? history[history.length-1].nodeId : 'q1'); body.style.opacity='1'; }, 120);
+  setTimeout(()=>{ render(prev.nodeId); body.style.opacity='1'; }, 120);
 }
 
-function restart() { history=[]; nav('q1',''); history=[]; render('q1'); }
+function restart() { history=[]; render('q1'); }
 
 function selRadio(i) {
   const opt = NODES[currentId].opts[i];
