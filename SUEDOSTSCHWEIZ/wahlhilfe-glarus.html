@@ -62,6 +62,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .party-row:last-child{margin-bottom:0}
 .party-badge{font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:3px;flex-shrink:0;color:white}
 .party-names{font-size:13px;color:#333;line-height:1.5}
+.cand-link{color:#333;text-decoration:none;border-bottom:1px solid #ccc}
+.cand-link:hover{color:#C8102E;border-bottom-color:#C8102E}
 
 /* Party colors */
 .p-SVP{background:#4B8A3E}.p-FDP{background:#3872B5}.p-Mitte{background:#D6862B}
@@ -107,7 +109,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <script>
 // ── Incumbent data (58 Bisherige, grouped by party per district) ──────────
-const CAND = {"Glarus Nord": [{"p": "SVP", "n": ["Adrian Hager", "Edwin Koller-Breitschmid", "Emil Küng", "Fridolin Staub-Tremp", "Kaspar Krieg", "Peter Rothlin", "Roman Zehnder", "Stefan Schnyder", "Yvonne Carrara"]}, {"p": "FDP", "n": ["Albert Heer-Müller", "Gabriela Meier Jud", "Michael Laager", "Philippe Haller"]}, {"p": "Mitte", "n": ["Beat Noser-Grütter", "Bruno Gallati-Landolt", "Cyrill Schwitter", "Dominique Stüssi", "Liliane Schrepfer-Landolt", "Luca Rimini"]}, {"p": "GLP", "n": ["Franz Landolt", "Nadine Landolt Rüegg", "Priska Müller Wahl", "Ruedi Schwitter"]}, {"p": "SP", "n": ["Benjamin Kistler", "Priska Grünenfelder", "Sabine Steinmann", "Samuel Zingg"]}, {"p": "Junge Grüne", "n": ["Kaj Weibel"]}], "Glarus": [{"p": "SVP", "n": ["Franz Freuler", "Markus Schnyder", "Matthias Schnyder", "Rolf Blumer"]}, {"p": "FDP", "n": ["Hans Jenny", "Jacqueline Jenny", "Remo Goethe", "Roland Goethe"]}, {"p": "Mitte", "n": ["Andrea Trummer", "Andreas Luchsinger", "Hans Schubiger", "Pedro Leuzinger"]}, {"p": "GLP", "n": ["Nils Birkeland"]}, {"p": "SP", "n": ["Sarah Küng", "Werner Stefan Kälin"]}, {"p": "Grüne", "n": ["Marius Grossenbacher", "Regula N. Keller"]}, {"p": "Junge Grüne", "n": ["Sven Keller"]}], "Glarus Süd": [{"p": "SVP", "n": ["Barbara Rhyner", "Barbara Vögeli", "Martin Baumgartner", "Reto Glarner", "Toni Gisler"]}, {"p": "FDP", "n": ["Martin Zopfi", "Rafaela Hug", "Stephan Muggli"]}, {"p": "Mitte", "n": ["Andreas Vögeli", "Euphemia Elmer"]}, {"p": "Grüne", "n": ["Cinia Schriber", "Mathias Zopfi"]}]};
+const CAND = {"Glarus Nord": [{"p": "SVP", "n": [["Adrian Hager", "80131"], ["Edwin Koller-Breitschmid", "80132"], ["Emil Küng", "80129"], ["Fridolin Staub-Tremp", "80130"], ["Kaspar Krieg", "80127"], ["Peter Rothlin", "80128"], ["Roman Zehnder", "80092"], ["Stefan Schnyder", "80094"], ["Yvonne Carrara", "80096"]]}, {"p": "FDP", "n": [["Albert Heer-Müller", "79520"], ["Gabriela Meier Jud", "79519"], ["Michael Laager", "79521"], ["Philippe Haller", "79522"]]}, {"p": "Mitte", "n": [["Beat Noser-Grütter", "79215"], ["Bruno Gallati-Landolt", "79216"], ["Cyrill Schwitter", "79234"], ["Dominique Stüssi", "79214"], ["Liliane Schrepfer-Landolt", "79212"], ["Luca Rimini", "79213"]]}, {"p": "GLP", "n": [["Franz Landolt", "79305"], ["Nadine Landolt Rüegg", "79304"], ["Priska Müller Wahl", "79325"], ["Ruedi Schwitter", "79303"]]}, {"p": "SP", "n": [["Benjamin Kistler", "79443"], ["Priska Grünenfelder", "79437"], ["Sabine Steinmann", "79450"], ["Samuel Zingg", "79452"]]}, {"p": "Junge Grüne", "n": [["Kaj Weibel", "79268"]]}], "Glarus": [{"p": "SVP", "n": [["Franz Freuler", "80153"], ["Markus Schnyder", "80151"], ["Matthias Schnyder", "80152"], ["Rolf Blumer", "80150"]]}, {"p": "FDP", "n": [["Hans Jenny", "79481"], ["Jacqueline Jenny", "79479"], ["Remo Goethe", "79480"], ["Roland Goethe", "79482"]]}, {"p": "Mitte", "n": [["Andrea Trummer", "79182"], ["Andreas Luchsinger", "79183"], ["Hans Schubiger", "79198"], ["Pedro Leuzinger", "79197"]]}, {"p": "GLP", "n": [["Nils Birkeland", "79416"]]}, {"p": "SP", "n": [["Sarah Küng", "79462"], ["Werner Stefan Kälin", "79461"]]}, {"p": "Grüne", "n": [["Marius Grossenbacher", "79251"], ["Regula N. Keller", "79250"]]}, {"p": "Junge Grüne", "n": [["Sven Keller", "79252"]]}], "Glarus Süd": [{"p": "SVP", "n": [["Barbara Rhyner", "80114"], ["Barbara Vögeli", "80117"], ["Martin Baumgartner", "80115"], ["Reto Glarner", "80116"], ["Toni Gisler", "80113"]]}, {"p": "FDP", "n": [["Martin Zopfi", "79497"], ["Rafaela Hug", "79509"], ["Stephan Muggli", "79508"]]}, {"p": "Mitte", "n": [["Andreas Vögeli", "79172"], ["Euphemia Elmer", "79173"]]}, {"p": "Grüne", "n": [["Cinia Schriber", "79350"], ["Mathias Zopfi", "79349"]]}]};
 
 const PARTY_CLASS = {
   SVP:'p-SVP', FDP:'p-FDP', Mitte:'p-Mitte', GLP:'p-GLP',
@@ -182,7 +184,9 @@ function renderCandList(district) {
   const total = groups.reduce((s,g)=>s+g.n.length,0);
   const rows = groups.map(g => {
     const cls = PARTY_CLASS[g.p] || 'p-SVP';
-    const names = g.n.join(' · ');
+    const names = g.n.map(([name,id]) =>
+      `<a class="cand-link" href="https://www.smartvote.ch/de/elections/26_gl_leg/candidacies/${id}" target="_blank" rel="noopener">${name}</a>`
+    ).join(' · ');
     return `<div class="party-row"><span class="party-badge ${cls}">${g.p}</span><span class="party-names">${names}</span></div>`;
   }).join('');
   return `<div class="bisherige">
@@ -269,13 +273,13 @@ function nav(nextId, label) {
 
 function goBack() {
   if (!history.length) return;
-  const prev = history.pop(); // nodeId = the screen we came FROM = screen to go back to
+  history.pop();
   const body = document.getElementById('body');
   body.style.opacity='0';
-  setTimeout(()=>{ render(prev.nodeId); body.style.opacity='1'; }, 120);
+  setTimeout(()=>{ render(history.length ? history[history.length-1].nodeId : 'q1'); body.style.opacity='1'; }, 120);
 }
 
-function restart() { history=[]; render('q1'); }
+function restart() { history=[]; nav('q1',''); history=[]; render('q1'); }
 
 function selRadio(i) {
   const opt = NODES[currentId].opts[i];
