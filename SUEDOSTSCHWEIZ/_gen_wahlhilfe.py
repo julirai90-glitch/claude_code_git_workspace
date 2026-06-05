@@ -280,7 +280,7 @@ function render(id) {{
 <div class="btns">${{btns}}</div>${{backBtn}}`;
 
   }} else if (node.type === 'res') {{
-    const txt = node.text.replace(/\\n/g,'<br><br>');
+    const txt = node.text.replace(/\\n/g,'<br>');
     const candList = node.district ? renderCandList(node.district) : '';
     const svLink = node.district ? `<a class="sv-link" href="${{node.smartvote}}" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
