@@ -20,7 +20,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 /* Breadcrumb */
 .crumbs{display:flex;flex-wrap:wrap;gap:4px;padding:12px 24px 0;min-height:0}
 .crumbs:empty{padding:0}
-.crumb{font-size:11px;background:#f5f5f5;color:#555;border-radius:20px;padding:3px 9px;white-space:nowrap}
+.crumb{font-size:11px;background:#f5f5f5;color:#555;border-radius:20px;padding:4px 10px;white-space:nowrap;border:none;cursor:pointer;font-family:inherit}
+.crumb:hover{background:#e8e8e8;color:#222}
 .crumb-arrow{font-size:11px;color:#ccc;align-self:center}
 
 /* Body */
@@ -57,13 +58,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 /* Incumbent list */
 .bisherige{border:1px solid #ebebeb;border-radius:8px;overflow:hidden;margin-bottom:16px}
 .bisherige-hd{background:#f7f7f7;padding:10px 14px;font-size:12px;font-weight:700;color:#555;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid #ebebeb}
-.bisherige-body{max-height:220px;overflow-y:auto;padding:10px 14px}
-.party-row{display:flex;gap:8px;align-items:baseline;margin-bottom:8px;flex-wrap:wrap}
+.bisherige-body{max-height:280px;overflow-y:auto;padding:10px 14px}
+.party-row{margin-bottom:12px}
 .party-row:last-child{margin-bottom:0}
-.party-badge{font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:3px;flex-shrink:0;color:white}
-.party-names{font-size:13px;color:#333;line-height:1.5}
-.cand-link{color:#333;text-decoration:none;border-bottom:1px solid #ccc}
-.cand-link:hover{color:#C8102E;border-bottom-color:#C8102E}
+.party-badge{font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:3px;color:white;display:inline-block;margin-bottom:5px}
+.party-names{display:flex;flex-direction:column;gap:1px}
+.cand-link{color:#444;text-decoration:none;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:14px;display:block;line-height:1.4}
+.cand-link:last-child{border-bottom:none}
+.cand-link:hover{color:#C8102E}
 
 /* Party colors */
 .p-SVP{background:#4B8A3E}.p-FDP{background:#3872B5}.p-Mitte{background:#D6862B}
@@ -78,7 +80,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .res-link:hover{text-decoration:underline}
 .btn-restart{margin-top:4px;display:block;width:100%;padding:11px;background:#f5f5f5;border:none;border-radius:8px;font-size:13px;color:#666;cursor:pointer}
 .btn-restart:hover{background:#ebebeb}
-.back-link{background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:0;margin-top:14px;display:flex;align-items:center;gap:4px}
+.back-link{background:none;border:none;color:#aaa;font-size:13px;cursor:pointer;padding:10px 0;margin-top:6px;display:flex;align-items:center;gap:4px;min-height:44px}
 .back-link:hover{color:#444}
 
 /* Footer */
@@ -149,7 +151,7 @@ const NODES = {
     text:'Lassen Sie sich einbürgern und/oder warten Sie, bis Sie 16 Jahre alt sind.'},
   r_novote:{type:'cont',icon:'🗳️',title:'Gehen Sie trotzdem!',
     text:'Sie werden es schwer haben, Gesetze, die der Landrat verabschiedet, an der Landsgemeinde noch zu ändern.',
-    next:'q3',nextLabel:'Trotzdem weitermachen →'},
+    next:'q3',nextLabel:'Weiter zu Frage 3 →'},
   r_unch:{type:'res',icon:'✅',title:'Liste unverändert einlegen',
     text:'Legen Sie die Liste Ihrer Wahl unverändert in die Urne.'},
   r_list:{type:'res',icon:'📋',title:'Die passende Liste wählen',
@@ -190,7 +192,7 @@ function renderCandList(districtOrArr) {
       const cls = PARTY_CLASS[g.p] || 'p-SVP';
       const names = g.n.map(([name,id]) =>
         `<a class="cand-link" href="https://www.smartvote.ch/de/elections/26_gl_leg/candidacies/${id}" target="_blank" rel="noopener">${name}</a>`
-      ).join(' · ');
+      ).join('');
       return `<div class="party-row"><span class="party-badge ${cls}">${g.p}</span><span class="party-names">${names}</span></div>`;
     }).join('');
     return `<div class="bisherige">
@@ -207,7 +209,7 @@ function renderCrumbs() {
   el.style.padding='';
   el.innerHTML = history.map((h,i) =>
     (i>0?'<span class="crumb-arrow">›</span>':'') +
-    `<span class="crumb">${h.label}</span>`
+    `<button class="crumb" onclick="goToStep(${i})">${h.label}</button>`
   ).join('');
 }
 
@@ -289,6 +291,14 @@ function goBack() {
   const body = document.getElementById('body');
   body.style.opacity='0';
   setTimeout(()=>{ render(prev.nodeId); body.style.opacity='1'; }, 120);
+}
+
+function goToStep(i) {
+  const nodeId = history[i].nodeId;
+  history = history.slice(0, i);
+  const body = document.getElementById('body');
+  body.style.opacity='0';
+  setTimeout(()=>{ render(nodeId); body.style.opacity='1'; }, 120);
 }
 
 function restart() { history=[]; render('q1'); }
