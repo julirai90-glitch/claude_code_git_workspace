@@ -201,7 +201,7 @@ const NODES = {{
     link:{{href:'https://www.smartvote.ch/de/elections/26_gl_leg/candidacies',label:'→ smartvote.ch öffnen'}}}},
   r_mix:{{type:'res',icon:'🔀',title:'Listen mischen',
     text:'Wenn Sie mehr als eine einzige Partei unterstützen wollen, nehmen Sie eine Liste und ersetzen Sie Kandidierende durch solche von einer anderen Liste Ihrer Wahl. Beachten Sie, dass am Schluss ein Name höchstens zweimal auf dem Zettel stehen darf.',
-    link:{{href:'https://www.smartvote.ch/de/elections/26_gl_leg/candidacies',label:'→ Kandidierende auf smartvote vergleichen'}}}},
+    link:{{href:'https://www.smartvote.ch/de/elections/26_gl_leg/lists',label:'→ Alle Listen auf smartvote.ch'}}}},
   r_fix:{{type:'res',icon:'✏️',title:'Liste anpassen',
     text:'Streichen Sie Ihnen nicht genehme Kandidierende und ersetzen Sie sie durch Namen von derselben Liste. Beachten Sie, dass am Schluss ein Name nicht mehr als zweimal auf dem Zettel stehen darf.',
     link:{{href:'https://www.smartvote.ch/de/elections/26_gl_leg/candidacies',label:'→ Kandidierende auf smartvote vergleichen'}}}},
