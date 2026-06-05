@@ -179,7 +179,7 @@ const NODES = {{
 
   // ── Results ──
   r_reg:{{type:'res',icon:'📋',title:'Noch nicht wahlberechtigt',
-    text:'Lassen Sie sich einbürgern und/oder warten Sie, bis Sie 16 Jahre alt sind.\\n\\nGehen Sie trotzdem an die Landsgemeinde! Es wird schwer sein, Gesetze, die der Landrat verabschiedet, dort noch zu ändern.'}},
+    text:'Lassen Sie sich einbürgern und/oder warten Sie, bis Sie 16 Jahre alt sind.'}},
   r_novote:{{type:'res',icon:'🗳️',title:'Gehen Sie trotzdem!',
     text:'Sie werden es schwer haben, Gesetze, die der Landrat verabschiedet, an der Landsgemeinde noch zu ändern.'}},
   r_unch:{{type:'res',icon:'✅',title:'Liste unverändert einlegen',
