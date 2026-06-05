@@ -174,33 +174,29 @@ const NODES = {{
     yes:'r_unch',no:'r_fix',crumbY:'Liste OK',crumbN:'Liste nicht OK'}},
   q7:{{type:'region',step:5,q:'Wo wohnen Sie?',
     opts:[
-      {{l:'Glarus Nord',next:'r_nord',crumb:'Glarus Nord'}},
-      {{l:'Glarus, Ennenda, Netstal oder Riedern',next:'r_glarus',crumb:'Glarus'}},
+      {{l:'Glarus Nord oder Glarus',next:'r_nordglarus',crumb:'Nord/Glarus'}},
       {{l:'Glarus Süd',next:'r_sued',crumb:'Glarus Süd'}},
     ]}},
 
   // ── Results ──
   r_reg:{{type:'res',icon:'📋',title:'Noch nicht wahlberechtigt',
     text:'Lassen Sie sich einbürgern und/oder warten Sie, bis Sie 16 Jahre alt sind.'}},
-  r_novote:{{type:'res',icon:'🗳️',title:'Gehen Sie trotzdem!',
-    text:'Sie werden es schwer haben, Gesetze, die der Landrat verabschiedet, an der Landsgemeinde noch zu ändern.'}},
+  r_novote:{{type:'cont',icon:'🗳️',title:'Gehen Sie trotzdem!',
+    text:'Sie werden es schwer haben, Gesetze, die der Landrat verabschiedet, an der Landsgemeinde noch zu ändern.',
+    next:'q3',nextLabel:'Trotzdem weitermachen →'}},
   r_unch:{{type:'res',icon:'✅',title:'Liste unverändert einlegen',
     text:'Legen Sie die Liste Ihrer Wahl unverändert in die Urne.'}},
   r_list:{{type:'res',icon:'📋',title:'Die passende Liste wählen',
     text:'Nehmen Sie diejenige Liste mit den meisten Frauen, Jungen, Landwirten usw. unter den kumulierten (doppelt aufgeführten) Kandidierenden. Nichtkumulierte haben in der Regel weniger Wahlchancen.',
     link:{{href:'https://www.smartvote.ch/de/elections/26_gl_leg/lists',label:'→ Alle Listen auf smartvote.ch'}}}},
-  r_nord:{{type:'res',icon:'📍',title:'Empfehlung für Glarus Nord',
-    district:'Glarus Nord',
+  r_nordglarus:{{type:'res',icon:'📍',title:'Empfehlung für Glarus Nord / Glarus',
+    districts:['Glarus Nord','Glarus'],
     smartvote:'https://www.smartvote.ch/de/elections/26_gl_leg/candidacies',
-    text:'Nehmen Sie die leere Liste und wählen Sie die Bisherigen Ihres Wahlkreises. Ergänzen oder ersetzen Sie nach Ihren Wünschen mit neuen Kandidierenden.\\n\\nTipp: Achten Sie auf kumulierte (doppelt aufgeführte) Kandidierende – sie haben in der Regel bessere Wahlchancen als nichtkumulierte. <a href=\\"https://www.smartvote.ch/de/elections/26_gl_leg/lists\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#C8102E;font-weight:600\\">Alle Listen auf smartvote.ch →</a>'}},
-  r_glarus:{{type:'res',icon:'📍',title:'Empfehlung für Glarus (Mitte)',
-    district:'Glarus',
-    smartvote:'https://www.smartvote.ch/de/elections/26_gl_leg/candidacies',
-    text:'Nehmen Sie die leere Liste und wählen Sie die Bisherigen Ihres Wahlkreises. Ergänzen oder ersetzen Sie nach Ihren Wünschen mit neuen Kandidierenden.\\n\\nTipp: Achten Sie auf kumulierte (doppelt aufgeführte) Kandidierende – sie haben in der Regel bessere Wahlchancen als nichtkumulierte. <a href=\\"https://www.smartvote.ch/de/elections/26_gl_leg/lists\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#C8102E;font-weight:600\\">Alle Listen auf smartvote.ch →</a>'}},
+    text:'Nehmen Sie die leere Liste und wählen Sie alle Bisherigen Ihres Wahlkreises. Wer das ist, sagen Ihnen die Parteien in ihrer Werbung. Sie finden die Bisherigen auch auf der Website des Kantons: gl.ch/parlament/landrat/mitglieder-des-landrates\\n\\nTipp: Achten Sie auf kumulierte (doppelt aufgeführte) Kandidierende – sie haben in der Regel bessere Wahlchancen als nichtkumulierte. <a href=\\"https://www.smartvote.ch/de/elections/26_gl_leg/lists\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#C8102E;font-weight:600\\">Alle Listen auf smartvote.ch →</a>'}},
   r_sued:{{type:'res',icon:'📍',title:'Empfehlung für Glarus Süd',
     district:'Glarus Süd',
     smartvote:'https://www.smartvote.ch/de/elections/26_gl_leg/candidacies',
-    text:'Nehmen Sie die leere Liste und wählen Sie die Bisherigen Ihres Wahlkreises. Ergänzen oder ersetzen Sie nach Ihren Wünschen mit neuen Kandidierenden.\\n\\nTipp: Achten Sie auf kumulierte (doppelt aufgeführte) Kandidierende – sie haben in der Regel bessere Wahlchancen als nichtkumulierte. <a href=\\"https://www.smartvote.ch/de/elections/26_gl_leg/lists\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#C8102E;font-weight:600\\">Alle Listen auf smartvote.ch →</a>'}},
+    text:'Nehmen Sie die leere Liste und wählen Sie alle Bisherigen Ihres Wahlkreises. Wer die Bisherigen sind, sagen Ihnen die Parteien in ihrer Werbung. Sie finden die Bisherigen auch auf der Website des Kantons: gl.ch/parlament/landrat/mitglieder-des-landrates\\n\\nTipp: Achten Sie auf kumulierte (doppelt aufgeführte) Kandidierende – sie haben in der Regel bessere Wahlchancen als nichtkumulierte. <a href=\\"https://www.smartvote.ch/de/elections/26_gl_leg/lists\\" target=\\"_blank\\" rel=\\"noopener\\" style=\\"color:#C8102E;font-weight:600\\">Alle Listen auf smartvote.ch →</a>'}},
   r_smartvote:{{type:'res',icon:'💡',title:'Empfehlung: smartvote.ch',
     text:'Lassen Sie sich von smartvote.ch eine Wahlempfehlung errechnen und füllen Sie den leeren Wahlzettel aus.\\n\\nBeachten Sie, dass nichtkumulierte Kandidierende wenig Wahlchancen haben, wenn auf derselben Liste auch kumulierte Namen stehen. Und: Auf dem Wahlzettel dürfen nur offizielle Kandidierende aufgeschrieben werden.',
     link:{{href:'https://www.smartvote.ch/de/elections/26_gl_leg/candidacies',label:'→ smartvote.ch öffnen'}}}},
@@ -218,21 +214,24 @@ let currentId = 'q1';
 let radioNext = null, radioCrumb = null;
 
 // ── Candidate list renderer ───────────────────────────────────────────────
-function renderCandList(district) {{
-  const groups = CAND[district];
-  if (!groups) return '';
-  const total = groups.reduce((s,g)=>s+g.n.length,0);
-  const rows = groups.map(g => {{
-    const cls = PARTY_CLASS[g.p] || 'p-SVP';
-    const names = g.n.map(([name,id]) =>
-      `<a class="cand-link" href="https://www.smartvote.ch/de/elections/26_gl_leg/candidacies/${{id}}" target="_blank" rel="noopener">${{name}}</a>`
-    ).join(' · ');
-    return `<div class="party-row"><span class="party-badge ${{cls}}">${{g.p}}</span><span class="party-names">${{names}}</span></div>`;
+function renderCandList(districtOrArr) {{
+  const distList = Array.isArray(districtOrArr) ? districtOrArr : [districtOrArr];
+  return distList.map(district => {{
+    const groups = CAND[district];
+    if (!groups) return '';
+    const total = groups.reduce((s,g)=>s+g.n.length,0);
+    const rows = groups.map(g => {{
+      const cls = PARTY_CLASS[g.p] || 'p-SVP';
+      const names = g.n.map(([name,id]) =>
+        `<a class="cand-link" href="https://www.smartvote.ch/de/elections/26_gl_leg/candidacies/${{id}}" target="_blank" rel="noopener">${{name}}</a>`
+      ).join(' · ');
+      return `<div class="party-row"><span class="party-badge ${{cls}}">${{g.p}}</span><span class="party-names">${{names}}</span></div>`;
+    }}).join('');
+    return `<div class="bisherige">
+      <div class="bisherige-hd">Bisherige in ${{district}} (${{total}})</div>
+      <div class="bisherige-body">${{rows}}</div>
+    </div>`;
   }}).join('');
-  return `<div class="bisherige">
-    <div class="bisherige-hd">Bisherige in ${{district}} (${{total}})</div>
-    <div class="bisherige-body">${{rows}}</div>
-  </div>`;
 }}
 
 // ── Render breadcrumbs ────────────────────────────────────────────────────
@@ -284,10 +283,17 @@ function render(id) {{
 <div class="q-text">${{node.q}}</div>
 <div class="btns">${{btns}}</div>${{backBtn}}`;
 
+  }} else if (node.type === 'cont') {{
+    html = `<div class="res-icon">${{node.icon}}</div>
+<div class="res-title">${{node.title}}</div>
+<div class="res-text">${{node.text}}</div>
+<button class="btn-y" onclick="nav('${{node.next}}','${{node.nextLabel}}')">${{node.nextLabel}}</button>${{backBtn}}`;
+
   }} else if (node.type === 'res') {{
     const txt = node.text.replace(/\\n/g,'<br>');
-    const candList = node.district ? renderCandList(node.district) : '';
-    const svLink = node.district ? `<a class="sv-link" href="${{node.smartvote}}" target="_blank" rel="noopener">
+    const distArr = node.districts || (node.district ? [node.district] : []);
+    const candList = distArr.length ? renderCandList(distArr) : '';
+    const svLink = distArr.length ? `<a class="sv-link" href="${{node.smartvote}}" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
   Alle Kandidierenden auf smartvote.ch
 </a>` : (node.link ? `<a class="res-link" href="${{node.link.href}}" target="_blank" rel="noopener">${{node.link.label}}</a>` : '');
