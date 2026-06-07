@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<!-- iframe-Höhe im CMS: ~2500px empfohlen (Scrollytelling), oder postMessage-Listener für Auto-Resize einrichten -->
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>35 Jahre Strom aus Graubünden</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #1a1a1a;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 696px;
+      margin: 0 auto;
+      overflow-x: hidden;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 20px 16px 14px;
+    }
+    h1 {
+      font-size: clamp(16px, 4vw, 22px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .lead {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.55;
+    }
+
+    /* Scrollytelling */
+    .scrolly { position: relative; }
+
+    .sticky-chart {
+      position: sticky;
+      top: 0;
+      height: 340px;
+      background: #fff;
+      z-index: 20;
+      padding: 6px 0 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    #chart-svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .steps { margin-top: 4px; }
+
+    .step {
+      min-height: 380px;
+      display: flex;
+      align-items: center;
+      padding: 16px;
+    }
+    .step:last-child { min-height: 300px; }
+
+    .text-box {
+      background: rgba(255,255,255,0.95);
+      border-left: 3px solid #0068A4;
+      border-radius: 0 4px 4px 0;
+      padding: 12px 14px;
+      max-width: 320px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .text-box h2 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .text-box p {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.55;
+    }
+    .big-num {
+      font-size: 24px;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .c-blue   { color: #0068A4; }
+    .c-orange { color: #EE7733; }
+    .c-green  { color: #1a9e5a; }
+
+    /* Outro */
+    .outro {
+      padding: 14px 16px 6px;
+    }
+    .outro p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      padding: 10px 16px 20px;
+      font-size: 11px;
+      color: #888;
+      border-top: 1px solid #e8e8e8;
+      line-height: 1.7;
+      margin-top: 8px;
+    }
+
+    /* Chart */
+    .axis text    { font-size: 11px; fill: #999; }
+    .axis .domain { stroke: #ddd; }
+    .axis .tick line { stroke: none; }
+    .axis-pv text { fill: #EE7733; }
+    .grid-line    { stroke: #f2f2f2; stroke-width: 1; }
+
+    .l-wasser { fill: none; stroke: #0068A4; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+    .l-klein  { fill: none; stroke: #0068A4; stroke-width: 1.5; stroke-dasharray: 5 3; stroke-linejoin: round; opacity: 0.4; }
+    .l-pv     { fill: none; stroke: #EE7733; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+
+    @media (max-width: 600px) {
+      .sticky-chart { height: 260px; }
+      .step { min-height: 300px; }
+      .axis text { font-size: 8px; }
+      .text-box { max-width: 88%; }
+      .big-num { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>35 Jahre Strom aus Graubünden</h1>
+    <p class="lead">Von der Dominanz der Wasserkraft zum Aufstieg der Solarenergie — die Stromproduktion des Kantons 1990 bis 2024.</p>
+  </div>
+
+  <div class="scrolly">
+    <div class="sticky-chart">
+      <svg id="chart-svg"></svg>
+    </div>
+
+    <div class="steps">
+
+      <div class="step" data-step="0">
+        <div class="text-box">
+          <h2>Strom aus Graubünden</h2>
+          <p>Der Kanton produziert Strom aus Wasser, Sonne, Biomasse und Wind. Doch eine Quelle dominiert seit Jahrzehnten klar das Bild.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="1">
+        <div class="text-box">
+          <h2>Wasserkraft: unangefochten</h2>
+          <p>Die grossen Stauseen und Flusskraftwerke liefern zwischen <span class="c-blue"><strong>5 600 und 10 700 GWh</strong></span> pro Jahr — genug für mehrere Millionen Haushalte.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="2">
+        <div class="text-box" style="border-left-color:#EE7733">
+          <h2>Dürrejahr 2022</h2>
+          <p><span class="big-num c-orange">5 062 GWh</span>Der trockene Sommer 2022 liess die Wasserkraft-Produktion einbrechen — der tiefste Wert seit mindestens zwanzig Jahren.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="3">
+        <div class="text-box" style="border-left-color:#EE7733">
+          <h2>Solarenergie: exponentielles Wachstum</h2>
+          <p>Während die Wasserkraft schwankt, wächst die Photovoltaik unaufhaltsam:</p>
+          <p style="margin-top:6px">
+            <span class="big-num c-orange">× 1 500</span>
+            Von 0,1 GWh (1990) auf <strong>185 GWh</strong> (2024).
+          </p>
+        </div>
+      </div>
+
+      <div class="step" data-step="4">
+        <div class="text-box" style="border-left-color:#1a9e5a">
+          <h2>2024: Rekord bei der Wasserkraft</h2>
+          <p>Nach dem Einbruch 2022 erholt sich die Wasserkraft eindrücklich:<br>
+          <span class="big-num c-green">10 185 GWh</span>Der höchste je gemessene Wert im Datensatz.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="outro">
+    <p>Die Energiewende ist in Graubünden im Gang — doch die Wasserkraft bleibt auf absehbare Zeit die tragende Säule der Stromversorgung im Kanton.</p>
+  </div>
+
+  <footer>
+    Daten: Statistik Graubünden · Elektrizitätsbilanz GR · data.gr.ch · Stand: 2026-06-07<br>
+    Grafik: Südostschweiz/jr
+  </footer>
+
+</div>
+<script>
+// Quelle: Statistik Graubünden, Elektrizitätsbilanz GR, data.gr.ch
+// Wasserkraft = Grosskraftwerke; Kleinwasserkraft = Serie ab 2011
+// PV-Werte 1990–2010 aus früher Monitoring-Phase (sehr kleine Werte)
+const raw = [
+  [1990,5639.00,0.12,null],
+  [1991,6396.00,0.12,null],
+  [1992,7248.00,0.12,null],
+  [1993,7120.00,0.13,null],
+  [1994,9283.00,0.13,null],
+  [1995,7651.00,0.13,null],
+  [1996,6246.00,0.14,null],
+  [1997,7890.00,0.14,null],
+  [1998,7397.00,0.14,null],
+  [1999,8777.00,0.33,null],
+  [2000,8837.00,0.43,null],
+  [2001,10668.00,0.60,null],
+  [2002,7708.00,0.69,null],
+  [2003,7862.00,0.72,null],
+  [2004,6978.00,0.81,null],
+  [2005,6603.00,1.12,null],
+  [2006,5612.00,1.22,null],
+  [2007,6991.00,1.43,null],
+  [2008,8196.00,2.09,null],
+  [2009,8496.00,4.10,null],
+  [2010,7335.00,6.26,null],
+  [2011,7905.00,9.20,64.69],
+  [2012,8102.00,15.50,100.31],
+  [2013,7827.00,24.50,127.02],
+  [2014,9075.00,30.48,152.41],
+  [2015,8866.00,42.19,167.44],
+  [2016,7717.00,47.73,284.67],
+  [2017,7047.00,54.36,353.78],
+  [2018,7402.00,60.18,340.71],
+  [2019,8039.00,66.89,400.11],
+  [2020,8204.00,79.60,425.49],
+  [2021,7829.00,91.86,382.05],
+  [2022,5062.43,111.51,351.37],
+  [2023,7575.00,142.62,309.90],
+  [2024,10185.14,185.12,381.71]
+];
+const data = raw.map(d => ({year:d[0], wasser:d[1], pv:d[2], klein:d[3]}));
+
+function buildChart() {
+  const mobile = window.innerWidth <= 600;
+  const el = document.getElementById('sticky-chart');
+  const W = el.clientWidth;
+  const H = mobile ? 260 : 340;
+  const m = {top:18, right: mobile ? 50 : 68, bottom:28, left: mobile ? 34 : 46};
+  const w = W - m.left - m.right;
+  const h = H - m.top - m.bottom;
+
+  const svg = d3.select('#chart-svg')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('width', W).attr('height', H);
+  svg.selectAll('*').remove();
+
+  const g = svg.append('g').attr('transform', `translate(${m.left},${m.top})`);
+
+  // Scales
+  const xSc = d3.scaleLinear().domain([1990, 2024]).range([0, w]);
+  const ySc = d3.scaleLinear().domain([0, 11500]).range([h, 0]);
+  // Secondary scale for PV (right axis), domain 0–220 GWh
+  const yPv = d3.scaleLinear().domain([0, 220]).range([h, 0]);
+
+  // Grid
+  g.selectAll('.grid-line')
+    .data(ySc.ticks(5))
+    .join('line')
+    .attr('class', 'grid-line')
+    .attr('x1', 0).attr('x2', w)
+    .attr('y1', d => ySc(d)).attr('y2', d => ySc(d));
+
+  // X axis
+  g.append('g').attr('class', 'axis')
+    .attr('transform', `translate(0,${h})`)
+    .call(d3.axisBottom(xSc).ticks(mobile ? 5 : 8).tickFormat(d3.format('d')));
+
+  // Y axis left
+  g.append('g').attr('class', 'axis')
+    .call(d3.axisLeft(ySc).ticks(5).tickFormat(d => d ? `${d/1000}k` : '0'))
+    .call(ax => ax.select('.domain').remove());
+
+  // Left axis label (hidden on mobile)
+  if (!mobile) {
+    g.append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -h/2).attr('y', -m.left + 12)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '9px').style('fill', '#aaa')
+      .text('GWh');
+  }
+
+  // Y axis right (PV secondary) — initially hidden
+  const axPvG = g.append('g').attr('class', 'axis axis-pv')
+    .attr('transform', `translate(${w},0)`)
+    .call(d3.axisRight(yPv).ticks(4).tickFormat(d => `${d}`))
+    .call(ax => ax.select('.domain').remove())
+    .style('opacity', 0);
+
+  axPvG.append('text')
+    .attr('x', 4).attr('y', -5)
+    .attr('text-anchor', 'start')
+    .style('font-size', mobile ? '8px' : '9px')
+    .style('fill', '#EE7733')
+    .text('Solar GWh →');
+
+  // Line generators
+  const lWasser = d3.line().x(d => xSc(d.year)).y(d => ySc(d.wasser)).curve(d3.curveMonotoneX);
+  const lKlein  = d3.line().defined(d => d.klein != null)
+                    .x(d => xSc(d.year)).y(d => ySc(d.klein)).curve(d3.curveMonotoneX);
+  const lPvMain = d3.line().x(d => xSc(d.year)).y(d => ySc(d.pv)).curve(d3.curveMonotoneX);
+  const lPvSec  = d3.line().x(d => xSc(d.year)).y(d => yPv(d.pv)).curve(d3.curveMonotoneX);
+
+  const pathW    = g.append('path').datum(data).attr('class','l-wasser').attr('d', lWasser);
+  const pathK    = g.append('path').datum(data).attr('class','l-klein').attr('d', lKlein);
+  const pathPvM  = g.append('path').datum(data).attr('class','l-pv').attr('d', lPvMain);
+  const pathPvS  = g.append('path').datum(data).attr('class','l-pv').attr('d', lPvSec).style('opacity',0);
+
+  // Annotations
+  const ann = g.append('g');
+
+  // 2022 annotation
+  const a22 = ann.append('g').style('opacity', 0);
+  const x22 = xSc(2022), y22 = ySc(5062.43);
+  const lx22 = x22 - (mobile ? 8 : 10), ly22 = y22 - (mobile ? 32 : 42);
+  a22.append('circle').attr('cx',x22).attr('cy',y22).attr('r',5)
+    .attr('fill','#EE7733').attr('stroke','#fff').attr('stroke-width',1.5);
+  a22.append('line')
+    .attr('x1',x22).attr('y1',y22-6).attr('x2',lx22).attr('y2',ly22)
+    .attr('stroke','#EE7733').attr('stroke-width',1).attr('stroke-dasharray','2 2');
+  a22.append('text').attr('x',lx22-3).attr('y',ly22)
+    .attr('text-anchor','end')
+    .style('font-size', mobile ? '10px' : '12px').style('font-weight','700').style('fill','#EE7733')
+    .text('5 062 GWh');
+  a22.append('text').attr('x',lx22-3).attr('y',ly22+13)
+    .attr('text-anchor','end')
+    .style('font-size', mobile ? '9px' : '10px').style('fill','#888')
+    .text('Dürre 2022');
+
+  // 2024 annotation
+  const a24 = ann.append('g').style('opacity', 0);
+  const x24 = xSc(2024), y24 = ySc(10185.14);
+  a24.append('circle').attr('cx',x24).attr('cy',y24).attr('r',5)
+    .attr('fill','#1a9e5a').attr('stroke','#fff').attr('stroke-width',1.5);
+  a24.append('line')
+    .attr('x1',x24).attr('y1',y24+6).attr('x2',x24-5).attr('y2',y24+32)
+    .attr('stroke','#1a9e5a').attr('stroke-width',1).attr('stroke-dasharray','2 2');
+  a24.append('text').attr('x',x24-8).attr('y',y24+46)
+    .attr('text-anchor','end')
+    .style('font-size', mobile ? '10px' : '12px').style('font-weight','700').style('fill','#1a9e5a')
+    .text('10 185 GWh');
+  a24.append('text').attr('x',x24-8).attr('y',y24+59)
+    .attr('text-anchor','end')
+    .style('font-size', mobile ? '9px' : '10px').style('fill','#888')
+    .text('Rekord 2024');
+
+  // PV endpoint label (secondary scale)
+  const aPv = ann.append('g').style('opacity', 0);
+  aPv.append('circle').attr('cx', xSc(2024)).attr('cy', yPv(185.12)).attr('r', 4)
+    .attr('fill','#EE7733').attr('stroke','#fff').attr('stroke-width',1.5);
+  aPv.append('text')
+    .attr('x', xSc(2024) - 6).attr('y', yPv(185.12) - 8)
+    .attr('text-anchor','end')
+    .style('font-size', mobile ? '10px' : '11px').style('font-weight','700').style('fill','#EE7733')
+    .text('185 GWh (2024)');
+
+  // Legend
+  const leg = g.append('g').attr('transform','translate(2,2)');
+  const legData = [
+    {x:0,             label:'Wasserkraft (gross)', stroke:'#0068A4', sw:2.5, dash:null,  op:1},
+    {x:mobile?108:136, label:'Kleinwasserkraft',  stroke:'#0068A4', sw:1.5, dash:'4 3', op:0.5},
+    {x:mobile?210:262, label:'Photovoltaik',       stroke:'#EE7733', sw:2,   dash:null,  op:1},
+  ];
+  legData.forEach(item => {
+    leg.append('line')
+      .attr('x1',item.x).attr('x2',item.x+14).attr('y1',6).attr('y2',6)
+      .attr('stroke',item.stroke).attr('stroke-width',item.sw)
+      .attr('stroke-dasharray', item.dash || null).attr('opacity', item.op);
+    leg.append('text').attr('x',item.x+18).attr('y',10)
+      .style('font-size', mobile ? '8px' : '10px').style('fill','#666')
+      .text(item.label);
+  });
+
+  // State machine
+  const STATES = {
+    0: {wO:0.65,wW:2.5, kO:0.3,  pmO:0.4,  psO:0, axO:0, a22:0, a24:0, aPv:0},
+    1: {wO:1,   wW:3,   kO:0.2,  pmO:0.08, psO:0, axO:0, a22:0, a24:0, aPv:0},
+    2: {wO:1,   wW:3,   kO:0.12, pmO:0.08, psO:0, axO:0, a22:1, a24:0, aPv:0},
+    3: {wO:0.1, wW:1.5, kO:0.05, pmO:0,    psO:1, axO:1, a22:0, a24:0, aPv:1},
+    4: {wO:1,   wW:3,   kO:0.3,  pmO:0.45, psO:0, axO:0, a22:0, a24:1, aPv:0},
+  };
+
+  let prev = -1;
+  function applyState(step) {
+    if (step === prev) return;
+    prev = step;
+    const s = STATES[step] || STATES[0];
+    const dur = 500;
+    pathW.transition().duration(dur).style('opacity', s.wO).attr('stroke-width', s.wW);
+    pathK.transition().duration(dur).style('opacity', s.kO);
+    pathPvM.transition().duration(dur).style('opacity', s.pmO);
+    pathPvS.transition().duration(dur).style('opacity', s.psO);
+    axPvG.transition().duration(dur).style('opacity', s.axO);
+    a22.transition().duration(dur).style('opacity', s.a22);
+    a24.transition().duration(dur).style('opacity', s.a24);
+    aPv.transition().duration(dur).style('opacity', s.aPv);
+  }
+
+  return applyState;
+}
+
+let applyState = buildChart();
+
+// Scroll: IntersectionObserver
+const stepEls = [...document.querySelectorAll('.step')];
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) applyState(+e.target.dataset.step);
+  });
+}, {threshold: 0.5});
+stepEls.forEach(el => io.observe(el));
+
+// Touch fallback
+stepEls.forEach(el =>
+  el.addEventListener('touchstart', () => applyState(+el.dataset.step), {passive:true})
+);
+
+// Init
+applyState(0);
+
+// Resize
+let rTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(rTimer);
+  rTimer = setTimeout(() => {
+    const active = stepEls.find(el => {
+      const r = el.getBoundingClientRect();
+      return r.top < window.innerHeight * 0.6 && r.bottom > 0;
+    });
+    applyState = buildChart();
+    applyState(+(active?.dataset.step || 0));
+  }, 150);
+});
+
+// Auto-resize postMessage für iframe
+function reportHeight() {
+  const h = document.documentElement.scrollHeight;
+  window.parent.postMessage({type:'setHeight', height: h}, '*');
+}
+reportHeight();
+setTimeout(reportHeight, 400);
+</script>
+</body>
+</html>
