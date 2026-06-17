@@ -17,7 +17,7 @@
     --font: system-ui, -apple-system, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); color: var(--text-primary); padding: 1.5rem; max-width: 800px; margin: 0 auto; }
+  body { font-family: var(--font); color: var(--text-primary); padding: 1.5rem; max-width: 696px; margin: 0 auto; }
   h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
   .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5; }
   .controls { display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem; }
@@ -51,11 +51,7 @@
 <body>
 
 <h2>Ausländeranteil und Stimmverhalten</h2>
-<p class="subtitle">
-  «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)», Abstimmung vom 14. Juni 2026 — alle 100 Bündner Gemeinden.
-  Jeder Punkt zeigt den Ja-Anteil einer Gemeinde im Verhältnis zu ihrem Ausländeranteil (ständige Wohnbevölkerung, provisorisch 2025). Punktgrösse = Bevölkerung.
-  <strong id="einordnung"></strong>
-</p>
+<p class="subtitle">«Keine 10-Millionen-Schweiz!» (14.06.2026): Ausländeranteil vs. Ja-Anteil, alle 100 Gemeinden.</p>
 
 <div class="controls">
   <input id="search" type="text" placeholder="Gemeinde suchen…">
@@ -81,7 +77,7 @@
   var gemeinden = DATA.gemeinden;
 
   document.getElementById('source-note').innerHTML =
-    'Quellen: ' + meta.quelle_abstimmung + ' · ' + meta.quelle_bevoelkerung + '<br>Auswertung &amp; Grafik: Julian Reich';
+    meta.einordnung_lang + ' Quellen: ' + meta.quelle_abstimmung + ' · ' + meta.quelle_bevoelkerung + '<br>Grafik: Südostschweiz/Julian Reich';
 
   var svg = document.getElementById('chart');
   var wrap = document.getElementById('chart-wrap');
@@ -171,7 +167,6 @@
   var rTxt = el('text', { class: 'r-annotation', x: w - m.r, y: m.t - 10, 'text-anchor': 'end' });
   rTxt.textContent = meta.einordnung_kurz;
   svg.appendChild(rTxt);
-  document.getElementById('einordnung').textContent = meta.einordnung_lang;
 
   // Punkte: grösste zuerst zeichnen, damit kleine Gemeinden oben (klickbar) bleiben
   var sorted = gemeinden.slice().sort(function (a, b) { return b.bevoelkerung - a.bevoelkerung; });
@@ -239,6 +234,7 @@
   regionSelect.addEventListener('change', applyFilter);
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 
 </body>
 </html>
