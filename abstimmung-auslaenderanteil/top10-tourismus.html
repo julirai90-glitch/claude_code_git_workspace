@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Die 10 grössten Tourismusorte – Stimmverhalten «Keine 10-Millionen-Schweiz!»</title>
+<title>Die 15 grössten Tourismusorte – Stimmverhalten «Keine 10-Millionen-Schweiz!»</title>
 <style>
   :root {
     --blue: #0068A4;
@@ -35,9 +35,9 @@
 </head>
 <body>
 
-<h2>Die 10 grössten Tourismusorte</h2>
+<h2>Die 15 grössten Tourismusorte</h2>
 <p class="subtitle">
-  Wie sie zur «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» gestimmt haben, Abstimmung vom 14. Juni 2026 — sortiert nach Logiernächten 2025, von Davos (grösster Tourismusort) bis Flims.
+  Wie sie zur «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» gestimmt haben, Abstimmung vom 14. Juni 2026 — sortiert nach Logiernächten 2025, von Davos (grösster Tourismusort) bis Silvaplana.
 </p>
 
 <div id="rows"></div>
@@ -49,7 +49,7 @@
 </div>
 
 <p class="caveat">
-  Auffällig, aber statistisch nicht als eigenständiger Effekt nachweisbar: Formal getestet (n=100, Interaktionsmodell Ausländeranteil × Tourismusort) lässt sich kein signifikanter Zusammenhang zwischen Tourismusintensität und Stimmverhalten belegen (p=0.19). Diese Liste zeigt die 10 grössten Tourismusorte als Beobachtung, nicht als bewiesenen Trend.
+  Auffällig, aber statistisch nicht als eigenständiger Effekt nachweisbar: Formal getestet (n=100, Interaktionsmodell Ausländeranteil × Tourismusort) lässt sich kein signifikanter Zusammenhang zwischen Tourismusintensität und Stimmverhalten belegen (p=0.19). Unter den 10 grössten Tourismusorten stimmten 9 von 10 Nein, bei den 15 grössten sind es noch 11 von 15 — die Tendenz schwächt sich mit grösserer Stichprobe bereits ab. Diese Liste zeigt eine Beobachtung, keinen bewiesenen Trend.
 </p>
 
 <p class="source-note" id="source-note">
@@ -68,7 +68,12 @@ var DATA = [
   {"gemeinde": "Chur", "logiernaechte": 256175, "ja_anteil": 40.86},
   {"gemeinde": "Vaz/Obervaz", "logiernaechte": 248878, "ja_anteil": 44.9},
   {"gemeinde": "Sils im Engadin/Segl", "logiernaechte": 239428, "ja_anteil": 43.89},
-  {"gemeinde": "Flims", "logiernaechte": 194963, "ja_anteil": 40.08}
+  {"gemeinde": "Flims", "logiernaechte": 194963, "ja_anteil": 40.08},
+  {"gemeinde": "Klosters", "logiernaechte": 169081, "ja_anteil": 56.28},
+  {"gemeinde": "Samnaun", "logiernaechte": 158348, "ja_anteil": 64.1},
+  {"gemeinde": "Celerina/Schlarigna", "logiernaechte": 119197, "ja_anteil": 40.49},
+  {"gemeinde": "Disentis/Mustér", "logiernaechte": 83246, "ja_anteil": 45.5},
+  {"gemeinde": "Silvaplana", "logiernaechte": 77709, "ja_anteil": 51.05}
 ];
 
 var container = document.getElementById('rows');
