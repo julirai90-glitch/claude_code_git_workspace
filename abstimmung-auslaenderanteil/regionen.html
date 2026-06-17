@@ -37,7 +37,6 @@
   .pt { cursor: pointer; stroke: #fff; stroke-width: 1; transition: opacity 0.15s; }
   .pt.dimmed { opacity: 0.1; }
   .pt.highlighted { stroke: var(--dark-blue); stroke-width: 2.4; }
-  .callout { font-size: 11px; fill: var(--dark-blue); font-weight: 600; }
   #tooltip {
     position: absolute; display: none; pointer-events: none; background: #fff;
     border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
@@ -183,15 +182,6 @@
     return { g: g, el: c, row: r };
   });
 
-  // Davos als Beispielgeschichte direkt beschriften (einzige Nein-Gemeinde in Prättigau/Davos)
-  var davos = points.filter(function (p) { return p.g.gemeinde === 'Davos'; })[0];
-  if (davos) {
-    var callout = el('text', {
-      class: 'callout', x: xScale(davos.g.ja_anteil), y: davos.row.y - rowH * 0.42, 'text-anchor': 'middle'
-    });
-    callout.textContent = '← Davos (einzige Nein-Gemeinde der Region)';
-    svg.appendChild(callout);
-  }
 
   function showTooltip(g, c) {
     c.classList.add('highlighted');
