@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Die 10 grössten Tourismusorte – Stimmverhalten «Keine 10-Millionen-Schweiz!»</title>
+<style>
+  :root {
+    --blue: #0068A4;
+    --orange: #EE7733;
+    --dark-blue: #1E3A5F;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --text-muted: #999999;
+    --border: #e5e5e5;
+    --font: system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); color: var(--text-primary); padding: 1.5rem; max-width: 700px; margin: 0 auto; }
+  h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
+  .caveat { font-size: 12px; color: var(--text-muted); font-style: italic; margin-bottom: 1.25rem; line-height: 1.5; }
+  .row { display: grid; grid-template-columns: 150px 1fr 56px; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .row .name { font-size: 13px; text-align: right; }
+  .row .name .sub { display: block; font-size: 10px; color: var(--text-muted); font-weight: normal; }
+  .bar-track { position: relative; height: 20px; background: #f2f2f2; border-radius: 3px; overflow: visible; }
+  .bar-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 3px; }
+  .threshold { position: absolute; top: -4px; bottom: -4px; width: 1px; background: var(--text-muted); left: 50%; }
+  .row .value { font-size: 13px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); margin: 0.75rem 0 1.5rem; flex-wrap: wrap; }
+  .legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .axis-note { font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 4px; }
+  .source-note { font-size: 11px; color: var(--text-muted); margin-top: 1.25rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<h2>Die 10 grössten Tourismusorte</h2>
+<p class="subtitle">
+  Wie sie zur «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» gestimmt haben, Abstimmung vom 14. Juni 2026 — sortiert nach Logiernächten 2025, von Davos (grösster Tourismusort) bis Flims.
+</p>
+
+<div id="rows"></div>
+<div class="axis-note">graue Linie = 50 %-Mehrheitsschwelle</div>
+
+<div class="legend">
+  <span><span class="dot" style="background:#0068A4"></span>angenommen (Ja-Anteil ≥ 50 %)</span>
+  <span><span class="dot" style="background:#EE7733"></span>abgelehnt (Ja-Anteil &lt; 50 %)</span>
+</div>
+
+<p class="caveat">
+  Auffällig, aber statistisch nicht als eigenständiger Effekt nachweisbar: Formal getestet (n=100, Interaktionsmodell Ausländeranteil × Tourismusort) lässt sich kein signifikanter Zusammenhang zwischen Tourismusintensität und Stimmverhalten belegen (p=0.19). Diese Liste zeigt die 10 grössten Tourismusorte als Beobachtung, nicht als bewiesenen Trend.
+</p>
+
+<p class="source-note" id="source-note">
+  Quellen: Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026 · BFS HESTA (Logiernächte 2025) via data.gr.ch<br>
+  Auswertung &amp; Grafik: Julian Reich
+</p>
+
+<script>
+var DATA = [
+  {"gemeinde": "Davos", "logiernaechte": 811462, "ja_anteil": 45.98},
+  {"gemeinde": "St. Moritz", "logiernaechte": 799655, "ja_anteil": 43.05},
+  {"gemeinde": "Arosa", "logiernaechte": 418711, "ja_anteil": 54.13},
+  {"gemeinde": "Pontresina", "logiernaechte": 403332, "ja_anteil": 43.5},
+  {"gemeinde": "Laax", "logiernaechte": 275818, "ja_anteil": 45.68},
+  {"gemeinde": "Scuol", "logiernaechte": 266633, "ja_anteil": 40.25},
+  {"gemeinde": "Chur", "logiernaechte": 256175, "ja_anteil": 40.86},
+  {"gemeinde": "Vaz/Obervaz", "logiernaechte": 248878, "ja_anteil": 44.9},
+  {"gemeinde": "Sils im Engadin/Segl", "logiernaechte": 239428, "ja_anteil": 43.89},
+  {"gemeinde": "Flims", "logiernaechte": 194963, "ja_anteil": 40.08}
+];
+
+var container = document.getElementById('rows');
+DATA.forEach(function (g) {
+  var row = document.createElement('div');
+  row.className = 'row';
+
+  var name = document.createElement('div');
+  name.className = 'name';
+  name.innerHTML = g.gemeinde + '<span class="sub">' + g.logiernaechte.toLocaleString('de-CH') + ' Logiernächte</span>';
+
+  var track = document.createElement('div');
+  track.className = 'bar-track';
+  var fill = document.createElement('div');
+  fill.className = 'bar-fill';
+  fill.style.width = g.ja_anteil + '%';
+  fill.style.background = g.ja_anteil >= 50 ? '#0068A4' : '#EE7733';
+  var threshold = document.createElement('div');
+  threshold.className = 'threshold';
+  track.appendChild(fill);
+  track.appendChild(threshold);
+
+  var value = document.createElement('div');
+  value.className = 'value';
+  value.textContent = g.ja_anteil.toFixed(1) + ' %';
+
+  row.appendChild(name);
+  row.appendChild(track);
+  row.appendChild(value);
+  container.appendChild(row);
+});
+</script>
+
+</body>
+</html>
