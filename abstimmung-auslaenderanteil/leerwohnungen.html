@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leerwohnungsziffer &amp; Stimmverhalten – «Keine 10-Millionen-Schweiz!» (NICHT BELASTBAR)</title>
+<script src="data_leerwohnungen.js"></script>
+<style>
+  :root {
+    --blue: #0068A4;
+    --orange: #EE7733;
+    --dark-blue: #1E3A5F;
+    --warn: #B5001E;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --text-muted: #999999;
+    --border: #e5e5e5;
+    --font: system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); color: var(--text-primary); padding: 1.5rem; max-width: 696px; margin: 0 auto; }
+  h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5; }
+  .warning {
+    background: #fdf0f0; border: 1px solid #f0c9c9; border-radius: 6px; padding: 10px 12px;
+    font-size: 12px; color: var(--warn); margin-bottom: 1rem; line-height: 1.5;
+  }
+  .controls { display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem; }
+  #search { font-size: 13px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; width: 220px; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  #chart-wrap { position: relative; }
+  svg { width: 100%; height: 460px; overflow: visible; display: block; }
+  .gridline { stroke: var(--border); stroke-width: 1; }
+  .axis-label { font-size: 11px; fill: var(--text-secondary); }
+  .axis-title { font-size: 12px; fill: var(--text-secondary); }
+  .threshold-line { stroke: var(--text-muted); stroke-width: 1.2; stroke-dasharray: 4,3; }
+  .trend-line { stroke: var(--warn); stroke-width: 1.6; stroke-dasharray: 5,3; }
+  .pt { cursor: pointer; stroke: #fff; stroke-width: 1; transition: opacity 0.15s; }
+  .pt.dimmed { opacity: 0.1; }
+  .pt.highlighted { stroke: var(--dark-blue); stroke-width: 2.4; }
+  .r-annotation { font-size: 12px; fill: var(--warn); font-style: italic; }
+  #tooltip {
+    position: absolute; display: none; pointer-events: none; background: #fff;
+    border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    padding: 8px 10px; font-size: 12px; line-height: 1.6; min-width: 170px; z-index: 10;
+  }
+  #tooltip .name { font-weight: 600; color: var(--dark-blue); }
+  #tooltip .region { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+  #tooltip .row { display: flex; justify-content: space-between; gap: 10px; }
+  #tooltip .row span:first-child { color: var(--text-muted); }
+  .source-note { font-size: 11px; color: var(--text-muted); margin-top: 1.25rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<h2>Leerwohnungsziffer und Stimmverhalten</h2>
+<p class="subtitle">Leerwohnungsziffer im Vergleich zum Ja-Anteil, alle 100 Gemeinden.</p>
+
+<div class="warning">
+  ⚠️ <strong>Nicht für Publikation geeignet:</strong> Dieser Zusammenhang sieht auf den ersten Blick signifikant aus (r=0.22),
+  hält aber den Robustheitstests (Rangkorrelation, Ausreisser-Test, Kontrolle für Gemeindegrösse) nicht stand – im Gegensatz
+  zu den anderen Charts dieser Reihe. Wahrscheinlich ein Zufallsbefund. Nur zur internen Ansicht.
+</div>
+
+<div class="controls">
+  <input id="search" type="text" placeholder="Gemeinde suchen…">
+</div>
+<div class="legend">
+  <span><span class="dot" style="background:#0068A4"></span>angenommen (Ja-Anteil ≥ 50 %)</span>
+  <span><span class="dot" style="background:#EE7733"></span>abgelehnt (Ja-Anteil &lt; 50 %)</span>
+</div>
+
+<div id="chart-wrap">
+  <svg id="chart"></svg>
+  <div id="tooltip"></div>
+</div>
+
+<p class="source-note" id="source-note"></p>
+
+<script>
+(function () {
+  var meta = DATA_LW.meta;
+  var gemeinden = DATA_LW.gemeinden;
+
+  document.getElementById('source-note').innerHTML =
+    meta.einordnung_lang + ' Quellen: ' + meta.quelle_abstimmung + ' · ' + meta.quelle_leerwohnungen + '<br>Grafik: Südostschweiz/Julian Reich';
+
+  var svg = document.getElementById('chart');
+  var wrap = document.getElementById('chart-wrap');
+  var tooltip = document.getElementById('tooltip');
+
+  var w = svg.clientWidth || 760;
+  var h = 460;
+  var m = { t: 30, r: 24, b: 46, l: 54 };
+  svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+
+  function niceFloor(v, step) { return Math.floor(v / step) * step; }
+  function niceCeil(v, step) { return Math.ceil(v / step) * step; }
+
+  var xs = gemeinden.map(function (g) { return g.leerwohn_kopf; });
+  var ys = gemeinden.map(function (g) { return g.ja_anteil; });
+  var pops = gemeinden.map(function (g) { return g.bevoelkerung; });
+
+  var xPad = (Math.max.apply(null, xs) - Math.min.apply(null, xs)) * 0.08;
+  var xMin = niceFloor(Math.min.apply(null, xs) - xPad, 0.01);
+  var xMax = niceCeil(Math.max.apply(null, xs) + xPad, 0.01);
+  var yPad = (Math.max.apply(null, ys) - Math.min.apply(null, ys)) * 0.12;
+  var yMin = niceFloor(Math.min.apply(null, ys) - yPad, 5);
+  var yMax = niceCeil(Math.max.apply(null, ys) + yPad, 5);
+
+  function xScale(v) { return m.l + (v - xMin) / (xMax - xMin) * (w - m.l - m.r); }
+  function yScale(v) { return h - m.b - (v - yMin) / (yMax - yMin) * (h - m.t - m.b); }
+
+  var maxPop = Math.max.apply(null, pops);
+  function rScale(v) { return 4 + Math.sqrt(v / maxPop) * 16; }
+
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function ticks(min, max, step) {
+    var t = [];
+    for (var v = niceCeil(min, step); v <= max; v += step) t.push(Math.round(v * 1000) / 1000);
+    return t;
+  }
+
+  ticks(xMin, xMax, 0.02).forEach(function (v) {
+    svg.appendChild(el('line', { class: 'gridline', x1: xScale(v), x2: xScale(v), y1: m.t, y2: h - m.b }));
+    var lbl = el('text', { class: 'axis-label', x: xScale(v), y: h - m.b + 16, 'text-anchor': 'middle' });
+    lbl.textContent = v.toFixed(2);
+    svg.appendChild(lbl);
+  });
+  ticks(yMin, yMax, 10).forEach(function (v) {
+    svg.appendChild(el('line', { class: 'gridline', x1: m.l, x2: w - m.r, y1: yScale(v), y2: yScale(v) }));
+    var lbl = el('text', { class: 'axis-label', x: m.l - 8, y: yScale(v) + 3, 'text-anchor': 'end' });
+    lbl.textContent = v + ' %';
+    svg.appendChild(lbl);
+  });
+
+  var xTitle = el('text', { class: 'axis-title', x: (m.l + w - m.r) / 2, y: h - 6, 'text-anchor': 'middle' });
+  xTitle.textContent = 'Leerwohnungen pro Einwohner';
+  svg.appendChild(xTitle);
+
+  var yTitle = el('text', { class: 'axis-title', transform: 'translate(14,' + (h / 2) + ') rotate(-90)', 'text-anchor': 'middle' });
+  yTitle.textContent = 'Ja-Anteil «Keine 10-Millionen-Schweiz!»';
+  svg.appendChild(yTitle);
+
+  if (yMin < 50 && yMax > 50) {
+    svg.appendChild(el('line', { class: 'threshold-line', x1: m.l, x2: w - m.r, y1: yScale(50), y2: yScale(50) }));
+    var thLbl = el('text', { class: 'axis-label', x: w - m.r, y: yScale(50) - 5, 'text-anchor': 'end' });
+    thLbl.textContent = 'Mehrheit (50 %)';
+    svg.appendChild(thLbl);
+  }
+
+  var slope = meta.regression.slope, intercept = meta.regression.intercept;
+  var yAtXMin = Math.max(yMin, Math.min(yMax, slope * xMin + intercept));
+  var yAtXMax = Math.max(yMin, Math.min(yMax, slope * xMax + intercept));
+  svg.appendChild(el('line', {
+    class: 'trend-line', x1: xScale(xMin), x2: xScale(xMax), y1: yScale(yAtXMin), y2: yScale(yAtXMax)
+  }));
+  var trendLbl = el('text', {
+    class: 'axis-label', fill: 'var(--warn)', x: xScale(xMax) - 4, y: yScale(yAtXMax) - 6, 'text-anchor': 'end'
+  });
+  trendLbl.textContent = 'Trendlinie (nicht robust!)';
+  svg.appendChild(trendLbl);
+
+  var rTxt = el('text', { class: 'r-annotation', x: w - m.r, y: m.t - 10, 'text-anchor': 'end' });
+  rTxt.textContent = meta.einordnung_kurz;
+  svg.appendChild(rTxt);
+
+  var sorted = gemeinden.slice().sort(function (a, b) { return b.bevoelkerung - a.bevoelkerung; });
+  var ptLayer = el('g', {});
+  svg.appendChild(ptLayer);
+  var points = sorted.map(function (g) {
+    var c = el('circle', {
+      class: 'pt',
+      cx: xScale(g.leerwohn_kopf), cy: yScale(g.ja_anteil), r: rScale(g.bevoelkerung),
+      fill: g.ja_anteil >= 50 ? '#0068A4' : '#EE7733',
+      'fill-opacity': 0.75
+    });
+    c.addEventListener('mouseenter', function () { showTooltip(g, c); });
+    c.addEventListener('mousemove', positionTooltip);
+    c.addEventListener('mouseleave', hideTooltip);
+    ptLayer.appendChild(c);
+    return { g: g, el: c };
+  });
+
+  function showTooltip(g, c) {
+    c.classList.add('highlighted');
+    tooltip.innerHTML =
+      '<div class="name">' + g.gemeinde + '</div>' +
+      '<div class="region">' + g.region + '</div>' +
+      '<div class="row"><span>Ja-Anteil</span><strong>' + g.ja_anteil.toFixed(1) + ' %</strong></div>' +
+      '<div class="row"><span>Leerwohn./Kopf</span><strong>' + g.leerwohn_kopf.toFixed(3) + '</strong></div>' +
+      '<div class="row"><span>Bevölkerung</span><strong>' + g.bevoelkerung.toLocaleString('de-CH') + '</strong></div>';
+    tooltip.style.display = 'block';
+  }
+  function positionTooltip(evt) {
+    var rect = wrap.getBoundingClientRect();
+    var left = evt.clientX - rect.left + 14;
+    if (left + 180 > rect.width) left = evt.clientX - rect.left - 190;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = (evt.clientY - rect.top + 14) + 'px';
+  }
+  function hideTooltip() {
+    points.forEach(function (p) { p.el.classList.remove('highlighted'); });
+    tooltip.style.display = 'none';
+  }
+
+  var search = document.getElementById('search');
+  search.addEventListener('input', function () {
+    var q = search.value.trim().toLowerCase();
+    points.forEach(function (p) {
+      var match = !q || p.g.gemeinde.toLowerCase().indexOf(q) !== -1;
+      p.el.classList.toggle('dimmed', !match);
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+
+</body>
+</html>
