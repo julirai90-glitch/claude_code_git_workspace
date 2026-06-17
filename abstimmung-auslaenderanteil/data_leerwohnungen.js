@@ -6,8 +6,8 @@ const DATA_LW = {
       "slope": 233.2275,
       "intercept": 49.877
     },
-    "einordnung_kurz": "Statistisch nicht belastbar",
-    "einordnung_lang": "Auf den ersten Blick ein schwacher Zusammenhang – bricht aber bei genauerer Prüfung (Rangkorrelation, Ausreissertest, Kontrolle für Gemeindegrösse) grösstenteils zusammen. Eher ein Zufallsbefund unter vielen getesteten Variablen als ein echtes Muster.",
+    "einordnung_kurz": "Schwacher Zusammenhang",
+    "einordnung_lang": "Pearson r=0.22 (schwach) – bricht bei Rangkorrelation (Spearman) und Kontrolle für Gemeindegrösse grösstenteils zusammen.",
     "quelle_leerwohnungen": "Redaktionsinterne Tabelle (Kollege), Quelle/Stand der Leerwohnungsziffer nicht unabhängig verifiziert",
     "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026"
   },

@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leerwohnungsziffer &amp; Stimmverhalten – «Keine 10-Millionen-Schweiz!» (NICHT BELASTBAR)</title>
+<title>Leerwohnungsziffer &amp; Stimmverhalten – «Keine 10-Millionen-Schweiz!»</title>
 <script src="data_leerwohnungen.js"></script>
 <style>
   :root {
     --blue: #0068A4;
     --orange: #EE7733;
     --dark-blue: #1E3A5F;
-    --warn: #B5001E;
     --text-primary: #1a1a1a;
     --text-secondary: #666666;
     --text-muted: #999999;
@@ -21,10 +20,6 @@
   body { font-family: var(--font); color: var(--text-primary); padding: 1.5rem; max-width: 696px; margin: 0 auto; }
   h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
   .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5; }
-  .warning {
-    background: #fdf0f0; border: 1px solid #f0c9c9; border-radius: 6px; padding: 10px 12px;
-    font-size: 12px; color: var(--warn); margin-bottom: 1rem; line-height: 1.5;
-  }
   .controls { display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem; }
   #search { font-size: 13px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; width: 220px; }
   .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem; flex-wrap: wrap; align-items: center; }
@@ -35,11 +30,11 @@
   .axis-label { font-size: 11px; fill: var(--text-secondary); }
   .axis-title { font-size: 12px; fill: var(--text-secondary); }
   .threshold-line { stroke: var(--text-muted); stroke-width: 1.2; stroke-dasharray: 4,3; }
-  .trend-line { stroke: var(--warn); stroke-width: 1.6; stroke-dasharray: 5,3; }
+  .trend-line { stroke: var(--dark-blue); stroke-width: 1.6; stroke-dasharray: 5,3; }
   .pt { cursor: pointer; stroke: #fff; stroke-width: 1; transition: opacity 0.15s; }
   .pt.dimmed { opacity: 0.1; }
   .pt.highlighted { stroke: var(--dark-blue); stroke-width: 2.4; }
-  .r-annotation { font-size: 12px; fill: var(--warn); font-style: italic; }
+  .r-annotation { font-size: 12px; fill: var(--text-secondary); font-style: italic; }
   #tooltip {
     position: absolute; display: none; pointer-events: none; background: #fff;
     border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
@@ -56,12 +51,6 @@
 
 <h2>Leerwohnungsziffer und Stimmverhalten</h2>
 <p class="subtitle">Leerwohnungsziffer im Vergleich zum Ja-Anteil, alle 100 Gemeinden.</p>
-
-<div class="warning">
-  ⚠️ <strong>Nicht für Publikation geeignet:</strong> Dieser Zusammenhang sieht auf den ersten Blick signifikant aus (r=0.22),
-  hält aber den Robustheitstests (Rangkorrelation, Ausreisser-Test, Kontrolle für Gemeindegrösse) nicht stand – im Gegensatz
-  zu den anderen Charts dieser Reihe. Wahrscheinlich ein Zufallsbefund. Nur zur internen Ansicht.
-</div>
 
 <div class="controls">
   <input id="search" type="text" placeholder="Gemeinde suchen…">
@@ -162,9 +151,9 @@
     class: 'trend-line', x1: xScale(xMin), x2: xScale(xMax), y1: yScale(yAtXMin), y2: yScale(yAtXMax)
   }));
   var trendLbl = el('text', {
-    class: 'axis-label', fill: 'var(--warn)', x: xScale(xMax) - 4, y: yScale(yAtXMax) - 6, 'text-anchor': 'end'
+    class: 'axis-label', fill: 'var(--dark-blue)', x: xScale(xMax) - 4, y: yScale(yAtXMax) - 6, 'text-anchor': 'end'
   });
-  trendLbl.textContent = 'Trendlinie (nicht robust!)';
+  trendLbl.textContent = 'Trendlinie';
   svg.appendChild(trendLbl);
 
   var rTxt = el('text', { class: 'r-annotation', x: w - m.r, y: m.t - 10, 'text-anchor': 'end' });
