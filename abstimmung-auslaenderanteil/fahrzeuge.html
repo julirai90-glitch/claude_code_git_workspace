@@ -53,7 +53,7 @@
 <p class="subtitle">
   «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)», Abstimmung vom 14. Juni 2026 — Bündner Gemeinden mit Fahrzeugdaten.
   Jeder Punkt zeigt den Ja-Anteil einer Gemeinde im Verhältnis zu ihren registrierten Personenwagen pro Einwohner. Punktgrösse = Bevölkerung.
-  <strong>Hinweis:</strong> Fahrzeugdaten sind Indikator für ländlich-gewerbliche Wirtschaftsstruktur, nicht als direkte Ursache zu verstehen.
+  <strong id="einordnung"></strong> Fahrzeugdaten sind Indikator für ländlich-gewerbliche Wirtschaftsstruktur, nicht als direkte Ursache zu verstehen.
 </p>
 
 <div class="controls">
@@ -163,12 +163,11 @@
   trendLbl.textContent = 'Trendlinie';
   svg.appendChild(trendLbl);
 
-  // Pearson r, ehrlich eingeordnet statt überzeichnet
+  // Einordnung in Klartext statt Statistik-Jargon (kurz im Chart, lang im Untertitel)
   var rTxt = el('text', { class: 'r-annotation', x: w - m.r, y: m.t - 10, 'text-anchor': 'end' });
-  var absR = Math.abs(meta.pearson_r);
-  var rInterpretation = absR < 0.2 ? 'kein klarer Zusammenhang' : (absR < 0.4 ? (meta.pearson_r < 0 ? 'schwacher negativer Zusammenhang' : 'schwacher positiver Zusammenhang') : (meta.pearson_r < 0 ? 'moderater negativer Zusammenhang' : 'moderater positiver Zusammenhang'));
-  rTxt.textContent = 'r = ' + meta.pearson_r.toFixed(2) + ' (' + rInterpretation + ')';
+  rTxt.textContent = meta.einordnung_kurz;
   svg.appendChild(rTxt);
+  document.getElementById('einordnung').textContent = meta.einordnung_lang;
 
   // Punkte: grösste zuerst zeichnen, damit kleine Gemeinden oben (klickbar) bleiben
   var sorted = gemeinden.slice().sort(function (a, b) { return b.bevoelkerung - a.bevoelkerung; });

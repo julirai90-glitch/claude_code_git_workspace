@@ -68,6 +68,8 @@ def main():
             "n": n_matched,
             "pearson_r": round(r, 3),
             "regression": {"slope": round(slope, 4), "intercept": round(intercept, 3)},
+            "einordnung_kurz": "Leichte Tendenz, viele Ausnahmen",
+            "einordnung_lang": "Nur etwa jeder 8. Unterschied zwischen den Gemeinden lässt sich mit den Fahrzeugen pro Kopf erklären – der Rest hängt von anderen Faktoren ab.",
             "quelle_fahrzeuge": f"{fz.get('quelle', 'ASTRA')}, Datenstand {fz.get('datenstand', '?')} (rund 1 Jahr vor der Abstimmung)",
             "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026",
         },

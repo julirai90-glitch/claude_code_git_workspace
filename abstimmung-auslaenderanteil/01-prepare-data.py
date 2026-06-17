@@ -187,6 +187,8 @@ def main():
             "regression": {"slope": round(slope, 4), "intercept": round(intercept, 3)},
             "mean_auslaenderanteil": round(mean_x, 2),
             "mean_ja_anteil": round(mean_y, 2),
+            "einordnung_kurz": "Kein klares Muster erkennbar",
+            "einordnung_lang": "Der Ausländeranteil einer Gemeinde sagt für sich allein praktisch nichts über ihr Abstimmungsverhalten aus.",
             "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026 (20260614_Statistikdaten_Abstimmungen.xlsx)",
             "quelle_bevoelkerung": "BFS STATPOP via data.gr.ch, Ständige Wohnbevölkerung nach Staatsangehörigkeit, provisorisch, Stand 31.12.2025",
         },

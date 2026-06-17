@@ -65,6 +65,8 @@ def main():
             "n": len(records),
             "pearson_r": round(r, 3),
             "regression": {"slope": round(slope, 4), "intercept": round(intercept, 3)},
+            "einordnung_kurz": "Leichte Tendenz, viele Ausnahmen",
+            "einordnung_lang": "Nur etwa jeder 9. Unterschied zwischen den Gemeinden lässt sich mit dem Männeranteil erklären – der Rest hängt von anderen Faktoren ab.",
             "quelle_demografie": "Statistik Graubünden 2024, Ständige Wohnbevölkerung nach Geschlecht",
             "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026",
         },

@@ -10,6 +10,8 @@ const DATA = {
     },
     "mean_auslaenderanteil": 16.98,
     "mean_ja_anteil": 51.64,
+    "einordnung_kurz": "Kein klares Muster erkennbar",
+    "einordnung_lang": "Der Ausländeranteil einer Gemeinde sagt für sich allein praktisch nichts über ihr Abstimmungsverhalten aus.",
     "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026 (20260614_Statistikdaten_Abstimmungen.xlsx)",
     "quelle_bevoelkerung": "BFS STATPOP via data.gr.ch, Ständige Wohnbevölkerung nach Staatsangehörigkeit, provisorisch, Stand 31.12.2025"
   },
