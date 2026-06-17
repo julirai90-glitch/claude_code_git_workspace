@@ -1,0 +1,818 @@
+{
+  "meta": {
+    "n": 100,
+    "vorlage": "Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)»",
+    "abstimmungsdatum": "2026-06-14",
+    "pearson_r": -0.123,
+    "regression": {
+      "slope": -0.1285,
+      "intercept": 53.825
+    },
+    "mean_auslaenderanteil": 16.98,
+    "mean_ja_anteil": 51.64,
+    "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026 (20260614_Statistikdaten_Abstimmungen.xlsx)",
+    "quelle_bevoelkerung": "BFS STATPOP via data.gr.ch, Ständige Wohnbevölkerung nach Staatsangehörigkeit, provisorisch, Stand 31.12.2025"
+  },
+  "gemeinden": [
+    {
+      "gemeinde": "Albula/Alvra",
+      "region": "Albula",
+      "ja_anteil": 53.18,
+      "stimmbeteiligung": 61.2,
+      "auslaenderanteil": 18.09,
+      "bevoelkerung": 1310
+    },
+    {
+      "gemeinde": "Andeer",
+      "region": "Viamala",
+      "ja_anteil": 42.53,
+      "stimmbeteiligung": 60.12,
+      "auslaenderanteil": 17.32,
+      "bevoelkerung": 912
+    },
+    {
+      "gemeinde": "Arosa",
+      "region": "Plessur",
+      "ja_anteil": 54.13,
+      "stimmbeteiligung": 60.9,
+      "auslaenderanteil": 26.76,
+      "bevoelkerung": 3143
+    },
+    {
+      "gemeinde": "Avers",
+      "region": "Viamala",
+      "ja_anteil": 48.96,
+      "stimmbeteiligung": 75.0,
+      "auslaenderanteil": 7.23,
+      "bevoelkerung": 166
+    },
+    {
+      "gemeinde": "Bergün Filisur",
+      "region": "Albula",
+      "ja_anteil": 40.58,
+      "stimmbeteiligung": 68.17,
+      "auslaenderanteil": 18.79,
+      "bevoelkerung": 894
+    },
+    {
+      "gemeinde": "Bever",
+      "region": "Maloja",
+      "ja_anteil": 39.48,
+      "stimmbeteiligung": 67.97,
+      "auslaenderanteil": 15.79,
+      "bevoelkerung": 627
+    },
+    {
+      "gemeinde": "Bonaduz",
+      "region": "Imboden",
+      "ja_anteil": 48.16,
+      "stimmbeteiligung": 59.67,
+      "auslaenderanteil": 14.63,
+      "bevoelkerung": 3617
+    },
+    {
+      "gemeinde": "Bregaglia",
+      "region": "Maloja",
+      "ja_anteil": 39.58,
+      "stimmbeteiligung": 58.04,
+      "auslaenderanteil": 15.98,
+      "bevoelkerung": 1602
+    },
+    {
+      "gemeinde": "Breil/Brigels",
+      "region": "Surselva",
+      "ja_anteil": 52.67,
+      "stimmbeteiligung": 58.77,
+      "auslaenderanteil": 9.84,
+      "bevoelkerung": 1737
+    },
+    {
+      "gemeinde": "Brusio",
+      "region": "Bernina",
+      "ja_anteil": 54.62,
+      "stimmbeteiligung": 53.55,
+      "auslaenderanteil": 17.68,
+      "bevoelkerung": 1103
+    },
+    {
+      "gemeinde": "Buseno",
+      "region": "Moesa",
+      "ja_anteil": 55.41,
+      "stimmbeteiligung": 81.52,
+      "auslaenderanteil": 6.86,
+      "bevoelkerung": 102
+    },
+    {
+      "gemeinde": "Calanca",
+      "region": "Moesa",
+      "ja_anteil": 47.62,
+      "stimmbeteiligung": 48.62,
+      "auslaenderanteil": 17.84,
+      "bevoelkerung": 213
+    },
+    {
+      "gemeinde": "Cama",
+      "region": "Moesa",
+      "ja_anteil": 67.31,
+      "stimmbeteiligung": 47.53,
+      "auslaenderanteil": 29.39,
+      "bevoelkerung": 735
+    },
+    {
+      "gemeinde": "Castaneda",
+      "region": "Moesa",
+      "ja_anteil": 46.62,
+      "stimmbeteiligung": 62.92,
+      "auslaenderanteil": 15.27,
+      "bevoelkerung": 262
+    },
+    {
+      "gemeinde": "Cazis",
+      "region": "Viamala",
+      "ja_anteil": 53.18,
+      "stimmbeteiligung": 52.72,
+      "auslaenderanteil": 19.0,
+      "bevoelkerung": 2548
+    },
+    {
+      "gemeinde": "Celerina/Schlarigna",
+      "region": "Maloja",
+      "ja_anteil": 40.49,
+      "stimmbeteiligung": 58.92,
+      "auslaenderanteil": 28.72,
+      "bevoelkerung": 1410
+    },
+    {
+      "gemeinde": "Chur",
+      "region": "Plessur",
+      "ja_anteil": 40.86,
+      "stimmbeteiligung": 57.24,
+      "auslaenderanteil": 24.44,
+      "bevoelkerung": 39740
+    },
+    {
+      "gemeinde": "Churwalden",
+      "region": "Plessur",
+      "ja_anteil": 46.37,
+      "stimmbeteiligung": 59.42,
+      "auslaenderanteil": 26.72,
+      "bevoelkerung": 2073
+    },
+    {
+      "gemeinde": "Conters im Prättigau",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 67.83,
+      "stimmbeteiligung": 60.21,
+      "auslaenderanteil": 4.68,
+      "bevoelkerung": 235
+    },
+    {
+      "gemeinde": "Davos",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 45.98,
+      "stimmbeteiligung": 62.99,
+      "auslaenderanteil": 29.61,
+      "bevoelkerung": 10733
+    },
+    {
+      "gemeinde": "Disentis/Mustér",
+      "region": "Surselva",
+      "ja_anteil": 45.5,
+      "stimmbeteiligung": 60.19,
+      "auslaenderanteil": 18.49,
+      "bevoelkerung": 2163
+    },
+    {
+      "gemeinde": "Domat/Ems",
+      "region": "Imboden",
+      "ja_anteil": 48.36,
+      "stimmbeteiligung": 51.99,
+      "auslaenderanteil": 25.79,
+      "bevoelkerung": 8419
+    },
+    {
+      "gemeinde": "Domleschg",
+      "region": "Viamala",
+      "ja_anteil": 47.3,
+      "stimmbeteiligung": 66.45,
+      "auslaenderanteil": 6.54,
+      "bevoelkerung": 2233
+    },
+    {
+      "gemeinde": "Falera",
+      "region": "Surselva",
+      "ja_anteil": 45.18,
+      "stimmbeteiligung": 67.27,
+      "auslaenderanteil": 11.98,
+      "bevoelkerung": 651
+    },
+    {
+      "gemeinde": "Felsberg",
+      "region": "Imboden",
+      "ja_anteil": 48.19,
+      "stimmbeteiligung": 59.96,
+      "auslaenderanteil": 13.84,
+      "bevoelkerung": 2847
+    },
+    {
+      "gemeinde": "Ferrera",
+      "region": "Viamala",
+      "ja_anteil": 62.86,
+      "stimmbeteiligung": 69.81,
+      "auslaenderanteil": 15.07,
+      "bevoelkerung": 73
+    },
+    {
+      "gemeinde": "Fideris",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 62.38,
+      "stimmbeteiligung": 63.88,
+      "auslaenderanteil": 7.41,
+      "bevoelkerung": 634
+    },
+    {
+      "gemeinde": "Flerden",
+      "region": "Viamala",
+      "ja_anteil": 53.57,
+      "stimmbeteiligung": 69.27,
+      "auslaenderanteil": 5.14,
+      "bevoelkerung": 253
+    },
+    {
+      "gemeinde": "Flims",
+      "region": "Imboden",
+      "ja_anteil": 40.08,
+      "stimmbeteiligung": 63.45,
+      "auslaenderanteil": 24.23,
+      "bevoelkerung": 2951
+    },
+    {
+      "gemeinde": "Fläsch",
+      "region": "Landquart",
+      "ja_anteil": 56.73,
+      "stimmbeteiligung": 64.61,
+      "auslaenderanteil": 11.74,
+      "bevoelkerung": 886
+    },
+    {
+      "gemeinde": "Furna",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 77.88,
+      "stimmbeteiligung": 67.95,
+      "auslaenderanteil": 4.0,
+      "bevoelkerung": 200
+    },
+    {
+      "gemeinde": "Fürstenau",
+      "region": "Viamala",
+      "ja_anteil": 56.25,
+      "stimmbeteiligung": 66.42,
+      "auslaenderanteil": 11.33,
+      "bevoelkerung": 353
+    },
+    {
+      "gemeinde": "Grono",
+      "region": "Moesa",
+      "ja_anteil": 57.55,
+      "stimmbeteiligung": 55.66,
+      "auslaenderanteil": 32.88,
+      "bevoelkerung": 1633
+    },
+    {
+      "gemeinde": "Grüsch",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 64.35,
+      "stimmbeteiligung": 61.31,
+      "auslaenderanteil": 10.61,
+      "bevoelkerung": 2187
+    },
+    {
+      "gemeinde": "Ilanz/Glion",
+      "region": "Surselva",
+      "ja_anteil": 48.85,
+      "stimmbeteiligung": 57.74,
+      "auslaenderanteil": 20.28,
+      "bevoelkerung": 5099
+    },
+    {
+      "gemeinde": "Jenaz",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 63.39,
+      "stimmbeteiligung": 58.97,
+      "auslaenderanteil": 9.65,
+      "bevoelkerung": 1150
+    },
+    {
+      "gemeinde": "Jenins",
+      "region": "Landquart",
+      "ja_anteil": 56.15,
+      "stimmbeteiligung": 67.34,
+      "auslaenderanteil": 12.36,
+      "bevoelkerung": 979
+    },
+    {
+      "gemeinde": "Klosters",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 56.28,
+      "stimmbeteiligung": 64.74,
+      "auslaenderanteil": 20.49,
+      "bevoelkerung": 4499
+    },
+    {
+      "gemeinde": "Küblis",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 67.44,
+      "stimmbeteiligung": 57.28,
+      "auslaenderanteil": 21.25,
+      "bevoelkerung": 913
+    },
+    {
+      "gemeinde": "La Punt Chamues-ch",
+      "region": "Maloja",
+      "ja_anteil": 54.35,
+      "stimmbeteiligung": 53.47,
+      "auslaenderanteil": 23.23,
+      "bevoelkerung": 762
+    },
+    {
+      "gemeinde": "Laax",
+      "region": "Surselva",
+      "ja_anteil": 45.68,
+      "stimmbeteiligung": 63.62,
+      "auslaenderanteil": 17.88,
+      "bevoelkerung": 2103
+    },
+    {
+      "gemeinde": "Landquart",
+      "region": "Landquart",
+      "ja_anteil": 55.7,
+      "stimmbeteiligung": 53.91,
+      "auslaenderanteil": 24.35,
+      "bevoelkerung": 9275
+    },
+    {
+      "gemeinde": "Lantsch/Lenz",
+      "region": "Albula",
+      "ja_anteil": 41.08,
+      "stimmbeteiligung": 62.37,
+      "auslaenderanteil": 15.36,
+      "bevoelkerung": 534
+    },
+    {
+      "gemeinde": "Lostallo",
+      "region": "Moesa",
+      "ja_anteil": 60.49,
+      "stimmbeteiligung": 54.25,
+      "auslaenderanteil": 20.21,
+      "bevoelkerung": 871
+    },
+    {
+      "gemeinde": "Lumnezia",
+      "region": "Surselva",
+      "ja_anteil": 51.42,
+      "stimmbeteiligung": 61.79,
+      "auslaenderanteil": 7.98,
+      "bevoelkerung": 2056
+    },
+    {
+      "gemeinde": "Luzein",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 68.94,
+      "stimmbeteiligung": 66.57,
+      "auslaenderanteil": 10.49,
+      "bevoelkerung": 1706
+    },
+    {
+      "gemeinde": "Madulain",
+      "region": "Maloja",
+      "ja_anteil": 57.73,
+      "stimmbeteiligung": 63.4,
+      "auslaenderanteil": 25.24,
+      "bevoelkerung": 206
+    },
+    {
+      "gemeinde": "Maienfeld",
+      "region": "Landquart",
+      "ja_anteil": 51.15,
+      "stimmbeteiligung": 63.86,
+      "auslaenderanteil": 12.65,
+      "bevoelkerung": 3344
+    },
+    {
+      "gemeinde": "Malans",
+      "region": "Landquart",
+      "ja_anteil": 42.97,
+      "stimmbeteiligung": 69.2,
+      "auslaenderanteil": 8.85,
+      "bevoelkerung": 2530
+    },
+    {
+      "gemeinde": "Masein",
+      "region": "Viamala",
+      "ja_anteil": 37.97,
+      "stimmbeteiligung": 63.72,
+      "auslaenderanteil": 8.55,
+      "bevoelkerung": 538
+    },
+    {
+      "gemeinde": "Medel (Lucmagn)",
+      "region": "Surselva",
+      "ja_anteil": 40.99,
+      "stimmbeteiligung": 55.18,
+      "auslaenderanteil": 10.61,
+      "bevoelkerung": 330
+    },
+    {
+      "gemeinde": "Mesocco",
+      "region": "Moesa",
+      "ja_anteil": 62.94,
+      "stimmbeteiligung": 60.97,
+      "auslaenderanteil": 21.23,
+      "bevoelkerung": 1432
+    },
+    {
+      "gemeinde": "Muntogna da Schons",
+      "region": "Viamala",
+      "ja_anteil": 53.92,
+      "stimmbeteiligung": 72.19,
+      "auslaenderanteil": 4.5,
+      "bevoelkerung": 378
+    },
+    {
+      "gemeinde": "Obersaxen Mundaun",
+      "region": "Surselva",
+      "ja_anteil": 51.57,
+      "stimmbeteiligung": 60.74,
+      "auslaenderanteil": 8.25,
+      "bevoelkerung": 1151
+    },
+    {
+      "gemeinde": "Pontresina",
+      "region": "Maloja",
+      "ja_anteil": 43.5,
+      "stimmbeteiligung": 61.34,
+      "auslaenderanteil": 32.4,
+      "bevoelkerung": 2077
+    },
+    {
+      "gemeinde": "Poschiavo",
+      "region": "Bernina",
+      "ja_anteil": 46.51,
+      "stimmbeteiligung": 56.28,
+      "auslaenderanteil": 10.82,
+      "bevoelkerung": 3493
+    },
+    {
+      "gemeinde": "Rheinwald",
+      "region": "Viamala",
+      "ja_anteil": 50.91,
+      "stimmbeteiligung": 69.83,
+      "auslaenderanteil": 15.22,
+      "bevoelkerung": 598
+    },
+    {
+      "gemeinde": "Rhäzüns",
+      "region": "Imboden",
+      "ja_anteil": 45.59,
+      "stimmbeteiligung": 57.44,
+      "auslaenderanteil": 20.72,
+      "bevoelkerung": 1607
+    },
+    {
+      "gemeinde": "Rongellen",
+      "region": "Viamala",
+      "ja_anteil": 66.67,
+      "stimmbeteiligung": 65.85,
+      "auslaenderanteil": 9.09,
+      "bevoelkerung": 55
+    },
+    {
+      "gemeinde": "Rossa",
+      "region": "Moesa",
+      "ja_anteil": 59.2,
+      "stimmbeteiligung": 63.73,
+      "auslaenderanteil": 8.72,
+      "bevoelkerung": 172
+    },
+    {
+      "gemeinde": "Rothenbrunnen",
+      "region": "Viamala",
+      "ja_anteil": 60.54,
+      "stimmbeteiligung": 60.08,
+      "auslaenderanteil": 10.98,
+      "bevoelkerung": 337
+    },
+    {
+      "gemeinde": "Roveredo (GR)",
+      "region": "Moesa",
+      "ja_anteil": 62.08,
+      "stimmbeteiligung": 56.36,
+      "auslaenderanteil": 28.29,
+      "bevoelkerung": 2711
+    },
+    {
+      "gemeinde": "S-chanf",
+      "region": "Maloja",
+      "ja_anteil": 53.56,
+      "stimmbeteiligung": 58.83,
+      "auslaenderanteil": 19.7,
+      "bevoelkerung": 736
+    },
+    {
+      "gemeinde": "Safiental",
+      "region": "Surselva",
+      "ja_anteil": 47.51,
+      "stimmbeteiligung": 65.52,
+      "auslaenderanteil": 5.25,
+      "bevoelkerung": 972
+    },
+    {
+      "gemeinde": "Sagogn",
+      "region": "Surselva",
+      "ja_anteil": 38.75,
+      "stimmbeteiligung": 59.39,
+      "auslaenderanteil": 12.61,
+      "bevoelkerung": 777
+    },
+    {
+      "gemeinde": "Samedan",
+      "region": "Maloja",
+      "ja_anteil": 41.55,
+      "stimmbeteiligung": 59.88,
+      "auslaenderanteil": 25.72,
+      "bevoelkerung": 2924
+    },
+    {
+      "gemeinde": "Samnaun",
+      "region": "Engiadina Bassa / Val Müstair",
+      "ja_anteil": 64.1,
+      "stimmbeteiligung": 56.52,
+      "auslaenderanteil": 28.25,
+      "bevoelkerung": 761
+    },
+    {
+      "gemeinde": "San Vittore",
+      "region": "Moesa",
+      "ja_anteil": 62.8,
+      "stimmbeteiligung": 60.32,
+      "auslaenderanteil": 28.44,
+      "bevoelkerung": 946
+    },
+    {
+      "gemeinde": "Santa Maria in Calanca",
+      "region": "Moesa",
+      "ja_anteil": 65.28,
+      "stimmbeteiligung": 69.9,
+      "auslaenderanteil": 9.73,
+      "bevoelkerung": 113
+    },
+    {
+      "gemeinde": "Scharans",
+      "region": "Viamala",
+      "ja_anteil": 45.26,
+      "stimmbeteiligung": 62.13,
+      "auslaenderanteil": 4.85,
+      "bevoelkerung": 845
+    },
+    {
+      "gemeinde": "Schiers",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 64.09,
+      "stimmbeteiligung": 56.8,
+      "auslaenderanteil": 21.84,
+      "bevoelkerung": 3017
+    },
+    {
+      "gemeinde": "Schluein",
+      "region": "Surselva",
+      "ja_anteil": 56.73,
+      "stimmbeteiligung": 50.98,
+      "auslaenderanteil": 19.64,
+      "bevoelkerung": 611
+    },
+    {
+      "gemeinde": "Schmitten (GR)",
+      "region": "Albula",
+      "ja_anteil": 62.07,
+      "stimmbeteiligung": 54.37,
+      "auslaenderanteil": 15.96,
+      "bevoelkerung": 213
+    },
+    {
+      "gemeinde": "Scuol",
+      "region": "Engiadina Bassa / Val Müstair",
+      "ja_anteil": 40.25,
+      "stimmbeteiligung": 60.31,
+      "auslaenderanteil": 21.85,
+      "bevoelkerung": 4599
+    },
+    {
+      "gemeinde": "Seewis im Prättigau",
+      "region": "Prättigau / Davos",
+      "ja_anteil": 60.36,
+      "stimmbeteiligung": 62.14,
+      "auslaenderanteil": 13.8,
+      "bevoelkerung": 1485
+    },
+    {
+      "gemeinde": "Sils im Domleschg",
+      "region": "Viamala",
+      "ja_anteil": 53.81,
+      "stimmbeteiligung": 59.08,
+      "auslaenderanteil": 17.71,
+      "bevoelkerung": 954
+    },
+    {
+      "gemeinde": "Sils im Engadin/Segl",
+      "region": "Maloja",
+      "ja_anteil": 43.89,
+      "stimmbeteiligung": 61.02,
+      "auslaenderanteil": 32.61,
+      "bevoelkerung": 693
+    },
+    {
+      "gemeinde": "Silvaplana",
+      "region": "Maloja",
+      "ja_anteil": 51.05,
+      "stimmbeteiligung": 56.87,
+      "auslaenderanteil": 32.64,
+      "bevoelkerung": 1109
+    },
+    {
+      "gemeinde": "Soazza",
+      "region": "Moesa",
+      "ja_anteil": 58.39,
+      "stimmbeteiligung": 61.04,
+      "auslaenderanteil": 18.75,
+      "bevoelkerung": 320
+    },
+    {
+      "gemeinde": "St. Moritz",
+      "region": "Maloja",
+      "ja_anteil": 43.05,
+      "stimmbeteiligung": 64.1,
+      "auslaenderanteil": 44.8,
+      "bevoelkerung": 5025
+    },
+    {
+      "gemeinde": "Sufers",
+      "region": "Viamala",
+      "ja_anteil": 41.89,
+      "stimmbeteiligung": 75.24,
+      "auslaenderanteil": 9.59,
+      "bevoelkerung": 146
+    },
+    {
+      "gemeinde": "Sumvitg",
+      "region": "Surselva",
+      "ja_anteil": 42.83,
+      "stimmbeteiligung": 61.36,
+      "auslaenderanteil": 7.13,
+      "bevoelkerung": 1052
+    },
+    {
+      "gemeinde": "Surses",
+      "region": "Albula",
+      "ja_anteil": 43.16,
+      "stimmbeteiligung": 58.48,
+      "auslaenderanteil": 18.89,
+      "bevoelkerung": 2494
+    },
+    {
+      "gemeinde": "Tamins",
+      "region": "Imboden",
+      "ja_anteil": 50.59,
+      "stimmbeteiligung": 58.32,
+      "auslaenderanteil": 16.49,
+      "bevoelkerung": 1225
+    },
+    {
+      "gemeinde": "Thusis",
+      "region": "Viamala",
+      "ja_anteil": 52.41,
+      "stimmbeteiligung": 47.34,
+      "auslaenderanteil": 35.89,
+      "bevoelkerung": 3452
+    },
+    {
+      "gemeinde": "Trimmis",
+      "region": "Landquart",
+      "ja_anteil": 59.7,
+      "stimmbeteiligung": 60.68,
+      "auslaenderanteil": 13.77,
+      "bevoelkerung": 3472
+    },
+    {
+      "gemeinde": "Trin",
+      "region": "Imboden",
+      "ja_anteil": 37.03,
+      "stimmbeteiligung": 68.61,
+      "auslaenderanteil": 13.1,
+      "bevoelkerung": 1572
+    },
+    {
+      "gemeinde": "Trun",
+      "region": "Surselva",
+      "ja_anteil": 48.07,
+      "stimmbeteiligung": 53.3,
+      "auslaenderanteil": 13.29,
+      "bevoelkerung": 1136
+    },
+    {
+      "gemeinde": "Tschappina",
+      "region": "Viamala",
+      "ja_anteil": 46.67,
+      "stimmbeteiligung": 62.5,
+      "auslaenderanteil": 4.05,
+      "bevoelkerung": 148
+    },
+    {
+      "gemeinde": "Tujetsch",
+      "region": "Surselva",
+      "ja_anteil": 39.18,
+      "stimmbeteiligung": 58.91,
+      "auslaenderanteil": 14.68,
+      "bevoelkerung": 1185
+    },
+    {
+      "gemeinde": "Untervaz",
+      "region": "Landquart",
+      "ja_anteil": 56.54,
+      "stimmbeteiligung": 55.71,
+      "auslaenderanteil": 12.33,
+      "bevoelkerung": 2676
+    },
+    {
+      "gemeinde": "Urmein",
+      "region": "Viamala",
+      "ja_anteil": 54.29,
+      "stimmbeteiligung": 82.44,
+      "auslaenderanteil": 3.7,
+      "bevoelkerung": 162
+    },
+    {
+      "gemeinde": "Val Müstair",
+      "region": "Engiadina Bassa / Val Müstair",
+      "ja_anteil": 46.16,
+      "stimmbeteiligung": 59.02,
+      "auslaenderanteil": 9.39,
+      "bevoelkerung": 1427
+    },
+    {
+      "gemeinde": "Vals",
+      "region": "Surselva",
+      "ja_anteil": 34.4,
+      "stimmbeteiligung": 64.09,
+      "auslaenderanteil": 23.52,
+      "bevoelkerung": 948
+    },
+    {
+      "gemeinde": "Valsot",
+      "region": "Engiadina Bassa / Val Müstair",
+      "ja_anteil": 52.78,
+      "stimmbeteiligung": 59.12,
+      "auslaenderanteil": 10.68,
+      "bevoelkerung": 824
+    },
+    {
+      "gemeinde": "Vaz/Obervaz",
+      "region": "Albula",
+      "ja_anteil": 44.9,
+      "stimmbeteiligung": 66.27,
+      "auslaenderanteil": 21.12,
+      "bevoelkerung": 2703
+    },
+    {
+      "gemeinde": "Zernez",
+      "region": "Engiadina Bassa / Val Müstair",
+      "ja_anteil": 51.9,
+      "stimmbeteiligung": 67.78,
+      "auslaenderanteil": 21.31,
+      "bevoelkerung": 1586
+    },
+    {
+      "gemeinde": "Zillis-Reischen",
+      "region": "Viamala",
+      "ja_anteil": 58.88,
+      "stimmbeteiligung": 67.22,
+      "auslaenderanteil": 20.68,
+      "bevoelkerung": 440
+    },
+    {
+      "gemeinde": "Zizers",
+      "region": "Landquart",
+      "ja_anteil": 50.37,
+      "stimmbeteiligung": 56.04,
+      "auslaenderanteil": 17.15,
+      "bevoelkerung": 3826
+    },
+    {
+      "gemeinde": "Zuoz",
+      "region": "Maloja",
+      "ja_anteil": 44.35,
+      "stimmbeteiligung": 61.79,
+      "auslaenderanteil": 33.58,
+      "bevoelkerung": 1209
+    }
+  ]
+}
