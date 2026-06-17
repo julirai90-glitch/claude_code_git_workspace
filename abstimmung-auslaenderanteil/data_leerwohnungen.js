@@ -1,14 +1,14 @@
 const DATA_LW = {
   "meta": {
     "n": 100,
-    "pearson_r": 0.221,
+    "pearson_r": 0.224,
     "regression": {
-      "slope": 233.2275,
-      "intercept": 49.877
+      "slope": 237.6489,
+      "intercept": 49.854
     },
     "einordnung_kurz": "Schwacher Zusammenhang",
     "einordnung_lang": "Pearson r=0.22 (schwach) – bricht bei Rangkorrelation (Spearman) und Kontrolle für Gemeindegrösse grösstenteils zusammen.",
-    "quelle_leerwohnungen": "Redaktionsinterne Tabelle (Kollege), Quelle/Stand der Leerwohnungsziffer nicht unabhängig verifiziert",
+    "quelle_leerwohnungen": "Statistik Graubünden / BFS Leerwohnungszählung, Stand 1.6.2025 (1006_Leerwohnungsbestände 2010-2025.xlsx)",
     "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026"
   },
   "gemeinden": [
@@ -16,21 +16,21 @@ const DATA_LW = {
       "gemeinde": "Albula/Alvra",
       "region": "Albula",
       "ja_anteil": 53.18,
-      "leerwohn_kopf": 0.002215657,
+      "leerwohn_kopf": 0.0023,
       "bevoelkerung": 1310
     },
     {
       "gemeinde": "Andeer",
       "region": "Viamala",
       "ja_anteil": 42.53,
-      "leerwohn_kopf": 0.002166847,
+      "leerwohn_kopf": 0.0022,
       "bevoelkerung": 912
     },
     {
       "gemeinde": "Arosa",
       "region": "Plessur",
       "ja_anteil": 54.13,
-      "leerwohn_kopf": 0.00918012,
+      "leerwohn_kopf": 0.0092,
       "bevoelkerung": 3143
     },
     {
@@ -44,7 +44,7 @@ const DATA_LW = {
       "gemeinde": "Bergün Filisur",
       "region": "Albula",
       "ja_anteil": 40.58,
-      "leerwohn_kopf": 0.0077951,
+      "leerwohn_kopf": 0.0078,
       "bevoelkerung": 894
     },
     {
@@ -58,28 +58,28 @@ const DATA_LW = {
       "gemeinde": "Bonaduz",
       "region": "Imboden",
       "ja_anteil": 48.16,
-      "leerwohn_kopf": 0.00112202,
+      "leerwohn_kopf": 0.0011,
       "bevoelkerung": 3617
     },
     {
       "gemeinde": "Bregaglia",
       "region": "Maloja",
       "ja_anteil": 39.58,
-      "leerwohn_kopf": 0.003771213,
+      "leerwohn_kopf": 0.0037,
       "bevoelkerung": 1602
     },
     {
       "gemeinde": "Breil/Brigels",
       "region": "Surselva",
       "ja_anteil": 52.67,
-      "leerwohn_kopf": 0.007620164,
+      "leerwohn_kopf": 0.0075,
       "bevoelkerung": 1737
     },
     {
       "gemeinde": "Brusio",
       "region": "Bernina",
       "ja_anteil": 54.62,
-      "leerwohn_kopf": 0.006369427,
+      "leerwohn_kopf": 0.0063,
       "bevoelkerung": 1103
     },
     {
@@ -93,49 +93,49 @@ const DATA_LW = {
       "gemeinde": "Calanca",
       "region": "Moesa",
       "ja_anteil": 47.62,
-      "leerwohn_kopf": 0.019607843,
+      "leerwohn_kopf": 0.0188,
       "bevoelkerung": 213
     },
     {
       "gemeinde": "Cama",
       "region": "Moesa",
       "ja_anteil": 67.31,
-      "leerwohn_kopf": 0.023611111,
+      "leerwohn_kopf": 0.0231,
       "bevoelkerung": 735
     },
     {
       "gemeinde": "Castaneda",
       "region": "Moesa",
       "ja_anteil": 46.62,
-      "leerwohn_kopf": 0.019685039,
+      "leerwohn_kopf": 0.0191,
       "bevoelkerung": 262
     },
     {
       "gemeinde": "Cazis",
       "region": "Viamala",
       "ja_anteil": 53.18,
-      "leerwohn_kopf": 0.001230012,
+      "leerwohn_kopf": 0.0012,
       "bevoelkerung": 2548
     },
     {
       "gemeinde": "Celerina/Schlarigna",
       "region": "Maloja",
       "ja_anteil": 40.49,
-      "leerwohn_kopf": 0.003533569,
+      "leerwohn_kopf": 0.0035,
       "bevoelkerung": 1410
     },
     {
       "gemeinde": "Chur",
       "region": "Plessur",
       "ja_anteil": 40.86,
-      "leerwohn_kopf": 0.001291597,
+      "leerwohn_kopf": 0.0013,
       "bevoelkerung": 39740
     },
     {
       "gemeinde": "Churwalden",
       "region": "Plessur",
       "ja_anteil": 46.37,
-      "leerwohn_kopf": 0.005203406,
+      "leerwohn_kopf": 0.0053,
       "bevoelkerung": 2073
     },
     {
@@ -149,56 +149,56 @@ const DATA_LW = {
       "gemeinde": "Davos",
       "region": "Prättigau / Davos",
       "ja_anteil": 45.98,
-      "leerwohn_kopf": 0.001206609,
+      "leerwohn_kopf": 0.0012,
       "bevoelkerung": 10733
     },
     {
       "gemeinde": "Disentis/Mustér",
       "region": "Surselva",
       "ja_anteil": 45.5,
-      "leerwohn_kopf": 0.002376426,
+      "leerwohn_kopf": 0.0023,
       "bevoelkerung": 2163
     },
     {
       "gemeinde": "Domat/Ems",
       "region": "Imboden",
       "ja_anteil": 48.36,
-      "leerwohn_kopf": 0.002502383,
+      "leerwohn_kopf": 0.0025,
       "bevoelkerung": 8419
     },
     {
       "gemeinde": "Domleschg",
       "region": "Viamala",
       "ja_anteil": 47.3,
-      "leerwohn_kopf": 0.00928382,
+      "leerwohn_kopf": 0.0094,
       "bevoelkerung": 2233
     },
     {
       "gemeinde": "Falera",
       "region": "Surselva",
       "ja_anteil": 45.18,
-      "leerwohn_kopf": 0.009448819,
+      "leerwohn_kopf": 0.0092,
       "bevoelkerung": 651
     },
     {
       "gemeinde": "Felsberg",
       "region": "Imboden",
       "ja_anteil": 48.19,
-      "leerwohn_kopf": 0.001039501,
+      "leerwohn_kopf": 0.0011,
       "bevoelkerung": 2847
     },
     {
       "gemeinde": "Ferrera",
       "region": "Viamala",
       "ja_anteil": 62.86,
-      "leerwohn_kopf": 0.026315789,
+      "leerwohn_kopf": 0.0274,
       "bevoelkerung": 73
     },
     {
       "gemeinde": "Fideris",
       "region": "Prättigau / Davos",
       "ja_anteil": 62.38,
-      "leerwohn_kopf": 0.003194888,
+      "leerwohn_kopf": 0.0032,
       "bevoelkerung": 634
     },
     {
@@ -212,14 +212,14 @@ const DATA_LW = {
       "gemeinde": "Flims",
       "region": "Imboden",
       "ja_anteil": 40.08,
-      "leerwohn_kopf": 0.005513439,
+      "leerwohn_kopf": 0.0054,
       "bevoelkerung": 2951
     },
     {
       "gemeinde": "Fläsch",
       "region": "Landquart",
       "ja_anteil": 56.73,
-      "leerwohn_kopf": 0.005688282,
+      "leerwohn_kopf": 0.0056,
       "bevoelkerung": 886
     },
     {
@@ -240,91 +240,91 @@ const DATA_LW = {
       "gemeinde": "Grono",
       "region": "Moesa",
       "ja_anteil": 57.55,
-      "leerwohn_kopf": 0.015822785,
+      "leerwohn_kopf": 0.0153,
       "bevoelkerung": 1633
     },
     {
       "gemeinde": "Grüsch",
       "region": "Prättigau / Davos",
       "ja_anteil": 64.35,
-      "leerwohn_kopf": 0.005055147,
+      "leerwohn_kopf": 0.005,
       "bevoelkerung": 2187
     },
     {
       "gemeinde": "Ilanz/Glion",
       "region": "Surselva",
       "ja_anteil": 48.85,
-      "leerwohn_kopf": 0.00473653,
+      "leerwohn_kopf": 0.0047,
       "bevoelkerung": 5099
     },
     {
       "gemeinde": "Jenaz",
       "region": "Prättigau / Davos",
       "ja_anteil": 63.39,
-      "leerwohn_kopf": 0.006013746,
+      "leerwohn_kopf": 0.0061,
       "bevoelkerung": 1150
     },
     {
       "gemeinde": "Jenins",
       "region": "Landquart",
       "ja_anteil": 56.15,
-      "leerwohn_kopf": 0.006224066,
+      "leerwohn_kopf": 0.0061,
       "bevoelkerung": 979
     },
     {
       "gemeinde": "Klosters",
       "region": "Prättigau / Davos",
       "ja_anteil": 56.28,
-      "leerwohn_kopf": 0.002679768,
+      "leerwohn_kopf": 0.0027,
       "bevoelkerung": 4499
     },
     {
       "gemeinde": "Küblis",
       "region": "Prättigau / Davos",
       "ja_anteil": 67.44,
-      "leerwohn_kopf": 0.008791209,
+      "leerwohn_kopf": 0.0088,
       "bevoelkerung": 913
     },
     {
       "gemeinde": "La Punt Chamues-ch",
       "region": "Maloja",
       "ja_anteil": 54.35,
-      "leerwohn_kopf": 0.004,
+      "leerwohn_kopf": 0.0039,
       "bevoelkerung": 762
     },
     {
       "gemeinde": "Laax",
       "region": "Surselva",
       "ja_anteil": 45.68,
-      "leerwohn_kopf": 0.016175071,
+      "leerwohn_kopf": 0.0162,
       "bevoelkerung": 2103
     },
     {
       "gemeinde": "Landquart",
       "region": "Landquart",
       "ja_anteil": 55.7,
-      "leerwohn_kopf": 0.000540891,
+      "leerwohn_kopf": 0.0005,
       "bevoelkerung": 9275
     },
     {
       "gemeinde": "Lantsch/Lenz",
       "region": "Albula",
       "ja_anteil": 41.08,
-      "leerwohn_kopf": 0.021235521,
+      "leerwohn_kopf": 0.0206,
       "bevoelkerung": 534
     },
     {
       "gemeinde": "Lostallo",
       "region": "Moesa",
       "ja_anteil": 60.49,
-      "leerwohn_kopf": 0.015011547,
+      "leerwohn_kopf": 0.0149,
       "bevoelkerung": 871
     },
     {
       "gemeinde": "Lumnezia",
       "region": "Surselva",
       "ja_anteil": 51.42,
-      "leerwohn_kopf": 0.002891566,
+      "leerwohn_kopf": 0.0029,
       "bevoelkerung": 2056
     },
     {
@@ -345,91 +345,91 @@ const DATA_LW = {
       "gemeinde": "Maienfeld",
       "region": "Landquart",
       "ja_anteil": 51.15,
-      "leerwohn_kopf": 0.004286589,
+      "leerwohn_kopf": 0.0042,
       "bevoelkerung": 3344
     },
     {
       "gemeinde": "Malans",
       "region": "Landquart",
       "ja_anteil": 42.97,
-      "leerwohn_kopf": 0.00118624,
+      "leerwohn_kopf": 0.0012,
       "bevoelkerung": 2530
     },
     {
       "gemeinde": "Masein",
       "region": "Viamala",
       "ja_anteil": 37.97,
-      "leerwohn_kopf": 0.001883239,
+      "leerwohn_kopf": 0.0019,
       "bevoelkerung": 538
     },
     {
       "gemeinde": "Medel (Lucmagn)",
       "region": "Surselva",
       "ja_anteil": 40.99,
-      "leerwohn_kopf": 0.015243902,
+      "leerwohn_kopf": 0.0152,
       "bevoelkerung": 330
     },
     {
       "gemeinde": "Mesocco",
       "region": "Moesa",
       "ja_anteil": 62.94,
-      "leerwohn_kopf": 0.021923621,
+      "leerwohn_kopf": 0.0216,
       "bevoelkerung": 1432
     },
     {
       "gemeinde": "Muntogna da Schons",
       "region": "Viamala",
       "ja_anteil": 53.92,
-      "leerwohn_kopf": 0.005434783,
+      "leerwohn_kopf": 0.0053,
       "bevoelkerung": 378
     },
     {
       "gemeinde": "Obersaxen Mundaun",
       "region": "Surselva",
       "ja_anteil": 51.57,
-      "leerwohn_kopf": 0.003448276,
+      "leerwohn_kopf": 0.0035,
       "bevoelkerung": 1151
     },
     {
       "gemeinde": "Pontresina",
       "region": "Maloja",
       "ja_anteil": 43.5,
-      "leerwohn_kopf": 0.001447876,
+      "leerwohn_kopf": 0.0014,
       "bevoelkerung": 2077
     },
     {
       "gemeinde": "Poschiavo",
       "region": "Bernina",
       "ja_anteil": 46.51,
-      "leerwohn_kopf": 0.022824536,
+      "leerwohn_kopf": 0.0229,
       "bevoelkerung": 3493
     },
     {
       "gemeinde": "Rheinwald",
       "region": "Viamala",
       "ja_anteil": 50.91,
-      "leerwohn_kopf": 0.005263158,
+      "leerwohn_kopf": 0.005,
       "bevoelkerung": 598
     },
     {
       "gemeinde": "Rhäzüns",
       "region": "Imboden",
       "ja_anteil": 45.59,
-      "leerwohn_kopf": 0.009305211,
+      "leerwohn_kopf": 0.0093,
       "bevoelkerung": 1607
     },
     {
       "gemeinde": "Rongellen",
       "region": "Viamala",
       "ja_anteil": 66.67,
-      "leerwohn_kopf": 0.016949153,
+      "leerwohn_kopf": 0.0182,
       "bevoelkerung": 55
     },
     {
       "gemeinde": "Rossa",
       "region": "Moesa",
       "ja_anteil": 59.2,
-      "leerwohn_kopf": 0.035714286,
+      "leerwohn_kopf": 0.0349,
       "bevoelkerung": 172
     },
     {
@@ -443,70 +443,70 @@ const DATA_LW = {
       "gemeinde": "Roveredo (GR)",
       "region": "Moesa",
       "ja_anteil": 62.08,
-      "leerwohn_kopf": 0.035391566,
+      "leerwohn_kopf": 0.0347,
       "bevoelkerung": 2711
     },
     {
       "gemeinde": "S-chanf",
       "region": "Maloja",
       "ja_anteil": 53.56,
-      "leerwohn_kopf": 0.005610098,
+      "leerwohn_kopf": 0.0054,
       "bevoelkerung": 736
     },
     {
       "gemeinde": "Safiental",
       "region": "Surselva",
       "ja_anteil": 47.51,
-      "leerwohn_kopf": 0.004149378,
+      "leerwohn_kopf": 0.0041,
       "bevoelkerung": 972
     },
     {
       "gemeinde": "Sagogn",
       "region": "Surselva",
       "ja_anteil": 38.75,
-      "leerwohn_kopf": 0.00260078,
+      "leerwohn_kopf": 0.0026,
       "bevoelkerung": 777
     },
     {
       "gemeinde": "Samedan",
       "region": "Maloja",
       "ja_anteil": 41.55,
-      "leerwohn_kopf": 0.003447087,
+      "leerwohn_kopf": 0.0034,
       "bevoelkerung": 2924
     },
     {
       "gemeinde": "Samnaun",
       "region": "Engiadina Bassa / Val Müstair",
       "ja_anteil": 64.1,
-      "leerwohn_kopf": 0.02,
+      "leerwohn_kopf": 0.0197,
       "bevoelkerung": 761
     },
     {
       "gemeinde": "San Vittore",
       "region": "Moesa",
       "ja_anteil": 62.8,
-      "leerwohn_kopf": 0.008324662,
+      "leerwohn_kopf": 0.0085,
       "bevoelkerung": 946
     },
     {
       "gemeinde": "Santa Maria in Calanca",
       "region": "Moesa",
       "ja_anteil": 65.28,
-      "leerwohn_kopf": 0.026548673,
+      "leerwohn_kopf": 0.0265,
       "bevoelkerung": 113
     },
     {
       "gemeinde": "Scharans",
       "region": "Viamala",
       "ja_anteil": 45.26,
-      "leerwohn_kopf": 0.004784689,
+      "leerwohn_kopf": 0.0047,
       "bevoelkerung": 845
     },
     {
       "gemeinde": "Schiers",
       "region": "Prättigau / Davos",
       "ja_anteil": 64.09,
-      "leerwohn_kopf": 0.015703308,
+      "leerwohn_kopf": 0.0156,
       "bevoelkerung": 3017
     },
     {
@@ -520,56 +520,56 @@ const DATA_LW = {
       "gemeinde": "Schmitten (GR)",
       "region": "Albula",
       "ja_anteil": 62.07,
-      "leerwohn_kopf": 0.014634146,
+      "leerwohn_kopf": 0.0141,
       "bevoelkerung": 213
     },
     {
       "gemeinde": "Scuol",
       "region": "Engiadina Bassa / Val Müstair",
       "ja_anteil": 40.25,
-      "leerwohn_kopf": 0.003739551,
+      "leerwohn_kopf": 0.0037,
       "bevoelkerung": 4599
     },
     {
       "gemeinde": "Seewis im Prättigau",
       "region": "Prättigau / Davos",
       "ja_anteil": 60.36,
-      "leerwohn_kopf": 0.00137931,
+      "leerwohn_kopf": 0.0013,
       "bevoelkerung": 1485
     },
     {
       "gemeinde": "Sils im Domleschg",
       "region": "Viamala",
       "ja_anteil": 53.81,
-      "leerwohn_kopf": 0.009221311,
+      "leerwohn_kopf": 0.0094,
       "bevoelkerung": 954
     },
     {
       "gemeinde": "Sils im Engadin/Segl",
       "region": "Maloja",
       "ja_anteil": 43.89,
-      "leerwohn_kopf": 0.014124294,
+      "leerwohn_kopf": 0.0144,
       "bevoelkerung": 693
     },
     {
       "gemeinde": "Silvaplana",
       "region": "Maloja",
       "ja_anteil": 51.05,
-      "leerwohn_kopf": 0.015124555,
+      "leerwohn_kopf": 0.0153,
       "bevoelkerung": 1109
     },
     {
       "gemeinde": "Soazza",
       "region": "Moesa",
       "ja_anteil": 58.39,
-      "leerwohn_kopf": 0.033950617,
+      "leerwohn_kopf": 0.0344,
       "bevoelkerung": 320
     },
     {
       "gemeinde": "St. Moritz",
       "region": "Maloja",
       "ja_anteil": 43.05,
-      "leerwohn_kopf": 0.013808285,
+      "leerwohn_kopf": 0.0137,
       "bevoelkerung": 5025
     },
     {
@@ -583,49 +583,49 @@ const DATA_LW = {
       "gemeinde": "Sumvitg",
       "region": "Surselva",
       "ja_anteil": 42.83,
-      "leerwohn_kopf": 0.005644403,
+      "leerwohn_kopf": 0.0057,
       "bevoelkerung": 1052
     },
     {
       "gemeinde": "Surses",
       "region": "Albula",
       "ja_anteil": 43.16,
-      "leerwohn_kopf": 0.010547667,
+      "leerwohn_kopf": 0.0104,
       "bevoelkerung": 2494
     },
     {
       "gemeinde": "Tamins",
       "region": "Imboden",
       "ja_anteil": 50.59,
-      "leerwohn_kopf": 0.001635323,
+      "leerwohn_kopf": 0.0016,
       "bevoelkerung": 1225
     },
     {
       "gemeinde": "Thusis",
       "region": "Viamala",
       "ja_anteil": 52.41,
-      "leerwohn_kopf": 0.006978773,
+      "leerwohn_kopf": 0.007,
       "bevoelkerung": 3452
     },
     {
       "gemeinde": "Trimmis",
       "region": "Landquart",
       "ja_anteil": 59.7,
-      "leerwohn_kopf": 0.000584112,
+      "leerwohn_kopf": 0.0006,
       "bevoelkerung": 3472
     },
     {
       "gemeinde": "Trin",
       "region": "Imboden",
       "ja_anteil": 37.03,
-      "leerwohn_kopf": 0.00834939,
+      "leerwohn_kopf": 0.0083,
       "bevoelkerung": 1572
     },
     {
       "gemeinde": "Trun",
       "region": "Surselva",
       "ja_anteil": 48.07,
-      "leerwohn_kopf": 0.005258545,
+      "leerwohn_kopf": 0.0053,
       "bevoelkerung": 1136
     },
     {
@@ -639,42 +639,42 @@ const DATA_LW = {
       "gemeinde": "Tujetsch",
       "region": "Surselva",
       "ja_anteil": 39.18,
-      "leerwohn_kopf": 0.000834028,
+      "leerwohn_kopf": 0.0008,
       "bevoelkerung": 1185
     },
     {
       "gemeinde": "Untervaz",
       "region": "Landquart",
       "ja_anteil": 56.54,
-      "leerwohn_kopf": 0.001121915,
+      "leerwohn_kopf": 0.0011,
       "bevoelkerung": 2676
     },
     {
       "gemeinde": "Urmein",
       "region": "Viamala",
       "ja_anteil": 54.29,
-      "leerwohn_kopf": 0.006134969,
+      "leerwohn_kopf": 0.0062,
       "bevoelkerung": 162
     },
     {
       "gemeinde": "Val Müstair",
       "region": "Engiadina Bassa / Val Müstair",
       "ja_anteil": 46.16,
-      "leerwohn_kopf": 0.014685315,
+      "leerwohn_kopf": 0.0147,
       "bevoelkerung": 1427
     },
     {
       "gemeinde": "Vals",
       "region": "Surselva",
       "ja_anteil": 34.4,
-      "leerwohn_kopf": 0.008350731,
+      "leerwohn_kopf": 0.0084,
       "bevoelkerung": 948
     },
     {
       "gemeinde": "Valsot",
       "region": "Engiadina Bassa / Val Müstair",
       "ja_anteil": 52.78,
-      "leerwohn_kopf": 0.011235955,
+      "leerwohn_kopf": 0.0109,
       "bevoelkerung": 824
     },
     {
@@ -688,7 +688,7 @@ const DATA_LW = {
       "gemeinde": "Zernez",
       "region": "Engiadina Bassa / Val Müstair",
       "ja_anteil": 51.9,
-      "leerwohn_kopf": 0.006909548,
+      "leerwohn_kopf": 0.0069,
       "bevoelkerung": 1586
     },
     {
@@ -702,7 +702,7 @@ const DATA_LW = {
       "gemeinde": "Zizers",
       "region": "Landquart",
       "ja_anteil": 50.37,
-      "leerwohn_kopf": 0.001625576,
+      "leerwohn_kopf": 0.0016,
       "bevoelkerung": 3826
     },
     {
