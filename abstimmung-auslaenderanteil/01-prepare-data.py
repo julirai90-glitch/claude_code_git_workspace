@@ -178,6 +178,13 @@ def main():
     ys = [rec["ja_anteil"] for rec in records]
     r, slope, intercept, mean_x, mean_y = pearson_and_regression(xs, ys)
 
+    # Zweite Geschichte: Stimmbeteiligung vs. Gemeindegrösse (log, robustester
+    # Praediktor - haelt auch im Modell mit Auslaenderanteil/Maenneranteil/
+    # Fahrzeugen stand, anders als Auslaenderanteil allein).
+    logbev_xs = [math.log10(rec["bevoelkerung"]) for rec in records]
+    sb_ys = [rec["stimmbeteiligung"] for rec in records]
+    r_sb, slope_sb, intercept_sb, mean_logbev, mean_sb = pearson_and_regression(logbev_xs, sb_ys)
+
     out = {
         "meta": {
             "n": len(records),
@@ -189,6 +196,12 @@ def main():
             "mean_ja_anteil": round(mean_y, 2),
             "einordnung_kurz": "Kein klares Muster erkennbar",
             "einordnung_lang": "Der Ausländeranteil einer Gemeinde sagt für sich allein praktisch nichts über ihr Abstimmungsverhalten aus.",
+            "beteiligung": {
+                "pearson_r": round(r_sb, 3),
+                "regression_log10": {"slope": round(slope_sb, 4), "intercept": round(intercept_sb, 3)},
+                "einordnung_kurz": "Spürbarer Zusammenhang, kein Naturgesetz",
+                "einordnung_lang": "Etwa jeder 6. Unterschied in der Stimmbeteiligung zwischen den Gemeinden lässt sich mit der Gemeindegrösse erklären – ein echter, aber kein dominanter Faktor. Mit dem Abstimmungsausgang selbst hat die Beteiligung übrigens nichts zu tun.",
+            },
             "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026 (20260614_Statistikdaten_Abstimmungen.xlsx)",
             "quelle_bevoelkerung": "BFS STATPOP via data.gr.ch, Ständige Wohnbevölkerung nach Staatsangehörigkeit, provisorisch, Stand 31.12.2025",
         },

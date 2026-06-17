@@ -12,6 +12,15 @@
     "mean_ja_anteil": 51.64,
     "einordnung_kurz": "Kein klares Muster erkennbar",
     "einordnung_lang": "Der Ausländeranteil einer Gemeinde sagt für sich allein praktisch nichts über ihr Abstimmungsverhalten aus.",
+    "beteiligung": {
+      "pearson_r": -0.413,
+      "regression_log10": {
+        "slope": -5.0997,
+        "intercept": 76.899
+      },
+      "einordnung_kurz": "Spürbarer Zusammenhang, kein Naturgesetz",
+      "einordnung_lang": "Etwa jeder 6. Unterschied in der Stimmbeteiligung zwischen den Gemeinden lässt sich mit der Gemeindegrösse erklären – ein echter, aber kein dominanter Faktor. Mit dem Abstimmungsausgang selbst hat die Beteiligung übrigens nichts zu tun."
+    },
     "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026 (20260614_Statistikdaten_Abstimmungen.xlsx)",
     "quelle_bevoelkerung": "BFS STATPOP via data.gr.ch, Ständige Wohnbevölkerung nach Staatsangehörigkeit, provisorisch, Stand 31.12.2025"
   },
