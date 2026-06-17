@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Themen — RR-Wahlen GR 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+body { background: #fff; padding: 1rem 1.25rem; }
+h2 { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 0.25rem; }
+.sub { font-size: 0.82rem; color: var(--c-muted); margin-bottom: 1.25rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.78rem; }
+.legend-item { display: flex; align-items: center; gap: 0.3rem; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+canvas { max-height: 380px; }
+.no-themes { padding: 2rem; text-align: center; color: var(--c-muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<h2>Themen pro Kandidatin/Kandidat</h2>
+<p class="sub">Anteil der Themen-Kategorien (automatisch via KI klassifiziert, nicht redaktionell geprüft).</p>
+<div class="legend" id="legend"></div>
+<div class="chart-wrap">
+  <canvas id="chart"></canvas>
+</div>
+
+<script>
+const DATA_URL = '../data/posts.json';
+
+const THEME_LABELS = {
+  wahlkampf:     'Wahlkampf',
+  sachpolitik:   'Sachpolitik',
+  persoenlich:   'Persönliches',
+  region:        'Region GR',
+  veranstaltung: 'Veranstaltung',
+};
+const THEME_COLORS = {
+  wahlkampf:     '#E63946',
+  sachpolitik:   '#2A9D8F',
+  persoenlich:   '#F4A261',
+  region:        '#457B9D',
+  veranstaltung: '#8338EC',
+};
+
+async function init() {
+  let posts;
+  try {
+    const r = await fetch(DATA_URL);
+    posts = await r.json();
+  } catch(e) {
+    document.body.innerHTML += '<div class="error">Daten konnten nicht geladen werden.</div>';
+    return;
+  }
+
+  const tagged = posts.filter(p => p.theme);
+  if (!tagged.length) {
+    document.getElementById('chart').closest('.chart-wrap').innerHTML =
+      '<div class="no-themes">Themen noch nicht klassifiziert — analyse_themes.py ausführen.</div>';
+    return;
+  }
+
+  // Group by kandidat
+  const kandidaten = [...new Map(tagged.map(p => [p.kandidat, p.kandidat])).values()].sort();
+  const themes = Object.keys(THEME_LABELS);
+
+  // Build datasets: one dataset per theme
+  const datasets = themes.map(theme => ({
+    label: THEME_LABELS[theme],
+    data: kandidaten.map(k => {
+      const total = tagged.filter(p => p.kandidat === k).length;
+      const count = tagged.filter(p => p.kandidat === k && p.theme === theme).length;
+      return total > 0 ? Math.round(count / total * 100) : 0;
+    }),
+    backgroundColor: THEME_COLORS[theme] + 'DD',
+    borderColor: THEME_COLORS[theme],
+    borderWidth: 1,
+    borderRadius: 2,
+  }));
+
+  // Build legend
+  const legend = document.getElementById('legend');
+  themes.forEach(t => {
+    legend.innerHTML += `<span class="legend-item">
+      <span class="legend-dot" style="background:${THEME_COLORS[t]}"></span>
+      ${THEME_LABELS[t]}
+    </span>`;
+  });
+
+  new Chart(document.getElementById('chart'), {
+    type: 'bar',
+    data: {
+      labels: kandidaten.map(k => k.split(' ').slice(-1)[0]),
+      datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: ctx => kandidaten[ctx[0].dataIndex],
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}%`,
+          }
+        }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: {
+          stacked: true,
+          max: 100,
+          ticks: { callback: v => v + '%', font: { size: 11 } },
+          title: { display: true, text: 'Anteil', font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  function sendHeight() {
+    window.parent.postMessage({ type: 'embed-size', height: document.body.scrollHeight }, '*');
+  }
+  setTimeout(sendHeight, 300);
+}
+
+init();
+</script>
+</body>
+</html>

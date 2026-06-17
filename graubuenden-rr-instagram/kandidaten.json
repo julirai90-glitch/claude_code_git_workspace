@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Valérie Favre Accola",
+    "partei": "SVP",
+    "bisher": false,
+    "instagram": "valeriefavreaccola",
+    "scout_id": "8aab06f9-ea1d-45bb-a66d-7f2ed937b772",
+    "farbe": "#4B8A3E"
+  },
+  {
+    "name": "Martin Bühler",
+    "partei": "FDP",
+    "bisher": true,
+    "instagram": "martin.buehler.gr",
+    "scout_id": "47cf6355-3df6-4f28-89c4-3f7e09e6b89b",
+    "farbe": "#3872B5"
+  },
+  {
+    "name": "Maurizio Michael",
+    "partei": "FDP",
+    "bisher": false,
+    "instagram": null,
+    "scout_id": null,
+    "farbe": "#3872B5"
+  },
+  {
+    "name": "Marcus Caduff",
+    "partei": "Die Mitte",
+    "bisher": true,
+    "instagram": "marcuscaduff",
+    "scout_id": "2484b416-9369-4c64-8ae7-d89132e31279",
+    "farbe": "#D6862B"
+  },
+  {
+    "name": "Carmelia Maissen",
+    "partei": "Die Mitte",
+    "bisher": true,
+    "instagram": "carmelia_maissen",
+    "scout_id": "1b18c06c-6ba6-4576-b378-3d03ab9712de",
+    "farbe": "#D6862B"
+  },
+  {
+    "name": "Aita Zanetti",
+    "partei": "Die Mitte",
+    "bisher": false,
+    "instagram": null,
+    "scout_id": null,
+    "farbe": "#D6862B"
+  },
+  {
+    "name": "Peter Peyer",
+    "partei": "SP",
+    "bisher": true,
+    "instagram": "rrpeterpeyer",
+    "scout_id": "9d7ceeaf-d722-41ca-becb-e4ce4ae158a4",
+    "farbe": "#F0554D"
+  },
+  {
+    "name": "Nora Saratz Cazin",
+    "partei": "GLP",
+    "bisher": false,
+    "instagram": "norasaratz",
+    "scout_id": "30ff47d7-a863-4a89-b68b-40fa0e77d381",
+    "farbe": "#C4C43D"
+  },
+  {
+    "name": "Reto Bott",
+    "partei": "parteilos",
+    "bisher": false,
+    "instagram": null,
+    "scout_id": null,
+    "farbe": "#888888"
+  }
+]

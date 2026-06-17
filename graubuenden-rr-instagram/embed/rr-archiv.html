@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instagram-Archiv — RR-Wahlen GR 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>
+body { background: #fff; padding: 1rem; }
+.controls { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+#count-info { font-size: 0.8rem; color: var(--c-muted); margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+<div class="controls">
+  <div class="search-wrap">
+    <input type="search" id="search" placeholder="Posts durchsuchen …" autocomplete="off">
+  </div>
+  <div class="filter-bar" id="kandidat-filter"></div>
+</div>
+<div id="count-info"></div>
+<div class="post-list" id="list"></div>
+
+<script>
+const DATA_URL = '../data/posts.json';
+let allPosts = [];
+
+async function init() {
+  const list = document.getElementById('list');
+  try {
+    const r = await fetch(DATA_URL);
+    allPosts = await r.json();
+  } catch(e) {
+    list.innerHTML = '<div class="error">Daten konnten nicht geladen werden.</div>';
+    return;
+  }
+
+  buildFilters();
+  render();
+
+  document.getElementById('search').addEventListener('input', render);
+
+  // postMessage auto-resize
+  function sendHeight() {
+    window.parent.postMessage({ type: 'embed-size', height: document.body.scrollHeight }, '*');
+  }
+  new ResizeObserver(sendHeight).observe(document.body);
+  sendHeight();
+}
+
+let activeFilters = new Set();
+
+function buildFilters() {
+  const bar = document.getElementById('kandidat-filter');
+  const kandidaten = [...new Map(allPosts.map(p => [p.kandidat, p])).values()];
+
+  // All button
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn active';
+  allBtn.textContent = 'Alle';
+  allBtn.style.background = '#fff';
+  allBtn.style.borderColor = '#161616';
+  allBtn.style.color = '#161616';
+  allBtn.dataset.kandidat = '__all__';
+  allBtn.addEventListener('click', () => {
+    activeFilters.clear();
+    [...bar.querySelectorAll('.filter-btn')].forEach(b => {
+      b.classList.remove('active');
+      if (b.dataset.kandidat !== '__all__') b.style.background = '#fff';
+    });
+    allBtn.classList.add('active');
+    render();
+  });
+  bar.appendChild(allBtn);
+
+  kandidaten.sort((a,b) => a.kandidat.localeCompare(b.kandidat));
+  for (const k of kandidaten) {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.textContent = k.kandidat.split(' ').slice(-1)[0]; // last name
+    btn.dataset.kandidat = k.kandidat;
+    btn.dataset.farbe = k.farbe;
+    btn.title = `${k.kandidat} (${k.partei})`;
+    btn.addEventListener('click', () => {
+      if (activeFilters.has(k.kandidat)) {
+        activeFilters.delete(k.kandidat);
+        btn.classList.remove('active');
+        btn.style.background = '#fff';
+        btn.style.color = k.farbe;
+        btn.style.borderColor = k.farbe;
+      } else {
+        activeFilters.add(k.kandidat);
+        btn.classList.add('active');
+        btn.style.background = k.farbe;
+        btn.style.color = '#fff';
+        btn.style.borderColor = k.farbe;
+      }
+      allBtn.classList.remove('active');
+      render();
+    });
+    btn.style.borderColor = k.farbe;
+    btn.style.color = k.farbe;
+    bar.appendChild(btn);
+  }
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  let posts = allPosts;
+
+  if (activeFilters.size > 0) {
+    posts = posts.filter(p => activeFilters.has(p.kandidat));
+  }
+  if (q) {
+    posts = posts.filter(p =>
+      (p.caption || '').toLowerCase().includes(q) ||
+      (p.kandidat || '').toLowerCase().includes(q) ||
+      (p.partei || '').toLowerCase().includes(q)
+    );
+  }
+
+  document.getElementById('count-info').textContent =
+    `${posts.length} von ${allPosts.length} Posts`;
+
+  const list = document.getElementById('list');
+  if (!posts.length) {
+    list.innerHTML = '<div class="loading">Keine Posts gefunden.</div>';
+    return;
+  }
+
+  list.innerHTML = posts.map(p => {
+    const date = p.post_date || (p.extracted_at ? p.extracted_at.slice(0,10) : '—');
+    const caption = (p.caption || '').trim();
+    const shortCaption = caption.length > 220 ? caption.slice(0,220) + '…' : caption;
+    const typeLabel = p.post_type === 'reel' ? '🎬 Reel' : '📷 Post';
+    const themeLabel = p.theme ? `<span class="theme-tag">${p.theme}</span>` : '';
+    const bisherBadge = p.bisher ? '<span style="font-size:0.68rem;color:#6B6763">bisher</span>' : '';
+
+    return `<div class="post-card">
+  <div class="chip-col">
+    <span class="kandidat-chip" style="background:${p.farbe}">
+      ${p.kandidat.split(' ').slice(-1)[0]}
+    </span>
+  </div>
+  <div class="text-col">
+    <div class="caption">${shortCaption || '<em style="color:#aaa">Kein Text</em>'}</div>
+    <div class="meta">
+      <span>${date}</span>
+      <span>${typeLabel}</span>
+      <span style="color:${p.farbe};font-weight:600">${p.partei}</span>
+      ${bisherBadge}
+      ${themeLabel}
+    </div>
+  </div>
+  <div class="link-col">
+    <a href="${p.url}" target="_blank" rel="noopener">→ IG</a>
+  </div>
+</div>`;
+  }).join('');
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Posting-Frequenz — RR-Wahlen GR 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+body { background: #fff; padding: 1rem 1.25rem; }
+h2 { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 0.25rem; }
+.sub { font-size: 0.82rem; color: var(--c-muted); margin-bottom: 1.25rem; }
+canvas { max-height: 340px; }
+</style>
+</head>
+<body>
+<h2>Posting-Frequenz pro Woche</h2>
+<p class="sub">Anzahl Instagram-Posts pro Kandidatin/Kandidat und Woche. Basis: Erfassungsdatum Scoutpost.</p>
+<div class="chart-wrap">
+  <canvas id="chart"></canvas>
+</div>
+
+<script>
+const DATA_URL = '../data/posts.json';
+
+// Monday of a given date string
+function weekOf(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00Z');
+  const day = d.getUTCDay(); // 0=Sun
+  const diff = (day === 0) ? -6 : 1 - day;
+  d.setUTCDate(d.getUTCDate() + diff);
+  return d.toISOString().slice(0,10);
+}
+
+async function init() {
+  let posts;
+  try {
+    const r = await fetch(DATA_URL);
+    posts = await r.json();
+  } catch(e) {
+    document.body.innerHTML += '<div class="error">Daten konnten nicht geladen werden.</div>';
+    return;
+  }
+
+  // Group by candidate + week
+  const kandidaten = [...new Map(posts.map(p => [p.kandidat, { name: p.kandidat, farbe: p.farbe }])).values()];
+  const weekSet = new Set();
+  const matrix = {}; // kandidat → week → count
+
+  for (const p of posts) {
+    const dateKey = p.post_date || (p.extracted_at ? p.extracted_at.slice(0,10) : null);
+    if (!dateKey) continue;
+    const week = weekOf(dateKey);
+    weekSet.add(week);
+    if (!matrix[p.kandidat]) matrix[p.kandidat] = {};
+    matrix[p.kandidat][week] = (matrix[p.kandidat][week] || 0) + 1;
+  }
+
+  const weeks = [...weekSet].sort();
+
+  const datasets = kandidaten
+    .filter(k => matrix[k.name])
+    .map(k => ({
+      label: k.name.split(' ').slice(-1)[0],
+      data: weeks.map(w => matrix[k.name][w] || 0),
+      backgroundColor: k.farbe + 'CC',
+      borderColor: k.farbe,
+      borderWidth: 2,
+      borderRadius: 3,
+    }));
+
+  new Chart(document.getElementById('chart'), {
+    type: 'bar',
+    data: { labels: weeks, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { font: { family: 'Inter', size: 11 }, boxWidth: 12, padding: 10 }
+        },
+        tooltip: {
+          callbacks: {
+            title: ctx => `Woche ab ${ctx[0].label}`,
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw} Post${ctx.raw !== 1 ? 's' : ''}`,
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: false,
+          ticks: { font: { size: 10 }, maxRotation: 45 },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, font: { size: 11 } },
+          title: { display: true, text: 'Posts', font: { size: 11 } }
+        }
+      }
+    }
+  });
+
+  // postMessage resize
+  function sendHeight() {
+    window.parent.postMessage({ type: 'embed-size', height: document.body.scrollHeight }, '*');
+  }
+  setTimeout(sendHeight, 300);
+}
+
+init();
+</script>
+</body>
+</html>
