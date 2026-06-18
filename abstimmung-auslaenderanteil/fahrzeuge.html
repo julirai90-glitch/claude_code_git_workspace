@@ -78,17 +78,54 @@
   var svg = document.getElementById('chart');
   var wrap = document.getElementById('chart-wrap');
   var tooltip = document.getElementById('tooltip');
+  var search = document.getElementById('search');
+  var points = [];
 
-  var w = svg.clientWidth || 760;
-  var h = 460;
-  var m = { t: 30, r: 24, b: 46, l: 54 };
-  svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+  function showTooltip(g, c) {
+    c.classList.add('highlighted');
+    tooltip.innerHTML =
+      '<div class="name">' + g.gemeinde + '</div>' +
+      '<div class="region">' + g.region + '</div>' +
+      '<div class="row"><span>Ja-Anteil</span><strong>' + g.ja_anteil.toFixed(1) + ' %</strong></div>' +
+      '<div class="row"><span>Fahrzeuge/Kopf</span><strong>' + g.fz_pro_kopf.toFixed(2) + '</strong></div>' +
+      '<div class="row"><span>Bevölkerung</span><strong>' + g.bevoelkerung.toLocaleString('de-CH') + '</strong></div>';
+    tooltip.style.display = 'block';
+  }
+  function positionTooltip(evt) {
+    var rect = wrap.getBoundingClientRect();
+    var left = evt.clientX - rect.left + 14;
+    if (left + 180 > rect.width) left = evt.clientX - rect.left - 190;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = (evt.clientY - rect.top + 14) + 'px';
+  }
+  function hideTooltip() {
+    points.forEach(function (p) { p.el.classList.remove('highlighted'); });
+    tooltip.style.display = 'none';
+  }
+  search.addEventListener('input', function () {
+    var q = search.value.trim().toLowerCase();
+    points.forEach(function (p) {
+      var match = !q || p.g.gemeinde.toLowerCase().indexOf(q) !== -1;
+      p.el.classList.toggle('dimmed', !match);
+    });
+  });
 
-  // --- manual scales (no chart library) ---
-  function niceFloor(v, step) { return Math.floor(v / step) * step; }
-  function niceCeil(v, step) { return Math.ceil(v / step) * step; }
+  // Komplette Zeichnung als Funktion, damit sie bei Grössenänderung (Resize,
+  // Geräte-Vorschau-Umschaltung in CMS-Editoren, Drehung) neu ausgeführt
+  // werden kann - die Breite wird sonst nur einmal beim Laden gemessen.
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
 
-  var xs = gemeinden.map(function (g) { return g.fz_pro_kopf; });
+    var w = svg.clientWidth || 760;
+    var h = 460;
+    var m = { t: 30, r: 24, b: 46, l: 54 };
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+
+    // --- manual scales (no chart library) ---
+    function niceFloor(v, step) { return Math.floor(v / step) * step; }
+    function niceCeil(v, step) { return Math.ceil(v / step) * step; }
+
+    var xs = gemeinden.map(function (g) { return g.fz_pro_kopf; });
   var ys = gemeinden.map(function (g) { return g.ja_anteil; });
   var pops = gemeinden.map(function (g) { return g.bevoelkerung; });
 
@@ -168,7 +205,7 @@
   var sorted = gemeinden.slice().sort(function (a, b) { return b.bevoelkerung - a.bevoelkerung; });
   var ptLayer = el('g', {});
   svg.appendChild(ptLayer);
-  var points = sorted.map(function (g) {
+  points = sorted.map(function (g) {
     var c = el('circle', {
       class: 'pt',
       cx: xScale(g.fz_pro_kopf), cy: yScale(g.ja_anteil), r: rScale(g.bevoelkerung),
@@ -181,37 +218,14 @@
     ptLayer.appendChild(c);
     return { g: g, el: c };
   });
-
-  function showTooltip(g, c) {
-    c.classList.add('highlighted');
-    tooltip.innerHTML =
-      '<div class="name">' + g.gemeinde + '</div>' +
-      '<div class="region">' + g.region + '</div>' +
-      '<div class="row"><span>Ja-Anteil</span><strong>' + g.ja_anteil.toFixed(1) + ' %</strong></div>' +
-      '<div class="row"><span>Fahrzeuge/Kopf</span><strong>' + g.fz_pro_kopf.toFixed(2) + '</strong></div>' +
-      '<div class="row"><span>Bevölkerung</span><strong>' + g.bevoelkerung.toLocaleString('de-CH') + '</strong></div>';
-    tooltip.style.display = 'block';
-  }
-  function positionTooltip(evt) {
-    var rect = wrap.getBoundingClientRect();
-    var left = evt.clientX - rect.left + 14;
-    if (left + 180 > rect.width) left = evt.clientX - rect.left - 190;
-    tooltip.style.left = left + 'px';
-    tooltip.style.top = (evt.clientY - rect.top + 14) + 'px';
-  }
-  function hideTooltip() {
-    points.forEach(function (p) { p.el.classList.remove('highlighted'); });
-    tooltip.style.display = 'none';
   }
 
-  // leichtgewichtige Gemeinde-Suche
-  var search = document.getElementById('search');
-  search.addEventListener('input', function () {
-    var q = search.value.trim().toLowerCase();
-    points.forEach(function (p) {
-      var match = !q || p.g.gemeinde.toLowerCase().indexOf(q) !== -1;
-      p.el.classList.toggle('dimmed', !match);
-    });
+  draw();
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(draw, 150);
   });
 })();
 </script>

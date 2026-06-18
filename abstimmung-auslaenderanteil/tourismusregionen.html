@@ -21,7 +21,12 @@
   h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
   .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5; }
   .controls { display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem; }
-  #search { font-size: 13px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; width: 220px; }
+  #search { font-size: 13px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; width: 220px; max-width: 100%; }
+  @media (max-width: 420px) {
+    body { padding: 1rem; }
+    .controls { flex-wrap: wrap; }
+    #search { width: 100%; }
+  }
   .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem; flex-wrap: wrap; align-items: center; }
   .legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
   .legend .tick { display: inline-block; width: 2px; height: 11px; background: var(--dark-blue); margin-right: 4px; vertical-align: middle; }
@@ -81,13 +86,31 @@
   var svg = document.getElementById('chart');
   var wrap = document.getElementById('chart-wrap');
   var tooltip = document.getElementById('tooltip');
+  var search = document.getElementById('search');
+  var points = [];
+  var isNarrow = (svg.clientWidth || 760) < 420;
 
-  var w = svg.clientWidth || 760;
-  var h = 680;
-  var m = { t: 20, r: 24, b: 46, l: 190 };
-  svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+  // Lange Destinationsnamen auf zwei Zeilen umbrechen (bevorzugt an " / "
+  // trennen, sonst am Leerzeichen nahe der Mitte), damit der linke Rand
+  // auf schmalen Bildschirmen schmal bleiben kann.
+  function wrapLabel(name, maxLen) {
+    if (name.length <= maxLen) return [name];
+    if (name.indexOf(' / ') !== -1) {
+      var parts = name.split(' / ');
+      return [parts[0] + ' /', parts.slice(1).join(' / ')];
+    }
+    var mid = Math.floor(name.length / 2);
+    var bestIdx = -1, bestDist = Infinity;
+    for (var i = 0; i < name.length; i++) {
+      if (name[i] === ' ') {
+        var dist = Math.abs(i - mid);
+        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+      }
+    }
+    return bestIdx > -1 ? [name.slice(0, bestIdx), name.slice(bestIdx + 1)] : [name];
+  }
 
-  // --- Destinationen gruppieren und nach Mittelwert sortieren ---
+  // --- Destinationen gruppieren und nach Mittelwert sortieren (unabhängig von der Breite) ---
   var byDest = {};
   gemeinden.forEach(function (g) {
     if (!byDest[g.tourismusdestination]) byDest[g.tourismusdestination] = [];
@@ -99,6 +122,44 @@
     return { name: name, list: list, mean: mean };
   });
   dests.sort(function (a, b) { return b.mean - a.mean; });
+
+  function showTooltip(g, c) {
+    c.classList.add('highlighted');
+    tooltip.innerHTML =
+      '<div class="name">' + g.gemeinde + '</div>' +
+      '<div class="region">' + g.tourismusdestination + '</div>' +
+      '<div class="row"><span>Ja-Anteil</span><strong>' + g.ja_anteil.toFixed(1) + ' %</strong></div>' +
+      '<div class="row"><span>Bevölkerung</span><strong>' + g.bevoelkerung.toLocaleString('de-CH') + '</strong></div>';
+    tooltip.style.display = 'block';
+  }
+  function positionTooltip(evt) {
+    var rect = wrap.getBoundingClientRect();
+    var left = evt.clientX - rect.left + 14;
+    if (left + 180 > rect.width) left = evt.clientX - rect.left - 190;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = (evt.clientY - rect.top + 14) + 'px';
+  }
+  function hideTooltip() {
+    points.forEach(function (p) { p.el.classList.remove('highlighted'); });
+    tooltip.style.display = 'none';
+  }
+  search.addEventListener('input', function () {
+    var q = search.value.trim().toLowerCase();
+    points.forEach(function (p) {
+      var match = !q || p.g.gemeinde.toLowerCase().indexOf(q) !== -1;
+      p.el.classList.toggle('dimmed', !match);
+    });
+  });
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var w = svg.clientWidth || 760;
+    isNarrow = w < 420;
+    var h = 680;
+    var m = { t: 20, r: 24, b: 46, l: isNarrow ? 115 : 190 };
+    var labelFontSize = isNarrow ? 10 : 11;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
 
   var rowH = (h - m.t - m.b) / dests.length;
   dests.forEach(function (d, i) { d.y = m.t + (i + 0.5) * rowH; });
@@ -148,9 +209,16 @@
       var sepY = m.t + i * rowH;
       svg.appendChild(el('line', { class: 'row-sep', x1: 0, x2: w - m.r, y1: sepY, y2: sepY }));
     }
-    var lbl = el('text', { class: 'row-label', x: m.l - 12, y: d.y + 4, 'text-anchor': 'end' });
-    lbl.textContent = d.name + ' (n=' + d.list.length + ')';
-    svg.appendChild(lbl);
+    var lines = wrapLabel(d.name, isNarrow ? 14 : 20);
+    var lineH = labelFontSize + 2;
+    var startY = d.y + 4 - (lines.length - 1) * lineH / 2;
+    lines.forEach(function (line, li) {
+      var lbl = el('text', {
+        class: 'row-label', x: m.l - 12, y: startY + li * lineH, 'text-anchor': 'end', 'font-size': labelFontSize
+      });
+      lbl.textContent = line;
+      svg.appendChild(lbl);
+    });
 
     svg.appendChild(el('line', {
       class: 'mean-tick', x1: xScale(d.mean), x2: xScale(d.mean), y1: d.y - rowH * 0.38, y2: d.y + rowH * 0.38
@@ -160,7 +228,7 @@
   var sorted = gemeinden.slice().sort(function (a, b) { return b.bevoelkerung - a.bevoelkerung; });
   var ptLayer = el('g', {});
   svg.appendChild(ptLayer);
-  var points = sorted.map(function (g) {
+  points = sorted.map(function (g) {
     var d = dests.filter(function (d) { return d.name === g.tourismusdestination; })[0];
     var c = el('circle', {
       class: 'pt',
@@ -174,35 +242,14 @@
     ptLayer.appendChild(c);
     return { g: g, el: c, row: d };
   });
-
-  function showTooltip(g, c) {
-    c.classList.add('highlighted');
-    tooltip.innerHTML =
-      '<div class="name">' + g.gemeinde + '</div>' +
-      '<div class="region">' + g.tourismusdestination + '</div>' +
-      '<div class="row"><span>Ja-Anteil</span><strong>' + g.ja_anteil.toFixed(1) + ' %</strong></div>' +
-      '<div class="row"><span>Bevölkerung</span><strong>' + g.bevoelkerung.toLocaleString('de-CH') + '</strong></div>';
-    tooltip.style.display = 'block';
-  }
-  function positionTooltip(evt) {
-    var rect = wrap.getBoundingClientRect();
-    var left = evt.clientX - rect.left + 14;
-    if (left + 180 > rect.width) left = evt.clientX - rect.left - 190;
-    tooltip.style.left = left + 'px';
-    tooltip.style.top = (evt.clientY - rect.top + 14) + 'px';
-  }
-  function hideTooltip() {
-    points.forEach(function (p) { p.el.classList.remove('highlighted'); });
-    tooltip.style.display = 'none';
   }
 
-  var search = document.getElementById('search');
-  search.addEventListener('input', function () {
-    var q = search.value.trim().toLowerCase();
-    points.forEach(function (p) {
-      var match = !q || p.g.gemeinde.toLowerCase().indexOf(q) !== -1;
-      p.el.classList.toggle('dimmed', !match);
-    });
+  draw();
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(draw, 150);
   });
 })();
 </script>

@@ -82,17 +82,71 @@
   var svg = document.getElementById('chart');
   var wrap = document.getElementById('chart-wrap');
   var tooltip = document.getElementById('tooltip');
+  var search = document.getElementById('search');
+  var regionSelect = document.getElementById('region-select');
+  var points = [];
 
-  var w = svg.clientWidth || 760;
-  var h = 460;
-  var m = { t: 30, r: 24, b: 46, l: 54 };
-  svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+  // Region-Dropdown einmalig befüllen (nicht bei jedem Redraw, sonst geht Auswahl verloren)
+  var regionsList = Array.from(new Set(gemeinden.map(function (g) { return g.region; }))).sort();
+  regionsList.forEach(function (region) {
+    var opt = document.createElement('option');
+    opt.value = region;
+    opt.textContent = region;
+    regionSelect.appendChild(opt);
+  });
 
-  // --- manual scales (no chart library) ---
-  function niceFloor(v, step) { return Math.floor(v / step) * step; }
-  function niceCeil(v, step) { return Math.ceil(v / step) * step; }
+  // Gemeinde-Suche + Region-Filter kombiniert (UND-Verknüpfung): dimmt alle Nicht-Treffer
+  function applyFilter() {
+    var q = search.value.trim().toLowerCase();
+    var region = regionSelect.value;
+    points.forEach(function (p) {
+      var matchesSearch = !q || p.g.gemeinde.toLowerCase().indexOf(q) !== -1;
+      var matchesRegion = !region || p.g.region === region;
+      p.el.classList.toggle('dimmed', !(matchesSearch && matchesRegion));
+    });
+  }
+  search.addEventListener('input', applyFilter);
+  regionSelect.addEventListener('change', applyFilter);
 
-  var xs = gemeinden.map(function (g) { return g.auslaenderanteil; });
+  function showTooltip(g, c) {
+    c.classList.add('highlighted');
+    tooltip.innerHTML =
+      '<div class="name">' + g.gemeinde + '</div>' +
+      '<div class="region">' + g.region + '</div>' +
+      '<div class="row"><span>Ja-Anteil</span><strong>' + g.ja_anteil.toFixed(1) + ' %</strong></div>' +
+      '<div class="row"><span>Ausländeranteil</span><strong>' + g.auslaenderanteil.toFixed(1) + ' %</strong></div>' +
+      '<div class="row"><span>Bevölkerung</span><strong>' + g.bevoelkerung.toLocaleString('de-CH') + '</strong></div>' +
+      '<div class="row"><span>Stimmbeteiligung</span><strong>' + g.stimmbeteiligung.toFixed(1) + ' %</strong></div>';
+    tooltip.style.display = 'block';
+  }
+  function positionTooltip(evt) {
+    var rect = wrap.getBoundingClientRect();
+    var left = evt.clientX - rect.left + 14;
+    if (left + 180 > rect.width) left = evt.clientX - rect.left - 190;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = (evt.clientY - rect.top + 14) + 'px';
+  }
+  function hideTooltip() {
+    points.forEach(function (p) { p.el.classList.remove('highlighted'); });
+    tooltip.style.display = 'none';
+  }
+
+  // Komplette Zeichnung als Funktion, damit sie bei Grössenänderung (Resize,
+  // Geräte-Vorschau-Umschaltung in CMS-Editoren, Drehung) neu ausgeführt
+  // werden kann - die Breite wird sonst nur einmal beim Laden gemessen.
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var w = svg.clientWidth || 760;
+    var h = 460;
+    var m = { t: 30, r: 24, b: 46, l: 54 };
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+
+    // --- manual scales (no chart library) ---
+    function niceFloor(v, step) { return Math.floor(v / step) * step; }
+    function niceCeil(v, step) { return Math.ceil(v / step) * step; }
+
+    var xs = gemeinden.map(function (g) { return g.auslaenderanteil; });
   var ys = gemeinden.map(function (g) { return g.ja_anteil; });
   var pops = gemeinden.map(function (g) { return g.bevoelkerung; });
 
@@ -172,7 +226,7 @@
   var sorted = gemeinden.slice().sort(function (a, b) { return b.bevoelkerung - a.bevoelkerung; });
   var ptLayer = el('g', {});
   svg.appendChild(ptLayer);
-  var points = sorted.map(function (g) {
+  points = sorted.map(function (g) {
     var c = el('circle', {
       class: 'pt',
       cx: xScale(g.auslaenderanteil), cy: yScale(g.ja_anteil), r: rScale(g.bevoelkerung),
@@ -186,52 +240,16 @@
     return { g: g, el: c };
   });
 
-  function showTooltip(g, c) {
-    c.classList.add('highlighted');
-    tooltip.innerHTML =
-      '<div class="name">' + g.gemeinde + '</div>' +
-      '<div class="region">' + g.region + '</div>' +
-      '<div class="row"><span>Ja-Anteil</span><strong>' + g.ja_anteil.toFixed(1) + ' %</strong></div>' +
-      '<div class="row"><span>Ausländeranteil</span><strong>' + g.auslaenderanteil.toFixed(1) + ' %</strong></div>' +
-      '<div class="row"><span>Bevölkerung</span><strong>' + g.bevoelkerung.toLocaleString('de-CH') + '</strong></div>' +
-      '<div class="row"><span>Stimmbeteiligung</span><strong>' + g.stimmbeteiligung.toFixed(1) + ' %</strong></div>';
-    tooltip.style.display = 'block';
-  }
-  function positionTooltip(evt) {
-    var rect = wrap.getBoundingClientRect();
-    var left = evt.clientX - rect.left + 14;
-    if (left + 180 > rect.width) left = evt.clientX - rect.left - 190;
-    tooltip.style.left = left + 'px';
-    tooltip.style.top = (evt.clientY - rect.top + 14) + 'px';
-  }
-  function hideTooltip() {
-    points.forEach(function (p) { p.el.classList.remove('highlighted'); });
-    tooltip.style.display = 'none';
+    applyFilter();
   }
 
-  // Region-Dropdown dynamisch aus den Daten befüllen (keine hartcodierte Liste)
-  var regionSelect = document.getElementById('region-select');
-  var regions = Array.from(new Set(gemeinden.map(function (g) { return g.region; }))).sort();
-  regions.forEach(function (region) {
-    var opt = document.createElement('option');
-    opt.value = region;
-    opt.textContent = region;
-    regionSelect.appendChild(opt);
+  draw();
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(draw, 150);
   });
-
-  // Gemeinde-Suche + Region-Filter kombiniert (UND-Verknüpfung): dimmt alle Nicht-Treffer
-  var search = document.getElementById('search');
-  function applyFilter() {
-    var q = search.value.trim().toLowerCase();
-    var region = regionSelect.value;
-    points.forEach(function (p) {
-      var matchesSearch = !q || p.g.gemeinde.toLowerCase().indexOf(q) !== -1;
-      var matchesRegion = !region || p.g.region === region;
-      p.el.classList.toggle('dimmed', !(matchesSearch && matchesRegion));
-    });
-  }
-  search.addEventListener('input', applyFilter);
-  regionSelect.addEventListener('change', applyFilter);
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
