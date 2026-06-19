@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tourismusdestinationen im Vergleich – «Keine 10-Millionen-Schweiz!»</title>
+<script src="data_tourismusdestination.js"></script>
+<style>
+  :root {
+    --blue: #0068A4;
+    --orange: #EE7733;
+    --dark-blue: #1E3A5F;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --text-muted: #999999;
+    --border: #e5e5e5;
+    --font: system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); color: var(--text-primary); padding: 1.5rem; max-width: 696px; margin: 0 auto; }
+  h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5; }
+  .controls { display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem; }
+  #search { font-size: 13px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; width: 220px; max-width: 100%; }
+  @media (max-width: 420px) {
+    body { padding: 1rem; }
+    .controls { flex-wrap: wrap; }
+    #search { width: 100%; }
+  }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .legend .tick { display: inline-block; width: 2px; height: 11px; background: var(--dark-blue); margin-right: 4px; vertical-align: middle; }
+  #chart-wrap { position: relative; }
+  svg { width: 100%; height: 680px; overflow: visible; display: block; }
+  .gridline { stroke: var(--border); stroke-width: 1; }
+  .row-sep { stroke: var(--border); stroke-width: 1; }
+  .axis-label { font-size: 11px; fill: var(--text-secondary); }
+  .row-label { font-size: 11px; fill: var(--text-primary); }
+  .axis-title { font-size: 12px; fill: var(--text-secondary); }
+  .threshold-line { stroke: var(--text-muted); stroke-width: 1.2; stroke-dasharray: 4,3; }
+  .mean-tick { stroke: var(--dark-blue); stroke-width: 2; opacity: 0.55; }
+  .pt { cursor: pointer; stroke: #fff; stroke-width: 1; transition: opacity 0.15s; }
+  .pt.dimmed { opacity: 0.1; }
+  .pt.highlighted { stroke: var(--dark-blue); stroke-width: 2.4; }
+  #tooltip {
+    position: absolute; display: none; pointer-events: none; background: #fff;
+    border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    padding: 8px 10px; font-size: 12px; line-height: 1.6; min-width: 170px; z-index: 10;
+  }
+  #tooltip .name { font-weight: 600; color: var(--dark-blue); }
+  #tooltip .region { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+  #tooltip .row { display: flex; justify-content: space-between; gap: 10px; }
+  #tooltip .row span:first-child { color: var(--text-muted); }
+  .source-note { font-size: 11px; color: var(--text-muted); margin-top: 1.25rem; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<h2>Tourismusdestinationen im Vergleich</h2>
+<p class="subtitle">«Keine 10-Millionen-Schweiz!» (14.06.2026): Ja-Anteil nach Tourismusdestination, alle 100 Gemeinden.</p>
+
+<div class="controls">
+  <input id="search" type="text" placeholder="Gemeinde suchen…">
+</div>
+<div class="legend">
+  <span><span class="dot" style="background:#0068A4"></span>angenommen (Ja-Anteil ≥ 50 %)</span>
+  <span><span class="dot" style="background:#EE7733"></span>abgelehnt (Ja-Anteil &lt; 50 %)</span>
+  <span><span class="tick"></span>Destinationsdurchschnitt</span>
+</div>
+
+<div id="chart-wrap">
+  <svg id="chart"></svg>
+  <div id="tooltip"></div>
+</div>
+
+<p class="source-note" id="source-note"></p>
+
+<script>
+(function () {
+  var meta = DATA_TD.meta;
+  var gemeinden = DATA_TD.gemeinden;
+
+  document.getElementById('source-note').innerHTML =
+    'Jeder Punkt ist eine Gemeinde, der Strich zeigt den Destinationsdurchschnitt. Destinationen erklären ' + (meta.eta2*100).toFixed(0) + ' % der Unterschiede im Ja-Anteil (noch mehr als die 11 amtlichen Regionen: 46 %). Quellen: ' + meta.quelle_abstimmung + ' · ' + meta.quelle_destinationen + '<br>Grafik: Südostschweiz/Julian Reich';
+
+  var svg = document.getElementById('chart');
+  var wrap = document.getElementById('chart-wrap');
+  var tooltip = document.getElementById('tooltip');
+  var search = document.getElementById('search');
+  var points = [];
+  var isNarrow = (svg.clientWidth || 760) < 420;
+
+  // Lange Destinationsnamen auf zwei Zeilen umbrechen (bevorzugt an " / "
+  // trennen, sonst am Leerzeichen nahe der Mitte), damit der linke Rand
+  // auf schmalen Bildschirmen schmal bleiben kann.
+  function wrapLabel(name, maxLen) {
+    if (name.length <= maxLen) return [name];
+    if (name.indexOf(' / ') !== -1) {
+      var parts = name.split(' / ');
+      return [parts[0] + ' /', parts.slice(1).join(' / ')];
+    }
+    var mid = Math.floor(name.length / 2);
+    var bestIdx = -1, bestDist = Infinity;
+    for (var i = 0; i < name.length; i++) {
+      if (name[i] === ' ') {
+        var dist = Math.abs(i - mid);
+        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+      }
+    }
+    return bestIdx > -1 ? [name.slice(0, bestIdx), name.slice(bestIdx + 1)] : [name];
+  }
+
+  // --- Destinationen gruppieren und nach Mittelwert sortieren (unabhängig von der Breite) ---
+  var byDest = {};
+  gemeinden.forEach(function (g) {
+    if (!byDest[g.tourismusdestination]) byDest[g.tourismusdestination] = [];
+    byDest[g.tourismusdestination].push(g);
+  });
+  var dests = Object.keys(byDest).map(function (name) {
+    var list = byDest[name];
+    var mean = list.reduce(function (s, g) { return s + g.ja_anteil; }, 0) / list.length;
+    return { name: name, list: list, mean: mean };
+  });
+  dests.sort(function (a, b) { return b.mean - a.mean; });
+
+  function showTooltip(g, c) {
+    c.classList.add('highlighted');
+    tooltip.innerHTML =
+      '<div class="name">' + g.gemeinde + '</div>' +
+      '<div class="region">' + g.tourismusdestination + '</div>' +
+      '<div class="row"><span>Ja-Anteil</span><strong>' + g.ja_anteil.toFixed(1) + ' %</strong></div>' +
+      '<div class="row"><span>Bevölkerung</span><strong>' + g.bevoelkerung.toLocaleString('de-CH') + '</strong></div>';
+    tooltip.style.display = 'block';
+  }
+  function positionTooltip(evt) {
+    var rect = wrap.getBoundingClientRect();
+    var left = evt.clientX - rect.left + 14;
+    if (left + 180 > rect.width) left = evt.clientX - rect.left - 190;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = (evt.clientY - rect.top + 14) + 'px';
+  }
+  function hideTooltip() {
+    points.forEach(function (p) { p.el.classList.remove('highlighted'); });
+    tooltip.style.display = 'none';
+  }
+  search.addEventListener('input', function () {
+    var q = search.value.trim().toLowerCase();
+    points.forEach(function (p) {
+      var match = !q || p.g.gemeinde.toLowerCase().indexOf(q) !== -1;
+      p.el.classList.toggle('dimmed', !match);
+    });
+  });
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var w = svg.clientWidth || 760;
+    isNarrow = w < 420;
+    var h = 680;
+    var m = { t: 20, r: 24, b: 46, l: isNarrow ? 115 : 190 };
+    var labelFontSize = isNarrow ? 10 : 11;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+
+  var rowH = (h - m.t - m.b) / dests.length;
+  dests.forEach(function (d, i) { d.y = m.t + (i + 0.5) * rowH; });
+
+  function niceFloor(v, step) { return Math.floor(v / step) * step; }
+  function niceCeil(v, step) { return Math.ceil(v / step) * step; }
+  var allJa = gemeinden.map(function (g) { return g.ja_anteil; });
+  var pad = (Math.max.apply(null, allJa) - Math.min.apply(null, allJa)) * 0.08;
+  var xMin = niceFloor(Math.min.apply(null, allJa) - pad, 5);
+  var xMax = niceCeil(Math.max.apply(null, allJa) + pad, 5);
+  function xScale(v) { return m.l + (v - xMin) / (xMax - xMin) * (w - m.l - m.r); }
+
+  var maxPop = Math.max.apply(null, gemeinden.map(function (g) { return g.bevoelkerung; }));
+  function rScale(v) { return 3 + Math.sqrt(v / maxPop) * 13; }
+
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function ticks(min, max, step) {
+    var t = [];
+    for (var v = niceCeil(min, step); v <= max; v += step) t.push(v);
+    return t;
+  }
+
+  ticks(xMin, xMax, 10).forEach(function (v) {
+    svg.appendChild(el('line', { class: 'gridline', x1: xScale(v), x2: xScale(v), y1: m.t, y2: h - m.b }));
+    var lbl = el('text', { class: 'axis-label', x: xScale(v), y: h - m.b + 16, 'text-anchor': 'middle' });
+    lbl.textContent = v + ' %';
+    svg.appendChild(lbl);
+  });
+  var xTitle = el('text', { class: 'axis-title', x: (m.l + w - m.r) / 2, y: h - 6, 'text-anchor': 'middle' });
+  xTitle.textContent = 'Ja-Anteil «Keine 10-Millionen-Schweiz!» pro Gemeinde';
+  svg.appendChild(xTitle);
+
+  if (xMin < 50 && xMax > 50) {
+    svg.appendChild(el('line', { class: 'threshold-line', x1: xScale(50), x2: xScale(50), y1: m.t, y2: h - m.b }));
+    var thLbl = el('text', { class: 'axis-label', x: xScale(50), y: m.t - 6, 'text-anchor': 'middle' });
+    thLbl.textContent = 'Mehrheit (50 %)';
+    svg.appendChild(thLbl);
+  }
+
+  dests.forEach(function (d, i) {
+    if (i > 0) {
+      var sepY = m.t + i * rowH;
+      svg.appendChild(el('line', { class: 'row-sep', x1: 0, x2: w - m.r, y1: sepY, y2: sepY }));
+    }
+    var lines = wrapLabel(d.name, isNarrow ? 14 : 20);
+    var lineH = labelFontSize + 2;
+    var startY = d.y + 4 - (lines.length - 1) * lineH / 2;
+    lines.forEach(function (line, li) {
+      var lbl = el('text', {
+        class: 'row-label', x: m.l - 12, y: startY + li * lineH, 'text-anchor': 'end', 'font-size': labelFontSize
+      });
+      lbl.textContent = line;
+      svg.appendChild(lbl);
+    });
+
+    svg.appendChild(el('line', {
+      class: 'mean-tick', x1: xScale(d.mean), x2: xScale(d.mean), y1: d.y - rowH * 0.38, y2: d.y + rowH * 0.38
+    }));
+  });
+
+  var sorted = gemeinden.slice().sort(function (a, b) { return b.bevoelkerung - a.bevoelkerung; });
+  var ptLayer = el('g', {});
+  svg.appendChild(ptLayer);
+  points = sorted.map(function (g) {
+    var d = dests.filter(function (d) { return d.name === g.tourismusdestination; })[0];
+    var c = el('circle', {
+      class: 'pt',
+      cx: xScale(g.ja_anteil), cy: d.y, r: rScale(g.bevoelkerung),
+      fill: g.ja_anteil >= 50 ? '#0068A4' : '#EE7733',
+      'fill-opacity': 0.75
+    });
+    c.addEventListener('mouseenter', function () { showTooltip(g, c); });
+    c.addEventListener('mousemove', positionTooltip);
+    c.addEventListener('mouseleave', hideTooltip);
+    ptLayer.appendChild(c);
+    return { g: g, el: c, row: d };
+  });
+  }
+
+  draw();
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(draw, 150);
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+
+</body>
+</html>

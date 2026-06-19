@@ -1,0 +1,611 @@
+{
+  "meta": {
+    "eta2": 0.574,
+    "p_value": 2.1117548312087273e-09,
+    "quelle_destinationen": "Kanton Graubünden (data.gr.ch), Destinationen turisticas dal Grischun (Geodaten) — Gemeinden per räumlichem Abgleich (Zentroid in Destinationspolygon) zugeordnet",
+    "quelle_abstimmung": "Kanton Graubünden, Statistikdaten Abstimmungen, 14.06.2026 (20260614_Statistikdaten_Abstimmungen.xlsx)",
+    "quelle_bevoelkerung": "BFS STATPOP via data.gr.ch, Ständige Wohnbevölkerung nach Staatsangehörigkeit, provisorisch, Stand 31.12.2025"
+  },
+  "gemeinden": [
+    {
+      "gemeinde": "Albula/Alvra",
+      "tourismusdestination": "Val Surses Savognin Bivio",
+      "ja_anteil": 53.18,
+      "bevoelkerung": 1310
+    },
+    {
+      "gemeinde": "Andeer",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 42.53,
+      "bevoelkerung": 912
+    },
+    {
+      "gemeinde": "Arosa",
+      "tourismusdestination": "Arosa",
+      "ja_anteil": 54.13,
+      "bevoelkerung": 3143
+    },
+    {
+      "gemeinde": "Avers",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 48.96,
+      "bevoelkerung": 166
+    },
+    {
+      "gemeinde": "Bergün Filisur",
+      "tourismusdestination": "Bergün Filisur",
+      "ja_anteil": 40.58,
+      "bevoelkerung": 894
+    },
+    {
+      "gemeinde": "Bever",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 39.48,
+      "bevoelkerung": 627
+    },
+    {
+      "gemeinde": "Bonaduz",
+      "tourismusdestination": "Chur",
+      "ja_anteil": 48.16,
+      "bevoelkerung": 3617
+    },
+    {
+      "gemeinde": "Bregaglia",
+      "tourismusdestination": "Bregaglia Engadin",
+      "ja_anteil": 39.58,
+      "bevoelkerung": 1602
+    },
+    {
+      "gemeinde": "Breil/Brigels",
+      "tourismusdestination": "Surselva",
+      "ja_anteil": 52.67,
+      "bevoelkerung": 1737
+    },
+    {
+      "gemeinde": "Brusio",
+      "tourismusdestination": "Valposchiavo",
+      "ja_anteil": 54.62,
+      "bevoelkerung": 1103
+    },
+    {
+      "gemeinde": "Buseno",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 55.41,
+      "bevoelkerung": 102
+    },
+    {
+      "gemeinde": "Calanca",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 47.62,
+      "bevoelkerung": 213
+    },
+    {
+      "gemeinde": "Cama",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 67.31,
+      "bevoelkerung": 735
+    },
+    {
+      "gemeinde": "Castaneda",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 46.62,
+      "bevoelkerung": 262
+    },
+    {
+      "gemeinde": "Cazis",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 53.18,
+      "bevoelkerung": 2548
+    },
+    {
+      "gemeinde": "Celerina/Schlarigna",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 40.49,
+      "bevoelkerung": 1410
+    },
+    {
+      "gemeinde": "Chur",
+      "tourismusdestination": "Chur",
+      "ja_anteil": 40.86,
+      "bevoelkerung": 39740
+    },
+    {
+      "gemeinde": "Churwalden",
+      "tourismusdestination": "Lenzerheide",
+      "ja_anteil": 46.37,
+      "bevoelkerung": 2073
+    },
+    {
+      "gemeinde": "Conters im Prättigau",
+      "tourismusdestination": "Prättigau",
+      "ja_anteil": 67.83,
+      "bevoelkerung": 235
+    },
+    {
+      "gemeinde": "Davos",
+      "tourismusdestination": "Davos Klosters",
+      "ja_anteil": 45.98,
+      "bevoelkerung": 10733
+    },
+    {
+      "gemeinde": "Disentis/Mustér",
+      "tourismusdestination": "Disentis Sedrun",
+      "ja_anteil": 45.5,
+      "bevoelkerung": 2163
+    },
+    {
+      "gemeinde": "Domat/Ems",
+      "tourismusdestination": "Chur",
+      "ja_anteil": 48.36,
+      "bevoelkerung": 8419
+    },
+    {
+      "gemeinde": "Domleschg",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 47.3,
+      "bevoelkerung": 2233
+    },
+    {
+      "gemeinde": "Falera",
+      "tourismusdestination": "Flims Laax",
+      "ja_anteil": 45.18,
+      "bevoelkerung": 651
+    },
+    {
+      "gemeinde": "Felsberg",
+      "tourismusdestination": "Chur",
+      "ja_anteil": 48.19,
+      "bevoelkerung": 2847
+    },
+    {
+      "gemeinde": "Ferrera",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 62.86,
+      "bevoelkerung": 73
+    },
+    {
+      "gemeinde": "Fideris",
+      "tourismusdestination": "Prättigau",
+      "ja_anteil": 62.38,
+      "bevoelkerung": 634
+    },
+    {
+      "gemeinde": "Flerden",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 53.57,
+      "bevoelkerung": 253
+    },
+    {
+      "gemeinde": "Flims",
+      "tourismusdestination": "Flims Laax",
+      "ja_anteil": 40.08,
+      "bevoelkerung": 2951
+    },
+    {
+      "gemeinde": "Fläsch",
+      "tourismusdestination": "Bündner Herrschaft",
+      "ja_anteil": 56.73,
+      "bevoelkerung": 886
+    },
+    {
+      "gemeinde": "Furna",
+      "tourismusdestination": "Prättigau",
+      "ja_anteil": 77.88,
+      "bevoelkerung": 200
+    },
+    {
+      "gemeinde": "Fürstenau",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 56.25,
+      "bevoelkerung": 353
+    },
+    {
+      "gemeinde": "Grono",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 57.55,
+      "bevoelkerung": 1633
+    },
+    {
+      "gemeinde": "Grüsch",
+      "tourismusdestination": "Prättigau",
+      "ja_anteil": 64.35,
+      "bevoelkerung": 2187
+    },
+    {
+      "gemeinde": "Ilanz/Glion",
+      "tourismusdestination": "Surselva",
+      "ja_anteil": 48.85,
+      "bevoelkerung": 5099
+    },
+    {
+      "gemeinde": "Jenaz",
+      "tourismusdestination": "Prättigau",
+      "ja_anteil": 63.39,
+      "bevoelkerung": 1150
+    },
+    {
+      "gemeinde": "Jenins",
+      "tourismusdestination": "Bündner Herrschaft",
+      "ja_anteil": 56.15,
+      "bevoelkerung": 979
+    },
+    {
+      "gemeinde": "Klosters",
+      "tourismusdestination": "Davos Klosters",
+      "ja_anteil": 56.28,
+      "bevoelkerung": 4499
+    },
+    {
+      "gemeinde": "Küblis",
+      "tourismusdestination": "Davos Klosters",
+      "ja_anteil": 67.44,
+      "bevoelkerung": 913
+    },
+    {
+      "gemeinde": "La Punt Chamues-ch",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 54.35,
+      "bevoelkerung": 762
+    },
+    {
+      "gemeinde": "Laax",
+      "tourismusdestination": "Flims Laax",
+      "ja_anteil": 45.68,
+      "bevoelkerung": 2103
+    },
+    {
+      "gemeinde": "Landquart",
+      "tourismusdestination": "Bündner Herrschaft",
+      "ja_anteil": 55.7,
+      "bevoelkerung": 9275
+    },
+    {
+      "gemeinde": "Lantsch/Lenz",
+      "tourismusdestination": "Lenzerheide",
+      "ja_anteil": 41.08,
+      "bevoelkerung": 534
+    },
+    {
+      "gemeinde": "Lostallo",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 60.49,
+      "bevoelkerung": 871
+    },
+    {
+      "gemeinde": "Lumnezia",
+      "tourismusdestination": "Surselva",
+      "ja_anteil": 51.42,
+      "bevoelkerung": 2056
+    },
+    {
+      "gemeinde": "Luzein",
+      "tourismusdestination": "Prättigau",
+      "ja_anteil": 68.94,
+      "bevoelkerung": 1706
+    },
+    {
+      "gemeinde": "Madulain",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 57.73,
+      "bevoelkerung": 206
+    },
+    {
+      "gemeinde": "Maienfeld",
+      "tourismusdestination": "Bündner Herrschaft",
+      "ja_anteil": 51.15,
+      "bevoelkerung": 3344
+    },
+    {
+      "gemeinde": "Malans",
+      "tourismusdestination": "Bündner Herrschaft",
+      "ja_anteil": 42.97,
+      "bevoelkerung": 2530
+    },
+    {
+      "gemeinde": "Masein",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 37.97,
+      "bevoelkerung": 538
+    },
+    {
+      "gemeinde": "Medel (Lucmagn)",
+      "tourismusdestination": "Disentis Sedrun",
+      "ja_anteil": 40.99,
+      "bevoelkerung": 330
+    },
+    {
+      "gemeinde": "Mesocco",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 62.94,
+      "bevoelkerung": 1432
+    },
+    {
+      "gemeinde": "Muntogna da Schons",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 53.92,
+      "bevoelkerung": 378
+    },
+    {
+      "gemeinde": "Obersaxen Mundaun",
+      "tourismusdestination": "Surselva",
+      "ja_anteil": 51.57,
+      "bevoelkerung": 1151
+    },
+    {
+      "gemeinde": "Pontresina",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 43.5,
+      "bevoelkerung": 2077
+    },
+    {
+      "gemeinde": "Poschiavo",
+      "tourismusdestination": "Valposchiavo",
+      "ja_anteil": 46.51,
+      "bevoelkerung": 3493
+    },
+    {
+      "gemeinde": "Rheinwald",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 50.91,
+      "bevoelkerung": 598
+    },
+    {
+      "gemeinde": "Rhäzüns",
+      "tourismusdestination": "Chur",
+      "ja_anteil": 45.59,
+      "bevoelkerung": 1607
+    },
+    {
+      "gemeinde": "Rongellen",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 66.67,
+      "bevoelkerung": 55
+    },
+    {
+      "gemeinde": "Rossa",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 59.2,
+      "bevoelkerung": 172
+    },
+    {
+      "gemeinde": "Rothenbrunnen",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 60.54,
+      "bevoelkerung": 337
+    },
+    {
+      "gemeinde": "Roveredo (GR)",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 62.08,
+      "bevoelkerung": 2711
+    },
+    {
+      "gemeinde": "S-chanf",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 53.56,
+      "bevoelkerung": 736
+    },
+    {
+      "gemeinde": "Safiental",
+      "tourismusdestination": "Surselva",
+      "ja_anteil": 47.51,
+      "bevoelkerung": 972
+    },
+    {
+      "gemeinde": "Sagogn",
+      "tourismusdestination": "Flims Laax",
+      "ja_anteil": 38.75,
+      "bevoelkerung": 777
+    },
+    {
+      "gemeinde": "Samedan",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 41.55,
+      "bevoelkerung": 2924
+    },
+    {
+      "gemeinde": "Samnaun",
+      "tourismusdestination": "Engadin Samnaun Val Müstair",
+      "ja_anteil": 64.1,
+      "bevoelkerung": 761
+    },
+    {
+      "gemeinde": "San Vittore",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 62.8,
+      "bevoelkerung": 946
+    },
+    {
+      "gemeinde": "Santa Maria in Calanca",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 65.28,
+      "bevoelkerung": 113
+    },
+    {
+      "gemeinde": "Scharans",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 45.26,
+      "bevoelkerung": 845
+    },
+    {
+      "gemeinde": "Schiers",
+      "tourismusdestination": "Prättigau",
+      "ja_anteil": 64.09,
+      "bevoelkerung": 3017
+    },
+    {
+      "gemeinde": "Schluein",
+      "tourismusdestination": "Surselva",
+      "ja_anteil": 56.73,
+      "bevoelkerung": 611
+    },
+    {
+      "gemeinde": "Schmitten (GR)",
+      "tourismusdestination": "Val Surses Savognin Bivio",
+      "ja_anteil": 62.07,
+      "bevoelkerung": 213
+    },
+    {
+      "gemeinde": "Scuol",
+      "tourismusdestination": "Engadin Samnaun Val Müstair",
+      "ja_anteil": 40.25,
+      "bevoelkerung": 4599
+    },
+    {
+      "gemeinde": "Seewis im Prättigau",
+      "tourismusdestination": "Prättigau",
+      "ja_anteil": 60.36,
+      "bevoelkerung": 1485
+    },
+    {
+      "gemeinde": "Sils im Domleschg",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 53.81,
+      "bevoelkerung": 954
+    },
+    {
+      "gemeinde": "Sils im Engadin/Segl",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 43.89,
+      "bevoelkerung": 693
+    },
+    {
+      "gemeinde": "Silvaplana",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 51.05,
+      "bevoelkerung": 1109
+    },
+    {
+      "gemeinde": "Soazza",
+      "tourismusdestination": "San Bernardino, Mesolcina / Calanca",
+      "ja_anteil": 58.39,
+      "bevoelkerung": 320
+    },
+    {
+      "gemeinde": "St. Moritz",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 43.05,
+      "bevoelkerung": 5025
+    },
+    {
+      "gemeinde": "Sufers",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 41.89,
+      "bevoelkerung": 146
+    },
+    {
+      "gemeinde": "Sumvitg",
+      "tourismusdestination": "Surselva",
+      "ja_anteil": 42.83,
+      "bevoelkerung": 1052
+    },
+    {
+      "gemeinde": "Surses",
+      "tourismusdestination": "Val Surses Savognin Bivio",
+      "ja_anteil": 43.16,
+      "bevoelkerung": 2494
+    },
+    {
+      "gemeinde": "Tamins",
+      "tourismusdestination": "Chur",
+      "ja_anteil": 50.59,
+      "bevoelkerung": 1225
+    },
+    {
+      "gemeinde": "Thusis",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 52.41,
+      "bevoelkerung": 3452
+    },
+    {
+      "gemeinde": "Trimmis",
+      "tourismusdestination": "Bündner Herrschaft",
+      "ja_anteil": 59.7,
+      "bevoelkerung": 3472
+    },
+    {
+      "gemeinde": "Trin",
+      "tourismusdestination": "Flims Laax",
+      "ja_anteil": 37.03,
+      "bevoelkerung": 1572
+    },
+    {
+      "gemeinde": "Trun",
+      "tourismusdestination": "Surselva",
+      "ja_anteil": 48.07,
+      "bevoelkerung": 1136
+    },
+    {
+      "gemeinde": "Tschappina",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 46.67,
+      "bevoelkerung": 148
+    },
+    {
+      "gemeinde": "Tujetsch",
+      "tourismusdestination": "Disentis Sedrun",
+      "ja_anteil": 39.18,
+      "bevoelkerung": 1185
+    },
+    {
+      "gemeinde": "Untervaz",
+      "tourismusdestination": "Bündner Herrschaft",
+      "ja_anteil": 56.54,
+      "bevoelkerung": 2676
+    },
+    {
+      "gemeinde": "Urmein",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 54.29,
+      "bevoelkerung": 162
+    },
+    {
+      "gemeinde": "Val Müstair",
+      "tourismusdestination": "Engadin Samnaun Val Müstair",
+      "ja_anteil": 46.16,
+      "bevoelkerung": 1427
+    },
+    {
+      "gemeinde": "Vals",
+      "tourismusdestination": "Vals",
+      "ja_anteil": 34.4,
+      "bevoelkerung": 948
+    },
+    {
+      "gemeinde": "Valsot",
+      "tourismusdestination": "Engadin Samnaun Val Müstair",
+      "ja_anteil": 52.78,
+      "bevoelkerung": 824
+    },
+    {
+      "gemeinde": "Vaz/Obervaz",
+      "tourismusdestination": "Lenzerheide",
+      "ja_anteil": 44.9,
+      "bevoelkerung": 2703
+    },
+    {
+      "gemeinde": "Zernez",
+      "tourismusdestination": "Engadin Samnaun Val Müstair",
+      "ja_anteil": 51.9,
+      "bevoelkerung": 1586
+    },
+    {
+      "gemeinde": "Zillis-Reischen",
+      "tourismusdestination": "Viamala",
+      "ja_anteil": 58.88,
+      "bevoelkerung": 440
+    },
+    {
+      "gemeinde": "Zizers",
+      "tourismusdestination": "Bündner Herrschaft",
+      "ja_anteil": 50.37,
+      "bevoelkerung": 3826
+    },
+    {
+      "gemeinde": "Zuoz",
+      "tourismusdestination": "Engadin St. Moritz",
+      "ja_anteil": 44.35,
+      "bevoelkerung": 1209
+    }
+  ]
+}
