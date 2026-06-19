@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bestätigt sich die Prognose? — Graubündner Gemeinden</title>
+<style>
+:root {
+  --blue: #0068A4;
+  --accent: #B5001E;
+  --border: #e5e5e5;
+  --bg: #f7f6f3;
+  --muted: #888;
+  --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); color: #1a1a1a; padding: 1.25rem; max-width: 696px; margin: 0 auto; }
+
+.search-row { position: relative; margin-bottom: 0.6rem; }
+#search {
+  width: 100%; font-family: var(--font); font-size: 1rem;
+  padding: 0.65rem 2.2rem 0.65rem 0.9rem; border: 1px solid var(--border);
+  border-radius: 6px; background: var(--bg); outline: none; transition: border-color .15s;
+}
+#search:focus { border-color: var(--blue); }
+#clear {
+  position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+  border: none; background: none; color: var(--muted); font-size: 1.2rem;
+  cursor: pointer; display: none; line-height: 1;
+}
+.result-count { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.8rem; }
+
+.axis-label { font-size: 0.68rem; fill: var(--muted); }
+.axis path, .axis line { stroke: var(--border); }
+.axis text { fill: var(--muted); font-size: 9px; font-family: var(--font); }
+.quad-line { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 3; }
+.quad-label { font-size: 9px; fill: var(--muted); font-family: var(--font); }
+
+circle.pt { cursor: pointer; transition: opacity .15s, stroke-width .15s; }
+circle.pt.dim { opacity: 0.15; }
+circle.pt.match { stroke: var(--dark-blue, #1E3A5F); stroke-width: 2; opacity: 1; }
+
+#chart-wrap { width: 100%; }
+svg { display: block; width: 100%; height: auto; }
+
+.tooltip {
+  position: fixed; background: #fff; border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.5rem 0.7rem; font-size: 0.74rem; line-height: 1.5; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  pointer-events: none; z-index: 20; display: none; max-width: 220px;
+}
+.tooltip.visible { display: block; }
+.tt-name { font-weight: 700; font-size: 0.82rem; margin-bottom: 0.2rem; }
+.tt-row { display: flex; justify-content: space-between; gap: 12px; }
+.tt-row .k { color: var(--muted); }
+.tt-row .v { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.source-note { font-size: 0.68rem; color: var(--muted); margin-top: 0.9rem; line-height: 1.5; }
+
+@media (max-width: 480px) {
+  body { padding: 0.9rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="search-row">
+  <input type="text" id="search" placeholder="Gemeinde eingeben …" autocomplete="off">
+  <button id="clear" aria-label="Suche löschen">×</button>
+</div>
+<div class="result-count" id="resultCount"></div>
+
+<div id="chart-wrap"><svg id="chart"></svg></div>
+<div class="tooltip" id="tooltip"></div>
+
+<div class="source-note">X: prognostiziertes jährliches Wachstum 2025–2040 (Szenario mittel, Wüest Partner AG / ARE GR, Juni 2025). Y: realer Saldo 2025 pro 1'000 Einwohner (data.gr.ch, AWT GR, publiziert 19.06.2026). Blasengrösse: Bevölkerung 2025.</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+const DATA_RAW = [ { "geo": "3542", "gemeinde": "Albula/Alvra", "pop2025": 1326, "pop2040": 1410, "pop2055": 1441, "wachstum_2025_2040_proz": 0.41, "wachstum_2040_2055_proz": 0.15, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 6, "todesfaelle_2025": 19, "saldo_2025": -13 }, { "geo": "3701", "gemeinde": "Andeer", "pop2025": 933, "pop2040": 983, "pop2055": 1082, "wachstum_2025_2040_proz": 0.35, "wachstum_2040_2055_proz": 0.64, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 9, "saldo_2025": -9 }, { "geo": "3921", "gemeinde": "Arosa", "pop2025": 3159, "pop2040": 2934, "pop2055": 2508, "wachstum_2025_2040_proz": -0.49, "wachstum_2040_2055_proz": -1.04, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 17, "todesfaelle_2025": 24, "saldo_2025": -7 }, { "geo": "3681", "gemeinde": "Avers", "pop2025": 172, "pop2040": 180, "pop2055": 185, "wachstum_2025_2040_proz": 0.3, "wachstum_2040_2055_proz": 0.18, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3544", "gemeinde": "Bergün Filisur", "pop2025": 904, "pop2040": 849, "pop2055": 794, "wachstum_2025_2040_proz": -0.42, "wachstum_2040_2055_proz": -0.45, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 6, "todesfaelle_2025": 10, "saldo_2025": -4 }, { "geo": "3781", "gemeinde": "Bever", "pop2025": 607, "pop2040": 537, "pop2055": 448, "wachstum_2025_2040_proz": -0.81, "wachstum_2040_2055_proz": -1.2, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 6, "todesfaelle_2025": 5, "saldo_2025": 1 }, { "geo": "3721", "gemeinde": "Bonaduz", "pop2025": 3629, "pop2040": 4129, "pop2055": 4456, "wachstum_2025_2040_proz": 0.86, "wachstum_2040_2055_proz": 0.51, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 27, "todesfaelle_2025": 19, "saldo_2025": 8 }, { "geo": "3792", "gemeinde": "Bregaglia", "pop2025": 1566, "pop2040": 1445, "pop2055": 1324, "wachstum_2025_2040_proz": -0.53, "wachstum_2040_2055_proz": -0.58, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 18, "todesfaelle_2025": 18, "saldo_2025": 0 }, { "geo": "3981", "gemeinde": "Breil/Brigels", "pop2025": 1689, "pop2040": 1434, "pop2055": 1204, "wachstum_2025_2040_proz": -1.09, "wachstum_2040_2055_proz": -1.16, "kategorie_kurzfristig": "\u003c -1%", "geburten_2025": 10, "todesfaelle_2025": 17, "saldo_2025": -7 }, { "geo": "3551", "gemeinde": "Brusio", "pop2025": 1105, "pop2040": 1069, "pop2055": 1023, "wachstum_2025_2040_proz": -0.22, "wachstum_2040_2055_proz": -0.29, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 5, "todesfaelle_2025": 13, "saldo_2025": -8 }, { "geo": "3804", "gemeinde": "Buseno", "pop2025": 90, "pop2040": 85, "pop2055": 70, "wachstum_2025_2040_proz": -0.38, "wachstum_2040_2055_proz": -1.29, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3837", "gemeinde": "Calanca", "pop2025": 210, "pop2040": 194, "pop2055": 173, "wachstum_2025_2040_proz": -0.53, "wachstum_2040_2055_proz": -0.76, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3831", "gemeinde": "Cama", "pop2025": 729, "pop2040": 930, "pop2055": 1033, "wachstum_2025_2040_proz": 1.64, "wachstum_2040_2055_proz": 0.7, "kategorie_kurzfristig": "1% bis 2%", "geburten_2025": 5, "todesfaelle_2025": 7, "saldo_2025": -2 }, { "geo": "3805", "gemeinde": "Castaneda", "pop2025": 261, "pop2040": 250, "pop2055": 235, "wachstum_2025_2040_proz": -0.29, "wachstum_2040_2055_proz": -0.41, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 6, "saldo_2025": -6 }, { "geo": "3661", "gemeinde": "Cazis", "pop2025": 2467, "pop2040": 2575, "pop2055": 2650, "wachstum_2025_2040_proz": 0.29, "wachstum_2040_2055_proz": 0.19, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 27, "todesfaelle_2025": 16, "saldo_2025": 11 }, { "geo": "3782", "gemeinde": "Celerina/Schlarigna", "pop2025": 1401, "pop2040": 1257, "pop2055": 1026, "wachstum_2025_2040_proz": -0.72, "wachstum_2040_2055_proz": -1.34, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 7, "todesfaelle_2025": 7, "saldo_2025": 0 }, { "geo": "3901", "gemeinde": "Chur", "pop2025": 39771, "pop2040": 42907, "pop2055": 45309, "wachstum_2025_2040_proz": 0.51, "wachstum_2040_2055_proz": 0.36, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 303, "todesfaelle_2025": 366, "saldo_2025": -63 }, { "geo": "3911", "gemeinde": "Churwalden", "pop2025": 2163, "pop2040": 2162, "pop2055": 2162, "wachstum_2025_2040_proz": 0, "wachstum_2040_2055_proz": 0, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 16, "todesfaelle_2025": 26, "saldo_2025": -10 }, { "geo": "3881", "gemeinde": "Conters im Prättigau", "pop2025": 229, "pop2040": 230, "pop2055": 226, "wachstum_2025_2040_proz": 0.03, "wachstum_2040_2055_proz": -0.12, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3851", "gemeinde": "Davos", "pop2025": 10856, "pop2040": 10624, "pop2055": 9896, "wachstum_2025_2040_proz": -0.14, "wachstum_2040_2055_proz": -0.47, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 52, "todesfaelle_2025": 88, "saldo_2025": -36 }, { "geo": "3982", "gemeinde": "Disentis/Mustér", "pop2025": 2080, "pop2040": 1984, "pop2055": 1956, "wachstum_2025_2040_proz": -0.31, "wachstum_2040_2055_proz": -0.09, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 14, "todesfaelle_2025": 23, "saldo_2025": -9 }, { "geo": "3722", "gemeinde": "Domat/Ems", "pop2025": 8465, "pop2040": 9583, "pop2055": 10083, "wachstum_2025_2040_proz": 0.83, "wachstum_2040_2055_proz": 0.34, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 63, "todesfaelle_2025": 56, "saldo_2025": 7 }, { "geo": "3673", "gemeinde": "Domleschg", "pop2025": 2246, "pop2040": 2301, "pop2055": 2327, "wachstum_2025_2040_proz": 0.16, "wachstum_2040_2055_proz": 0.07, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 16, "todesfaelle_2025": 17, "saldo_2025": -1 }, { "geo": "3572", "gemeinde": "Falera", "pop2025": 646, "pop2040": 683, "pop2055": 678, "wachstum_2025_2040_proz": 0.37, "wachstum_2040_2055_proz": -0.05, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 6, "todesfaelle_2025": 8, "saldo_2025": -2 }, { "geo": "3731", "gemeinde": "Felsberg", "pop2025": 2893, "pop2040": 3101, "pop2055": 3306, "wachstum_2025_2040_proz": 0.46, "wachstum_2040_2055_proz": 0.43, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 14, "todesfaelle_2025": 19, "saldo_2025": -5 }, { "geo": "3713", "gemeinde": "Ferrera", "pop2025": 82, "pop2040": 82, "pop2055": 84, "wachstum_2025_2040_proz": 0, "wachstum_2040_2055_proz": 0.16, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3861", "gemeinde": "Fideris", "pop2025": 620, "pop2040": 620, "pop2055": 617, "wachstum_2025_2040_proz": 0, "wachstum_2040_2055_proz": -0.03, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 10, "saldo_2025": -10 }, { "geo": "3951", "gemeinde": "Fläsch", "pop2025": 902, "pop2040": 1079, "pop2055": 1142, "wachstum_2025_2040_proz": 1.2, "wachstum_2040_2055_proz": 0.38, "kategorie_kurzfristig": "1% bis 2%", "geburten_2025": 0, "todesfaelle_2025": 8, "saldo_2025": -8 }, { "geo": "3662", "gemeinde": "Flerden", "pop2025": 256, "pop2040": 275, "pop2055": 283, "wachstum_2025_2040_proz": 0.48, "wachstum_2040_2055_proz": 0.19, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3732", "gemeinde": "Flims", "pop2025": 3004, "pop2040": 3129, "pop2055": 3107, "wachstum_2025_2040_proz": 0.27, "wachstum_2040_2055_proz": -0.05, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 17, "todesfaelle_2025": 34, "saldo_2025": -17 }, { "geo": "3862", "gemeinde": "Furna", "pop2025": 204, "pop2040": 213, "pop2055": 210, "wachstum_2025_2040_proz": 0.29, "wachstum_2040_2055_proz": -0.09, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3633", "gemeinde": "Fürstenau", "pop2025": 349, "pop2040": 336, "pop2055": 317, "wachstum_2025_2040_proz": -0.25, "wachstum_2040_2055_proz": -0.39, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3832", "gemeinde": "Grono", "pop2025": 1580, "pop2040": 1784, "pop2055": 2027, "wachstum_2025_2040_proz": 0.81, "wachstum_2040_2055_proz": 0.85, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 12, "todesfaelle_2025": 14, "saldo_2025": -2 }, { "geo": "3961", "gemeinde": "Grüsch", "pop2025": 2205, "pop2040": 2363, "pop2055": 2364, "wachstum_2025_2040_proz": 0.46, "wachstum_2040_2055_proz": 0, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 16, "todesfaelle_2025": 16, "saldo_2025": 0 }, { "geo": "3619", "gemeinde": "Ilanz/Glion", "pop2025": 5111, "pop2040": 5633, "pop2055": 6081, "wachstum_2025_2040_proz": 0.65, "wachstum_2040_2055_proz": 0.51, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 34, "todesfaelle_2025": 73, "saldo_2025": -39 }, { "geo": "3863", "gemeinde": "Jenaz", "pop2025": 1143, "pop2040": 1127, "pop2055": 1080, "wachstum_2025_2040_proz": -0.09, "wachstum_2040_2055_proz": -0.28, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 11, "todesfaelle_2025": 19, "saldo_2025": -8 }, { "geo": "3952", "gemeinde": "Jenins", "pop2025": 974, "pop2040": 1056, "pop2055": 1012, "wachstum_2025_2040_proz": 0.54, "wachstum_2040_2055_proz": -0.28, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 10, "todesfaelle_2025": 5, "saldo_2025": 5 }, { "geo": "3871", "gemeinde": "Klosters", "pop2025": 4474, "pop2040": 4258, "pop2055": 3849, "wachstum_2025_2040_proz": -0.33, "wachstum_2040_2055_proz": -0.67, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 25, "todesfaelle_2025": 50, "saldo_2025": -25 }, { "geo": "3882", "gemeinde": "Küblis", "pop2025": 918, "pop2040": 902, "pop2055": 886, "wachstum_2025_2040_proz": -0.12, "wachstum_2040_2055_proz": -0.12, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 8, "todesfaelle_2025": 7, "saldo_2025": 1 }, { "geo": "3785", "gemeinde": "La Punt Chamues-ch", "pop2025": 732, "pop2040": 695, "pop2055": 609, "wachstum_2025_2040_proz": -0.35, "wachstum_2040_2055_proz": -0.88, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 7, "todesfaelle_2025": 7, "saldo_2025": 0 }, { "geo": "3575", "gemeinde": "Laax", "pop2025": 2216, "pop2040": 2613, "pop2055": 2869, "wachstum_2025_2040_proz": 1.1, "wachstum_2040_2055_proz": 0.63, "kategorie_kurzfristig": "1% bis 2%", "geburten_2025": 22, "todesfaelle_2025": 9, "saldo_2025": 13 }, { "geo": "3955", "gemeinde": "Landquart", "pop2025": 9408, "pop2040": 10457, "pop2055": 10602, "wachstum_2025_2040_proz": 0.71, "wachstum_2040_2055_proz": 0.09, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 65, "todesfaelle_2025": 81, "saldo_2025": -16 }, { "geo": "3513", "gemeinde": "Lantsch/Lenz", "pop2025": 543, "pop2040": 542, "pop2055": 523, "wachstum_2025_2040_proz": -0.01, "wachstum_2040_2055_proz": -0.24, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 8, "saldo_2025": -8 }, { "geo": "3821", "gemeinde": "Lostallo", "pop2025": 872, "pop2040": 989, "pop2055": 1076, "wachstum_2025_2040_proz": 0.84, "wachstum_2040_2055_proz": 0.56, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 5, "todesfaelle_2025": 10, "saldo_2025": -5 }, { "geo": "3618", "gemeinde": "Lumnezia", "pop2025": 2072, "pop2040": 2024, "pop2055": 1851, "wachstum_2025_2040_proz": -0.16, "wachstum_2040_2055_proz": -0.59, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 13, "todesfaelle_2025": 20, "saldo_2025": -7 }, { "geo": "3891", "gemeinde": "Luzein", "pop2025": 1634, "pop2040": 1578, "pop2055": 1463, "wachstum_2025_2040_proz": -0.23, "wachstum_2040_2055_proz": -0.5, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 16, "todesfaelle_2025": 13, "saldo_2025": 3 }, { "geo": "3783", "gemeinde": "Madulain", "pop2025": 195, "pop2040": 176, "pop2055": 145, "wachstum_2025_2040_proz": -0.68, "wachstum_2040_2055_proz": -1.28, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3953", "gemeinde": "Maienfeld", "pop2025": 3367, "pop2040": 3885, "pop2055": 4138, "wachstum_2025_2040_proz": 0.96, "wachstum_2040_2055_proz": 0.42, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 44, "todesfaelle_2025": 24, "saldo_2025": 20 }, { "geo": "3954", "gemeinde": "Malans", "pop2025": 2555, "pop2040": 2682, "pop2055": 2672, "wachstum_2025_2040_proz": 0.32, "wachstum_2040_2055_proz": -0.02, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 20, "todesfaelle_2025": 13, "saldo_2025": 7 }, { "geo": "3663", "gemeinde": "Masein", "pop2025": 544, "pop2040": 607, "pop2055": 684, "wachstum_2025_2040_proz": 0.73, "wachstum_2040_2055_proz": 0.8, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 0, "todesfaelle_2025": 5, "saldo_2025": -5 }, { "geo": "3983", "gemeinde": "Medel (Lucmagn)", "pop2025": 326, "pop2040": 303, "pop2055": 258, "wachstum_2025_2040_proz": -0.49, "wachstum_2040_2055_proz": -1.07, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 4, "todesfaelle_2025": 5, "saldo_2025": -1 }, { "geo": "3822", "gemeinde": "Mesocco", "pop2025": 1418, "pop2040": 1368, "pop2055": 1339, "wachstum_2025_2040_proz": -0.24, "wachstum_2040_2055_proz": -0.14, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 5, "todesfaelle_2025": 17, "saldo_2025": -12 }, { "geo": "3715", "gemeinde": "Muntogna da Schons", "pop2025": 370, "pop2040": 354, "pop2055": 331, "wachstum_2025_2040_proz": -0.29, "wachstum_2040_2055_proz": -0.45, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3988", "gemeinde": "Obersaxen Mundaun", "pop2025": 1165, "pop2040": 1154, "pop2055": 1054, "wachstum_2025_2040_proz": -0.06, "wachstum_2040_2055_proz": -0.6, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 5, "todesfaelle_2025": 17, "saldo_2025": -12 }, { "geo": "3784", "gemeinde": "Pontresina", "pop2025": 2110, "pop2040": 2028, "pop2055": 1843, "wachstum_2025_2040_proz": -0.26, "wachstum_2040_2055_proz": -0.64, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 13, "todesfaelle_2025": 10, "saldo_2025": 3 }, { "geo": "3561", "gemeinde": "Poschiavo", "pop2025": 3542, "pop2040": 3587, "pop2055": 3565, "wachstum_2025_2040_proz": 0.08, "wachstum_2040_2055_proz": -0.04, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 19, "todesfaelle_2025": 52, "saldo_2025": -33 }, { "geo": "3723", "gemeinde": "Rhäzüns", "pop2025": 1680, "pop2040": 1832, "pop2055": 1975, "wachstum_2025_2040_proz": 0.58, "wachstum_2040_2055_proz": 0.5, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 15, "todesfaelle_2025": 15, "saldo_2025": 0 }, { "geo": "3714", "gemeinde": "Rheinwald", "pop2025": 580, "pop2040": 541, "pop2055": 492, "wachstum_2025_2040_proz": -0.46, "wachstum_2040_2055_proz": -0.63, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3711", "gemeinde": "Rongellen", "pop2025": 61, "pop2040": 61, "pop2055": 57, "wachstum_2025_2040_proz": 0, "wachstum_2040_2055_proz": -0.45, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3808", "gemeinde": "Rossa", "pop2025": 164, "pop2040": 176, "pop2055": 172, "wachstum_2025_2040_proz": 0.47, "wachstum_2040_2055_proz": -0.15, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3637", "gemeinde": "Rothenbrunnen", "pop2025": 318, "pop2040": 305, "pop2055": 283, "wachstum_2025_2040_proz": -0.28, "wachstum_2040_2055_proz": -0.5, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3834", "gemeinde": "Roveredo (GR)", "pop2025": 2706, "pop2040": 3166, "pop2055": 3302, "wachstum_2025_2040_proz": 1.05, "wachstum_2040_2055_proz": 0.28, "kategorie_kurzfristig": "1% bis 2%", "geburten_2025": 11, "todesfaelle_2025": 19, "saldo_2025": -8 }, { "geo": "3788", "gemeinde": "S-chanf", "pop2025": 707, "pop2040": 664, "pop2055": 594, "wachstum_2025_2040_proz": -0.42, "wachstum_2040_2055_proz": -0.74, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 8, "todesfaelle_2025": 6, "saldo_2025": 2 }, { "geo": "3672", "gemeinde": "Safiental", "pop2025": 967, "pop2040": 932, "pop2055": 901, "wachstum_2025_2040_proz": -0.25, "wachstum_2040_2055_proz": -0.23, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 9, "todesfaelle_2025": 9, "saldo_2025": 0 }, { "geo": "3581", "gemeinde": "Sagogn", "pop2025": 768, "pop2040": 778, "pop2055": 826, "wachstum_2025_2040_proz": 0.09, "wachstum_2040_2055_proz": 0.4, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 8, "saldo_2025": -8 }, { "geo": "3786", "gemeinde": "Samedan", "pop2025": 2899, "pop2040": 2660, "pop2055": 2363, "wachstum_2025_2040_proz": -0.57, "wachstum_2040_2055_proz": -0.79, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 19, "todesfaelle_2025": 30, "saldo_2025": -11 }, { "geo": "3752", "gemeinde": "Samnaun", "pop2025": 749, "pop2040": 713, "pop2055": 639, "wachstum_2025_2040_proz": -0.33, "wachstum_2040_2055_proz": -0.73, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 5, "todesfaelle_2025": 13, "saldo_2025": -8 }, { "geo": "3835", "gemeinde": "San Vittore", "pop2025": 939, "pop2040": 1049, "pop2055": 1103, "wachstum_2025_2040_proz": 0.74, "wachstum_2040_2055_proz": 0.34, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 11, "todesfaelle_2025": 0, "saldo_2025": 11 }, { "geo": "3810", "gemeinde": "Santa Maria in Calanca", "pop2025": 120, "pop2040": 102, "pop2055": 81, "wachstum_2025_2040_proz": -1.08, "wachstum_2040_2055_proz": -1.53, "kategorie_kurzfristig": "\u003c -1%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3638", "gemeinde": "Scharans", "pop2025": 835, "pop2040": 801, "pop2055": 766, "wachstum_2025_2040_proz": -0.28, "wachstum_2040_2055_proz": -0.3, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 8, "todesfaelle_2025": 16, "saldo_2025": -8 }, { "geo": "3962", "gemeinde": "Schiers", "pop2025": 3008, "pop2040": 3351, "pop2055": 3742, "wachstum_2025_2040_proz": 0.72, "wachstum_2040_2055_proz": 0.74, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 21, "todesfaelle_2025": 30, "saldo_2025": -9 }, { "geo": "3582", "gemeinde": "Schluein", "pop2025": 631, "pop2040": 647, "pop2055": 622, "wachstum_2025_2040_proz": 0.17, "wachstum_2040_2055_proz": -0.26, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 5, "todesfaelle_2025": 7, "saldo_2025": -2 }, { "geo": "3514", "gemeinde": "Schmitten (GR)", "pop2025": 206, "pop2040": 179, "pop2055": 150, "wachstum_2025_2040_proz": -0.93, "wachstum_2040_2055_proz": -1.17, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 5, "saldo_2025": -5 }, { "geo": "3762", "gemeinde": "Scuol", "pop2025": 4526, "pop2040": 4016, "pop2055": 3596, "wachstum_2025_2040_proz": -0.79, "wachstum_2040_2055_proz": -0.73, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 25, "todesfaelle_2025": 46, "saldo_2025": -21 }, { "geo": "3972", "gemeinde": "Seewis im Prättigau", "pop2025": 1442, "pop2040": 1434, "pop2055": 1388, "wachstum_2025_2040_proz": -0.04, "wachstum_2040_2055_proz": -0.22, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 10, "todesfaelle_2025": 15, "saldo_2025": -5 }, { "geo": "3640", "gemeinde": "Sils im Domleschg", "pop2025": 978, "pop2040": 1002, "pop2055": 1018, "wachstum_2025_2040_proz": 0.16, "wachstum_2040_2055_proz": 0.11, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 7, "todesfaelle_2025": 12, "saldo_2025": -5 }, { "geo": "3789", "gemeinde": "Sils im Engadin/Segl", "pop2025": 721, "pop2040": 709, "pop2055": 674, "wachstum_2025_2040_proz": -0.11, "wachstum_2040_2055_proz": -0.34, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 4, "todesfaelle_2025": 6, "saldo_2025": -2 }, { "geo": "3790", "gemeinde": "Silvaplana", "pop2025": 1097, "pop2040": 1091, "pop2055": 1019, "wachstum_2025_2040_proz": -0.04, "wachstum_2040_2055_proz": -0.45, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 11, "saldo_2025": -11 }, { "geo": "3823", "gemeinde": "Soazza", "pop2025": 325, "pop2040": 287, "pop2055": 248, "wachstum_2025_2040_proz": -0.83, "wachstum_2040_2055_proz": -0.97, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 6, "saldo_2025": -6 }, { "geo": "3787", "gemeinde": "St. Moritz", "pop2025": 5001, "pop2040": 5077, "pop2055": 4935, "wachstum_2025_2040_proz": 0.1, "wachstum_2040_2055_proz": -0.19, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 35, "todesfaelle_2025": 40, "saldo_2025": -5 }, { "geo": "3695", "gemeinde": "Sufers", "pop2025": 152, "pop2040": 155, "pop2055": 167, "wachstum_2025_2040_proz": 0.13, "wachstum_2040_2055_proz": 0.5, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3985", "gemeinde": "Sumvitg", "pop2025": 1078, "pop2040": 1003, "pop2055": 896, "wachstum_2025_2040_proz": -0.48, "wachstum_2040_2055_proz": -0.75, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 5, "todesfaelle_2025": 17, "saldo_2025": -12 }, { "geo": "3543", "gemeinde": "Surses", "pop2025": 2445, "pop2040": 2334, "pop2055": 2116, "wachstum_2025_2040_proz": -0.31, "wachstum_2040_2055_proz": -0.65, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 12, "todesfaelle_2025": 22, "saldo_2025": -10 }, { "geo": "3733", "gemeinde": "Tamins", "pop2025": 1225, "pop2040": 1225, "pop2055": 1178, "wachstum_2025_2040_proz": 0, "wachstum_2040_2055_proz": -0.26, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 9, "todesfaelle_2025": 12, "saldo_2025": -3 }, { "geo": "3668", "gemeinde": "Thusis", "pop2025": 3543, "pop2040": 3969, "pop2055": 4263, "wachstum_2025_2040_proz": 0.76, "wachstum_2040_2055_proz": 0.48, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 14, "todesfaelle_2025": 34, "saldo_2025": -20 }, { "geo": "3945", "gemeinde": "Trimmis", "pop2025": 3399, "pop2040": 3486, "pop2055": 3593, "wachstum_2025_2040_proz": 0.17, "wachstum_2040_2055_proz": 0.2, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 34, "todesfaelle_2025": 19, "saldo_2025": 15 }, { "geo": "3734", "gemeinde": "Trin", "pop2025": 1544, "pop2040": 1607, "pop2055": 1754, "wachstum_2025_2040_proz": 0.27, "wachstum_2040_2055_proz": 0.59, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 9, "todesfaelle_2025": 11, "saldo_2025": -2 }, { "geo": "3987", "gemeinde": "Trun", "pop2025": 1157, "pop2040": 1139, "pop2055": 1077, "wachstum_2025_2040_proz": -0.1, "wachstum_2040_2055_proz": -0.37, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 4, "todesfaelle_2025": 20, "saldo_2025": -16 }, { "geo": "3669", "gemeinde": "Tschappina", "pop2025": 141, "pop2040": 126, "pop2055": 106, "wachstum_2025_2040_proz": -0.75, "wachstum_2040_2055_proz": -1.15, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3986", "gemeinde": "Tujetsch", "pop2025": 1155, "pop2040": 980, "pop2055": 782, "wachstum_2025_2040_proz": -1.09, "wachstum_2040_2055_proz": -1.49, "kategorie_kurzfristig": "\u003c -1%", "geburten_2025": 0, "todesfaelle_2025": 13, "saldo_2025": -13 }, { "geo": "3946", "gemeinde": "Untervaz", "pop2025": 2694, "pop2040": 2742, "pop2055": 2713, "wachstum_2025_2040_proz": 0.12, "wachstum_2040_2055_proz": -0.07, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 16, "todesfaelle_2025": 15, "saldo_2025": 1 }, { "geo": "3670", "gemeinde": "Urmein", "pop2025": 168, "pop2040": 186, "pop2055": 209, "wachstum_2025_2040_proz": 0.68, "wachstum_2040_2055_proz": 0.78, "kategorie_kurzfristig": "0.5% bis 1%", "geburten_2025": 0, "todesfaelle_2025": 0, "saldo_2025": 0 }, { "geo": "3847", "gemeinde": "Val Müstair", "pop2025": 1390, "pop2040": 1165, "pop2055": 972, "wachstum_2025_2040_proz": -1.17, "wachstum_2040_2055_proz": -1.2, "kategorie_kurzfristig": "\u003c -1%", "geburten_2025": 10, "todesfaelle_2025": 24, "saldo_2025": -14 }, { "geo": "3603", "gemeinde": "Vals", "pop2025": 947, "pop2040": 892, "pop2055": 843, "wachstum_2025_2040_proz": -0.4, "wachstum_2040_2055_proz": -0.38, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 6, "todesfaelle_2025": 9, "saldo_2025": -3 }, { "geo": "3764", "gemeinde": "Valsot", "pop2025": 802, "pop2040": 729, "pop2055": 651, "wachstum_2025_2040_proz": -0.63, "wachstum_2040_2055_proz": -0.75, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 8, "todesfaelle_2025": 5, "saldo_2025": 3 }, { "geo": "3506", "gemeinde": "Vaz/Obervaz", "pop2025": 2814, "pop2040": 2876, "pop2055": 2737, "wachstum_2025_2040_proz": 0.15, "wachstum_2040_2055_proz": -0.33, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 10, "todesfaelle_2025": 24, "saldo_2025": -14 }, { "geo": "3746", "gemeinde": "Zernez", "pop2025": 1567, "pop2040": 1408, "pop2055": 1255, "wachstum_2025_2040_proz": -0.71, "wachstum_2040_2055_proz": -0.76, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 10, "todesfaelle_2025": 19, "saldo_2025": -9 }, { "geo": "3712", "gemeinde": "Zillis-Reischen", "pop2025": 431, "pop2040": 461, "pop2055": 460, "wachstum_2025_2040_proz": 0.45, "wachstum_2040_2055_proz": -0.01, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 5, "todesfaelle_2025": 0, "saldo_2025": 5 }, { "geo": "3947", "gemeinde": "Zizers", "pop2025": 3654, "pop2040": 3934, "pop2055": 4124, "wachstum_2025_2040_proz": 0.49, "wachstum_2040_2055_proz": 0.31, "kategorie_kurzfristig": "0% bis 0.5%", "geburten_2025": 34, "todesfaelle_2025": 38, "saldo_2025": -4 }, { "geo": "3791", "gemeinde": "Zuoz", "pop2025": 1218, "pop2040": 1180, "pop2055": 1123, "wachstum_2025_2040_proz": -0.21, "wachstum_2040_2055_proz": -0.33, "kategorie_kurzfristig": "-1% bis 0%", "geburten_2025": 6, "todesfaelle_2025": 6, "saldo_2025": 0 }];
+const DATA = DATA_RAW.map(d => ({
+  ...d,
+  x: d.wachstum_2025_2040_proz,
+  y: (d.saldo_2025 / d.pop2025) * 1000
+}));
+
+const margin = { top: 16, right: 16, bottom: 30, left: 34 };
+let width, height = 420;
+
+const svg = d3.select('#chart');
+const g = svg.append('g');
+const tooltip = document.getElementById('tooltip');
+
+const xExtent = d3.extent(DATA, d => d.x);
+const yExtent = d3.extent(DATA, d => d.y);
+const xPad = (xExtent[1] - xExtent[0]) * 0.08;
+const yPad = (yExtent[1] - yExtent[0]) * 0.08;
+
+const x = d3.scaleLinear().domain([xExtent[0] - xPad, xExtent[1] + xPad]);
+const y = d3.scaleLinear().domain([yExtent[0] - yPad, yExtent[1] + yPad]);
+const r = d3.scaleSqrt().domain([0, d3.max(DATA, d => d.pop2025)]).range([3, 16]);
+
+function color(d) { return d.y >= 0 ? '#0068A4' : '#B5001E'; }
+
+function draw() {
+  width = document.getElementById('chart-wrap').clientWidth;
+  const w = width - margin.left - margin.right;
+  const h = height - margin.top - margin.bottom;
+  x.range([0, w]);
+  y.range([h, 0]);
+
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+  g.attr('transform', `translate(${margin.left},${margin.top})`);
+  g.selectAll('*').remove();
+
+  g.append('g').attr('class', 'axis').attr('transform', `translate(0,${h})`)
+    .call(d3.axisBottom(x).ticks(5).tickFormat(d => d + '%'));
+  g.append('g').attr('class', 'axis').call(d3.axisLeft(y).ticks(5));
+
+  g.append('text').attr('class', 'axis-label').attr('x', w).attr('y', h - 6).attr('text-anchor', 'end')
+    .text('Prognose-Wachstum 2025–2040 →');
+
+  g.append('line').attr('class', 'quad-line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', 0).attr('y2', h);
+  g.append('line').attr('class', 'quad-line').attr('x1', 0).attr('x2', w).attr('y1', y(0)).attr('y2', y(0));
+  g.append('text').attr('class', 'quad-label').attr('x', w - 4).attr('y', 12).attr('text-anchor', 'end')
+    .text('Wachstum bestätigt');
+  g.append('text').attr('class', 'quad-label').attr('x', 4).attr('y', h - 4).attr('text-anchor', 'start')
+    .text('Rückgang bestätigt');
+
+  const pts = g.selectAll('circle.pt').data(DATA, d => d.geo).enter().append('circle')
+    .attr('class', 'pt')
+    .attr('cx', d => x(d.x)).attr('cy', d => y(d.y)).attr('r', d => r(d.pop2025))
+    .attr('fill', color).attr('fill-opacity', 0.75).attr('stroke', '#fff').attr('stroke-width', 0.6);
+
+  pts.on('mouseenter', function (event, d) { showTooltip(event, d); })
+     .on('mousemove', function (event) { positionTooltip(event); })
+     .on('mouseleave', hideTooltip)
+     .on('click', function (event, d) { showTooltip(event, d); });
+
+  applyFilter(document.getElementById('search').value);
+}
+
+function showTooltip(event, d) {
+  tooltip.innerHTML = `
+    <div class="tt-name">${d.gemeinde}</div>
+    <div class="tt-row"><span class="k">Prognose-Wachstum p.a.</span><span class="v">${d.x > 0 ? '+' : ''}${d.x.toFixed(2)} %</span></div>
+    <div class="tt-row"><span class="k">Saldo 2025 / 1'000 Einw.</span><span class="v">${d.y > 0 ? '+' : ''}${d.y.toFixed(1)}</span></div>
+    <div class="tt-row"><span class="k">Geburten / Todesfälle 2025</span><span class="v">${d.geburten_2025} / ${d.todesfaelle_2025}</span></div>
+    <div class="tt-row"><span class="k">Bevölkerung 2025</span><span class="v">${d.pop2025.toLocaleString('de-CH')}</span></div>
+  `;
+  tooltip.classList.add('visible');
+  positionTooltip(event);
+}
+function positionTooltip(event) {
+  const pad = 14;
+  let left = event.clientX + pad, top = event.clientY + pad;
+  if (left + 230 > window.innerWidth) left = event.clientX - 230 - pad;
+  if (top + 110 > window.innerHeight) top = event.clientY - 110 - pad;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('visible'); }
+
+function applyFilter(text) {
+  const ft = text.trim().toLowerCase();
+  let matchCount = 0, firstMatch = null;
+  g.selectAll('circle.pt').classed('dim', d => !!ft && !d.gemeinde.toLowerCase().includes(ft))
+    .classed('match', d => !!ft && d.gemeinde.toLowerCase().includes(ft));
+  DATA.forEach(d => { if (ft && d.gemeinde.toLowerCase().includes(ft)) { matchCount++; if (!firstMatch) firstMatch = d; } });
+  document.getElementById('resultCount').textContent = ft
+    ? `${matchCount} Treffer von ${DATA.length} Gemeinden`
+    : `${DATA.length} Gemeinden`;
+  if (firstMatch) {
+    const node = g.selectAll('circle.pt').filter(d => d.geo === firstMatch.geo).node();
+    if (node) {
+      const rect = node.getBoundingClientRect();
+      showTooltip({ clientX: rect.x, clientY: rect.y }, firstMatch);
+    }
+  } else {
+    hideTooltip();
+  }
+}
+
+const searchInput = document.getElementById('search');
+const clearBtn = document.getElementById('clear');
+searchInput.addEventListener('input', () => {
+  clearBtn.style.display = searchInput.value ? 'block' : 'none';
+  applyFilter(searchInput.value);
+});
+clearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  clearBtn.style.display = 'none';
+  applyFilter('');
+  hideTooltip();
+});
+
+draw();
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(draw, 150);
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</body>
+</html>
