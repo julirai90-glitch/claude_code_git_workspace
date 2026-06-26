@@ -57,7 +57,9 @@
   .err{color:var(--stau);font-size:.85rem;padding:10px}
   /* abstrakte Stau-Liste (v.a. Mobile) */
   #board{margin-top:12px}
-  .bhead{font-size:.76rem;color:var(--muted);margin:.2em 2px .3em}
+  .bbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4em;margin:.2em 2px .4em}
+  .bhead{font-size:.76rem;color:var(--muted)}
+  .bsort button{padding:.22em .55em;font-size:.74rem}
   .brow{display:flex;align-items:center;flex-wrap:wrap;gap:.4em .55em;padding:8px 6px;border-bottom:1px solid var(--line);cursor:pointer}
   .brow:hover{background:#f5f7f9}
   .brow.sel{background:#eef5fb}
@@ -106,7 +108,7 @@ function swissParts(d){ // {h:Stunde dezimal, dow:0-6} in Europe/Zurich
 }
 const C = {frei:"#2e9e5b", zaeh:"#EE7733", stau:"#d6342c", keine_daten:"#c4c4c4"};
 const tip = d3.select("#tip");
-let LATEST, BASE, BOUND, sel=null, metric="flow";
+let LATEST, BASE, BOUND, sel=null, metric="flow", boardSort="load";
 
 Promise.all([
   d3.json(apiUrl("latest")),
@@ -207,20 +209,27 @@ function select(id){
   renderDetail();
 }
 
-function renderBoard(){
+function sortRows(){
   const rank={stau:0,zaeh:1,frei:2,keine_daten:3};
-  const rows=LATEST.sites.slice().sort((a,b)=>{
-    const d=rank[worst(a)]-rank[worst(b)];
-    return d!==0 ? d : tot(b)-tot(a);
-  });
+  const rows=LATEST.sites.slice();
+  if(boardSort==="az")      rows.sort((a,b)=>a.place.localeCompare(b.place,'de'));
+  else if(boardSort==="vol")rows.sort((a,b)=>tot(b)-tot(a));
+  else                      rows.sort((a,b)=>{const d=rank[worst(a)]-rank[worst(b)];return d!==0?d:tot(b)-tot(a);});
+  return rows;
+}
+function renderBoard(){
+  const rows=sortRows();
   const chip=x=>'<span class="chip"><i style="background:'+C[x.status]+'"></i>'+(x.flow==null?'–':x.flow)+'</span>';
+  const btn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
   d3.select("#board").html(
-    '<div class="bhead">Zählstellen nach Auslastung · Fz/h je Richtung · tippen für Tagesverlauf</div>'+
-    rows.map(s=>'<div class="brow'+(s.id===sel?' sel':'')+'" data-id="'+s.id+'">'
+    '<div class="bbar"><span class="bhead">Zählstellen · Fz/h je Richtung · tippen für Tagesverlauf</span>'
+    +'<span class="toggle bsort">'+btn('load','Auslastung')+btn('vol','Verkehr')+btn('az','A–Z')+'</span></div>'
+    +rows.map(s=>'<div class="brow'+(s.id===sel?' sel':'')+'" data-id="'+s.id+'">'
       +'<span class="bdot" style="background:'+C[worst(s)]+'"></span>'
       +'<span class="bplace">'+s.place+'<em>'+s.road+'</em></span>'
       +'<span class="bchips">'+chip(s.dirs.positive)+chip(s.dirs.negative)+'</span></div>').join('')
   );
+  d3.selectAll(".bsort button").on("click",function(){boardSort=this.getAttribute("data-sort");renderBoard();});
   d3.selectAll(".brow").on("click",function(){
     select(this.getAttribute("data-id"));
     document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'nearest'});
