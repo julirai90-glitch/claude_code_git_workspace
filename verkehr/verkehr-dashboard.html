@@ -82,7 +82,7 @@
 <body>
 <div class="wrap">
   <h1>Verkehr in Graubünden – live</h1>
-  <p class="sub">Fahrzeuge pro Stunde und Tempo an den Bundes-Zählstellen, je Richtung. Klick auf einen Punkt zeigt den Tagesverlauf.</p>
+  <p class="sub">Verkehrsfluss auf den <b>Nationalstrassen des Bundes</b> in Graubünden (v.a. A13) – Fahrzeuge pro Stunde und Tempo je Richtung. <b>Kantonsstrassen sind nicht enthalten.</b> Klick auf eine Zählstelle zeigt den Tagesverlauf.</p>
   <p class="stand" id="stand">lädt …</p>
   <div class="legend">
     <span><i class="dot" style="background:var(--frei)"></i>flüssig</span>
@@ -121,7 +121,7 @@ Promise.all([
   d3.json(apiUrl("baseline")).catch(()=>null),
   d3.json(ASSET_BASE+"/gr_boundary.json").catch(()=>null)
 ]).then(([latest,base,bound])=>{
-  LATEST=latest; BASE=base; BOUND=bound;
+  LATEST=sanitize(latest); BASE=base; BOUND=bound;
   updateStand(latest);
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
   drawMap();
@@ -129,7 +129,16 @@ Promise.all([
   // Default-Auswahl: höchstes Gesamtaufkommen
   const top=latest.sites.slice().sort((a,b)=>tot(b)-tot(a))[0];
   select(top.id);
-  d3.select("#foot").html('Datenquelle: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData»), Bundes-Zählstellen, Abruf alle 5 Min. Standorte/Namen amtlich (Tiefbauamt GR). Richtungen geometrisch hergeleitet – <i>provisorische</i> Achsen sind markiert. Grafik: Julian Reich.');
+  d3.select("#foot").html(
+    '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr (Fahrzeuge/Stunde, Ø-Tempo) an den '
+    +'automatischen Zählstellen des Bundes auf den Nationalstrassen in Graubünden – Abruf alle 5 Min. '
+    +'Die Ampel beruht vorerst auf festen Tempo-Schwellen; auf Pässen kann sie zäh anzeigen, obwohl '
+    +'der langsame Verkehr dort normal ist (wird auf einen Vergleich mit dem ortsüblichen Wert umgestellt, '
+    +'sobald genug Tage erfasst sind). Richtungen sind teils nur geometrisch hergeleitet (<i>provisorisch</i> markiert). '
+    +'Defekt wirkende Messungen (eine Richtung 0, während die andere klar fährt) werden ausgeblendet. '
+    +'Kantonale Strassen sind nicht erfasst.<br>'
+    +'Datenquelle: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData»); Standorte/Namen amtlich '
+    +'(Tiefbauamt Graubünden). Grafik: Julian Reich.');
   setInterval(refreshLatest, 60000);   // Auto-Refresh: alle 60 s neue Werte holen
 }).catch(e=>{d3.select("#board").html('<div class="err">Daten konnten nicht geladen werden: '+e+'</div>');});
 
@@ -140,9 +149,24 @@ function updateStand(latest){
 function refreshLatest(){
   d3.json(apiUrl("latest")).then(latest=>{
     if(!latest||!latest.sites)return;
-    LATEST=latest; updateStand(latest); drawMap(); renderBoard();
+    LATEST=sanitize(latest); updateStand(latest); drawMap(); renderBoard();
     if(sel) d3.selectAll(".site").classed("sel",function(){return this.getAttribute("data-id")===sel;});
   }).catch(()=>{});
+}
+
+// Plausibilitaets-Filter: zeigt eine Richtung 0 Fz/h, waehrend die Gegenrichtung
+// klar aktiv ist (>= SUSPECT_PEER), ist der Sensor dieser Richtung mutmasslich
+// ausgefallen -> als "keine Daten" behandeln statt irrefuehrende 0 anzuzeigen.
+const SUSPECT_PEER=200;
+function sanitize(latest){
+  if(!latest||!latest.sites) return latest;
+  const kill=d=>{d.flow=null;d.speed=null;d.status='keine_daten';d.suspect=true;};
+  for(const s of latest.sites){
+    const p=s.dirs.positive, n=s.dirs.negative;
+    if(p.flow===0 && (n.flow||0)>=SUSPECT_PEER) kill(p);
+    if(n.flow===0 && (p.flow||0)>=SUSPECT_PEER) kill(n);
+  }
+  return latest;
 }
 
 function tot(s){return (s.dirs.positive.flow||0)+(s.dirs.negative.flow||0);}
