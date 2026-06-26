@@ -45,6 +45,7 @@
   .card h3{font-size:.86rem;margin:.1em 0 .1em;font-weight:600}
   .card .prov{font-size:.68rem;color:var(--orange);font-weight:600}
   .card .now{font-size:.78rem;color:var(--muted);margin:0 0 .2em}
+  .card .trendword{color:var(--ink);font-weight:600}
   .card .bnote{font-size:.7rem;color:var(--muted);margin:.3em 0 0;font-style:italic}
   .card .now b{color:var(--ink);font-size:.95rem}
   .axis text{fill:var(--muted);font-size:10px} .axis path,.axis line{stroke:#dfe3e8}
@@ -173,16 +174,17 @@ function sanitize(latest){
 // Kurzfrist-Tendenz je Richtung: aktueller Wert vs. Schnitt der letzten ~30 Min.
 // +1 steigend, -1 fallend, 0 stabil/zu wenig Daten. Mindest-Volumen gegen Nacht-Rauschen.
 const TREND_FLOOR=60, TREND_TH=0.10;
-function trend(key){
+function trend(key, metric){
+  metric=metric||'flow';
   const ser=window.__today&&window.__today.series&&window.__today.series[key];
   if(!ser||ser.length<4) return 0;
-  const flows=ser.map(p=>p.flow).filter(v=>v!=null);
-  if(flows.length<4) return 0;
-  const cur=flows[flows.length-1];
-  const prior=flows.slice(Math.max(0,flows.length-7),flows.length-1); // ~vorherige 30 Min
+  const vals=ser.map(p=>p[metric]).filter(v=>v!=null);
+  if(vals.length<4) return 0;
+  const cur=vals[vals.length-1];
+  const prior=vals.slice(Math.max(0,vals.length-7),vals.length-1); // ~vorherige 30 Min
   if(!prior.length) return 0;
   const mean=prior.reduce((a,b)=>a+b,0)/prior.length;
-  if(mean<TREND_FLOOR) return 0;
+  if(metric==='flow' && mean<TREND_FLOOR) return 0; // Volumen-Floor nur fuer Fahrzeuge
   const d=(cur-mean)/mean;
   return d>TREND_TH?1:(d<-TREND_TH?-1:0);
 }
@@ -315,7 +317,14 @@ function chartCard(s,dir,prov){
   const card=d3.select("#charts").append("div").attr("class","card");
   card.append("h3").html(dd.label+(prov?' <span class="prov" title="Richtung noch nicht empirisch bestätigt">⚠ provisorisch</span>':''));
   const cur=metric==="flow"?(dd.flow==null?"–":dd.flow+" Fz/h"):(dd.speed==null?"–":dd.speed+" km/h");
-  card.append("p").attr("class","now").html('jetzt: <b>'+cur+'</b>');
+  const hasVal=metric==="flow"?dd.flow!=null:dd.speed!=null;
+  let tword="";
+  if(hasVal){
+    const tr=trend(s.id+"|"+dir, metric);
+    const w=tr>0?"▲ steigend":tr<0?"▼ sinkend":"– stabil";
+    tword=' · <span class="trendword" title="Kurzfrist-Tendenz der letzten ~30 Min">'+w+'</span>';
+  }
+  card.append("p").attr("class","now").html('jetzt: <b>'+cur+'</b>'+tword);
   const W=330,H=150,m={t:6,r:8,b:18,l:34};
   const svg=card.append("svg").attr("viewBox",`0 0 ${W} ${H}`).style("width","100%").style("height","auto");
   const x=d3.scaleLinear().domain([0,24]).range([m.l,W-m.r]);
