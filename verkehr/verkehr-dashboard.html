@@ -324,16 +324,21 @@ function renderExpand(container, s){
   ["positive","negative"].forEach(dir=>chartCard(s,dir,prov));
 }
 
-// Zentrierter gleitender Mittelwert zur Glättung der Kurve. SMOOTH_R=2 -> 5 Punkte (~25 Min).
-const SMOOTH_R=2;
-function smoothVal(arr,i,metric){
-  let s=0,n=0;
-  for(let k=i-SMOOTH_R;k<=i+SMOOTH_R;k++){
-    if(k<0||k>=arr.length) continue;
-    const v=metric==="flow"?arr[k].flow:arr[k].speed;
-    if(v!=null){s+=v;n++;}
+// Viertelstunden-Mittel: rohe 5-Min-Punkte in feste 15-Min-Bloecke legen und mitteln.
+// Gleiches Raster wie die Baseline -> konsistent; Linie und Hover zeigen denselben Wert.
+function bucketize(ser){
+  const b={};
+  for(const p of ser){
+    const hm=String(p.t).split(':'); const idx=Math.floor(((+hm[0])*60+(+hm[1]))/15);
+    (b[idx]=b[idx]||{f:[],s:[]});
+    if(p.flow!=null)b[idx].f.push(p.flow);
+    if(p.speed!=null)b[idx].s.push(p.speed);
   }
-  return n?s/n:null;
+  const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+  return Object.keys(b).map(Number).sort((a,c)=>a-c).map(idx=>({
+    idx, h:(idx*15+7.5)/60, flow:avg(b[idx].f), speed:avg(b[idx].s),
+    label:String(Math.floor(idx/4)).padStart(2,'0')+':'+String((idx%4)*15).padStart(2,'0')
+  }));
 }
 
 function chartCard(s,dir,prov){
@@ -358,13 +363,14 @@ function chartCard(s,dir,prov){
   const x=d3.scaleLinear().domain([0,24]).range([m.l,W-m.r]);
   const key=s.id+"|"+dir;
   const today=(window.__today&&window.__today.series&&window.__today.series[key])||[];
+  const buckets=bucketize(today);
   const bl=(BASE&&BASE.data&&BASE.data[key])?BASE.data[key][dayType()]:null;
   const slotX=i=>i/4;
   const medArr = bl ? (metric==="flow"?bl.flow_med:bl.speed_med) : null;
   const p25=bl?bl.flow_p25:null, p75=bl?bl.flow_p75:null;
   let yMax=10;
   if(medArr) yMax=Math.max(yMax,d3.max(metric==="flow"?p75:medArr));
-  if(today.length) yMax=Math.max(yMax,d3.max(today,d=>metric==="flow"?d.flow:(d.speed||0)));
+  if(buckets.length) yMax=Math.max(yMax,d3.max(buckets,d=>metric==="flow"?(d.flow||0):(d.speed||0)));
   const y=d3.scaleLinear().domain([0,yMax*1.1]).nice().range([H-m.b,m.t]);
   svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-m.b})`)
      .call(d3.axisBottom(x).ticks(6).tickFormat(d=>d+"h"));
@@ -379,12 +385,11 @@ function chartCard(s,dir,prov){
     const ml=d3.line().defined((d,i)=>medArr[i]!=null).x((d,i)=>x(slotX(i))).y((d,i)=>y(medArr[i])).curve(d3.curveMonotoneX);
     svg.append("path").datum(medArr).attr("class","med").attr("d",ml);
   }
-  // heutige Linie – optisch geglättet (gleitender ~15-Min-Schnitt). Die rohen
-  // 1-Min-Hochrechnungen rauschen stark; "jetzt"-Wert und Hover bleiben roh.
-  if(today.length){
-    const tl=d3.line().x((d,i)=>x(toH(today[i].t))).y((d,i)=>y(smoothVal(today,i,metric)))
-      .defined((d,i)=>smoothVal(today,i,metric)!=null).curve(d3.curveMonotoneX);
-    svg.append("path").datum(today).attr("class","today").attr("d",tl);
+  // heutige Linie = Viertelstunden-Mittel (Linie und Hover zeigen denselben Wert).
+  if(buckets.length){
+    const tl=d3.line().x(d=>x(d.h)).y(d=>y(metric==="flow"?d.flow:d.speed))
+      .defined(d=>(metric==="flow"?d.flow:d.speed)!=null).curve(d3.curveMonotoneX);
+    svg.append("path").datum(buckets).attr("class","today").attr("d",tl);
   }
   // Jetzt-Linie
   const nowH=swissParts(new Date()).h;
@@ -395,20 +400,21 @@ function chartCard(s,dir,prov){
   svg.append("rect").attr("x",m.l).attr("y",m.t).attr("width",W-m.r-m.l).attr("height",H-m.b-m.t)
      .attr("fill","transparent").style("cursor","crosshair")
      .on("mousemove",function(ev){
-        if(!today.length)return;
+        if(!buckets.length)return;
         const hr=x.invert(d3.pointer(ev,svg.node())[0]);
         let best=null,bd=1e9;
-        for(const p of today){const dh=Math.abs(toH(p.t)-hr);if(dh<bd){bd=dh;best=p;}}
+        for(const b of buckets){const dh=Math.abs(b.h-hr);if(dh<bd){bd=dh;best=b;}}
         if(!best)return;
-        const bx=x(toH(best.t));
+        const bx=x(best.h);
         guide.attr("x1",bx).attr("x2",bx).style("opacity",1);
         const val=metric==="flow"?best.flow:best.speed;
         if(val!=null)hdot.attr("cx",bx).attr("cy",y(val)).style("opacity",1);else hdot.style("opacity",0);
         let typ="";
-        if(bl){const idx=Math.min(95,Math.max(0,Math.round(toH(best.t)*4)));const arr=metric==="flow"?bl.flow_med:bl.speed_med;const mv=arr&&arr[idx];if(mv!=null)typ='<div class="r"><span>typisch</span><span>'+mv+(metric==="flow"?' Fz/h':' km/h')+'</span></div>';}
-        tip.html('<b>'+best.t+'</b> Uhr'
-          +'<div class="r"><span>Fahrzeuge</span><span>'+(best.flow==null?'–':best.flow+' Fz/h')+'</span></div>'
-          +'<div class="r"><span>Tempo</span><span>'+(best.speed==null?'–':best.speed+' km/h')+'</span></div>'+typ)
+        if(bl){const arr=metric==="flow"?bl.flow_med:bl.speed_med;const mv=arr&&arr[best.idx];if(mv!=null)typ='<div class="r"><span>typisch</span><span>'+mv+(metric==="flow"?' Fz/h':' km/h')+'</span></div>';}
+        const e=best.idx+1, endLbl=String(Math.floor(e/4)%24).padStart(2,'0')+':'+String((e%4)*15).padStart(2,'0');
+        tip.html('<b>'+best.label+'–'+endLbl+'</b> · Ø Viertelstunde'
+          +'<div class="r"><span>Fahrzeuge</span><span>'+(best.flow==null?'–':'ca. '+Math.round(best.flow)+' Fz/h')+'</span></div>'
+          +'<div class="r"><span>Tempo</span><span>'+(best.speed==null?'–':'ca. '+(Math.round(best.speed*10)/10)+' km/h')+'</span></div>'+typ)
           .style("left",(ev.pageX+14)+"px").style("top",(ev.pageY+12)+"px").style("opacity",1);
      })
      .on("mouseleave",function(){guide.style("opacity",0);hdot.style("opacity",0);hideTip();});
