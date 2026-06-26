@@ -76,6 +76,7 @@
   .bchips{display:flex;gap:.35em;flex:0 0 auto;margin-left:auto}
   .chip{display:inline-flex;align-items:center;gap:.28em;font-size:.78rem;color:var(--ink);background:#f2f4f7;border-radius:11px;padding:.12em .55em}
   .chip i{width:8px;height:8px;border-radius:50%}
+  .trend{font-size:.62rem;color:var(--muted);margin-left:.18em;line-height:1}
   @media(max-width:560px){ #map{display:none} .bplace{font-size:.95rem} }
 </style>
 </head>
@@ -169,6 +170,23 @@ function sanitize(latest){
   return latest;
 }
 
+// Kurzfrist-Tendenz je Richtung: aktueller Wert vs. Schnitt der letzten ~30 Min.
+// +1 steigend, -1 fallend, 0 stabil/zu wenig Daten. Mindest-Volumen gegen Nacht-Rauschen.
+const TREND_FLOOR=60, TREND_TH=0.10;
+function trend(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser||ser.length<4) return 0;
+  const flows=ser.map(p=>p.flow).filter(v=>v!=null);
+  if(flows.length<4) return 0;
+  const cur=flows[flows.length-1];
+  const prior=flows.slice(Math.max(0,flows.length-7),flows.length-1); // ~vorherige 30 Min
+  if(!prior.length) return 0;
+  const mean=prior.reduce((a,b)=>a+b,0)/prior.length;
+  if(mean<TREND_FLOOR) return 0;
+  const d=(cur-mean)/mean;
+  return d>TREND_TH?1:(d<-TREND_TH?-1:0);
+}
+
 function tot(s){return (s.dirs.positive.flow||0)+(s.dirs.negative.flow||0);}
 function worst(s){
   const order={stau:3,zaeh:2,frei:1,keine_daten:0};
@@ -252,7 +270,11 @@ function sortRows(){
 }
 function renderBoard(){
   const rows=sortRows();
-  const chip=x=>'<span class="chip"><i style="background:'+C[x.status]+'"></i>'+(x.flow==null?'–':x.flow)+'</span>';
+  const chip=(s,dir)=>{const x=s.dirs[dir];
+    const a=x.flow==null?0:trend(s.id+'|'+dir);
+    const ar=a>0?'<span class="trend" title="steigend ggü. den letzten ~30 Min">▲</span>'
+             :a<0?'<span class="trend" title="fallend ggü. den letzten ~30 Min">▼</span>':'';
+    return '<span class="chip"><i style="background:'+C[x.status]+'"></i>'+(x.flow==null?'–':x.flow)+ar+'</span>';};
   const btn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
   d3.select("#board").html(
     '<div class="bbar"><span class="bhead">Zählstellen · Fz/h je Richtung · tippen für Tagesverlauf</span>'
@@ -261,7 +283,7 @@ function renderBoard(){
       return '<div class="brow'+(open?' sel':'')+'" data-id="'+s.id+'">'
         +'<span class="bdot" style="background:'+C[worst(s)]+'"></span>'
         +'<span class="bplace">'+s.place+'<em>'+s.road+'</em></span>'
-        +'<span class="bchips">'+chip(s.dirs.positive)+chip(s.dirs.negative)+'</span>'
+        +'<span class="bchips">'+chip(s,'positive')+chip(s,'negative')+'</span>'
         +'<span class="bcaret">'+(open?'▾':'▸')+'</span></div>'
         +(open?'<div class="bexp" data-for="'+s.id+'"></div>':'');
     }).join('')
@@ -363,7 +385,9 @@ function chartCard(s,dir,prov){
 function toH(hhmm){const[a,b]=hhmm.split(":");return +a+ +b/60;}
 
 // today.json separat laden (optional)
-d3.json(apiUrl("today")).then(t=>{window.__today=t;if(sel)renderBoard();}).catch(()=>{});
+function loadToday(){d3.json(apiUrl("today")).then(t=>{window.__today=t;if(LATEST)renderBoard();}).catch(()=>{});}
+loadToday();
+setInterval(loadToday, 300000);   // today alle 5 Min neu -> Tendenz-Pfeile bleiben aktuell
 </script>
 </body>
 </html>
