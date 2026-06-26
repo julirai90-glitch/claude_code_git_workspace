@@ -46,6 +46,7 @@
   .card .prov{font-size:.68rem;color:var(--orange);font-weight:600}
   .card .now{font-size:.78rem;color:var(--muted);margin:0 0 .2em}
   .card .trendword{color:var(--ink);font-weight:600}
+  .card .daycount{font-size:.74rem;color:var(--muted);margin:0 0 .3em}
   .card .bnote{font-size:.7rem;color:var(--muted);margin:.3em 0 0;font-style:italic}
   .card .now b{color:var(--ink);font-size:.95rem}
   .axis text{fill:var(--muted);font-size:10px} .axis path,.axis line{stroke:#dfe3e8}
@@ -189,6 +190,17 @@ function trend(key, metric){
   return d>TREND_TH?1:(d<-TREND_TH?-1:0);
 }
 
+// Hochrechnung: bisher heute durchgefahrene Fahrzeuge (Schaetzung).
+// flow ist Fz/h; jeder 5-Min-Wert deckt 1/12 h ab -> Summe(flow)/12. Ist eine
+// Integration der Rate, kein exakter Zaehlerstand -> immer als "ca." kennzeichnen.
+function dayCount(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser||!ser.length) return null;
+  let s=0,n=0;
+  for(const p of ser){ if(p.flow!=null){ s+=p.flow; n++; } }
+  return n?Math.round(s/12):null;
+}
+
 function tot(s){return (s.dirs.positive.flow||0)+(s.dirs.negative.flow||0);}
 function worst(s){
   const order={stau:3,zaeh:2,frei:1,keine_daten:0};
@@ -325,6 +337,10 @@ function chartCard(s,dir,prov){
     tword=' · <span class="trendword" title="Kurzfrist-Tendenz der letzten ~30 Min">'+w+'</span>';
   }
   card.append("p").attr("class","now").html('jetzt: <b>'+cur+'</b>'+tword);
+  const dc=dayCount(s.id+"|"+dir);
+  if(dc!=null) card.append("p").attr("class","daycount")
+    .attr("title","Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung, kein exakter Zählerstand")
+    .html('heute bisher: <b>ca. '+dc.toLocaleString('de-CH')+'</b> Fahrzeuge');
   const W=330,H=150,m={t:6,r:8,b:18,l:34};
   const svg=card.append("svg").attr("viewBox",`0 0 ${W} ${H}`).style("width","100%").style("height","auto");
   const x=d3.scaleLinear().domain([0,24]).range([m.l,W-m.r]);
