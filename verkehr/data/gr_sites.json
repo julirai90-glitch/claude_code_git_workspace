@@ -1,0 +1,934 @@
+[
+ {
+  "id": "CH:0014",
+  "num": 14,
+  "place": "Julier/Silvaplana",
+  "road": "A29",
+  "lat": 46.46,
+  "lon": 9.79,
+  "lanes": [
+   {
+    "lane_id": "CH:0014.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27782
+   },
+   {
+    "lane_id": "CH:0014.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11274
+   }
+  ]
+ },
+ {
+  "id": "CH:0025",
+  "num": 25,
+  "place": "Maienfeld",
+  "road": "A13a",
+  "lat": 47.01,
+  "lon": 9.5,
+  "lanes": [
+   {
+    "lane_id": "CH:0025.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11217
+   },
+   {
+    "lane_id": "CH:0025.02",
+    "dir": "negative",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 11217
+   },
+   {
+    "lane_id": "CH:0025.03",
+    "dir": "positive",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10333
+   },
+   {
+    "lane_id": "CH:0025.04",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10333
+   }
+  ]
+ },
+ {
+  "id": "CH:0027",
+  "num": 27,
+  "place": "Disentis O",
+  "road": "H19",
+  "lat": 46.72,
+  "lon": 8.88,
+  "lanes": [
+   {
+    "lane_id": "CH:0027.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12032
+   },
+   {
+    "lane_id": "CH:0027.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 21056
+   }
+  ]
+ },
+ {
+  "id": "CH:0044",
+  "num": 44,
+  "place": "San Bernardino-Tunnel",
+  "road": "A13c",
+  "lat": 46.46,
+  "lon": 9.19,
+  "lanes": [
+   {
+    "lane_id": "CH:0044.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10363
+   },
+   {
+    "lane_id": "CH:0044.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11177
+   }
+  ]
+ },
+ {
+  "id": "CH:0096",
+  "num": 96,
+  "place": "Domat/Ems",
+  "road": "A13a",
+  "lat": 46.84,
+  "lon": 9.46,
+  "lanes": [
+   {
+    "lane_id": "CH:0096.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10843
+   },
+   {
+    "lane_id": "CH:0096.02",
+    "dir": "negative",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10843
+   },
+   {
+    "lane_id": "CH:0096.03",
+    "dir": "positive",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10340
+   },
+   {
+    "lane_id": "CH:0096.04",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10340
+   }
+  ]
+ },
+ {
+  "id": "CH:0098",
+  "num": 98,
+  "place": "Castasegna",
+  "road": "H3b",
+  "lat": 46.33,
+  "lon": 9.53,
+  "lanes": [
+   {
+    "lane_id": "CH:0098.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11250
+   },
+   {
+    "lane_id": "CH:0098.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20821
+   }
+  ]
+ },
+ {
+  "id": "CH:0099",
+  "num": 99,
+  "place": "S-chanf/Umfahrung",
+  "road": "H27",
+  "lat": 46.61,
+  "lon": 9.99,
+  "lanes": [
+   {
+    "lane_id": "CH:0099.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20768
+   },
+   {
+    "lane_id": "CH:0099.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11385
+   }
+  ]
+ },
+ {
+  "id": "CH:0131",
+  "num": 131,
+  "place": "Tamins",
+  "road": "H19",
+  "lat": 46.83,
+  "lon": 9.4,
+  "lanes": [
+   {
+    "lane_id": "CH:0131.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27414
+   },
+   {
+    "lane_id": "CH:0131.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12505
+   }
+  ]
+ },
+ {
+  "id": "CH:0132",
+  "num": 132,
+  "place": "Pardisla/Chlus-Tunnel",
+  "road": "A28",
+  "lat": 46.97,
+  "lon": 9.6,
+  "lanes": [
+   {
+    "lane_id": "CH:0132.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27736
+   },
+   {
+    "lane_id": "CH:0132.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 36466
+   }
+  ]
+ },
+ {
+  "id": "CH:0133",
+  "num": 133,
+  "place": "Scuol W",
+  "road": "H27",
+  "lat": 46.79,
+  "lon": 10.27,
+  "lanes": [
+   {
+    "lane_id": "CH:0133.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12092
+   },
+   {
+    "lane_id": "CH:0133.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20734
+   }
+  ]
+ },
+ {
+  "id": "CH:0138",
+  "num": 138,
+  "place": "Brusio N",
+  "road": "H29",
+  "lat": 46.26,
+  "lon": 10.12,
+  "lanes": [
+   {
+    "lane_id": "CH:0138.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11370
+   },
+   {
+    "lane_id": "CH:0138.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20805
+   }
+  ]
+ },
+ {
+  "id": "CH:0157",
+  "num": 157,
+  "place": "Alvaschein/Solis-Tunnel",
+  "road": "A29",
+  "lat": 46.68,
+  "lon": 9.53,
+  "lanes": [
+   {
+    "lane_id": "CH:0157.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27752
+   },
+   {
+    "lane_id": "CH:0157.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10344
+   }
+  ]
+ },
+ {
+  "id": "CH:0169",
+  "num": 169,
+  "place": "Flüela/Tschuggen N",
+  "road": "H28b",
+  "lat": 46.8,
+  "lon": 9.9,
+  "lanes": [
+   {
+    "lane_id": "CH:0169.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20900
+   },
+   {
+    "lane_id": "CH:0169.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20899
+   }
+  ]
+ },
+ {
+  "id": "CH:0203",
+  "num": 203,
+  "place": "Roveredo",
+  "road": "A13c",
+  "lat": 46.23,
+  "lon": 9.11,
+  "lanes": [
+   {
+    "lane_id": "CH:0203.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 26371
+   },
+   {
+    "lane_id": "CH:0203.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27629
+   }
+  ]
+ },
+ {
+  "id": "CH:0227",
+  "num": 227,
+  "place": "Ofen/Buffalora",
+  "road": "H28c",
+  "lat": 46.65,
+  "lon": 10.27,
+  "lanes": [
+   {
+    "lane_id": "CH:0227.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11291
+   },
+   {
+    "lane_id": "CH:0227.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12166
+   }
+  ]
+ },
+ {
+  "id": "CH:0228",
+  "num": 228,
+  "place": "Zizers/ Rappagugg",
+  "road": "A13a",
+  "lat": 46.93,
+  "lon": 9.56,
+  "lanes": [
+   {
+    "lane_id": "CH:0228.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10337
+   },
+   {
+    "lane_id": "CH:0228.02",
+    "dir": "negative",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10337
+   },
+   {
+    "lane_id": "CH:0228.03",
+    "dir": "positive",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 26376
+   },
+   {
+    "lane_id": "CH:0228.04",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 26376
+   }
+  ]
+ },
+ {
+  "id": "CH:0238",
+  "num": 238,
+  "place": "Rothenbrunnen S",
+  "road": "A13b",
+  "lat": 46.76,
+  "lon": 9.42,
+  "lanes": [
+   {
+    "lane_id": "CH:0238.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10343
+   },
+   {
+    "lane_id": "CH:0238.02",
+    "dir": "negative",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10343
+   },
+   {
+    "lane_id": "CH:0238.03",
+    "dir": "positive",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10342
+   },
+   {
+    "lane_id": "CH:0238.04",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10342
+   }
+  ]
+ },
+ {
+  "id": "CH:0258",
+  "num": 258,
+  "place": "Julier/La Veduta",
+  "road": "A29",
+  "lat": 46.47,
+  "lon": 9.72,
+  "lanes": [
+   {
+    "lane_id": "CH:0258.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11274
+   },
+   {
+    "lane_id": "CH:0258.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12165
+   }
+  ]
+ },
+ {
+  "id": "CH:0320",
+  "num": 320,
+  "place": "Chur Nord",
+  "road": "A13a",
+  "lat": 46.88,
+  "lon": 9.54,
+  "lanes": [
+   {
+    "lane_id": "CH:0320.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10339
+   },
+   {
+    "lane_id": "CH:0320.02",
+    "dir": "negative",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10339
+   },
+   {
+    "lane_id": "CH:0320.03",
+    "dir": "positive",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10337
+   },
+   {
+    "lane_id": "CH:0320.04",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10337
+   },
+   {
+    "lane_id": "ZH.CH:0320.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 23724
+   },
+   {
+    "lane_id": "ZH.CH:0320.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 23723
+   }
+  ]
+ },
+ {
+  "id": "CH:0322",
+  "num": 322,
+  "place": "Zillis/Bargias",
+  "road": "A13c",
+  "lat": 46.65,
+  "lon": 9.45,
+  "lanes": [
+   {
+    "lane_id": "CH:0322.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27439
+   },
+   {
+    "lane_id": "CH:0322.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27440
+   },
+   {
+    "lane_id": "ZH.CH:0322.01",
+    "dir": null,
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": null
+   },
+   {
+    "lane_id": "ZH.CH:0322.02",
+    "dir": null,
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": null
+   }
+  ]
+ },
+ {
+  "id": "CH:0373",
+  "num": 373,
+  "place": "Klosters/Mezzaselva",
+  "road": "A28",
+  "lat": 46.89,
+  "lon": 9.84,
+  "lanes": [
+   {
+    "lane_id": "CH:0373.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27748
+   },
+   {
+    "lane_id": "CH:0373.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27747
+   }
+  ]
+ },
+ {
+  "id": "CH:0392",
+  "num": 392,
+  "place": "Plaun da Lej",
+  "road": "H3b",
+  "lat": 46.42,
+  "lon": 9.73,
+  "lanes": [
+   {
+    "lane_id": "CH:0392.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12943
+   },
+   {
+    "lane_id": "CH:0392.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12944
+   },
+   {
+    "lane_id": "ZH.CH:0392.01",
+    "dir": null,
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": null
+   },
+   {
+    "lane_id": "ZH.CH:0392.02",
+    "dir": null,
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": null
+   }
+  ]
+ },
+ {
+  "id": "CH:0539",
+  "num": 539,
+  "place": "Hinterrhein",
+  "road": "A13c",
+  "lat": 46.54,
+  "lon": 9.23,
+  "lanes": [
+   {
+    "lane_id": "CH:0539.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11118
+   },
+   {
+    "lane_id": "CH:0539.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10360
+   }
+  ]
+ },
+ {
+  "id": "CH:0610",
+  "num": 610,
+  "place": "Chur/Obere Au",
+  "road": "A13a",
+  "lat": 46.86,
+  "lon": 9.51,
+  "lanes": [
+   {
+    "lane_id": "CH:0610.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10340
+   },
+   {
+    "lane_id": "CH:0610.02",
+    "dir": "negative",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10340
+   },
+   {
+    "lane_id": "CH:0610.03",
+    "dir": "positive",
+    "lane": "lane2",
+    "carriageway": "mainCarriageway",
+    "tmc": 10339
+   },
+   {
+    "lane_id": "CH:0610.04",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10339
+   }
+  ]
+ },
+ {
+  "id": "CH:0611",
+  "num": 611,
+  "place": "Rothenbrunnen/Isla Bella",
+  "road": "A13b",
+  "lat": 46.78,
+  "lon": 9.42,
+  "lanes": [
+   {
+    "lane_id": "CH:0611.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 10342
+   },
+   {
+    "lane_id": "CH:0611.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11117
+   }
+  ]
+ },
+ {
+  "id": "CH:0630",
+  "num": 630,
+  "place": "Calfreisen-Tunnel",
+  "road": "740",
+  "lat": 46.84,
+  "lon": 9.59,
+  "lanes": [
+   {
+    "lane_id": "CH:0630.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20940
+   },
+   {
+    "lane_id": "CH:0630.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20939
+   }
+  ]
+ },
+ {
+  "id": "CH:0631",
+  "num": 631,
+  "place": "Malix",
+  "road": "H3a",
+  "lat": 46.82,
+  "lon": 9.54,
+  "lanes": [
+   {
+    "lane_id": "CH:0631.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20987
+   },
+   {
+    "lane_id": "CH:0631.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11676
+   }
+  ]
+ },
+ {
+  "id": "CH:0632",
+  "num": 632,
+  "place": "Davos N/Laret",
+  "road": "H28a",
+  "lat": 46.84,
+  "lon": 9.86,
+  "lanes": [
+   {
+    "lane_id": "CH:0632.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11269
+   },
+   {
+    "lane_id": "CH:0632.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20904
+   }
+  ]
+ },
+ {
+  "id": "CH:0633",
+  "num": 633,
+  "place": "Davos/Landwasser-Tunnel",
+  "road": "H417b",
+  "lat": 46.7,
+  "lon": 9.73,
+  "lanes": [
+   {
+    "lane_id": "CH:0633.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 20887
+   },
+   {
+    "lane_id": "CH:0633.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12162
+   }
+  ]
+ },
+ {
+  "id": "CH:0634",
+  "num": 634,
+  "place": "Bernina/Baracone",
+  "road": "H29",
+  "lat": 46.41,
+  "lon": 10.04,
+  "lanes": [
+   {
+    "lane_id": "CH:0634.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12942
+   },
+   {
+    "lane_id": "CH:0634.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11265
+   }
+  ]
+ },
+ {
+  "id": "CH:0635",
+  "num": 635,
+  "place": "Tujetsch/Crestas-Tunnel",
+  "road": "H19",
+  "lat": 46.68,
+  "lon": 8.81,
+  "lanes": [
+   {
+    "lane_id": "CH:0635.01",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12030
+   },
+   {
+    "lane_id": "CH:0635.02",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12032
+   }
+  ]
+ },
+ {
+  "id": "CH:0636",
+  "num": 636,
+  "place": "Zernez/Praschitsch",
+  "road": "H27",
+  "lat": 46.71,
+  "lon": 10.09,
+  "lanes": [
+   {
+    "lane_id": "CH:0636.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 11383
+   },
+   {
+    "lane_id": "CH:0636.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 12089
+   }
+  ]
+ },
+ {
+  "id": "CH:0708",
+  "num": 708,
+  "place": "Küblis",
+  "road": "A28",
+  "lat": 46.92,
+  "lon": 9.76,
+  "lanes": [
+   {
+    "lane_id": "CH:0708.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 27741
+   },
+   {
+    "lane_id": "CH:0708.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 36472
+   },
+   {
+    "lane_id": "ZH.CH:0708.01",
+    "dir": "positive",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 23683
+   },
+   {
+    "lane_id": "ZH.CH:0708.02",
+    "dir": "negative",
+    "lane": "lane1",
+    "carriageway": "mainCarriageway",
+    "tmc": 23682
+   }
+  ]
+ }
+]
