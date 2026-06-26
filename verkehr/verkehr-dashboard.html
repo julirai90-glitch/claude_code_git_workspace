@@ -324,6 +324,18 @@ function renderExpand(container, s){
   ["positive","negative"].forEach(dir=>chartCard(s,dir,prov));
 }
 
+// Zentrierter gleitender Mittelwert zur Glättung der Kurve. SMOOTH_R=2 -> 5 Punkte (~25 Min).
+const SMOOTH_R=2;
+function smoothVal(arr,i,metric){
+  let s=0,n=0;
+  for(let k=i-SMOOTH_R;k<=i+SMOOTH_R;k++){
+    if(k<0||k>=arr.length) continue;
+    const v=metric==="flow"?arr[k].flow:arr[k].speed;
+    if(v!=null){s+=v;n++;}
+  }
+  return n?s/n:null;
+}
+
 function chartCard(s,dir,prov){
   const dd=s.dirs[dir];
   const card=d3.select("#charts").append("div").attr("class","card");
@@ -367,9 +379,11 @@ function chartCard(s,dir,prov){
     const ml=d3.line().defined((d,i)=>medArr[i]!=null).x((d,i)=>x(slotX(i))).y((d,i)=>y(medArr[i])).curve(d3.curveMonotoneX);
     svg.append("path").datum(medArr).attr("class","med").attr("d",ml);
   }
-  // heutige Linie
+  // heutige Linie – optisch geglättet (gleitender ~15-Min-Schnitt). Die rohen
+  // 1-Min-Hochrechnungen rauschen stark; "jetzt"-Wert und Hover bleiben roh.
   if(today.length){
-    const tl=d3.line().x(d=>x(toH(d.t))).y(d=>y(metric==="flow"?d.flow:(d.speed||0))).defined(d=>metric==="flow"?d.flow!=null:d.speed!=null).curve(d3.curveMonotoneX);
+    const tl=d3.line().x((d,i)=>x(toH(today[i].t))).y((d,i)=>y(smoothVal(today,i,metric)))
+      .defined((d,i)=>smoothVal(today,i,metric)!=null).curve(d3.curveMonotoneX);
     svg.append("path").datum(today).attr("class","today").attr("d",tl);
   }
   // Jetzt-Linie
