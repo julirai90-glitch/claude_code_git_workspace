@@ -256,10 +256,10 @@ function drawMap(){
 }
 
 function showTip(e,d){
-  const f=x=>x==null?"–":x, p=d.dirs.positive,n=d.dirs.negative;
+  const fl=v=>v==null?"–":v+" Fz/h", sp=v=>v==null?"–":v+" km/h", p=d.dirs.positive,n=d.dirs.negative;
   tip.html('<b>'+d.place+'</b> <span style="color:#6b7280">('+d.road+')</span>'
-    +'<div class="r"><span>'+p.label+'</span><span>'+f(p.flow)+' Fz/h · '+f(p.speed)+'</span></div>'
-    +'<div class="r"><span>'+n.label+'</span><span>'+f(n.flow)+' Fz/h · '+f(n.speed)+'</span></div>')
+    +'<div class="r"><span>'+p.label+'</span><span>'+fl(p.flow)+' · '+sp(p.speed)+'</span></div>'
+    +'<div class="r"><span>'+n.label+'</span><span>'+fl(n.flow)+' · '+sp(n.speed)+'</span></div>')
     .style("left",(e.clientX+14)+"px").style("top",(e.clientY+12)+"px").style("opacity",1);
 }
 function hideTip(){tip.style("opacity",0);}
