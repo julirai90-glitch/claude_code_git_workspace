@@ -369,8 +369,10 @@ function chartCard(s,dir,prov){
   const medArr = bl ? (metric==="flow"?bl.flow_med:bl.speed_med) : null;
   const p25=bl?bl.flow_p25:null, p75=bl?bl.flow_p75:null;
   let yMax=10;
-  if(medArr) yMax=Math.max(yMax,d3.max(metric==="flow"?p75:medArr));
-  if(buckets.length) yMax=Math.max(yMax,d3.max(buckets,d=>metric==="flow"?(d.flow||0):(d.speed||0)));
+  // d3.max liefert undefined bei lauter null (z.B. Baseline-Daytype mit 0 Tagen) -> NaN vermeiden
+  const mBase=medArr?d3.max(metric==="flow"?p75:medArr):null;
+  if(mBase!=null) yMax=Math.max(yMax,mBase);
+  if(buckets.length){const mb=d3.max(buckets,d=>metric==="flow"?(d.flow||0):(d.speed||0)); if(mb!=null) yMax=Math.max(yMax,mb);}
   const y=d3.scaleLinear().domain([0,yMax*1.1]).nice().range([H-m.b,m.t]);
   svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-m.b})`)
      .call(d3.axisBottom(x).ticks(6).tickFormat(d=>d+"h"));
