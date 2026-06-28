@@ -310,7 +310,8 @@ function renderBoard(){
   }
 }
 
-function dayType(){const dow=swissParts(new Date(LATEST.generated)).dow;return (dow===0||dow===6)?"we":"werktag";}
+function dayType(){const dow=swissParts(new Date(LATEST.generated)).dow;return dow===0?"so":dow===6?"sa":dow===5?"fr":"modo";}
+const CATLABEL={modo:"Mo–Do",fr:"Freitag",sa:"Samstag",so:"Sonntag"};
 
 function renderExpand(container, s){
   if(!container||container.empty())return;
@@ -422,9 +423,9 @@ function chartCard(s,dir,prov){
      .on("mouseleave",function(){guide.style("opacity",0);hdot.style("opacity",0);hideTip();});
   // Hinweis solange wenige Vergleichstage erfasst sind (Faktentreue: keine Schein-Robustheit)
   if(bl){
-    const we=dayType()==="we";
-    const n=we?(BASE.nWe||0):(BASE.nWd||0);
-    if(n<4) card.append("p").attr("class","bnote").html('Vergleichslinie vorläufig – erst '+n+' '+(we?'Wochenend':'Werk')+'tag'+(n===1?'':'e')+' erfasst');
+    const cat=dayType();
+    const n=(BASE.n&&BASE.n[cat])||0;
+    if(n<4) card.append("p").attr("class","bnote").html('Vergleichslinie vorläufig – erst '+n+' Vergleichstag'+(n===1?'':'e')+' ('+CATLABEL[cat]+') erfasst');
   } else if(metric==="flow" && (!BASE || !BASE.generated)){
     card.append("p").attr("class","bnote").html('Vergleichslinie folgt, sobald genug Tage erfasst sind');
   }
