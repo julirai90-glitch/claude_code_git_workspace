@@ -207,6 +207,23 @@ function dayCount(key){
   for(const p of ser){ if(p.flow!=null){ s+=p.flow; n++; } }
   return n?Math.round(s/12):null;
 }
+// echte Zaehlung der letzten ~60 Min (gleitend): today sind 5-Min-Slot-Mittel in Fz/h,
+// jeder Slot deckt 1/12 h ab -> Summe(flow letzte 12 Slots)/12 = Fahrzeuge der letzten Stunde.
+function lastHourCount(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser||!ser.length) return null;
+  const fl=ser.filter(p=>p.flow!=null).slice(-12);
+  if(!fl.length) return null;
+  return Math.round(fl.reduce((a,p)=>a+p.flow,0)/12);
+}
+// geglaettetes aktuelles Tempo: Mittel der letzten ~15 Min (3 Slots)
+function recentSpeed(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser) return null;
+  const sp=ser.filter(p=>p.speed!=null).slice(-3);
+  if(!sp.length) return null;
+  return Math.round(sp.reduce((a,p)=>a+p.speed,0)/sp.length*10)/10;
+}
 
 function tot(s){return (s.dirs.positive.flow||0)+(s.dirs.negative.flow||0);}
 function worst(s){
@@ -358,15 +375,19 @@ function chartCard(s,dir,prov){
   const dd=s.dirs[dir];
   const card=d3.select("#charts").append("div").attr("class","card");
   card.append("h3").html(dd.label+(prov?' <span class="prov" title="Richtung noch nicht empirisch bestätigt">⚠ provisorisch</span>':''));
-  const cur=metric==="flow"?(dd.flow==null?"–":dd.flow+" Fz/h"):(dd.speed==null?"–":dd.speed+" km/h");
-  const hasVal=metric==="flow"?dd.flow!=null:dd.speed!=null;
+  const k0=s.id+"|"+dir;
+  let headline, hasVal;
+  if(metric==="flow"){ const lh=lastHourCount(k0); hasVal=lh!=null;
+    headline='letzte Stunde: <b>'+(hasVal?'ca. '+lh.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'; }
+  else { const rs=recentSpeed(k0); hasVal=rs!=null;
+    headline='Tempo: <b>'+(hasVal?'ca. '+rs+' km/h':'–')+'</b> <span style="font-weight:400;color:var(--muted)">(Ø 15 Min)</span>'; }
   let tword="";
   if(hasVal){
-    const tr=trend(s.id+"|"+dir, metric);
+    const tr=trend(k0, metric);
     const w=tr>0?"▲ steigend":tr<0?"▼ sinkend":"– stabil";
     tword=' · <span class="trendword" title="Kurzfrist-Tendenz der letzten ~30 Min">'+w+'</span>';
   }
-  card.append("p").attr("class","now").html('jetzt: <b>'+cur+'</b>'+tword);
+  card.append("p").attr("class","now").html(headline+tword);
   const dc=dayCount(s.id+"|"+dir);
   if(dc!=null) card.append("p").attr("class","daycount")
     .attr("title","Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung, kein exakter Zählerstand")
