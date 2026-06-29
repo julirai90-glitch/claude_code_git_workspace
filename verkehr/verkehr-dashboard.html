@@ -63,6 +63,9 @@
   #board{margin-top:12px}
   .bbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4em;margin:.2em 2px .4em}
   .bhead{font-size:.76rem;color:var(--muted)}
+  .bgroup{font-size:.82rem;font-weight:700;color:var(--ink);margin:.85em 2px .15em;padding-bottom:.25em;border-bottom:2px solid var(--line)}
+  .bgroup small{font-weight:400;color:var(--muted);font-size:.82em}
+  .bgroup span{font-weight:400;color:var(--muted)}
   .bsort button{padding:.22em .55em;font-size:.74rem}
   .brow{display:flex;align-items:center;flex-wrap:wrap;gap:.4em .55em;padding:8px 6px;border-bottom:1px solid var(--line);cursor:pointer}
   .brow:hover{background:#f5f7f9}
@@ -161,8 +164,12 @@ function refreshLatest(){
 // klar aktiv ist (>= SUSPECT_PEER), ist der Sensor dieser Richtung mutmasslich
 // ausgefallen -> als "keine Daten" behandeln statt irrefuehrende 0 anzuzeigen.
 const SUSPECT_PEER=200;
+// Dauerhaft datenlose Zaehlstellen ausblenden (Sensor liefert nichts):
+// CH:0169 Flueela/Tschuggen N, CH:0098 Castasegna.
+const DROP_SITES=["CH:0169","CH:0098"];
 function sanitize(latest){
   if(!latest||!latest.sites) return latest;
+  latest.sites=latest.sites.filter(s=>!DROP_SITES.includes(s.id));
   const kill=d=>{d.flow=null;d.speed=null;d.status='keine_daten';d.suspect=true;};
   for(const s of latest.sites){
     const p=s.dirs.positive, n=s.dirs.negative;
@@ -282,6 +289,7 @@ function sortRows(){
   else                      rows.sort((a,b)=>{const d=rank[worst(a)]-rank[worst(b)];return d!==0?d:tot(b)-tot(a);});
   return rows;
 }
+function axisClass(s){return /^A13|^A28/.test(s.road)?"haupt":"pass";}
 function renderBoard(){
   const rows=sortRows();
   const chip=(s,dir)=>{const x=s.dirs[dir];
@@ -290,17 +298,21 @@ function renderBoard(){
              :a<0?'<span class="trend" title="fallend ggü. den letzten ~30 Min">▼</span>':'';
     return '<span class="chip"><i style="background:'+C[x.status]+'"></i>'+(x.flow==null?'–':x.flow)+ar+'</span>';};
   const btn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
+  const rowHtml=s=>{const open=s.id===sel;
+    return '<div class="brow'+(open?' sel':'')+'" data-id="'+s.id+'">'
+      +'<span class="bdot" style="background:'+C[worst(s)]+'"></span>'
+      +'<span class="bplace">'+s.place+'<em>'+s.road+'</em></span>'
+      +'<span class="bchips">'+chip(s,'positive')+chip(s,'negative')+'</span>'
+      +'<span class="bcaret">'+(open?'▾':'▸')+'</span></div>'
+      +(open?'<div class="bexp" data-for="'+s.id+'"></div>':'');};
+  const haupt=rows.filter(s=>axisClass(s)==="haupt");
+  const pass =rows.filter(s=>axisClass(s)==="pass");
+  const section=(title,arr)=>arr.length?('<div class="bgroup">'+title+' <span>('+arr.length+')</span></div>'+arr.map(rowHtml).join('')):'';
   d3.select("#board").html(
     '<div class="bbar"><span class="bhead">Zählstellen · Fz/h je Richtung · tippen für Tagesverlauf</span>'
     +'<span class="toggle bsort">'+btn('load','Auslastung')+btn('vol','Verkehr')+btn('az','A–Z')+'</span></div>'
-    +rows.map(s=>{const open=s.id===sel;
-      return '<div class="brow'+(open?' sel':'')+'" data-id="'+s.id+'">'
-        +'<span class="bdot" style="background:'+C[worst(s)]+'"></span>'
-        +'<span class="bplace">'+s.place+'<em>'+s.road+'</em></span>'
-        +'<span class="bchips">'+chip(s,'positive')+chip(s,'negative')+'</span>'
-        +'<span class="bcaret">'+(open?'▾':'▸')+'</span></div>'
-        +(open?'<div class="bexp" data-for="'+s.id+'"></div>':'');
-    }).join('')
+    +section('Hauptachsen <small>A13/A28</small>',haupt)
+    +section('Pässe &amp; Nebenstrassen',pass)
   );
   d3.selectAll(".bsort button").on("click",function(){boardSort=this.getAttribute("data-sort");renderBoard();});
   d3.selectAll(".brow").on("click",function(){select(this.getAttribute("data-id"), true);});
