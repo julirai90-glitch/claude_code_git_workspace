@@ -1,0 +1,233 @@
+{
+ "CH:0014": {
+  "axis": "A29",
+  "positive": "Ri. Tiefencastel/Chur",
+  "negative": "Ri. Silvaplana/Engadin",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0157": {
+  "axis": "A29",
+  "positive": "Ri. Tiefencastel/Chur",
+  "negative": "Ri. Silvaplana/Engadin",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0258": {
+  "axis": "A29",
+  "positive": "Ri. Tiefencastel/Chur",
+  "negative": "Ri. Silvaplana/Engadin",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0025": {
+  "axis": "A13a",
+  "positive": "Ri. Chur/Sargans (Nord)",
+  "negative": "Ri. San Bernardino (Süd)",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0096": {
+  "axis": "A13a",
+  "positive": "Ri. Chur/Sargans (Nord)",
+  "negative": "Ri. San Bernardino (Süd)",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0228": {
+  "axis": "A13a",
+  "positive": "Ri. Chur/Sargans (Nord)",
+  "negative": "Ri. San Bernardino (Süd)",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0320": {
+  "axis": "A13a",
+  "positive": "Ri. Chur/Sargans (Nord)",
+  "negative": "Ri. San Bernardino (Süd)",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0610": {
+  "axis": "A13a",
+  "positive": "Ri. Chur/Sargans (Nord)",
+  "negative": "Ri. San Bernardino (Süd)",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0027": {
+  "axis": "H19",
+  "positive": "Ri. Chur/Reichenau",
+  "negative": "Ri. Disentis/Oberalp",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0131": {
+  "axis": "H19",
+  "positive": "Ri. Chur/Reichenau",
+  "negative": "Ri. Disentis/Oberalp",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0635": {
+  "axis": "H19",
+  "positive": "Ri. Chur/Reichenau",
+  "negative": "Ri. Disentis/Oberalp",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0044": {
+  "axis": "A13c",
+  "positive": "Ri. Thusis/Chur (Nord)",
+  "negative": "Ri. Bellinzona/Mesocco (Süd)",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0203": {
+  "axis": "A13c",
+  "positive": "Ri. Thusis/Chur (Nord)",
+  "negative": "Ri. Bellinzona/Mesocco (Süd)",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0322": {
+  "axis": "A13c",
+  "positive": "Ri. Thusis/Chur (Nord)",
+  "negative": "Ri. Bellinzona/Mesocco (Süd)",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0539": {
+  "axis": "A13c",
+  "positive": "Ri. Thusis/Chur (Nord)",
+  "negative": "Ri. Bellinzona/Mesocco (Süd)",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0098": {
+  "axis": "H3b",
+  "positive": "Ri. Maloja/Silvaplana",
+  "negative": "Ri. Chiavenna (I)",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0392": {
+  "axis": "H3b",
+  "positive": "Ri. Maloja/Silvaplana",
+  "negative": "Ri. Chiavenna (I)",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0099": {
+  "axis": "H27",
+  "positive": "Ri. Scuol/Unterengadin",
+  "negative": "Ri. St. Moritz/Oberengadin",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0133": {
+  "axis": "H27",
+  "positive": "Ri. Scuol/Unterengadin",
+  "negative": "Ri. St. Moritz/Oberengadin",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0636": {
+  "axis": "H27",
+  "positive": "Ri. Scuol/Unterengadin",
+  "negative": "Ri. St. Moritz/Oberengadin",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0132": {
+  "axis": "A28",
+  "positive": "Ri. Klosters/Davos",
+  "negative": "Ri. Landquart/Chur",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0373": {
+  "axis": "A28",
+  "positive": "Ri. Klosters/Davos",
+  "negative": "Ri. Landquart/Chur",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0708": {
+  "axis": "A28",
+  "positive": "Ri. Klosters/Davos",
+  "negative": "Ri. Landquart/Chur",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0138": {
+  "axis": "H29",
+  "positive": "Ri. Pontresina/St. Moritz (Nord)",
+  "negative": "Ri. Poschiavo/Tirano (Süd)",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0634": {
+  "axis": "H29",
+  "positive": "Ri. Pontresina/St. Moritz (Nord)",
+  "negative": "Ri. Poschiavo/Tirano (Süd)",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0169": {
+  "axis": "H28b",
+  "positive": "Ri. Davos",
+  "negative": "Ri. Susch/Engadin",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0227": {
+  "axis": "H28c",
+  "positive": "Ri. Zernez",
+  "negative": "Ri. Müstair",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0238": {
+  "axis": "A13b",
+  "positive": "Ri. Chur (Nord)",
+  "negative": "Ri. San Bernardino (Süd)",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0611": {
+  "axis": "A13b",
+  "positive": "Ri. Chur (Nord)",
+  "negative": "Ri. San Bernardino (Süd)",
+  "method": "geometric",
+  "verified": false
+ },
+ "CH:0630": {
+  "axis": "740",
+  "positive": "Ri. Arosa/Schanfigg",
+  "negative": "Ri. Chur",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0631": {
+  "axis": "H3a",
+  "positive": "Ri. Chur",
+  "negative": "Ri. Lenzerheide/Tiefencastel",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0632": {
+  "axis": "H28a",
+  "positive": "Ri. Klosters",
+  "negative": "Ri. Davos",
+  "method": "provisional",
+  "verified": false
+ },
+ "CH:0633": {
+  "axis": "H417b",
+  "positive": "Ri. Davos Platz",
+  "negative": "Ri. Davos Glaris",
+  "method": "provisional",
+  "verified": false
+ }
+}

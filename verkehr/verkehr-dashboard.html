@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verkehr in Graubünden – live</title>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<style>
+  :root{
+    --blau:#0068A4; --orange:#EE7733;
+    --frei:#2e9e5b; --zaeh:#EE7733; --stau:#d6342c; --nodata:#c4c4c4;
+    --ink:#1d2430; --muted:#6b7280; --line:#e6e8ec; --bg:#ffffff;
+  }
+  *{box-sizing:border-box}
+  html,body{overflow-x:hidden;max-width:100%}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg);font-size:15px;line-height:1.45}
+  .wrap{max-width:696px;margin:0 auto;padding:4px 2px 18px}
+  h1{font-size:1.34rem;margin:.2em 0 .1em;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:.86rem;margin:0 0 .5em}
+  .stand{font-size:.78rem;color:var(--muted);margin:.2em 0 .6em}
+  .stand b{color:var(--ink)}
+  .legend{display:flex;flex-wrap:wrap;gap:.6em 1.1em;font-size:.78rem;color:var(--muted);margin:.2em 0 .7em}
+  .legend span{display:inline-flex;align-items:center;gap:.32em}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  #map{width:100%;display:block;background:#f5f7f9;border:1px solid var(--line);border-radius:8px}
+  .road{fill:none;stroke:#cfd6dd;stroke-width:2;stroke-linecap:round}
+  .bound{fill:#eef2f5;stroke:#cdd5dd;stroke-width:1}
+  .site{stroke:#fff;stroke-width:1.3;cursor:pointer;transition:r .15s}
+  .site.sel{stroke:var(--ink);stroke-width:2.4}
+  .tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--line);
+       border-radius:7px;padding:7px 9px;font-size:.78rem;box-shadow:0 4px 14px rgba(20,30,50,.13);
+       opacity:0;transition:opacity .1s;max-width:240px;z-index:5}
+  .tip b{color:var(--ink)} .tip .r{display:flex;justify-content:space-between;gap:1.2em;margin-top:2px}
+  .detail{margin-top:14px}
+  .dhead{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.4em;margin-bottom:.1em}
+  .dhead h2{font-size:1.06rem;margin:.2em 0}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;font-size:.78rem}
+  .toggle button{border:0;background:#fff;padding:.28em .7em;cursor:pointer;color:var(--muted)}
+  .toggle button.on{background:var(--blau);color:#fff}
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.charts{grid-template-columns:1fr}}
+  .card{border:1px solid var(--line);border-radius:8px;padding:8px 8px 4px}
+  .card h3{font-size:.86rem;margin:.1em 0 .1em;font-weight:600}
+  .card .prov{font-size:.68rem;color:var(--orange);font-weight:600}
+  .card .now{font-size:.78rem;color:var(--muted);margin:0 0 .2em}
+  .card .trendword{color:var(--ink);font-weight:600}
+  .card .daycount{font-size:.74rem;color:var(--muted);margin:0 0 .3em}
+  .card .bnote{font-size:.7rem;color:var(--muted);margin:.3em 0 0;font-style:italic}
+  .card .now b{color:var(--ink);font-size:.95rem}
+  .axis text{fill:var(--muted);font-size:10px} .axis path,.axis line{stroke:#dfe3e8}
+  .band{fill:var(--blau);opacity:.10} .med{fill:none;stroke:#9aa4b0;stroke-width:1.4;stroke-dasharray:4 3}
+  .today{fill:none;stroke:var(--blau);stroke-width:2.4}
+  .nowln{stroke:var(--orange);stroke-width:1;stroke-dasharray:2 2}
+  .hoverln{stroke:#9aa4b0;stroke-width:1;stroke-dasharray:2 2;pointer-events:none}
+  .hoverdot{fill:var(--blau);stroke:#fff;stroke-width:1.4;pointer-events:none}
+  .foot{color:var(--muted);font-size:.72rem;margin-top:14px;border-top:1px solid var(--line);padding-top:8px}
+  .seedwarn{background:#fff7ed;border:1px solid #fde4c8;color:#9a5b1a;font-size:.74rem;
+            padding:5px 8px;border-radius:6px;margin:.4em 0}
+  .err{color:var(--stau);font-size:.85rem;padding:10px}
+  /* abstrakte Stau-Liste (v.a. Mobile) */
+  #board{margin-top:12px}
+  .bbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4em;margin:.2em 2px .4em}
+  .bhead{font-size:.76rem;color:var(--muted)}
+  .bgroup{font-size:.82rem;font-weight:700;color:var(--ink);margin:.85em 2px .15em;padding-bottom:.25em;border-bottom:2px solid var(--line)}
+  .bgroup small{font-weight:400;color:var(--muted);font-size:.82em}
+  .bgroup span{font-weight:400;color:var(--muted)}
+  .bsort button{padding:.22em .55em;font-size:.74rem}
+  .brow{display:flex;align-items:center;flex-wrap:wrap;gap:.4em .55em;padding:8px 6px;border-bottom:1px solid var(--line);cursor:pointer}
+  .brow:hover{background:#f5f7f9}
+  .brow.sel{background:#eef5fb}
+  .bcaret{flex:0 0 auto;color:var(--muted);font-size:.72rem;width:1em;text-align:center;margin-left:.1em}
+  .bexp{padding:8px 6px 12px;border-bottom:1px solid var(--line);background:#fafbfc;animation:bexp .18s ease}
+  @keyframes bexp{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  .bexp .dhead{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4em;margin:.1em 0 .5em}
+  .bexp .dtitle{font-size:.9rem;font-weight:600;color:var(--ink)}
+  .bdot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+  .bplace{flex:1 1 50%;font-size:.92rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bplace em{color:var(--muted);font-style:normal;font-size:.8em;margin-left:.3em}
+  .bchips{display:flex;gap:.35em;flex:0 0 auto;margin-left:auto}
+  .chip{display:inline-flex;align-items:center;gap:.28em;font-size:.78rem;color:var(--ink);background:#f2f4f7;border-radius:11px;padding:.12em .55em}
+  .chip i{width:8px;height:8px;border-radius:50%}
+  .trend{font-size:.62rem;color:var(--muted);margin-left:.18em;line-height:1}
+  @media(max-width:560px){ #map{display:none} .bplace{font-size:.95rem} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Verkehr in Graubünden – live</h1>
+  <p class="sub">Verkehrsfluss auf den <b>Nationalstrassen des Bundes</b> in Graubünden (v.a. A13) – Fahrzeuge pro Stunde und Tempo je Richtung. <b>Kantonsstrassen sind nicht enthalten.</b> Klick auf eine Zählstelle zeigt den Tagesverlauf.</p>
+  <p class="stand" id="stand">lädt …</p>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--frei)"></i>flüssig</span>
+    <span><i class="dot" style="background:var(--zaeh)"></i>zäh</span>
+    <span><i class="dot" style="background:var(--stau)"></i>stockend</span>
+    <span><i class="dot" style="background:var(--nodata)"></i>keine Daten</span>
+    <span>Punktgrösse = Fahrzeuge/h</span>
+  </div>
+  <svg id="map"></svg>
+  <div id="seedbox"></div>
+  <div id="board"></div>
+  <div class="foot" id="foot"></div>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+// ---- konfigurierbar: Datenquelle (Umzug = nur diese URL ändern) ----
+// Dynamische Live-Daten aus n8n (latest/today/baseline). Umzug = nur diese URL ändern.
+const DATA_API = "https://n8n.julianreich.ch/webhook/verkehr-data";
+// Statische Assets (gr_boundary.json) liegen neben dieser HTML-Datei ("" = gleiches Verzeichnis, "data" = Unterordner)
+const ASSET_BASE = "data";
+const apiUrl = f => DATA_API + "?f=" + f;
+const TZ = "Europe/Zurich";   // alle Zeiten in Schweizer Zeit anzeigen, unabhängig vom Browser
+function swissParts(d){ // {h:Stunde dezimal, dow:0-6} in Europe/Zurich
+  const p=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit',weekday:'short',hour12:false}).formatToParts(d);
+  const get=t=>p.find(x=>x.type===t).value;
+  const dowMap={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  return {h:(+get('hour'))+(+get('minute'))/60, dow:dowMap[get('weekday')]};
+}
+const C = {frei:"#2e9e5b", zaeh:"#EE7733", stau:"#d6342c", keine_daten:"#c4c4c4"};
+const tip = d3.select("#tip");
+let LATEST, BASE, BOUND, sel=null, metric="flow", boardSort="load";
+
+Promise.all([
+  d3.json(apiUrl("latest")),
+  d3.json(apiUrl("baseline")).catch(()=>null),
+  d3.json(ASSET_BASE+"/gr_boundary.json").catch(()=>null)
+]).then(([latest,base,bound])=>{
+  LATEST=sanitize(latest); BASE=base; BOUND=bound;
+  updateStand(latest);
+  if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
+  drawMap();
+  renderBoard();
+  // Default-Auswahl: höchstes Gesamtaufkommen
+  const top=latest.sites.slice().sort((a,b)=>tot(b)-tot(a))[0];
+  select(top.id);
+  d3.select("#foot").html(
+    '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr (Fahrzeuge/Stunde, Ø-Tempo) an den '
+    +'automatischen Zählstellen des Bundes auf den Nationalstrassen in Graubünden – Abruf alle 5 Min. '
+    +'Die Ampel beruht vorerst auf festen Tempo-Schwellen; auf Pässen kann sie zäh anzeigen, obwohl '
+    +'der langsame Verkehr dort normal ist (wird auf einen Vergleich mit dem ortsüblichen Wert umgestellt, '
+    +'sobald genug Tage erfasst sind). Richtungen sind teils nur geometrisch hergeleitet (<i>provisorisch</i> markiert). '
+    +'Defekt wirkende Messungen (eine Richtung 0, während die andere klar fährt) werden ausgeblendet. '
+    +'Kantonale Strassen sind nicht erfasst.<br>'
+    +'Datenquelle: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData»); Standorte/Namen amtlich '
+    +'(Tiefbauamt Graubünden). Grafik: Julian Reich.');
+  setInterval(refreshLatest, 60000);   // Auto-Refresh: alle 60 s neue Werte holen
+}).catch(e=>{d3.select("#board").html('<div class="err">Daten konnten nicht geladen werden: '+e+'</div>');});
+
+function updateStand(latest){
+  const t=new Date(latest.generated);
+  d3.select("#stand").html('Stand: <b>'+t.toLocaleString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</b> Uhr · aktualisiert alle 5 Min');
+}
+function refreshLatest(){
+  d3.json(apiUrl("latest")).then(latest=>{
+    if(!latest||!latest.sites)return;
+    LATEST=sanitize(latest); updateStand(latest); drawMap(); renderBoard();
+    if(sel) d3.selectAll(".site").classed("sel",function(){return this.getAttribute("data-id")===sel;});
+  }).catch(()=>{});
+}
+
+// Plausibilitaets-Filter: zeigt eine Richtung 0 Fz/h, waehrend die Gegenrichtung
+// klar aktiv ist (>= SUSPECT_PEER), ist der Sensor dieser Richtung mutmasslich
+// ausgefallen -> als "keine Daten" behandeln statt irrefuehrende 0 anzuzeigen.
+const SUSPECT_PEER=200;
+// Dauerhaft datenlose Zaehlstellen ausblenden (Sensor liefert nichts):
+// CH:0169 Flueela/Tschuggen N, CH:0098 Castasegna.
+const DROP_SITES=["CH:0169","CH:0098"];
+function sanitize(latest){
+  if(!latest||!latest.sites) return latest;
+  latest.sites=latest.sites.filter(s=>!DROP_SITES.includes(s.id));
+  const kill=d=>{d.flow=null;d.speed=null;d.status='keine_daten';d.suspect=true;};
+  for(const s of latest.sites){
+    const p=s.dirs.positive, n=s.dirs.negative;
+    if(p.flow===0 && (n.flow||0)>=SUSPECT_PEER) kill(p);
+    if(n.flow===0 && (p.flow||0)>=SUSPECT_PEER) kill(n);
+  }
+  return latest;
+}
+
+// Kurzfrist-Tendenz je Richtung: aktueller Wert vs. Schnitt der letzten ~30 Min.
+// +1 steigend, -1 fallend, 0 stabil/zu wenig Daten. Mindest-Volumen gegen Nacht-Rauschen.
+const TREND_FLOOR=60, TREND_TH=0.10;
+function trend(key, metric){
+  metric=metric||'flow';
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser||ser.length<4) return 0;
+  const vals=ser.map(p=>p[metric]).filter(v=>v!=null);
+  if(vals.length<4) return 0;
+  const cur=vals[vals.length-1];
+  const prior=vals.slice(Math.max(0,vals.length-7),vals.length-1); // ~vorherige 30 Min
+  if(!prior.length) return 0;
+  const mean=prior.reduce((a,b)=>a+b,0)/prior.length;
+  if(metric==='flow' && mean<TREND_FLOOR) return 0; // Volumen-Floor nur fuer Fahrzeuge
+  const d=(cur-mean)/mean;
+  return d>TREND_TH?1:(d<-TREND_TH?-1:0);
+}
+
+// Hochrechnung: bisher heute durchgefahrene Fahrzeuge (Schaetzung).
+// flow ist Fz/h; jeder 5-Min-Wert deckt 1/12 h ab -> Summe(flow)/12. Ist eine
+// Integration der Rate, kein exakter Zaehlerstand -> immer als "ca." kennzeichnen.
+function dayCount(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser||!ser.length) return null;
+  let s=0,n=0;
+  for(const p of ser){ if(p.flow!=null){ s+=p.flow; n++; } }
+  return n?Math.round(s/12):null;
+}
+// echte Zaehlung der letzten ~60 Min (gleitend): today sind 5-Min-Slot-Mittel in Fz/h,
+// jeder Slot deckt 1/12 h ab -> Summe(flow letzte 12 Slots)/12 = Fahrzeuge der letzten Stunde.
+function lastHourCount(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser||!ser.length) return null;
+  const fl=ser.filter(p=>p.flow!=null).slice(-12);
+  if(!fl.length) return null;
+  return Math.round(fl.reduce((a,p)=>a+p.flow,0)/12);
+}
+// geglaetteter Verkehr: Mittel der letzten ~15 Min (3 Slots) in Fz/h
+function flow15(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser) return null;
+  const fl=ser.filter(p=>p.flow!=null).slice(-3);
+  if(!fl.length) return null;
+  return Math.round(fl.reduce((a,p)=>a+p.flow,0)/fl.length);
+}
+// geglaettetes aktuelles Tempo: Mittel der letzten ~15 Min (3 Slots)
+function recentSpeed(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser) return null;
+  const sp=ser.filter(p=>p.speed!=null).slice(-3);
+  if(!sp.length) return null;
+  return Math.round(sp.reduce((a,p)=>a+p.speed,0)/sp.length*10)/10;
+}
+
+function tot(s){const f=d=>{const v=flow15(s.id+'|'+d);return v!=null?v:(s.dirs[d].flow||0);};return f('positive')+f('negative');}
+function worst(s){
+  const order={stau:3,zaeh:2,frei:1,keine_daten:0};
+  const a=s.dirs.positive.status,b=s.dirs.negative.status;
+  return order[a]>=order[b]?a:b;
+}
+
+function flatRings(geom){ // Polygon -> flache Liste aller [lon,lat]
+  return geom.coordinates.reduce((a,ring)=>a.concat(ring),[]);
+}
+function drawMap(){
+  const W=696, H=430;
+  const svg=d3.select("#map").attr("viewBox",`0 0 ${W} ${H}`).attr("height",H);
+  svg.selectAll("*").remove();
+  const pts=LATEST.sites.filter(s=>s.lat&&s.lon);
+  // --- bulletproof lineare Projektion (equirectangular, cos-Korrektur) ---
+  let lon0=d3.min(pts,d=>d.lon), lon1=d3.max(pts,d=>d.lon),
+      lat0=d3.min(pts,d=>d.lat), lat1=d3.max(pts,d=>d.lat);
+  if(BOUND){ // Grenze in den Ausschnitt einbeziehen
+    flatRings(BOUND).forEach(p=>{lon0=Math.min(lon0,p[0]);lon1=Math.max(lon1,p[0]);
+                                 lat0=Math.min(lat0,p[1]);lat1=Math.max(lat1,p[1]);});
+  }
+  const pad=14, kx=Math.cos((lat0+lat1)/2*Math.PI/180);
+  const gW=(lon1-lon0)*kx, gH=(lat1-lat0);
+  const s=Math.min((W-2*pad)/gW,(H-2*pad)/gH);
+  const offX=pad+((W-2*pad)-gW*s)/2, offY=pad+((H-2*pad)-gH*s)/2;
+  const proj=(lon,lat)=>[offX+(lon-lon0)*kx*s, offY+(lat1-lat)*s];
+
+  if(BOUND){
+    const d=BOUND.coordinates.map(ring=>"M"+ring.map(p=>proj(p[0],p[1]).join(",")).join("L")+"Z").join("");
+    svg.append("path").attr("class","bound").attr("d",d);
+  }
+  // Strassen als Linien durch sortierte Zähler je Route.
+  // A13a/A13b/A13c = eine durchgehende Route (A13); H-Strassen mit Buchstaben
+  // (H3a/H3b, H28a/b/c) sind dagegen verschiedene Strassen -> nicht mergen.
+  const routeKey=r=>/^A13[a-z]$/.test(r)?"A13":r;
+  const byRoad=d3.group(pts,d=>routeKey(d.road));
+  byRoad.forEach(arr=>{
+    if(arr.length<2)return;
+    const horiz=(d3.max(arr,d=>d.lon)-d3.min(arr,d=>d.lon))>=(d3.max(arr,d=>d.lat)-d3.min(arr,d=>d.lat));
+    const ss=arr.slice().sort((a,b)=>horiz?a.lon-b.lon:a.lat-b.lat);
+    svg.append("path").attr("class","road")
+       .attr("d","M"+ss.map(d=>proj(d.lon,d.lat).join(",")).join("L"));
+  });
+
+  const r=d3.scaleSqrt().domain([0,d3.max(pts,tot)||1]).range([3.5,15]);
+  svg.append("g").selectAll("circle").data(pts,d=>d.id).join("circle")
+    .attr("class","site").attr("data-id",d=>d.id)
+    .attr("cx",d=>proj(d.lon,d.lat)[0]).attr("cy",d=>proj(d.lon,d.lat)[1])
+    .attr("r",d=>r(tot(d))).attr("fill",d=>C[worst(d)])
+    .on("mousemove",(e,d)=>showTip(e,d)).on("mouseleave",hideTip)
+    .on("click",(e,d)=>select(d.id));
+}
+
+function showTip(e,d){
+  const fl=v=>v==null?"–":v+" Fz/h", sp=v=>v==null?"–":v+" km/h", p=d.dirs.positive,n=d.dirs.negative;
+  tip.html('<b>'+d.place+'</b> <span style="color:#6b7280">('+d.road+')</span>'
+    +'<div class="r"><span>'+p.label+'</span><span>'+fl(p.flow)+' · '+sp(p.speed)+'</span></div>'
+    +'<div class="r"><span>'+n.label+'</span><span>'+fl(n.flow)+' · '+sp(n.speed)+'</span></div>')
+    .style("left",(e.clientX+14)+"px").style("top",(e.clientY+12)+"px").style("opacity",1);
+}
+function hideTip(){tip.style("opacity",0);}
+
+function select(id, scroll){
+  sel = (sel===id) ? null : id;          // Toggle: erneuter Klick klappt zu
+  d3.selectAll(".site").classed("sel",function(){return this.getAttribute("data-id")===sel;});
+  renderBoard();                          // Liste neu zeichnen (inkl. aufgeklapptem Panel)
+  if(sel && scroll){
+    const row=document.querySelector('.brow[data-id="'+sel+'"]');
+    if(row) row.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+
+function sortRows(){
+  const rank={stau:0,zaeh:1,frei:2,keine_daten:3};
+  const rows=LATEST.sites.slice();
+  if(boardSort==="az")      rows.sort((a,b)=>a.place.localeCompare(b.place,'de'));
+  else if(boardSort==="vol")rows.sort((a,b)=>tot(b)-tot(a));
+  else                      rows.sort((a,b)=>{const d=rank[worst(a)]-rank[worst(b)];return d!==0?d:tot(b)-tot(a);});
+  return rows;
+}
+function axisClass(s){return /^A13|^A28/.test(s.road)?"haupt":"pass";}
+function renderBoard(){
+  const rows=sortRows();
+  const chip=(s,dir)=>{const x=s.dirs[dir];
+    const a=x.flow==null?0:trend(s.id+'|'+dir);
+    const ar=a>0?'<span class="trend" title="steigend ggü. den letzten ~30 Min">▲</span>'
+             :a<0?'<span class="trend" title="fallend ggü. den letzten ~30 Min">▼</span>':'';
+    const v=x.flow==null?'–':((flow15(s.id+'|'+dir) ?? x.flow));
+    return '<span class="chip" title="Fahrzeuge/h, Ø letzte 15 Min"><i style="background:'+C[x.status]+'"></i>'+v+ar+'</span>';};
+  const btn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
+  const rowHtml=s=>{const open=s.id===sel;
+    return '<div class="brow'+(open?' sel':'')+'" data-id="'+s.id+'">'
+      +'<span class="bdot" style="background:'+C[worst(s)]+'"></span>'
+      +'<span class="bplace">'+s.place+'<em>'+s.road+'</em></span>'
+      +'<span class="bchips">'+chip(s,'positive')+chip(s,'negative')+'</span>'
+      +'<span class="bcaret">'+(open?'▾':'▸')+'</span></div>'
+      +(open?'<div class="bexp" data-for="'+s.id+'"></div>':'');};
+  const haupt=rows.filter(s=>axisClass(s)==="haupt");
+  const pass =rows.filter(s=>axisClass(s)==="pass");
+  const section=(title,arr)=>arr.length?('<div class="bgroup">'+title+' <span>('+arr.length+')</span></div>'+arr.map(rowHtml).join('')):'';
+  d3.select("#board").html(
+    '<div class="bbar"><span class="bhead">Zählstellen · Fz/h je Richtung (Ø 15 Min) · tippen für Tagesverlauf</span>'
+    +'<span class="toggle bsort">'+btn('load','Auslastung')+btn('vol','Verkehr')+btn('az','A–Z')+'</span></div>'
+    +section('Hauptachsen <small>A13/A28</small>',haupt)
+    +section('Pässe &amp; Nebenstrassen',pass)
+  );
+  d3.selectAll(".bsort button").on("click",function(){boardSort=this.getAttribute("data-sort");renderBoard();});
+  d3.selectAll(".brow").on("click",function(){select(this.getAttribute("data-id"), true);});
+  if(sel){
+    const s=LATEST.sites.find(x=>x.id===sel);
+    if(s) renderExpand(d3.select('.bexp[data-for="'+sel+'"]'), s);
+  }
+}
+
+function dayType(){const dow=swissParts(new Date(LATEST.generated)).dow;return dow===0?"so":dow===6?"sa":dow===5?"fr":"modo";}
+const CATLABEL={modo:"Mo–Do",fr:"Freitag",sa:"Samstag",so:"Sonntag"};
+
+function renderExpand(container, s){
+  if(!container||container.empty())return;
+  const prov=!s.dirs.positive.verified;
+  container.html(
+    '<div class="dhead"><span class="dtitle">'+s.place+' · Tagesverlauf <span style="color:#6b7280;font-weight:400;font-size:.85em">'+s.road+'</span></span>'
+    +'<span class="toggle"><button class="mbtn'+(metric==="flow"?" on":"")+'" data-m="flow">Fahrzeuge/h</button>'
+    +'<button class="mbtn'+(metric==="speed"?" on":"")+'" data-m="speed">Tempo km/h</button></span></div>'
+    +'<div class="charts" id="charts"></div>');
+  container.selectAll(".mbtn").on("click",function(){metric=this.getAttribute("data-m");renderBoard();});
+  ["positive","negative"].forEach(dir=>chartCard(s,dir,prov));
+}
+
+// Viertelstunden-Mittel: rohe 5-Min-Punkte in feste 15-Min-Bloecke legen und mitteln.
+// Gleiches Raster wie die Baseline -> konsistent; Linie und Hover zeigen denselben Wert.
+function bucketize(ser){
+  const b={};
+  for(const p of ser){
+    const hm=String(p.t).split(':'); const idx=Math.floor(((+hm[0])*60+(+hm[1]))/15);
+    (b[idx]=b[idx]||{f:[],s:[]});
+    if(p.flow!=null)b[idx].f.push(p.flow);
+    if(p.speed!=null)b[idx].s.push(p.speed);
+  }
+  const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+  return Object.keys(b).map(Number).sort((a,c)=>a-c).map(idx=>({
+    idx, h:(idx*15+7.5)/60, flow:avg(b[idx].f), speed:avg(b[idx].s),
+    label:String(Math.floor(idx/4)).padStart(2,'0')+':'+String((idx%4)*15).padStart(2,'0')
+  }));
+}
+
+function chartCard(s,dir,prov){
+  const dd=s.dirs[dir];
+  const card=d3.select("#charts").append("div").attr("class","card");
+  card.append("h3").html(dd.label+(prov?' <span class="prov" title="Richtung noch nicht empirisch bestätigt">⚠ provisorisch</span>':''));
+  const k0=s.id+"|"+dir;
+  let headline, hasVal;
+  if(metric==="flow"){ const lh=lastHourCount(k0); hasVal=lh!=null;
+    headline='letzte Stunde: <b>'+(hasVal?'ca. '+lh.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'; }
+  else { const rs=recentSpeed(k0); hasVal=rs!=null;
+    headline='Tempo: <b>'+(hasVal?'ca. '+rs+' km/h':'–')+'</b> <span style="font-weight:400;color:var(--muted)">(Ø 15 Min)</span>'; }
+  let tword="";
+  if(hasVal){
+    const tr=trend(k0, metric);
+    const w=tr>0?"▲ steigend":tr<0?"▼ sinkend":"– stabil";
+    tword=' · <span class="trendword" title="Kurzfrist-Tendenz der letzten ~30 Min">'+w+'</span>';
+  }
+  card.append("p").attr("class","now").html(headline+tword);
+  const dc=dayCount(s.id+"|"+dir);
+  if(dc!=null) card.append("p").attr("class","daycount")
+    .attr("title","Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung, kein exakter Zählerstand")
+    .html('heute bisher: <b>ca. '+dc.toLocaleString('de-CH')+'</b> Fahrzeuge');
+  const W=330,H=150,m={t:6,r:8,b:18,l:34};
+  const svg=card.append("svg").attr("viewBox",`0 0 ${W} ${H}`).style("width","100%").style("height","auto");
+  const x=d3.scaleLinear().domain([0,24]).range([m.l,W-m.r]);
+  const key=s.id+"|"+dir;
+  const today=(window.__today&&window.__today.series&&window.__today.series[key])||[];
+  const buckets=bucketize(today);
+  const bl=(BASE&&BASE.data&&BASE.data[key])?BASE.data[key][dayType()]:null;
+  const slotX=i=>i/4;
+  const medArr = bl ? (metric==="flow"?bl.flow_med:bl.speed_med) : null;
+  const p25=bl?bl.flow_p25:null, p75=bl?bl.flow_p75:null;
+  let yMax=10;
+  // d3.max liefert undefined bei lauter null (z.B. Baseline-Daytype mit 0 Tagen) -> NaN vermeiden
+  const mBase=medArr?d3.max(metric==="flow"?p75:medArr):null;
+  if(mBase!=null) yMax=Math.max(yMax,mBase);
+  if(buckets.length){const mb=d3.max(buckets,d=>metric==="flow"?(d.flow||0):(d.speed||0)); if(mb!=null) yMax=Math.max(yMax,mb);}
+  const y=d3.scaleLinear().domain([0,yMax*1.1]).nice().range([H-m.b,m.t]);
+  svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-m.b})`)
+     .call(d3.axisBottom(x).ticks(6).tickFormat(d=>d+"h"));
+  svg.append("g").attr("class","axis").attr("transform",`translate(${m.l},0)`)
+     .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format("~s")));
+  // Referenzband (nur flow) + Median, leere Slots überspringen
+  if(bl && metric==="flow"){
+    const area=d3.area().defined((d,i)=>p25[i]!=null&&p75[i]!=null).x((d,i)=>x(slotX(i))).y0((d,i)=>y(p25[i])).y1((d,i)=>y(p75[i])).curve(d3.curveMonotoneX);
+    svg.append("path").datum(p25).attr("class","band").attr("d",area);
+  }
+  if(medArr){
+    const ml=d3.line().defined((d,i)=>medArr[i]!=null).x((d,i)=>x(slotX(i))).y((d,i)=>y(medArr[i])).curve(d3.curveMonotoneX);
+    svg.append("path").datum(medArr).attr("class","med").attr("d",ml);
+  }
+  // heutige Linie = Viertelstunden-Mittel (Linie und Hover zeigen denselben Wert).
+  if(buckets.length){
+    const tl=d3.line().x(d=>x(d.h)).y(d=>y(metric==="flow"?d.flow:d.speed))
+      .defined(d=>(metric==="flow"?d.flow:d.speed)!=null).curve(d3.curveMonotoneX);
+    svg.append("path").datum(buckets).attr("class","today").attr("d",tl);
+  }
+  // Jetzt-Linie
+  const nowH=swissParts(new Date()).h;
+  svg.append("line").attr("class","nowln").attr("x1",x(nowH)).attr("x2",x(nowH)).attr("y1",m.t).attr("y2",H-m.b);
+  // Hover: Uhrzeit + Werte am nächstgelegenen Zeitpunkt
+  const guide=svg.append("line").attr("class","hoverln").attr("y1",m.t).attr("y2",H-m.b).style("opacity",0);
+  const hdot=svg.append("circle").attr("class","hoverdot").attr("r",3.2).style("opacity",0);
+  svg.append("rect").attr("x",m.l).attr("y",m.t).attr("width",W-m.r-m.l).attr("height",H-m.b-m.t)
+     .attr("fill","transparent").style("cursor","crosshair")
+     .on("mousemove",function(ev){
+        if(!buckets.length)return;
+        const hr=x.invert(d3.pointer(ev,svg.node())[0]);
+        let best=null,bd=1e9;
+        for(const b of buckets){const dh=Math.abs(b.h-hr);if(dh<bd){bd=dh;best=b;}}
+        if(!best)return;
+        const bx=x(best.h);
+        guide.attr("x1",bx).attr("x2",bx).style("opacity",1);
+        const val=metric==="flow"?best.flow:best.speed;
+        if(val!=null)hdot.attr("cx",bx).attr("cy",y(val)).style("opacity",1);else hdot.style("opacity",0);
+        let typ="";
+        if(bl){const arr=metric==="flow"?bl.flow_med:bl.speed_med;const mv=arr&&arr[best.idx];if(mv!=null)typ='<div class="r"><span>typisch</span><span>'+mv+(metric==="flow"?' Fz/h':' km/h')+'</span></div>';}
+        const e=best.idx+1, endLbl=String(Math.floor(e/4)%24).padStart(2,'0')+':'+String((e%4)*15).padStart(2,'0');
+        tip.html('<b>'+best.label+'–'+endLbl+'</b> · Ø Viertelstunde'
+          +'<div class="r"><span>Fahrzeuge</span><span>'+(best.flow==null?'–':'ca. '+Math.round(best.flow)+' Fz/h')+'</span></div>'
+          +'<div class="r"><span>Tempo</span><span>'+(best.speed==null?'–':'ca. '+(Math.round(best.speed*10)/10)+' km/h')+'</span></div>'+typ)
+          .style("left",(ev.pageX+14)+"px").style("top",(ev.pageY+12)+"px").style("opacity",1);
+     })
+     .on("mouseleave",function(){guide.style("opacity",0);hdot.style("opacity",0);hideTip();});
+  // Hinweis solange wenige Vergleichstage erfasst sind (Faktentreue: keine Schein-Robustheit)
+  if(bl){
+    const cat=dayType();
+    const n=(BASE.n&&BASE.n[cat])||0;
+    if(n<4) card.append("p").attr("class","bnote").html('Vergleichslinie vorläufig – erst '+n+' Vergleichstag'+(n===1?'':'e')+' ('+CATLABEL[cat]+') erfasst');
+  } else if(metric==="flow" && (!BASE || !BASE.generated)){
+    card.append("p").attr("class","bnote").html('Vergleichslinie folgt, sobald genug Tage erfasst sind');
+  }
+}
+function toH(hhmm){const[a,b]=hhmm.split(":");return +a+ +b/60;}
+
+// today.json separat laden (optional)
+function loadToday(){d3.json(apiUrl("today")).then(t=>{window.__today=t;if(LATEST)renderBoard();}).catch(()=>{});}
+loadToday();
+setInterval(loadToday, 300000);   // today alle 5 Min neu -> Tendenz-Pfeile bleiben aktuell
+</script>
+</body>
+</html>
