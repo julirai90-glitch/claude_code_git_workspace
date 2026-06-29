@@ -216,6 +216,14 @@ function lastHourCount(key){
   if(!fl.length) return null;
   return Math.round(fl.reduce((a,p)=>a+p.flow,0)/12);
 }
+// geglaetteter Verkehr: Mittel der letzten ~15 Min (3 Slots) in Fz/h
+function flow15(key){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser) return null;
+  const fl=ser.filter(p=>p.flow!=null).slice(-3);
+  if(!fl.length) return null;
+  return Math.round(fl.reduce((a,p)=>a+p.flow,0)/fl.length);
+}
 // geglaettetes aktuelles Tempo: Mittel der letzten ~15 Min (3 Slots)
 function recentSpeed(key){
   const ser=window.__today&&window.__today.series&&window.__today.series[key];
@@ -225,7 +233,7 @@ function recentSpeed(key){
   return Math.round(sp.reduce((a,p)=>a+p.speed,0)/sp.length*10)/10;
 }
 
-function tot(s){return (s.dirs.positive.flow||0)+(s.dirs.negative.flow||0);}
+function tot(s){const f=d=>{const v=flow15(s.id+'|'+d);return v!=null?v:(s.dirs[d].flow||0);};return f('positive')+f('negative');}
 function worst(s){
   const order={stau:3,zaeh:2,frei:1,keine_daten:0};
   const a=s.dirs.positive.status,b=s.dirs.negative.status;
@@ -313,7 +321,8 @@ function renderBoard(){
     const a=x.flow==null?0:trend(s.id+'|'+dir);
     const ar=a>0?'<span class="trend" title="steigend ggü. den letzten ~30 Min">▲</span>'
              :a<0?'<span class="trend" title="fallend ggü. den letzten ~30 Min">▼</span>':'';
-    return '<span class="chip"><i style="background:'+C[x.status]+'"></i>'+(x.flow==null?'–':x.flow)+ar+'</span>';};
+    const v=x.flow==null?'–':((flow15(s.id+'|'+dir) ?? x.flow));
+    return '<span class="chip" title="Fahrzeuge/h, Ø letzte 15 Min"><i style="background:'+C[x.status]+'"></i>'+v+ar+'</span>';};
   const btn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
   const rowHtml=s=>{const open=s.id===sel;
     return '<div class="brow'+(open?' sel':'')+'" data-id="'+s.id+'">'
@@ -326,7 +335,7 @@ function renderBoard(){
   const pass =rows.filter(s=>axisClass(s)==="pass");
   const section=(title,arr)=>arr.length?('<div class="bgroup">'+title+' <span>('+arr.length+')</span></div>'+arr.map(rowHtml).join('')):'';
   d3.select("#board").html(
-    '<div class="bbar"><span class="bhead">Zählstellen · Fz/h je Richtung · tippen für Tagesverlauf</span>'
+    '<div class="bbar"><span class="bhead">Zählstellen · Fz/h je Richtung (Ø 15 Min) · tippen für Tagesverlauf</span>'
     +'<span class="toggle bsort">'+btn('load','Auslastung')+btn('vol','Verkehr')+btn('az','A–Z')+'</span></div>'
     +section('Hauptachsen <small>A13/A28</small>',haupt)
     +section('Pässe &amp; Nebenstrassen',pass)
