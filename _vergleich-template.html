@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vier Stationen, ein Trend · Klima-Prototyp</title>
+<style>
+  :root{ --orange:#EE7733; --grau:#6b7280; }
+  *{ box-sizing:border-box; }
+  body{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:#1f2937; margin:0; padding:20px; background:#fff; line-height:1.5; }
+  .wrap{ max-width:820px; margin:0 auto; }
+  h1{ font-size:1.6rem; margin:0 0 4px; }
+  .kicker{ color:var(--orange); font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.78rem; }
+  .sub{ color:var(--grau); font-size:.9rem; margin:0 0 14px; }
+  .chart{ position:relative; }
+  svg{ width:100%; display:block; touch-action:none; cursor:crosshair; }
+  .scalebar{ display:flex; align-items:center; gap:8px; font-size:.78rem; color:var(--grau); margin-top:10px; flex-wrap:wrap; }
+  .scalebar .grad{ height:12px; flex:1; min-width:140px; border-radius:3px; background:linear-gradient(90deg,#08306b,#4a90c2,#f7f7f7,#d6604d,#67000d); }
+  .note{ font-size:.76rem; color:var(--grau); margin-top:10px; }
+  @media (prefers-reduced-motion: reduce){ .tip{ transition:none; } }
+  .tip{ position:fixed; pointer-events:none; background:#fff; border:1px solid #d1d5db; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.14); padding:8px 11px; font-size:.8rem; opacity:0; transition:opacity .07s; z-index:50; min-width:150px; }
+  .tip b{ font-size:1.05rem; display:block; margin-bottom:3px; }
+  .tip .row{ display:flex; justify-content:space-between; gap:16px; } .tip .row span:last-child{ font-weight:600; }
+  footer{ margin-top:26px; border-top:1px solid #e5e7eb; padding-top:14px; font-size:.76rem; color:var(--grau); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Graubünden in Zahlen · Klima-Prototyp</div>
+  <h1>Vier Stationen, ein Trend</h1>
+  <p class="sub">Jahresmittel-Temperatur 1864–2025 als Warming Stripes, nach Höhe sortiert (Tallage oben, Hochgebirge unten). Farbe = Abweichung vom jeweiligen Stationsschnitt 1961–1990, gemeinsame Skala – so ist die Erwärmung direkt vergleichbar.</p>
+  <div class="chart"><svg id="multi" role="img" aria-label="Warming Stripes von vier Stationen im Vergleich"></svg></div>
+  <div class="scalebar"><span>kühler als 1961–1990</span><div class="grad"></div><span>wärmer</span></div>
+  <p class="note">Quelle: MeteoSchweiz, homogene Klimamessreihen. Bad Ragaz liegt im Kanton St. Gallen (nächstgelegene Tieflagen-Langreihe). Abgerufen 26.06.2026 von data.geo.admin.ch.</p>
+  <footer><b>Prototyp</b> – nicht für Publikation.</footer>
+</div>
+<script>
+const STR = __STRIPES_JSON__;
+const $ = id => document.getElementById(id);
+STR.forEach(s=>{ const d=s.series.filter(p=>p[0]>=1961&&p[0]<=1990); s.ref=d.reduce((a,p)=>a+p[1],0)/d.length; });
+let maxAbs=0; STR.forEach(s=>s.series.forEach(p=>{ const a=Math.abs(p[1]-s.ref); if(a>maxAbs)maxAbs=a; }));
+const STOPS=[[8,48,107],[74,144,194],[247,247,247],[214,96,77],[103,0,13]];
+function col(t,ref){ let x=Math.max(0,Math.min(1,((t-ref)/maxAbs+1)/2)); const seg=x*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(seg)),f=seg-i,A=STOPS[i],B=STOPS[i+1]; const c=k=>Math.round(A[k]+(B[k]-A[k])*f); return `rgb(${c(0)},${c(1)},${c(2)})`; }
+const Y0=1864,Y1=2025,NY=Y1-Y0+1;
+let META=null;
+function widthOf(svg){ return Math.round(svg.getBoundingClientRect().width)||svg.parentElement.clientWidth||360; }
+function render(){
+  const svg=$('multi'), W=widthOf(svg), small=W<560;
+  const mL=small?96:150, mR=8, top=6, axisH=22, rowH=small?44:56, gap=8;
+  const H=top+STR.length*(rowH+gap)+axisH;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.style.height=H+'px';
+  const plotW=W-mL-mR, bw=plotW/NY;
+  const X=y=>mL+(y-Y0)*bw;
+  let s='';
+  STR.forEach((st,ri)=>{
+    const y0=top+ri*(rowH+gap);
+    st.series.forEach(p=>{ if(p[0]<Y0||p[0]>Y1)return; s+=`<rect x="${(X(p[0])).toFixed(2)}" y="${y0}" width="${(bw+0.6).toFixed(2)}" height="${rowH}" fill="${col(p[1],st.ref)}"/>`; });
+    // label
+    s+=`<text x="${mL-12}" y="${y0+rowH/2-2}" text-anchor="end" font-size="${small?12:13.5}" font-weight="700" fill="#1f2937">${st.name}</text>`;
+    s+=`<text x="${mL-12}" y="${y0+rowH/2+13}" text-anchor="end" font-size="${small?9.5:10.5}" fill="#9ca3af">${st.height} m · ${st.region}</text>`;
+  });
+  // year axis
+  const ay=top+STR.length*(rowH+gap)+2;
+  (small?[1900,1960,2025]:[1864,1900,1950,2000,2025]).forEach(y=>{ const x=X(y)+bw/2; s+=`<line x1="${x}" y1="${ay}" x2="${x}" y2="${ay+4}" stroke="#9ca3af"/><text x="${x}" y="${ay+16}" text-anchor="middle" font-size="11" fill="#6b7280">${y}</text>`; });
+  s+=`<line class="mk" id="mk" y1="${top}" y2="${ay}" stroke="#111" stroke-width="1.5" opacity="0"/>`;
+  svg.innerHTML=s; META={W,mL,mR,bw,rowH,gap,top,plotW};
+}
+// tooltip
+const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
+function showTip(html,cx,cy){ tip.innerHTML=html; tip.style.opacity=1; let lx=cx+14; if(lx+180>window.innerWidth) lx=cx-186; let ty=cy+14; if(ty+tip.offsetHeight>window.innerHeight) ty=Math.max(6,cy-tip.offsetHeight-14); tip.style.left=Math.max(6,lx)+'px'; tip.style.top=ty+'px'; }
+function hideTip(){ tip.style.opacity=0; const m=$('mk'); if(m)m.setAttribute('opacity',0); }
+$('multi').addEventListener('pointermove',ev=>{
+  if(!META)return; const svg=$('multi'), r=svg.getBoundingClientRect(); const sx=svg.viewBox.baseVal.width/r.width||1, sy=svg.viewBox.baseVal.height/r.height||1;
+  const vx=(ev.clientX-r.left)*sx, vy=(ev.clientY-r.top)*sy;
+  const yr=Math.round(Y0+(vx-META.mL)/META.bw-0.5); if(yr<Y0||yr>Y1){hideTip();return;}
+  let ri=Math.floor((vy-META.top)/(META.rowH+META.gap)); if(ri<0||ri>=STR.length){hideTip();return;}
+  const st=STR[ri]; const pt=st.series.find(p=>p[0]===yr); if(!pt){hideTip();return;}
+  const d=pt[1]-st.ref;
+  showTip(`<b>${st.name} · ${yr}</b><div class="row"><span>Jahresmittel</span><span>${pt[1].toFixed(1)} °C</span></div><div class="row"><span>Abw. 1961–90</span><span>${d>=0?'+':'−'}${Math.abs(d).toFixed(1)} °C</span></div>`,ev.clientX,ev.clientY);
+  const mk=$('mk'); if(mk){ const x=META.mL+(yr-Y0+0.5)*META.bw; mk.setAttribute('x1',x); mk.setAttribute('x2',x); mk.setAttribute('opacity',1); }
+});
+$('multi').addEventListener('pointerleave',hideTip);
+let raf; window.addEventListener('resize',()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(render); });
+render();
+</script>
+</body>
+</html>

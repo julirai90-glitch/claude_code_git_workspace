@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klima Davos 1864–2025 · Prototyp</title>
+<style>
+  :root{ --blau:#0068A4; --orange:#EE7733; --grau:#6b7280; --hell:#eef2f5; }
+  *{ box-sizing:border-box; }
+  body{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        color:#1f2937; margin:0; padding:20px; background:#fff; line-height:1.5; }
+  .wrap{ max-width:780px; margin:0 auto; }
+  h1{ font-size:1.6rem; margin:0 0 4px; }
+  h2{ font-size:1.1rem; margin:36px 0 2px; }
+  .kicker{ color:var(--orange); font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.78rem; }
+  .sub{ color:var(--grau); font-size:.88rem; margin:0 0 10px; }
+  .chart{ position:relative; }
+  svg{ width:100%; display:block; touch-action:none; cursor:crosshair; }
+  .note{ font-size:.76rem; color:var(--grau); margin-top:8px; }
+  .legend{ display:flex; gap:16px; font-size:.8rem; margin:8px 0; flex-wrap:wrap; align-items:center; }
+  .legend i{ width:13px; height:13px; border-radius:50%; display:inline-block; vertical-align:-2px; margin-right:5px; }
+  .scalebar{ display:flex; align-items:center; gap:8px; font-size:.76rem; color:var(--grau); margin-top:8px; flex-wrap:wrap; }
+  .scalebar .grad{ height:12px; flex:1; min-width:120px; border-radius:3px;
+     background:linear-gradient(90deg,#08306b,#4a90c2,#f7f7f7,#d6604d,#67000d); }
+  @media (prefers-reduced-motion: reduce){ .tip{ transition:none; } }
+  .tip{ position:fixed; pointer-events:none; background:#fff; border:1px solid #d1d5db;
+        border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.14); padding:8px 11px; font-size:.8rem;
+        opacity:0; transition:opacity .07s; z-index:50; min-width:150px; }
+  .tip b{ font-size:1.05rem; display:block; margin-bottom:3px; }
+  .tip .row{ display:flex; justify-content:space-between; gap:16px; }
+  .tip .row span:last-child{ font-weight:600; }
+  .records{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 4px; }
+  .records .rec{ background:var(--hell); border-radius:9px; padding:9px 13px; flex:1; min-width:130px; }
+  .records .rec b{ font-size:1.15rem; display:block; }
+  .records .rec.hot b{ color:#c0392b; } .records .rec.cold b{ color:#2471a3; }
+  .records .rec span{ font-size:.74rem; color:var(--grau); }
+  hr{ border:0; border-top:1px solid #e5e7eb; margin:40px 0 0; }
+  footer{ margin-top:30px; border-top:1px solid #e5e7eb; padding-top:14px; font-size:.76rem; color:var(--grau); }
+  code{ background:var(--hell); padding:1px 5px; border-radius:4px; font-size:.85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Graubünden in Zahlen · Klima-Prototyp</div>
+  <h1>So hat sich Davos erwärmt</h1>
+  <p class="sub">Homogene Klimamessreihe der Station Davos (1560&nbsp;m), MeteoSchweiz. Jahreswerte 1864–2025. <em>Fünf Ansichten zur Auswahl – später streichen wir, was wir nicht brauchen. Alle reagieren auf Hover/Tap.</em></p>
+  <div class="records" id="records"></div>
+  <p class="note">Tagesrekorde aus der täglichen homogenen Messreihe (Tageswerte ab ~1888); Niederschlagsrekorde aus den Jahressummen ab 1867.</p>
+
+  <h2>① Warming Stripes – 162 Jahre auf einen Blick</h2>
+  <p class="sub">Jede Linie ein Jahr, Farbe = Abweichung vom Schnitt 1961–1990.</p>
+  <div class="chart"><svg id="stripes" role="img" aria-label="Warming Stripes: Jahresmitteltemperatur Davos 1864 bis 2025, von kühl/blau zu warm/rot"></svg></div>
+  <div class="scalebar"><span id="sc-min">kühler</span><div class="grad"></div><span id="sc-max">wärmer</span></div>
+  <p class="note">Quelle: MeteoSchweiz, homogene Klimamessreihe Station Davos. Referenzperiode 1961–1990.</p>
+
+  <h2>② Was die Erwärmung konkret bedeutet</h2>
+  <p class="sub">Mittlere Tage pro Jahr – zwei offizielle 30-Jahre-Klimanormen (1961–1990 → 1991–2020).</p>
+  <div class="legend">
+    <span><i style="background:#0068A4"></i>1961–1990</span>
+    <span><i style="background:#EE7733"></i>1991–2020</span>
+  </div>
+  <div class="chart"><svg id="dumbbell" role="img" aria-label="Veränderung von Frost-, Eis- und Sommertagen zwischen den Klimanormen 1961-1990 und 1991-2020"></svg></div>
+  <p class="note">Quelle: MeteoSchweiz, homogene Reihen Station Davos – Sommertage (Max&nbsp;≥25&nbsp;°C), Frosttage (Min&nbsp;&lt;0&nbsp;°C), Eistage (Max&nbsp;&lt;0&nbsp;°C). Ab 1959.</p>
+
+  <hr>
+  <h2>③ Jahresmittel-Temperatur 1864–2025 (Säulen + Trend)</h2>
+  <p class="sub">Jede Säule ein Jahr, Linie = gleitendes 10-Jahre-Mittel.</p>
+  <div class="chart"><svg id="temp" role="img" aria-label="Jahresmitteltemperatur Davos 1864 bis 2025 als Säulen mit gleitendem 10-Jahre-Mittel"></svg></div>
+  <p class="note">Quelle: MeteoSchweiz, homogene Klimamessreihe Station Davos.</p>
+
+  <h2>④ Sommertage und Frosttage im Jahresverlauf</h2>
+  <div class="legend">
+    <span><i style="background:#EE7733;border-radius:3px"></i>Sommertage (Säulen, links)</span>
+    <span><i style="background:#0068A4"></i>Frosttage (Linie, rechts)</span>
+  </div>
+  <div class="chart"><svg id="days" role="img" aria-label="Sommertage und Frosttage pro Jahr in Davos seit 1959"></svg></div>
+  <p class="note">Quelle: MeteoSchweiz, homogene Reihen Station Davos. Frosttage als 10-Jahre-Mittel geglättet. Ab 1959.</p>
+
+  <hr>
+  <h2>⑤ Niederschlag pro Jahr 1867–2025</h2>
+  <p class="sub">Jahressumme je Säule, Linie = gleitendes 10-Jahre-Mittel. Anders als bei der Temperatur: <strong>kein klarer Trend</strong> – die Menge schwankt stark, der Wandel in Davos ist die Wärme, nicht der Niederschlag.</p>
+  <div class="chart"><svg id="precip" role="img" aria-label="Jährliche Niederschlagssumme Davos 1867 bis 2025 mit gleitendem 10-Jahre-Mittel"></svg></div>
+  <p class="note">Quelle: MeteoSchweiz, homogene Niederschlagsreihe Station Davos (Jahressumme in mm). Verfügbar ab 1867.</p>
+
+  <footer>
+    <b>Prototyp</b> – nicht für Publikation. Daten ungefiltert aus der offiziellen Open-Data-CSV.<br>
+    Quelle: MeteoSchweiz Open Data, homogene Klimareihe Station Davos (Datensatz «Climate stations – Homogeneous data series»). Abgerufen 26.06.2026 von data.geo.admin.ch.
+  </footer>
+</div>
+
+<script>
+const DATA = [{"y":1864,"tmean":1.2},{"y":1865,"tmean":2.2},{"y":1866,"tmean":2.5},{"y":1867,"tmean":2.4},{"y":1868,"tmean":2.7},{"y":1869,"tmean":2.3},{"y":1870,"tmean":1.5},{"y":1871,"tmean":1.2},{"y":1872,"tmean":2.8},{"y":1873,"tmean":2.4},{"y":1874,"tmean":1.7},{"y":1875,"tmean":1.8},{"y":1876,"tmean":2.6},{"y":1877,"tmean":2.2},{"y":1878,"tmean":1.6},{"y":1879,"tmean":1.2},{"y":1880,"tmean":2.6},{"y":1881,"tmean":2.1},{"y":1882,"tmean":2.3},{"y":1883,"tmean":1.4},{"y":1884,"tmean":2.2},{"y":1885,"tmean":2.4},{"y":1886,"tmean":2},{"y":1887,"tmean":0.8},{"y":1888,"tmean":1.5},{"y":1889,"tmean":1.3},{"y":1890,"tmean":1.2},{"y":1891,"tmean":1.3},{"y":1892,"tmean":1.9},{"y":1893,"tmean":2.1},{"y":1894,"tmean":2.1},{"y":1895,"tmean":1.9},{"y":1896,"tmean":1.4},{"y":1897,"tmean":2.5},{"y":1898,"tmean":2.8},{"y":1899,"tmean":2.4},{"y":1900,"tmean":2.9},{"y":1901,"tmean":1.8},{"y":1902,"tmean":2.2},{"y":1903,"tmean":1.9},{"y":1904,"tmean":2.7},{"y":1905,"tmean":1.7},{"y":1906,"tmean":1.7},{"y":1907,"tmean":2},{"y":1908,"tmean":1.9},{"y":1909,"tmean":1.5},{"y":1910,"tmean":2},{"y":1911,"tmean":2.7},{"y":1912,"tmean":1.9},{"y":1913,"tmean":2.4},{"y":1914,"tmean":2.1},{"y":1915,"tmean":2.1},{"y":1916,"tmean":2.3},{"y":1917,"tmean":1.4},{"y":1918,"tmean":2.5},{"y":1919,"tmean":1.3},{"y":1920,"tmean":3.2},{"y":1921,"tmean":3.1},{"y":1922,"tmean":1.7},{"y":1923,"tmean":2.5},{"y":1924,"tmean":2},{"y":1925,"tmean":2.1},{"y":1926,"tmean":2.9},{"y":1927,"tmean":2.7},{"y":1928,"tmean":2.9},{"y":1929,"tmean":2.1},{"y":1930,"tmean":3},{"y":1931,"tmean":1.7},{"y":1932,"tmean":2.3},{"y":1933,"tmean":1.8},{"y":1934,"tmean":3.3},{"y":1935,"tmean":1.8},{"y":1936,"tmean":2.4},{"y":1937,"tmean":2.5},{"y":1938,"tmean":2.3},{"y":1939,"tmean":2.2},{"y":1940,"tmean":1.4},{"y":1941,"tmean":1.7},{"y":1942,"tmean":2.4},{"y":1943,"tmean":3.1},{"y":1944,"tmean":1.7},{"y":1945,"tmean":2.5},{"y":1946,"tmean":3},{"y":1947,"tmean":3.6},{"y":1948,"tmean":3.2},{"y":1949,"tmean":3.2},{"y":1950,"tmean":2.8},{"y":1951,"tmean":2.9},{"y":1952,"tmean":2.2},{"y":1953,"tmean":2.7},{"y":1954,"tmean":1.9},{"y":1955,"tmean":2},{"y":1956,"tmean":0.9},{"y":1957,"tmean":3},{"y":1958,"tmean":2.6},{"y":1959,"tmean":3.2,"summer":0,"frost":208,"ice":39},{"y":1960,"tmean":2.8,"summer":0,"frost":209,"ice":42},{"y":1961,"tmean":3.7,"summer":0,"frost":193,"ice":44},{"y":1962,"tmean":1.6,"summer":1,"frost":238,"ice":86},{"y":1963,"tmean":1.9,"summer":1,"frost":201,"ice":78},{"y":1964,"tmean":3.1,"summer":0,"frost":214,"ice":53},{"y":1965,"tmean":1.8,"summer":2,"frost":234,"ice":85},{"y":1966,"tmean":2.6,"summer":1,"frost":198,"ice":78},{"y":1967,"tmean":2.7,"summer":0,"frost":213,"ice":64},{"y":1968,"tmean":2.6,"summer":4,"frost":206,"ice":61},{"y":1969,"tmean":2.6,"summer":0,"frost":209,"ice":80},{"y":1970,"tmean":2.3,"summer":1,"frost":219,"ice":87},{"y":1971,"tmean":3.1,"summer":2,"frost":201,"ice":57},{"y":1972,"tmean":2.9,"summer":3,"frost":246,"ice":36},{"y":1973,"tmean":2.6,"summer":0,"frost":212,"ice":84},{"y":1974,"tmean":2.7,"summer":2,"frost":242,"ice":54},{"y":1975,"tmean":3.1,"summer":0,"frost":215,"ice":58},{"y":1976,"tmean":2.7,"summer":0,"frost":219,"ice":60},{"y":1977,"tmean":3.2,"summer":0,"frost":205,"ice":53},{"y":1978,"tmean":2.6,"summer":0,"frost":228,"ice":60},{"y":1979,"tmean":2.6,"summer":0,"frost":214,"ice":70},{"y":1980,"tmean":2.1,"summer":3,"frost":227,"ice":77},{"y":1981,"tmean":2.6,"summer":2,"frost":183,"ice":86},{"y":1982,"tmean":3.3,"summer":1,"frost":208,"ice":53},{"y":1983,"tmean":3.4,"summer":8,"frost":209,"ice":54},{"y":1984,"tmean":2.3,"summer":4,"frost":206,"ice":76},{"y":1985,"tmean":2.6,"summer":2,"frost":206,"ice":69},{"y":1986,"tmean":3.1,"summer":1,"frost":194,"ice":69},{"y":1987,"tmean":3,"summer":0,"frost":202,"ice":65},{"y":1988,"tmean":3.5,"summer":1,"frost":186,"ice":59},{"y":1989,"tmean":4.2,"summer":0,"frost":191,"ice":20},{"y":1990,"tmean":3.8,"summer":1,"frost":194,"ice":46},{"y":1991,"tmean":3.2,"summer":1,"frost":216,"ice":62},{"y":1992,"tmean":3.8,"summer":7,"frost":201,"ice":46},{"y":1993,"tmean":3.4,"summer":2,"frost":196,"ice":54},{"y":1994,"tmean":4.6,"summer":4,"frost":185,"ice":43},{"y":1995,"tmean":3.2,"summer":3,"frost":195,"ice":57},{"y":1996,"tmean":3.1,"summer":0,"frost":197,"ice":53},{"y":1997,"tmean":4.1,"summer":0,"frost":195,"ice":34},{"y":1998,"tmean":3.5,"summer":6,"frost":196,"ice":58},{"y":1999,"tmean":3.5,"summer":1,"frost":182,"ice":62},{"y":2000,"tmean":4.1,"summer":5,"frost":179,"ice":49},{"y":2001,"tmean":3.5,"summer":1,"frost":183,"ice":65},{"y":2002,"tmean":4.3,"summer":5,"frost":187,"ice":36},{"y":2003,"tmean":4.3,"summer":16,"frost":192,"ice":54},{"y":2004,"tmean":3.5,"summer":0,"frost":187,"ice":66},{"y":2005,"tmean":3,"summer":5,"frost":176,"ice":86},{"y":2006,"tmean":4.2,"summer":12,"frost":175,"ice":62},{"y":2007,"tmean":4.1,"summer":5,"frost":191,"ice":47},{"y":2008,"tmean":3.8,"summer":1,"frost":199,"ice":46},{"y":2009,"tmean":3.8,"summer":2,"frost":190,"ice":78},{"y":2010,"tmean":2.7,"summer":8,"frost":187,"ice":85},{"y":2011,"tmean":4.7,"summer":6,"frost":179,"ice":34},{"y":2012,"tmean":3.9,"summer":9,"frost":180,"ice":64},{"y":2013,"tmean":3.6,"summer":9,"frost":182,"ice":60},{"y":2014,"tmean":4.8,"summer":4,"frost":171,"ice":33},{"y":2015,"tmean":4.8,"summer":19,"frost":178,"ice":41},{"y":2016,"tmean":4.4,"summer":6,"frost":184,"ice":39},{"y":2017,"tmean":4.2,"summer":8,"frost":190,"ice":54},{"y":2018,"tmean":5,"summer":7,"frost":161,"ice":52},{"y":2019,"tmean":4.5,"summer":13,"frost":186,"ice":46},{"y":2020,"tmean":4.9,"summer":5,"frost":181,"ice":34},{"y":2021,"tmean":3.7,"summer":4,"frost":198,"ice":61},{"y":2022,"tmean":5.3,"summer":10,"frost":168,"ice":37},{"y":2023,"tmean":5.2,"summer":17,"frost":177,"ice":40},{"y":2024,"tmean":5.4,"summer":8,"frost":160,"ice":37},{"y":2025,"tmean":5.2,"summer":14,"frost":171,"ice":22}];
+
+const EXTRA = [{"y":1864},{"y":1865},{"y":1866},{"y":1867,"precip":1021.5},{"y":1868,"precip":1048.9},{"y":1869,"precip":865.2},{"y":1870,"precip":721.4},{"y":1871},{"y":1872},{"y":1873},{"y":1874,"precip":829.4},{"y":1875},{"y":1876,"precip":1092.1},{"y":1877,"precip":1221.4},{"y":1878,"precip":1329.2},{"y":1879,"precip":931},{"y":1880,"precip":1189.2},{"y":1881,"precip":837},{"y":1882,"precip":1171.6},{"y":1883,"precip":862.6},{"y":1884,"precip":623.7},{"y":1885,"precip":852.3},{"y":1886,"precip":791},{"y":1887,"precip":633.9},{"y":1888,"precip":883.1},{"y":1889,"precip":978.9},{"y":1890,"precip":974.6},{"y":1891,"precip":1043.3},{"y":1892,"precip":924.4},{"y":1893,"precip":831.1},{"y":1894,"precip":813},{"y":1895,"precip":809.3},{"y":1896,"precip":1170.2},{"y":1897,"precip":863.6},{"y":1898,"precip":972.8},{"y":1899,"precip":908},{"y":1900,"precip":867.9},{"y":1901,"precip":1139.5},{"y":1902,"precip":814.4},{"y":1903,"precip":795.8},{"y":1904,"precip":880.1},{"y":1905,"precip":1005.3},{"y":1906,"precip":855.6},{"y":1907,"precip":987.1},{"y":1908,"precip":970.1},{"y":1909,"precip":888.7},{"y":1910,"precip":1134.4},{"y":1911,"precip":926.1},{"y":1912,"precip":1080.2},{"y":1913,"precip":998.9},{"y":1914,"precip":990.3},{"y":1915,"precip":911.2},{"y":1916,"precip":1246.9},{"y":1917,"precip":899.3},{"y":1918,"precip":912.8},{"y":1919,"precip":968.4},{"y":1920,"precip":976.9},{"y":1921,"precip":757.5},{"y":1922,"precip":1204.6},{"y":1923,"precip":927.7},{"y":1924,"precip":886.6},{"y":1925,"precip":809.7},{"y":1926,"precip":1097.8},{"y":1927,"precip":1045.7},{"y":1928,"precip":1114.5},{"y":1929,"precip":753.1},{"y":1930,"precip":906.1},{"y":1931,"precip":1077.3},{"y":1932,"precip":839.1},{"y":1933,"precip":928.1},{"y":1934,"precip":946.1},{"y":1935,"precip":1272.5},{"y":1936,"precip":972.2},{"y":1937,"precip":995.9},{"y":1938,"precip":860.6},{"y":1939,"precip":1109.2},{"y":1940,"precip":1041.1},{"y":1941,"precip":819.5},{"y":1942,"precip":870.2},{"y":1943,"precip":864.2},{"y":1944,"precip":1104.4},{"y":1945,"precip":968.8},{"y":1946,"precip":929},{"y":1947,"precip":983.6},{"y":1948,"precip":1018.4},{"y":1949,"precip":833.3},{"y":1950,"precip":1043.9},{"y":1951,"precip":1049.1},{"y":1952,"precip":1127.2},{"y":1953,"precip":744.6},{"y":1954,"precip":1303.1},{"y":1955,"precip":888.1},{"y":1956,"precip":944.7},{"y":1957,"precip":884.4},{"y":1958,"precip":1092.5},{"y":1959,"precip":649.4,"tmax":23.9,"tmin":-19.1},{"y":1960,"precip":1136.3,"tmax":24.2,"tmin":-25.8},{"y":1961,"precip":791.9,"tmax":24.1,"tmin":-16.4},{"y":1962,"precip":885.4,"tmax":26.1,"tmin":-25.9},{"y":1963,"precip":883.9,"tmax":25.1,"tmin":-28.3},{"y":1964,"precip":805.3,"tmax":24.9,"tmin":-18.8},{"y":1965,"precip":1169.8,"tmax":25.1,"tmin":-23.1},{"y":1966,"precip":1114.1,"tmax":27.3,"tmin":-25},{"y":1967,"precip":1000,"tmax":24.9,"tmin":-23.3},{"y":1968,"precip":1056,"tmax":27.1,"tmin":-22.8},{"y":1969,"precip":874.1,"tmax":24.9,"tmin":-21.1},{"y":1970,"precip":1238.2,"tmax":25.4,"tmin":-19.5},{"y":1971,"precip":703.3,"tmax":27.8,"tmin":-26.3},{"y":1972,"precip":779.5,"tmax":27.2,"tmin":-16.8},{"y":1973,"precip":1024.2,"tmax":24.2,"tmin":-24.6},{"y":1974,"precip":1122.9,"tmax":26.8,"tmin":-17.6},{"y":1975,"precip":898.4,"tmax":24.9,"tmin":-16.6},{"y":1976,"precip":1027.2,"tmax":24.6,"tmin":-22},{"y":1977,"precip":1040.2,"tmax":24.7,"tmin":-18.3},{"y":1978,"precip":1032,"tmax":22,"tmin":-17.2},{"y":1979,"precip":1320,"tmax":23.4,"tmin":-21.7},{"y":1980,"precip":1022.8,"tmax":27.6,"tmin":-21.4},{"y":1981,"precip":1227.4,"tmax":25.8,"tmin":-22.7},{"y":1982,"precip":1014.8,"tmax":25,"tmin":-19.1},{"y":1983,"precip":1086.1,"tmax":29,"tmin":-20},{"y":1984,"precip":915.3,"tmax":27.1,"tmin":-19.6},{"y":1985,"precip":913.9,"tmax":25.4,"tmin":-27.8},{"y":1986,"precip":993.4,"tmax":25.5,"tmin":-24.7},{"y":1987,"precip":1171.8,"tmax":24.9,"tmin":-28.1},{"y":1988,"precip":1102.2,"tmax":26.2,"tmin":-19.1},{"y":1989,"precip":723.2,"tmax":24.7,"tmin":-13.7},{"y":1990,"precip":1022.3,"tmax":25.3,"tmin":-16.8},{"y":1991,"precip":843.4,"tmax":25.9,"tmin":-22.4},{"y":1992,"precip":975.7,"tmax":26.6,"tmin":-21.2},{"y":1993,"precip":1002.9,"tmax":26.1,"tmin":-22.1},{"y":1994,"precip":1077.8,"tmax":27.6,"tmin":-18.8},{"y":1995,"precip":1102.5,"tmax":26.6,"tmin":-21.1},{"y":1996,"precip":995.4,"tmax":24.4,"tmin":-21.8},{"y":1997,"precip":959.2,"tmax":23.4,"tmin":-15.4},{"y":1998,"precip":933.7,"tmax":27,"tmin":-19.3},{"y":1999,"precip":1369.7,"tmax":25.3,"tmin":-23.3},{"y":2000,"precip":1189.8,"tmax":25.5,"tmin":-22},{"y":2001,"precip":1268.2,"tmax":26.1,"tmin":-20.2},{"y":2002,"precip":1227.5,"tmax":27.7,"tmin":-19.8},{"y":2003,"precip":848.7,"tmax":27.3,"tmin":-19.8},{"y":2004,"precip":881.1,"tmax":24.3,"tmin":-19.4},{"y":2005,"precip":922.9,"tmax":27.5,"tmin":-22.6},{"y":2006,"precip":788.5,"tmax":27.5,"tmin":-21.7},{"y":2007,"precip":1005,"tmax":26.3,"tmin":-17.7},{"y":2008,"precip":1163.7,"tmax":27.2,"tmin":-18.4},{"y":2009,"precip":928.6,"tmax":26.5,"tmin":-21.1},{"y":2010,"precip":1003.4,"tmax":27.8,"tmin":-20.3},{"y":2011,"precip":1070.3,"tmax":28.5,"tmin":-18.6},{"y":2012,"precip":1232.3,"tmax":27.3,"tmin":-27.4},{"y":2013,"precip":923.7,"tmax":27.6,"tmin":-20.4},{"y":2014,"precip":1021.5,"tmax":27.1,"tmin":-17.1},{"y":2015,"precip":866,"tmax":29.3,"tmin":-16},{"y":2016,"precip":1153,"tmax":26.6,"tmin":-19.9},{"y":2017,"precip":1193,"tmax":26.8,"tmin":-19.4},{"y":2018,"precip":1082.8,"tmax":26.2,"tmin":-24.3},{"y":2019,"precip":1314.1,"tmax":29.8,"tmin":-17.9},{"y":2020,"precip":1031.9,"tmax":27.2,"tmin":-15.8},{"y":2021,"precip":956.6,"tmax":26.6,"tmin":-18.8},{"y":2022,"precip":831.4,"tmax":27.8,"tmin":-17.1},{"y":2023,"precip":1203.2,"tmax":28.5,"tmin":-16.2},{"y":2024,"precip":1002.7,"tmax":27,"tmin":-18.4},{"y":2025,"precip":929.6,"tmax":27.2,"tmin":-18.3}];
+(function(){ const mp=new Map(EXTRA.map(e=>[e.y,e])); DATA.forEach(r=>{ const e=mp.get(r.y); if(e){ if(e.precip!=null)r.precip=e.precip; if(e.tmax!=null)r.tmax=e.tmax; if(e.tmin!=null)r.tmin=e.tmin; } }); })();
+
+const $ = id => document.getElementById(id);
+const periodMean = (key,y0,y1) => { const d=DATA.filter(r=>r.y>=y0&&r.y<=y1&&r[key]!=null); return d.reduce((a,r)=>a+r[key],0)/d.length; };
+const REF = periodMean('tmean',1961,1990);
+function running(arr,key,win){ const h=(win-1)/2,o=[]; for(let i=0;i<arr.length;i++){let s=0,n=0;for(let j=Math.ceil(i-h);j<=Math.floor(i+h);j++){if(arr[j]&&arr[j][key]!=null){s+=arr[j][key];n++;}}o.push(n?s/n:null);} return o; }
+function widthOf(svg){ return Math.round(svg.getBoundingClientRect().width) || svg.parentElement.clientWidth || 360; }
+function setBox(svg,W,H){ svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.style.height=H+'px'; }
+
+// shared tooltip + hover binding
+const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
+function showTip(html,cx,cy){ tip.innerHTML=html; tip.style.opacity=1; let lx=cx+14; if(lx+180>window.innerWidth) lx=cx-186; let ty=cy+14; if(ty+tip.offsetHeight>window.innerHeight) ty=Math.max(6,cy-tip.offsetHeight-14); tip.style.left=Math.max(6,lx)+'px'; tip.style.top=ty+'px'; }
+function hideAll(){ tip.style.opacity=0; document.querySelectorAll('.mk').forEach(m=>m.setAttribute('opacity',0)); }
+function bindHover(svg,handler){
+  function mv(ev){ const r=svg.getBoundingClientRect(); const cx=ev.touches?ev.touches[0].clientX:ev.clientX; const cy=ev.touches?ev.touches[0].clientY:ev.clientY; const sx=svg.viewBox.baseVal.width/r.width||1; const sy=svg.viewBox.baseVal.height/r.height||1; handler((cx-r.left)*sx,(cy-r.top)*sy,cx,cy); }
+  svg.addEventListener('pointermove',mv); svg.addEventListener('pointerdown',mv); svg.addEventListener('pointerleave',hideAll);
+}
+const META={};
+
+// ---------- ① Warming Stripes ----------
+const STOPS=[[8,48,107],[74,144,194],[247,247,247],[214,96,77],[103,0,13]];
+function stripeColor(tmean,maxAbs){ let t=Math.max(0,Math.min(1,((tmean-REF)/maxAbs+1)/2)); const seg=t*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(seg)),f=seg-i,A=STOPS[i],B=STOPS[i+1]; const c=k=>Math.round(A[k]+(B[k]-A[k])*f); return `rgb(${c(0)},${c(1)},${c(2)})`; }
+function renderStripes(){
+  const svg=$('stripes'), W=widthOf(svg), H=Math.min(170,Math.max(120,W*0.28)), axisH=22, plotH=H-axisH;
+  const rows=DATA.filter(r=>r.tmean!=null);
+  const maxAbs=Math.max(...rows.map(r=>Math.abs(r.tmean-REF)));
+  setBox(svg,W,H);
+  const bw=W/rows.length;
+  let s='';
+  rows.forEach((r,i)=>{ s+=`<rect x="${(i*bw).toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.tmean,maxAbs)}"/>`; });
+  const ticks=W<480?[1900,1960,2025]:[1864,1900,1950,2000,2025];
+  const Xy=y=>(rows.findIndex(r=>r.y===y)+0.5)*bw;
+  ticks.forEach(y=>{ const x=Xy(y); s+=`<line x1="${x}" y1="${plotH}" x2="${x}" y2="${plotH+4}" stroke="#9ca3af"/><text x="${x}" y="${plotH+17}" text-anchor="middle" font-size="12" fill="#6b7280">${y}</text>`; });
+  s+=`<line class="mk" id="mk-stripes" y1="0" y2="${plotH}" stroke="#111" stroke-width="1.5" opacity="0"/>`;
+  svg.innerHTML=s;
+  META.stripes={rows,bw,maxAbs,plotH};
+  $('sc-min').textContent=(REF-maxAbs).toFixed(1)+' °C';
+  $('sc-max').textContent=(REF+maxAbs).toFixed(1)+' °C';
+}
+
+// ---------- ② Dumbbell ----------
+function renderDumbbell(){
+  const svg=$('dumbbell'), W=widthOf(svg), small=W<480;
+  const items=[{k:'frost',l:'Frosttage'},{k:'ice',l:'Eistage'},{k:'summer',l:'Sommertage'}]
+    .map(it=>({...it,a:periodMean(it.k,1961,1990),b:periodMean(it.k,1991,2020)}));
+  const m={l:small?84:120,r:small?54:82,t:22,b:24}, rowH=small?56:64, H=m.t+rowH*items.length+m.b;
+  const xmax=250, X=v=>m.l+v/xmax*(W-m.l-m.r);
+  setBox(svg,W,H);
+  let defs='', s='';
+  s+=`<line x1="${m.l}" y1="${H-m.b+2}" x2="${W-m.r}" y2="${H-m.b+2}" stroke="#eef0f2"/>`;
+  s+=`<text x="${X(0)}" y="${H-m.b+15}" text-anchor="start" font-size="9.5" fill="#b6bcc4">0</text>`;
+  s+=`<text x="${X(250)}" y="${H-m.b+15}" text-anchor="end" font-size="9.5" fill="#b6bcc4">250 Tage/Jahr</text>`;
+  items.forEach((it,i)=>{
+    const y=m.t+rowH*(i+0.5), xa=X(it.a), xb=X(it.b), gid=`g${i}`; it._y=y;
+    defs+=`<linearGradient id="${gid}" gradientUnits="userSpaceOnUse" x1="${xa}" y1="0" x2="${xb}" y2="0"><stop offset="0" stop-color="#0068A4"/><stop offset="1" stop-color="#EE7733"/></linearGradient>`;
+    s+=`<text x="${m.l-14}" y="${y+4}" text-anchor="end" font-size="${small?12:13.5}" fill="#1f2937" font-weight="600">${it.l}</text>`;
+    s+=`<line x1="${xa}" y1="${y}" x2="${xb}" y2="${y}" stroke="url(#${gid})" stroke-width="8" stroke-linecap="round"/>`;
+    s+=`<circle cx="${xa}" cy="${y}" r="7" fill="#0068A4" stroke="#fff" stroke-width="2"/>`;
+    s+=`<circle cx="${xb}" cy="${y}" r="7" fill="#EE7733" stroke="#fff" stroke-width="2"/>`;
+    s+=`<text x="${xa}" y="${y-12}" text-anchor="middle" font-size="11" fill="#0068A4" font-weight="700">${it.a.toFixed(0)}</text>`;
+    s+=`<text x="${xb}" y="${y+18}" text-anchor="middle" font-size="11" fill="#EE7733" font-weight="700">${it.b.toFixed(0)}</text>`;
+    const dd=it.b-it.a, txt=`${dd>=0?'+':'−'}${Math.abs(dd).toFixed(0)}`, px=W-m.r/2, pw=txt.length*7+16;
+    s+=`<rect x="${px-pw/2}" y="${y-11}" width="${pw}" height="22" rx="11" fill="#f1f4f7"/>`;
+    s+=`<text x="${px}" y="${y+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">${txt}</text>`;
+  });
+  svg.innerHTML=`<defs>${defs}</defs>`+s;
+  META.dumb={items,m,rowH};
+}
+
+// ---------- ③ Temperature bars + 10y line ----------
+function renderTemp(){
+  const svg=$('temp'), W=widthOf(svg), small=W<480, H=small?230:300, m={l:34,r:10,t:12,b:26};
+  const rows=DATA.filter(r=>r.tmean!=null), xmin=rows[0].y, xmax=rows[rows.length-1].y;
+  const X=y=>m.l+(y-xmin)/(xmax-xmin)*(W-m.l-m.r), Y=v=>H-m.b-v/6*(H-m.t-m.b);
+  setBox(svg,W,H);
+  let s='';
+  for(let v=0;v<=6;v+=2){ s+=`<line x1="${m.l}" y1="${Y(v)}" x2="${W-m.r}" y2="${Y(v)}" stroke="#eee"/><text x="${m.l-5}" y="${Y(v)+3}" text-anchor="end" font-size="10" fill="#9ca3af">${v}°</text>`; }
+  (small?[1900,1960,2020]:[1880,1920,1960,2000]).forEach(y=>{ s+=`<text x="${X(y)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#9ca3af">${y}</text>`; });
+  const bw=Math.max(0.8,(W-m.l-m.r)/(xmax-xmin)*0.8);
+  rows.forEach(r=>{ s+=`<rect x="${X(r.y)-bw/2}" y="${Y(r.tmean)}" width="${bw}" height="${(H-m.b-Y(r.tmean)).toFixed(1)}" fill="${r.tmean>=REF?'#e8916a':'#9cc4dd'}" opacity="0.9"/>`; });
+  const rm=running(rows,'tmean',10); let p='';
+  rows.forEach((r,i)=>{ if(rm[i]!=null) p+=(p?'L':'M')+X(r.y).toFixed(1)+' '+Y(rm[i]).toFixed(1); });
+  s+=`<path d="${p}" fill="none" stroke="#0068A4" stroke-width="2.5"/>`;
+  const warm=rows.reduce((a,b)=>b.tmean>a.tmean?b:a), cool=rows.reduce((a,b)=>b.tmean<a.tmean?b:a);
+  [[warm,'#c0392b'],[cool,'#2471a3']].forEach(rc=>{ const r=rc[0],c=rc[1]; s+=`<circle cx="${X(r.y)}" cy="${Y(r.tmean)-5}" r="3" fill="${c}"/><text x="${Math.min(W-14,Math.max(14,X(r.y)))}" y="${Y(r.tmean)-10}" text-anchor="middle" font-size="9" fill="${c}" font-weight="700">${r.y}</text>`; });
+  s+=`<line class="mk" id="mk-temp" y1="${m.t}" y2="${H-m.b}" stroke="#111" stroke-width="1" opacity="0"/>`;
+  svg.innerHTML=s;
+  META.temp={pts:rows.map(r=>({x:X(r.y),r})),trend:rm,rows};
+}
+
+// ---------- ④ Summer bars vs frost line ----------
+function renderDays(){
+  const svg=$('days'), W=widthOf(svg), small=W<480, H=small?230:300, m={l:30,r:38,t:12,b:26};
+  const rows=DATA.filter(r=>r.summer!=null), xmin=rows[0].y, xmax=rows[rows.length-1].y;
+  const X=y=>m.l+(y-xmin)/(xmax-xmin)*(W-m.l-m.r);
+  const sMax=20, Ys=v=>H-m.b-v/sMax*(H-m.t-m.b);
+  const fMin=140,fMax=260, Yf=v=>H-m.b-(v-fMin)/(fMax-fMin)*(H-m.t-m.b);
+  setBox(svg,W,H);
+  let s='';
+  for(let v=0;v<=20;v+=5){ s+=`<line x1="${m.l}" y1="${Ys(v)}" x2="${W-m.r}" y2="${Ys(v)}" stroke="#f4f4f4"/><text x="${m.l-4}" y="${Ys(v)+3}" text-anchor="end" font-size="10" fill="#EE7733">${v}</text>`; }
+  for(let v=140;v<=260;v+=40){ s+=`<text x="${W-m.r+4}" y="${Yf(v)+3}" text-anchor="start" font-size="10" fill="#0068A4">${v}</text>`; }
+  (small?[1960,1990,2020]:[1960,1980,2000,2020]).forEach(y=>{ s+=`<text x="${X(y)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#9ca3af">${y}</text>`; });
+  const bw=Math.max(1,(W-m.l-m.r)/(xmax-xmin)*0.7);
+  rows.forEach(r=>{ s+=`<rect x="${X(r.y)-bw/2}" y="${Ys(r.summer)}" width="${bw}" height="${(H-m.b-Ys(r.summer)).toFixed(1)}" fill="#EE7733" opacity="0.85"/>`; });
+  const rf=running(rows,'frost',10); let p='';
+  rows.forEach((r,i)=>{ if(rf[i]!=null) p+=(p?'L':'M')+X(r.y).toFixed(1)+' '+Yf(rf[i]).toFixed(1); });
+  s+=`<path d="${p}" fill="none" stroke="#0068A4" stroke-width="2.5"/>`;
+  s+=`<line class="mk" id="mk-days" y1="${m.t}" y2="${H-m.b}" stroke="#111" stroke-width="1" opacity="0"/>`;
+  svg.innerHTML=s;
+  META.days={pts:rows.map(r=>({x:X(r.y),r}))};
+}
+
+// ---------- ⑤ Niederschlag ----------
+function renderPrecip(){
+  const svg=$('precip'), W=widthOf(svg), small=W<480, H=small?230:300, m={l:40,r:10,t:12,b:26};
+  const rows=DATA.filter(r=>r.precip!=null), xmin=rows[0].y, xmax=rows[rows.length-1].y;
+  const X=y=>m.l+(y-xmin)/(xmax-xmin)*(W-m.l-m.r), pMax=1500, Y=v=>H-m.b-v/pMax*(H-m.t-m.b);
+  setBox(svg,W,H);
+  let s='';
+  for(let v=0;v<=1500;v+=500){ s+=`<line x1="${m.l}" y1="${Y(v)}" x2="${W-m.r}" y2="${Y(v)}" stroke="#eee"/><text x="${m.l-5}" y="${Y(v)+3}" text-anchor="end" font-size="10" fill="#9ca3af">${v}</text>`; }
+  (small?[1900,1960,2020]:[1880,1920,1960,2000]).forEach(y=>{ s+=`<text x="${X(y)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#9ca3af">${y}</text>`; });
+  const bw=Math.max(0.8,(W-m.l-m.r)/(xmax-xmin)*0.8);
+  rows.forEach(r=>{ s+=`<rect x="${X(r.y)-bw/2}" y="${Y(r.precip)}" width="${bw}" height="${(H-m.b-Y(r.precip)).toFixed(1)}" fill="#7fb2d4" opacity="0.85"/>`; });
+  const rm=running(rows,'precip',10); let p='';
+  rows.forEach((r,i)=>{ if(rm[i]!=null) p+=(p?'L':'M')+X(r.y).toFixed(1)+' '+Y(rm[i]).toFixed(1); });
+  s+=`<path d="${p}" fill="none" stroke="#0068A4" stroke-width="2.5"/>`;
+  s+=`<text x="${m.l-5}" y="${m.t+2}" text-anchor="end" font-size="9" fill="#9ca3af">mm</text>`;
+  s+=`<line class="mk" id="mk-precip" y1="${m.t}" y2="${H-m.b}" stroke="#111" stroke-width="1" opacity="0"/>`;
+  svg.innerHTML=s;
+  META.precip={pts:rows.map(r=>({x:X(r.y),r}))};
+}
+
+// ---------- Rekord-Leiste ----------
+// Tagesrekorde aus der täglichen homogenen Reihe (ths200dx/ths200dn), Abdeckung ab ~1888
+const REC_HOT={t:29.8,d:'26. Juni 2019'}, REC_COLD={t:-31.2,d:'2. Januar 1905'};
+function renderRecords(){
+  const pr=DATA.filter(r=>r.precip!=null);
+  const wet=pr.reduce((a,b)=>b.precip>a.precip?b:a), dry=pr.reduce((a,b)=>b.precip<a.precip?b:a);
+  $('records').innerHTML=
+    `<div class="rec hot"><b>${REC_HOT.t.toFixed(1)} °C</b><span>heissester je gemessener Tag<br>${REC_HOT.d}</span></div>`+
+    `<div class="rec cold"><b>−${Math.abs(REC_COLD.t).toFixed(1)} °C</b><span>kältester je gemessener Tag<br>${REC_COLD.d}</span></div>`+
+    `<div class="rec"><b>${wet.precip.toFixed(0)} mm</b><span>nassestes Jahr (${wet.y})</span></div>`+
+    `<div class="rec"><b>${dry.precip.toFixed(0)} mm</b><span>trockenstes Jahr (${dry.y})</span></div>`;
+}
+
+// ---------- hover handlers ----------
+function nearest(pts,vx){ let best=pts[0],bd=1e9; for(const p of pts){const d=Math.abs(p.x-vx); if(d<bd){bd=d;best=p;}} return best; }
+function moveMark(id,x){ const mk=$(id); if(mk){ mk.setAttribute('x1',x); mk.setAttribute('x2',x); mk.setAttribute('opacity',1);} }
+
+function bindAll(){
+  bindHover($('stripes'),(vx,vy,cx,cy)=>{ const M=META.stripes; if(!M)return; const i=Math.max(0,Math.min(M.rows.length-1,Math.floor(vx/M.bw))); const r=M.rows[i]; const d=r.tmean-REF;
+    let h=`<b>${r.y}</b><div class="row"><span>Jahresmittel</span><span>${r.tmean.toFixed(1)} °C</span></div><div class="row"><span>Abweichung</span><span>${d>=0?'+':'−'}${Math.abs(d).toFixed(1)} °C</span></div>`;
+    if(r.tmax!=null) h+=`<div class="row"><span>wärmster Tag</span><span>${r.tmax.toFixed(1)} °C</span></div><div class="row"><span>kältester Tag</span><span>${r.tmin.toFixed(1)} °C</span></div>`;
+    if(r.summer!=null) h+=`<div class="row"><span>Sommertage</span><span>${r.summer}</span></div><div class="row"><span>Frosttage</span><span>${r.frost}</span></div><div class="row"><span>Eistage</span><span>${r.ice}</span></div>`;
+    showTip(h,cx,cy); moveMark('mk-stripes',(i+0.5)*M.bw); });
+
+  bindHover($('dumbbell'),(vx,vy,cx,cy)=>{ const M=META.dumb; if(!M)return; const i=Math.floor((vy-M.m.t)/M.rowH); if(i<0||i>=M.items.length){hideAll();return;} const it=M.items[i]; const dd=it.b-it.a;
+    showTip(`<b>${it.l}</b><div class="row"><span>1961–1990</span><span>${it.a.toFixed(0)} Tage</span></div><div class="row"><span>1991–2020</span><span>${it.b.toFixed(0)} Tage</span></div><div class="row"><span>Veränderung</span><span>${dd>=0?'+':'−'}${Math.abs(dd).toFixed(0)} Tage</span></div>`,cx,cy); });
+
+  bindHover($('temp'),(vx,vy,cx,cy)=>{ const M=META.temp; if(!M)return; const p=nearest(M.pts,vx); const r=p.r; const d=r.tmean-REF;
+    let h=`<b>${r.y}</b><div class="row"><span>Jahresmittel</span><span>${r.tmean.toFixed(1)} °C</span></div><div class="row"><span>Abw. 1961–90</span><span>${d>=0?'+':'−'}${Math.abs(d).toFixed(1)} °C</span></div>`;
+    if(r.tmax!=null) h+=`<div class="row"><span>wärmster Tag</span><span>${r.tmax.toFixed(1)} °C</span></div><div class="row"><span>kältester Tag</span><span>${r.tmin.toFixed(1)} °C</span></div>`;
+    showTip(h,cx,cy); moveMark('mk-temp',p.x); });
+
+  bindHover($('precip'),(vx,vy,cx,cy)=>{ const M=META.precip; if(!M)return; const p=nearest(M.pts,vx); const r=p.r;
+    showTip(`<b>${r.y}</b><div class="row"><span>Niederschlag</span><span>${r.precip.toFixed(0)} mm</span></div>`,cx,cy); moveMark('mk-precip',p.x); });
+
+  bindHover($('days'),(vx,vy,cx,cy)=>{ const M=META.days; if(!M)return; const p=nearest(M.pts,vx); const r=p.r;
+    showTip(`<b>${r.y}</b><div class="row"><span>Sommertage</span><span>${r.summer}</span></div><div class="row"><span>Frosttage</span><span>${r.frost}</span></div><div class="row"><span>Eistage</span><span>${r.ice}</span></div>`,cx,cy); moveMark('mk-days',p.x); });
+}
+
+function renderAll(){ renderRecords(); renderStripes(); renderDumbbell(); renderTemp(); renderDays(); renderPrecip(); }
+let raf; window.addEventListener('resize',()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(renderAll); });
+renderAll();
+bindAll();
+</script>
+</body>
+</html>

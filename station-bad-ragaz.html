@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klima · Prototyp</title>
+<style>
+  :root{ --blau:#0068A4; --orange:#EE7733; --grau:#6b7280; --hell:#eef2f5; }
+  *{ box-sizing:border-box; }
+  body{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+        color:#1f2937; margin:0; padding:20px; background:#fff; line-height:1.5; }
+  .wrap{ max-width:780px; margin:0 auto; }
+  h1{ font-size:1.6rem; margin:0 0 4px; }
+  h2{ font-size:1.1rem; margin:36px 0 2px; }
+  .kicker{ color:var(--orange); font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.78rem; }
+  .sub{ color:var(--grau); font-size:.88rem; margin:0 0 10px; }
+  .chart{ position:relative; }
+  svg{ width:100%; display:block; touch-action:none; cursor:crosshair; }
+  .note{ font-size:.76rem; color:var(--grau); margin-top:8px; }
+  .legend{ display:flex; gap:16px; font-size:.8rem; margin:8px 0; flex-wrap:wrap; align-items:center; }
+  .legend i{ width:13px; height:13px; border-radius:50%; display:inline-block; vertical-align:-2px; margin-right:5px; }
+  .scalebar{ display:flex; align-items:center; gap:8px; font-size:.76rem; color:var(--grau); margin-top:8px; flex-wrap:wrap; }
+  .scalebar .grad{ height:12px; flex:1; min-width:120px; border-radius:3px;
+     background:linear-gradient(90deg,#08306b,#4a90c2,#f7f7f7,#d6604d,#67000d); }
+  .records{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 4px; }
+  .records .rec{ background:var(--hell); border-radius:9px; padding:9px 13px; flex:1; min-width:130px; }
+  .records .rec b{ font-size:1.15rem; display:block; }
+  .records .rec.hot b{ color:#c0392b; } .records .rec.cold b{ color:#2471a3; }
+  .records .rec span{ font-size:.74rem; color:var(--grau); }
+  @media (prefers-reduced-motion: reduce){ .tip{ transition:none; } }
+  .tip{ position:fixed; pointer-events:none; background:#fff; border:1px solid #d1d5db;
+        border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.14); padding:8px 11px; font-size:.8rem;
+        opacity:0; transition:opacity .07s; z-index:50; min-width:150px; }
+  .tip b{ font-size:1.05rem; display:block; margin-bottom:3px; }
+  .tip .row{ display:flex; justify-content:space-between; gap:16px; }
+  .tip .row span:last-child{ font-weight:600; }
+  hr{ border:0; border-top:1px solid #e5e7eb; margin:40px 0 0; }
+  footer{ margin-top:30px; border-top:1px solid #e5e7eb; padding-top:14px; font-size:.76rem; color:var(--grau); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Graubünden in Zahlen · Klima-Prototyp</div>
+  <h1 id="title">—</h1>
+  <p class="sub" id="sub">—</p>
+  <div class="records" id="records"></div>
+  <p class="note" id="rec-note"></p>
+
+  <h2>① Warming Stripes – Temperatur auf einen Blick</h2>
+  <p class="sub">Jede Linie ein Jahr, Farbe = Abweichung vom Schnitt 1961–1990.</p>
+  <div class="chart"><svg id="stripes" role="img" aria-label="Warming Stripes: Jahresmitteltemperatur, von kühl/blau zu warm/rot"></svg></div>
+  <div class="scalebar"><span id="sc-min">kühler</span><div class="grad"></div><span id="sc-max">wärmer</span></div>
+  <p class="note" id="note-stripes"></p>
+
+  <section id="sec-dumbbell">
+  <h2>② Was die Erwärmung konkret bedeutet</h2>
+  <p class="sub">Mittlere Tage pro Jahr – zwei offizielle 30-Jahre-Klimanormen (1961–1990 → 1991–2020).</p>
+  <div class="legend">
+    <span><i style="background:#0068A4"></i>1961–1990</span>
+    <span><i style="background:#EE7733"></i>1991–2020</span>
+  </div>
+  <div class="chart"><svg id="dumbbell" role="img" aria-label="Veränderung von Frost-, Eis- und Sommertagen zwischen den Klimanormen"></svg></div>
+  <p class="note" id="note-dumbbell"></p>
+  </section>
+
+  <hr>
+  <h2>③ Jahresmittel-Temperatur (Säulen + Trend)</h2>
+  <p class="sub">Jede Säule ein Jahr, Linie = gleitendes 10-Jahre-Mittel.</p>
+  <div class="chart"><svg id="temp" role="img" aria-label="Jahresmitteltemperatur als Säulen mit gleitendem 10-Jahre-Mittel"></svg></div>
+  <p class="note" id="note-temp"></p>
+
+  <section id="sec-days">
+  <h2>④ Sommertage und Frosttage im Jahresverlauf</h2>
+  <div class="legend">
+    <span><i style="background:#EE7733;border-radius:3px"></i>Sommertage (Säulen, links)</span>
+    <span><i style="background:#0068A4"></i>Frosttage (Linie, rechts)</span>
+  </div>
+  <div class="chart"><svg id="days" role="img" aria-label="Sommertage und Frosttage pro Jahr"></svg></div>
+  <p class="note" id="note-days"></p>
+  </section>
+
+  <section id="sec-precip">
+  <hr>
+  <h2>⑤ Niederschlag pro Jahr</h2>
+  <p class="sub" id="sub-precip">Jahressumme je Säule, Linie = gleitendes 10-Jahre-Mittel.</p>
+  <div class="chart"><svg id="precip" role="img" aria-label="Jährliche Niederschlagssumme mit gleitendem 10-Jahre-Mittel"></svg></div>
+  <p class="note" id="note-precip"></p>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const ST = {"code":"rag","name":"Bad Ragaz","canton":"SG","height":497,"since":1864,"region":"Sarganserland · Rheintal","series":[{"y":1864,"tmean":7.2},{"y":1865,"tmean":9},{"y":1866,"tmean":9.2},{"y":1867,"tmean":8.6},{"y":1868,"tmean":9.4},{"y":1869,"tmean":8.6},{"y":1870,"tmean":8},{"y":1871,"tmean":7.2},{"y":1872,"tmean":9.8},{"y":1873,"tmean":9.2},{"y":1874,"tmean":8.4},{"y":1875,"tmean":8.2},{"y":1876,"tmean":8.8},{"y":1877,"tmean":8.8},{"y":1878,"tmean":8},{"y":1879,"tmean":7.1},{"y":1880,"tmean":8.4},{"y":1881,"tmean":8.5},{"y":1882,"tmean":8.4},{"y":1883,"tmean":8.2},{"y":1884,"tmean":8.7},{"y":1885,"tmean":8.4},{"y":1886,"tmean":8.5},{"y":1887,"tmean":7},{"y":1888,"tmean":7.6},{"y":1889,"tmean":7.3},{"y":1890,"tmean":7.4},{"y":1891,"tmean":7.4},{"y":1892,"tmean":8.5},{"y":1893,"tmean":8.6},{"y":1894,"tmean":8.4},{"y":1895,"tmean":8.2},{"y":1896,"tmean":7.5},{"y":1897,"tmean":8.7},{"y":1898,"tmean":8.9},{"y":1899,"tmean":8.9},{"y":1900,"tmean":9.1},{"y":1901,"tmean":7.9},{"y":1902,"tmean":8.3},{"y":1903,"tmean":8.6},{"y":1904,"tmean":8.9},{"y":1905,"tmean":8.2},{"y":1906,"tmean":8.3},{"y":1907,"tmean":8.5},{"y":1908,"tmean":7.9},{"y":1909,"tmean":7.9},{"y":1910,"tmean":8.6},{"y":1911,"tmean":9.4},{"y":1912,"tmean":8.3},{"y":1913,"tmean":8.9},{"y":1914,"tmean":8.5},{"y":1915,"tmean":8.3},{"y":1916,"tmean":8.9},{"y":1917,"tmean":7.7},{"y":1918,"tmean":8.8},{"y":1919,"tmean":7.9},{"y":1920,"tmean":9.4},{"y":1921,"tmean":9.5},{"y":1922,"tmean":7.8},{"y":1923,"tmean":9},{"y":1924,"tmean":8.1},{"y":1925,"tmean":8.5},{"y":1926,"tmean":9.4},{"y":1927,"tmean":8.7},{"y":1928,"tmean":9.3},{"y":1929,"tmean":8.3},{"y":1930,"tmean":9.5},{"y":1931,"tmean":7.8},{"y":1932,"tmean":8.5},{"y":1933,"tmean":8},{"y":1934,"tmean":9.4},{"y":1935,"tmean":8.6},{"y":1936,"tmean":8.9},{"y":1937,"tmean":9.3},{"y":1938,"tmean":8.5},{"y":1939,"tmean":8.6},{"y":1940,"tmean":7.4},{"y":1941,"tmean":8.1},{"y":1942,"tmean":8.6},{"y":1943,"tmean":9.9},{"y":1944,"tmean":8.4},{"y":1945,"tmean":9.1},{"y":1946,"tmean":9.2},{"y":1947,"tmean":10.2},{"y":1948,"tmean":9.8},{"y":1949,"tmean":10},{"y":1950,"tmean":9.6},{"y":1951,"tmean":9.7},{"y":1952,"tmean":8.9},{"y":1953,"tmean":9.1},{"y":1954,"tmean":8.4},{"y":1955,"tmean":8.5},{"y":1956,"tmean":7.6},{"y":1957,"tmean":9.1},{"y":1958,"tmean":8.9},{"y":1959,"tmean":9.9,"summer":32,"frost":82,"ice":10,"precip":826.7},{"y":1960,"tmean":9.5,"summer":23,"frost":61,"ice":19,"precip":1076.7},{"y":1961,"tmean":10.1,"summer":33,"frost":75,"ice":15,"precip":912.5},{"y":1962,"tmean":8.3,"summer":33,"frost":107,"ice":27,"precip":1050},{"y":1963,"tmean":8,"summer":25,"frost":99,"ice":47,"precip":1025.2},{"y":1964,"tmean":9.1,"summer":43,"frost":96,"ice":29,"precip":960.9},{"y":1965,"tmean":8.2,"summer":21,"frost":91,"ice":20,"precip":1323.2},{"y":1966,"tmean":9.3,"summer":32,"frost":75,"ice":15,"precip":1346.2},{"y":1967,"tmean":9,"summer":33,"frost":76,"ice":26,"precip":1183.3},{"y":1968,"tmean":8.6,"summer":22,"frost":103,"ice":32,"precip":1031.8},{"y":1969,"tmean":8.5,"summer":33,"frost":99,"ice":34,"precip":1022.3},{"y":1970,"tmean":8.5,"summer":34,"frost":100,"ice":26,"precip":1493.3},{"y":1971,"tmean":8.6,"summer":39,"frost":104,"ice":33,"precip":735.1},{"y":1972,"tmean":8.9,"summer":29,"frost":72,"ice":14,"precip":849.3},{"y":1973,"tmean":8.5,"summer":45,"frost":113,"ice":23,"precip":1120.9},{"y":1974,"tmean":9.3,"summer":28,"frost":49,"ice":2,"precip":1356.9},{"y":1975,"tmean":9.1,"summer":37,"frost":84,"ice":13,"precip":1050.9},{"y":1976,"tmean":9,"summer":41,"frost":99,"ice":22,"precip":1091.4},{"y":1977,"tmean":9.4,"summer":22,"frost":73,"ice":10,"precip":1173.2},{"y":1978,"tmean":8.3,"summer":25,"frost":98,"ice":20,"precip":1140.4},{"y":1979,"tmean":9,"summer":28,"frost":76,"ice":11,"precip":1353.3},{"y":1980,"tmean":8.3,"summer":21,"frost":113,"ice":24,"precip":972.6},{"y":1981,"tmean":8.8,"summer":29,"frost":104,"ice":30,"precip":1296.1},{"y":1982,"tmean":9.7,"summer":36,"frost":86,"ice":13,"precip":965.9},{"y":1983,"tmean":9.6,"summer":49,"frost":91,"ice":22,"precip":1071},{"y":1984,"tmean":8.8,"summer":19,"frost":94,"ice":15,"precip":1235.7},{"y":1985,"tmean":8.6,"summer":40,"frost":95,"ice":39,"precip":883},{"y":1986,"tmean":8.9,"summer":49,"frost":92,"ice":19,"precip":1230.1},{"y":1987,"tmean":8.6,"summer":41,"frost":92,"ice":30,"precip":1141.1},{"y":1988,"tmean":9.8,"summer":35,"frost":78,"ice":8,"precip":1304.5},{"y":1989,"tmean":9.6,"summer":35,"frost":78,"ice":25,"precip":892.9},{"y":1990,"tmean":9.8,"summer":41,"frost":72,"ice":13,"precip":1193.9},{"y":1991,"tmean":9.1,"summer":49,"frost":94,"ice":21,"precip":1026.7},{"y":1992,"tmean":10,"summer":53,"frost":86,"ice":14,"precip":1139.2},{"y":1993,"tmean":9.4,"summer":40,"frost":89,"ice":24,"precip":1235.1},{"y":1994,"tmean":11,"summer":54,"frost":55,"ice":5,"precip":958.6},{"y":1995,"tmean":9.7,"summer":39,"frost":86,"ice":18,"precip":1228.5},{"y":1996,"tmean":8.9,"summer":31,"frost":99,"ice":16,"precip":1099.8},{"y":1997,"tmean":9.9,"summer":41,"frost":88,"ice":8,"precip":1090.2},{"y":1998,"tmean":9.9,"summer":45,"frost":77,"ice":17,"precip":955.7},{"y":1999,"tmean":9.8,"summer":38,"frost":90,"ice":12,"precip":1365.3},{"y":2000,"tmean":10.8,"summer":43,"frost":56,"ice":5,"precip":1232.4},{"y":2001,"tmean":10,"summer":49,"frost":84,"ice":14,"precip":1368.9},{"y":2002,"tmean":10.8,"summer":41,"frost":45,"ice":10,"precip":1454.1},{"y":2003,"tmean":10.7,"summer":92,"frost":100,"ice":26,"precip":847.1},{"y":2004,"tmean":9.7,"summer":44,"frost":107,"ice":14,"precip":954.2},{"y":2005,"tmean":9.3,"summer":48,"frost":109,"ice":30,"precip":831.7},{"y":2006,"tmean":10.2,"summer":62,"frost":96,"ice":24,"precip":952},{"y":2007,"tmean":10.5,"summer":48,"frost":64,"ice":17,"precip":972.6},{"y":2008,"tmean":10.4,"summer":50,"frost":78,"ice":7,"precip":1138.1},{"y":2009,"tmean":10.5,"summer":50,"frost":77,"ice":25,"precip":929.9},{"y":2010,"tmean":9.5,"summer":41,"frost":95,"ice":39,"precip":1073.1},{"y":2011,"tmean":11,"summer":46,"frost":79,"ice":13,"precip":1001.5},{"y":2012,"tmean":10.3,"precip":1425.7},{"y":2013,"tmean":9.9,"summer":49,"frost":90,"ice":17,"precip":989.2},{"y":2014,"tmean":11.4,"summer":30,"frost":26,"ice":2,"precip":1021.2},{"y":2015,"tmean":10.9,"summer":62,"frost":71,"ice":6,"precip":1011.5},{"y":2016,"tmean":10.6,"summer":53,"frost":62,"ice":4,"precip":1157.7},{"y":2017,"tmean":10.5,"summer":58,"frost":67,"ice":18,"precip":1208.5},{"y":2018,"tmean":11.9,"summer":87,"frost":54,"ice":5,"precip":940.8},{"y":2019,"tmean":11.2,"summer":55,"frost":49,"ice":8,"precip":1233.4},{"y":2020,"tmean":11.2,"summer":55,"frost":59,"ice":4,"precip":1124.1},{"y":2021,"tmean":10.1,"summer":41,"frost":72,"ice":12,"precip":1028.5},{"y":2022,"tmean":11.8,"summer":73,"frost":62,"ice":4,"precip":850.9},{"y":2023,"tmean":11.8,"summer":72,"frost":51,"ice":7,"precip":1367.7},{"y":2024,"tmean":11.8,"summer":69,"frost":39,"ice":4,"precip":1071.7},{"y":2025,"tmean":11.5,"summer":55,"frost":58,"ice":3,"precip":945.9}],"recHot":{"d":"13.08.2003","t":36.4},"recCold":{"d":"11.02.1956","t":-26.7},"dailySince":1938};
+const DATA = ST.series;
+const $ = id => document.getElementById(id);
+const has = k => DATA.some(r=>r[k]!=null);
+const periodMean=(key,y0,y1)=>{ const d=DATA.filter(r=>r.y>=y0&&r.y<=y1&&r[key]!=null); return d.length?d.reduce((a,r)=>a+r[key],0)/d.length:NaN; };
+const REF=periodMean('tmean',1961,1990);
+const Y0=DATA[0].y, Y1=DATA[DATA.length-1].y;
+const MON=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const deDate=s=>{ const p=s.split('.'); return `${parseInt(p[0])}. ${MON[parseInt(p[1])-1]} ${p[2]}`; };
+const neg=v=>(v<0?'−':'')+Math.abs(v).toFixed(1);
+function running(arr,key,win){ const h=(win-1)/2,o=[]; for(let i=0;i<arr.length;i++){let s=0,n=0;for(let j=Math.ceil(i-h);j<=Math.floor(i+h);j++){if(arr[j]&&arr[j][key]!=null){s+=arr[j][key];n++;}}o.push(n?s/n:null);} return o; }
+function widthOf(svg){ return Math.round(svg.getBoundingClientRect().width)||svg.parentElement.clientWidth||360; }
+function setBox(svg,W,H){ svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.style.height=H+'px'; }
+function hide(id){ $(id).style.display='none'; } function show(id){ $(id).style.display=''; }
+
+// header + texts
+$('title').textContent=`So hat sich ${ST.name} erwärmt`;
+$('sub').innerHTML=`Homogene Klimamessreihe der Station ${ST.name} (${ST.height}&nbsp;m, ${ST.region}), MeteoSchweiz. Jahreswerte ${Y0}–${Y1}.`
+  + (ST.canton!=='GR'?` <em>Hinweis: ${ST.name} liegt im Kanton ${ST.canton} – die nächstgelegene Tieflagen-Langreihe knapp ennet der Bündner Grenze.</em>`:'');
+$('note-stripes').textContent=`Quelle: MeteoSchweiz, homogene Klimamessreihe Station ${ST.name}. Referenzperiode 1961–1990.`;
+$('note-temp').textContent=`Quelle: MeteoSchweiz, homogene Klimamessreihe Station ${ST.name}.`;
+$('note-dumbbell').textContent=`Quelle: MeteoSchweiz, homogene Reihen Station ${ST.name}. Ab 1959.`;
+$('note-days').textContent=`Quelle: MeteoSchweiz, homogene Reihen Station ${ST.name}. Frosttage als 10-Jahre-Mittel geglättet. Ab 1959.`;
+$('note-precip').textContent=`Quelle: MeteoSchweiz, homogene Niederschlagsreihe Station ${ST.name} (Jahressumme in mm).`;
+$('rec-note').innerHTML=`Tagesrekorde aus der täglichen homogenen Messreihe (Tageswerte ab ${ST.dailySince})`+(has('precip')?'; Niederschlagsrekorde aus den Jahressummen':'')+'.';
+$('foot').innerHTML=`<b>Prototyp</b> – nicht für Publikation. Daten ungefiltert aus der offiziellen Open-Data-CSV.<br>`
+  +`Quelle: MeteoSchweiz Open Data, homogene Klimareihe Station ${ST.name} (Datensatz «Climate stations – Homogeneous data series»). Abgerufen 26.06.2026 von data.geo.admin.ch.`;
+
+// shared tooltip
+const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
+function showTip(html,cx,cy){ tip.innerHTML=html; tip.style.opacity=1; let lx=cx+14; if(lx+180>window.innerWidth) lx=cx-186; let ty=cy+14; if(ty+tip.offsetHeight>window.innerHeight) ty=Math.max(6,cy-tip.offsetHeight-14); tip.style.left=Math.max(6,lx)+'px'; tip.style.top=ty+'px'; }
+function hideAll(){ tip.style.opacity=0; document.querySelectorAll('.mk').forEach(m=>m.setAttribute('opacity',0)); }
+function bindHover(svg,handler){
+  function mv(ev){ const r=svg.getBoundingClientRect(); const cx=ev.touches?ev.touches[0].clientX:ev.clientX; const cy=ev.touches?ev.touches[0].clientY:ev.clientY; const sx=svg.viewBox.baseVal.width/r.width||1; const sy=svg.viewBox.baseVal.height/r.height||1; handler((cx-r.left)*sx,(cy-r.top)*sy,cx,cy); }
+  svg.addEventListener('pointermove',mv); svg.addEventListener('pointerdown',mv); svg.addEventListener('pointerleave',hideAll);
+}
+const META={};
+function nearest(pts,vx){ let best=pts[0],bd=1e9; for(const p of pts){const d=Math.abs(p.x-vx); if(d<bd){bd=d;best=p;}} return best; }
+function moveMark(id,x){ const mk=$(id); if(mk){ mk.setAttribute('x1',x); mk.setAttribute('x2',x); mk.setAttribute('opacity',1);} }
+
+// ① Stripes
+const STOPS=[[8,48,107],[74,144,194],[247,247,247],[214,96,77],[103,0,13]];
+function stripeColor(tmean,maxAbs){ let t=Math.max(0,Math.min(1,((tmean-REF)/maxAbs+1)/2)); const seg=t*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(seg)),f=seg-i,A=STOPS[i],B=STOPS[i+1]; const c=k=>Math.round(A[k]+(B[k]-A[k])*f); return `rgb(${c(0)},${c(1)},${c(2)})`; }
+function renderStripes(){
+  const svg=$('stripes'), W=widthOf(svg), H=Math.min(170,Math.max(120,W*0.28)), axisH=22, plotH=H-axisH;
+  const rows=DATA.filter(r=>r.tmean!=null);
+  const maxAbs=Math.max(...rows.map(r=>Math.abs(r.tmean-REF)));
+  setBox(svg,W,H); const bw=W/rows.length; let s='';
+  rows.forEach((r,i)=>{ s+=`<rect x="${(i*bw).toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.tmean,maxAbs)}"/>`; });
+  const ticks=(W<480?[1900,1960,2025]:[1864,1900,1950,2000,2025]).filter(y=>y>=Y0&&y<=Y1);
+  const Xy=y=>(rows.findIndex(r=>r.y===y)+0.5)*bw;
+  ticks.forEach(y=>{ const x=Xy(y); s+=`<line x1="${x}" y1="${plotH}" x2="${x}" y2="${plotH+4}" stroke="#9ca3af"/><text x="${x}" y="${plotH+17}" text-anchor="middle" font-size="12" fill="#6b7280">${y}</text>`; });
+  s+=`<line class="mk" id="mk-stripes" y1="0" y2="${plotH}" stroke="#111" stroke-width="1.5" opacity="0"/>`;
+  svg.innerHTML=s; META.stripes={rows,bw};
+  $('sc-min').textContent=(REF-maxAbs).toFixed(1)+' °C'; $('sc-max').textContent=(REF+maxAbs).toFixed(1)+' °C';
+}
+
+// ② Dumbbell
+function renderDumbbell(){
+  const svg=$('dumbbell'), W=widthOf(svg), small=W<480;
+  const items=[{k:'frost',l:'Frosttage'},{k:'ice',l:'Eistage'},{k:'summer',l:'Sommertage'}]
+    .map(it=>({...it,a:periodMean(it.k,1961,1990),b:periodMean(it.k,1991,2020)})).filter(it=>isFinite(it.a)&&isFinite(it.b));
+  if(items.length<2){ hide('sec-dumbbell'); return; } show('sec-dumbbell');
+  const m={l:small?84:120,r:small?54:82,t:22,b:24}, rowH=small?56:64, H=m.t+rowH*items.length+m.b;
+  const xmax=Math.max(250,Math.ceil(Math.max(...items.map(it=>Math.max(it.a,it.b)))/50)*50);
+  const X=v=>m.l+v/xmax*(W-m.l-m.r);
+  setBox(svg,W,H); let defs='', s='';
+  s+=`<line x1="${m.l}" y1="${H-m.b+2}" x2="${W-m.r}" y2="${H-m.b+2}" stroke="#eef0f2"/>`;
+  s+=`<text x="${X(0)}" y="${H-m.b+15}" text-anchor="start" font-size="9.5" fill="#b6bcc4">0</text>`;
+  s+=`<text x="${X(xmax)}" y="${H-m.b+15}" text-anchor="end" font-size="9.5" fill="#b6bcc4">${xmax} Tage/Jahr</text>`;
+  items.forEach((it,i)=>{
+    const y=m.t+rowH*(i+0.5), xa=X(it.a), xb=X(it.b), gid=`g${i}`;
+    defs+=`<linearGradient id="${gid}" gradientUnits="userSpaceOnUse" x1="${xa}" y1="0" x2="${xb}" y2="0"><stop offset="0" stop-color="#0068A4"/><stop offset="1" stop-color="#EE7733"/></linearGradient>`;
+    s+=`<text x="${m.l-14}" y="${y+4}" text-anchor="end" font-size="${small?12:13.5}" fill="#1f2937" font-weight="600">${it.l}</text>`;
+    s+=`<line x1="${xa}" y1="${y}" x2="${xb}" y2="${y}" stroke="url(#${gid})" stroke-width="8" stroke-linecap="round"/>`;
+    s+=`<circle cx="${xa}" cy="${y}" r="7" fill="#0068A4" stroke="#fff" stroke-width="2"/>`;
+    s+=`<circle cx="${xb}" cy="${y}" r="7" fill="#EE7733" stroke="#fff" stroke-width="2"/>`;
+    s+=`<text x="${xa}" y="${y-12}" text-anchor="middle" font-size="11" fill="#0068A4" font-weight="700">${it.a.toFixed(0)}</text>`;
+    s+=`<text x="${xb}" y="${y+18}" text-anchor="middle" font-size="11" fill="#EE7733" font-weight="700">${it.b.toFixed(0)}</text>`;
+    const dd=it.b-it.a, txt=`${dd>=0?'+':'−'}${Math.abs(dd).toFixed(0)}`, px=W-m.r/2, pw=txt.length*7+16;
+    s+=`<rect x="${px-pw/2}" y="${y-11}" width="${pw}" height="22" rx="11" fill="#f1f4f7"/>`;
+    s+=`<text x="${px}" y="${y+4}" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">${txt}</text>`;
+  });
+  svg.innerHTML=`<defs>${defs}</defs>`+s; META.dumb={items,m,rowH};
+}
+
+// ③ Temp
+function renderTemp(){
+  const svg=$('temp'), W=widthOf(svg), small=W<480, H=small?230:300, m={l:34,r:10,t:12,b:26};
+  const rows=DATA.filter(r=>r.tmean!=null), xmin=rows[0].y, xmax=rows[rows.length-1].y;
+  const vals=rows.map(r=>r.tmean); let ymin=Math.floor(Math.min(...vals)/2)*2, ymax=Math.ceil(Math.max(...vals)/2)*2; if(ymax-ymin<2)ymax=ymin+2;
+  const X=y=>m.l+(y-xmin)/(xmax-xmin)*(W-m.l-m.r), Y=v=>H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);
+  setBox(svg,W,H); let s='';
+  const step=Math.max(2,Math.round((ymax-ymin)/3/2)*2);
+  for(let v=ymin;v<=ymax;v+=step){ s+=`<line x1="${m.l}" y1="${Y(v)}" x2="${W-m.r}" y2="${Y(v)}" stroke="#eee"/><text x="${m.l-5}" y="${Y(v)+3}" text-anchor="end" font-size="10" fill="#9ca3af">${v}°</text>`; }
+  (small?[1900,1960,2020]:[1880,1920,1960,2000]).filter(y=>y>=xmin&&y<=xmax).forEach(y=>{ s+=`<text x="${X(y)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#9ca3af">${y}</text>`; });
+  const bw=Math.max(0.8,(W-m.l-m.r)/(xmax-xmin)*0.8);
+  rows.forEach(r=>{ s+=`<rect x="${X(r.y)-bw/2}" y="${Y(r.tmean)}" width="${bw}" height="${(H-m.b-Y(r.tmean)).toFixed(1)}" fill="${r.tmean>=REF?'#e8916a':'#9cc4dd'}" opacity="0.9"/>`; });
+  const rm=running(rows,'tmean',10); let p=''; rows.forEach((r,i)=>{ if(rm[i]!=null) p+=(p?'L':'M')+X(r.y).toFixed(1)+' '+Y(rm[i]).toFixed(1); });
+  s+=`<path d="${p}" fill="none" stroke="#0068A4" stroke-width="2.5"/>`;
+  const warm=rows.reduce((a,b)=>b.tmean>a.tmean?b:a), cool=rows.reduce((a,b)=>b.tmean<a.tmean?b:a);
+  [[warm,'#c0392b'],[cool,'#2471a3']].forEach(rc=>{ const r=rc[0],c=rc[1]; s+=`<circle cx="${X(r.y)}" cy="${Y(r.tmean)-5}" r="3" fill="${c}"/><text x="${Math.min(W-14,Math.max(14,X(r.y)))}" y="${Y(r.tmean)-10}" text-anchor="middle" font-size="9" fill="${c}" font-weight="700">${r.y}</text>`; });
+  s+=`<line class="mk" id="mk-temp" y1="${m.t}" y2="${H-m.b}" stroke="#111" stroke-width="1" opacity="0"/>`;
+  svg.innerHTML=s; META.temp={pts:rows.map(r=>({x:X(r.y),r}))};
+}
+
+// ④ Days
+function renderDays(){
+  if(!has('summer')){ hide('sec-days'); return; } show('sec-days');
+  const svg=$('days'), W=widthOf(svg), small=W<480, H=small?230:300, m={l:30,r:38,t:12,b:26};
+  const rows=DATA.filter(r=>r.summer!=null), xmin=rows[0].y, xmax=rows[rows.length-1].y;
+  const X=y=>m.l+(y-xmin)/(xmax-xmin)*(W-m.l-m.r);
+  const sMax=Math.max(10,Math.ceil(Math.max(...rows.map(r=>r.summer))/10)*10);
+  const fv=rows.map(r=>r.frost).filter(v=>v!=null); let fMin=Math.floor(Math.min(...fv)/20)*20, fMax=Math.ceil(Math.max(...fv)/20)*20; if(fMax-fMin<40)fMax=fMin+40;
+  const Ys=v=>H-m.b-v/sMax*(H-m.t-m.b), Yf=v=>H-m.b-(v-fMin)/(fMax-fMin)*(H-m.t-m.b);
+  setBox(svg,W,H); let s='';
+  for(let k=0;k<=2;k++){ const v=sMax/2*k; s+=`<line x1="${m.l}" y1="${Ys(v)}" x2="${W-m.r}" y2="${Ys(v)}" stroke="#f4f4f4"/><text x="${m.l-4}" y="${Ys(v)+3}" text-anchor="end" font-size="10" fill="#EE7733">${v}</text>`; }
+  for(let k=0;k<=2;k++){ const v=fMin+(fMax-fMin)/2*k; s+=`<text x="${W-m.r+4}" y="${Yf(v)+3}" text-anchor="start" font-size="10" fill="#0068A4">${v}</text>`; }
+  (small?[1960,1990,2020]:[1960,1980,2000,2020]).filter(y=>y>=xmin&&y<=xmax).forEach(y=>{ s+=`<text x="${X(y)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#9ca3af">${y}</text>`; });
+  const bw=Math.max(1,(W-m.l-m.r)/(xmax-xmin)*0.7);
+  rows.forEach(r=>{ s+=`<rect x="${X(r.y)-bw/2}" y="${Ys(r.summer)}" width="${bw}" height="${(H-m.b-Ys(r.summer)).toFixed(1)}" fill="#EE7733" opacity="0.85"/>`; });
+  const rf=running(rows,'frost',10); let p=''; rows.forEach((r,i)=>{ if(rf[i]!=null) p+=(p?'L':'M')+X(r.y).toFixed(1)+' '+Yf(rf[i]).toFixed(1); });
+  s+=`<path d="${p}" fill="none" stroke="#0068A4" stroke-width="2.5"/>`;
+  s+=`<line class="mk" id="mk-days" y1="${m.t}" y2="${H-m.b}" stroke="#111" stroke-width="1" opacity="0"/>`;
+  svg.innerHTML=s; META.days={pts:rows.map(r=>({x:X(r.y),r}))};
+}
+
+// ⑤ Precip
+function renderPrecip(){
+  if(!has('precip')){ hide('sec-precip'); return; } show('sec-precip');
+  const svg=$('precip'), W=widthOf(svg), small=W<480, H=small?230:300, m={l:42,r:10,t:12,b:26};
+  const rows=DATA.filter(r=>r.precip!=null), xmin=rows[0].y, xmax=rows[rows.length-1].y;
+  const pMax=Math.ceil(Math.max(...rows.map(r=>r.precip))/250)*250;
+  const X=y=>m.l+(y-xmin)/(xmax-xmin)*(W-m.l-m.r), Y=v=>H-m.b-v/pMax*(H-m.t-m.b);
+  setBox(svg,W,H); let s='';
+  for(let v=0;v<=pMax;v+=pMax/3){ s+=`<line x1="${m.l}" y1="${Y(v)}" x2="${W-m.r}" y2="${Y(v)}" stroke="#eee"/><text x="${m.l-5}" y="${Y(v)+3}" text-anchor="end" font-size="10" fill="#9ca3af">${v.toFixed(0)}</text>`; }
+  const yticks=(small?[1900,1960,2020]:[1880,1920,1960,2000]).filter(y=>y>=xmin&&y<=xmax);
+  yticks.forEach(y=>{ s+=`<text x="${X(y)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#9ca3af">${y}</text>`; });
+  const bw=Math.max(0.8,(W-m.l-m.r)/(xmax-xmin)*0.8);
+  rows.forEach(r=>{ s+=`<rect x="${X(r.y)-bw/2}" y="${Y(r.precip)}" width="${bw}" height="${(H-m.b-Y(r.precip)).toFixed(1)}" fill="#7fb2d4" opacity="0.85"/>`; });
+  const rm=running(rows,'precip',10); let p=''; rows.forEach((r,i)=>{ if(rm[i]!=null) p+=(p?'L':'M')+X(r.y).toFixed(1)+' '+Y(rm[i]).toFixed(1); });
+  s+=`<path d="${p}" fill="none" stroke="#0068A4" stroke-width="2.5"/>`;
+  s+=`<text x="${m.l-5}" y="${m.t+2}" text-anchor="end" font-size="9" fill="#9ca3af">mm</text>`;
+  s+=`<line class="mk" id="mk-precip" y1="${m.t}" y2="${H-m.b}" stroke="#111" stroke-width="1" opacity="0"/>`;
+  svg.innerHTML=s; META.precip={pts:rows.map(r=>({x:X(r.y),r}))};
+  $('sub-precip').innerHTML=`Jahressumme je Säule, Linie = gleitendes 10-Jahre-Mittel.`;
+}
+
+// records
+function renderRecords(){
+  let cards='';
+  if(ST.recHot&&ST.recHot.t!=null) cards+=`<div class="rec hot"><b>${ST.recHot.t.toFixed(1)} °C</b><span>heissester je gemessener Tag<br>${deDate(ST.recHot.d)}</span></div>`;
+  if(ST.recCold&&ST.recCold.t!=null) cards+=`<div class="rec cold"><b>${neg(ST.recCold.t)} °C</b><span>kältester je gemessener Tag<br>${deDate(ST.recCold.d)}</span></div>`;
+  if(has('precip')){ const pr=DATA.filter(r=>r.precip!=null); const wet=pr.reduce((a,b)=>b.precip>a.precip?b:a), dry=pr.reduce((a,b)=>b.precip<a.precip?b:a);
+    cards+=`<div class="rec"><b>${wet.precip.toFixed(0)} mm</b><span>nassestes Jahr (${wet.y})</span></div><div class="rec"><b>${dry.precip.toFixed(0)} mm</b><span>trockenstes Jahr (${dry.y})</span></div>`; }
+  $('records').innerHTML=cards;
+}
+
+// hover
+function bindAll(){
+  bindHover($('stripes'),(vx,vy,cx,cy)=>{ const M=META.stripes; if(!M)return; const i=Math.max(0,Math.min(M.rows.length-1,Math.floor(vx/M.bw))); const r=M.rows[i]; const d=r.tmean-REF;
+    let h=`<b>${r.y}</b><div class="row"><span>Jahresmittel</span><span>${r.tmean.toFixed(1)} °C</span></div><div class="row"><span>Abweichung</span><span>${d>=0?'+':'−'}${Math.abs(d).toFixed(1)} °C</span></div>`;
+    if(r.summer!=null) h+=`<div class="row"><span>Sommertage</span><span>${r.summer}</span></div>`;
+    if(r.frost!=null) h+=`<div class="row"><span>Frosttage</span><span>${r.frost}</span></div>`;
+    showTip(h,cx,cy); moveMark('mk-stripes',(i+0.5)*M.bw); });
+  bindHover($('dumbbell'),(vx,vy,cx,cy)=>{ const M=META.dumb; if(!M)return; const i=Math.floor((vy-M.m.t)/M.rowH); if(i<0||i>=M.items.length){hideAll();return;} const it=M.items[i]; const dd=it.b-it.a;
+    showTip(`<b>${it.l}</b><div class="row"><span>1961–1990</span><span>${it.a.toFixed(0)} Tage</span></div><div class="row"><span>1991–2020</span><span>${it.b.toFixed(0)} Tage</span></div><div class="row"><span>Veränderung</span><span>${dd>=0?'+':'−'}${Math.abs(dd).toFixed(0)} Tage</span></div>`,cx,cy); });
+  bindHover($('temp'),(vx,vy,cx,cy)=>{ const M=META.temp; if(!M)return; const p=nearest(M.pts,vx); const r=p.r; const d=r.tmean-REF;
+    showTip(`<b>${r.y}</b><div class="row"><span>Jahresmittel</span><span>${r.tmean.toFixed(1)} °C</span></div><div class="row"><span>Abw. 1961–90</span><span>${d>=0?'+':'−'}${Math.abs(d).toFixed(1)} °C</span></div>`,cx,cy); moveMark('mk-temp',p.x); });
+  bindHover($('days'),(vx,vy,cx,cy)=>{ const M=META.days; if(!M)return; const p=nearest(M.pts,vx); const r=p.r;
+    let h=`<b>${r.y}</b><div class="row"><span>Sommertage</span><span>${r.summer}</span></div><div class="row"><span>Frosttage</span><span>${r.frost}</span></div>`; if(r.ice!=null)h+=`<div class="row"><span>Eistage</span><span>${r.ice}</span></div>`;
+    showTip(h,cx,cy); moveMark('mk-days',p.x); });
+  bindHover($('precip'),(vx,vy,cx,cy)=>{ const M=META.precip; if(!M)return; const p=nearest(M.pts,vx); const r=p.r;
+    showTip(`<b>${r.y}</b><div class="row"><span>Niederschlag</span><span>${r.precip.toFixed(0)} mm</span></div>`,cx,cy); moveMark('mk-precip',p.x); });
+}
+
+function renderAll(){ renderRecords(); renderStripes(); renderDumbbell(); renderTemp(); renderDays(); renderPrecip(); }
+let raf; window.addEventListener('resize',()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(renderAll); });
+renderAll(); bindAll();
+</script>
+</body>
+</html>
