@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Live-Temperatur Chur · Prototyp V2</title>
+<title>Live-Temperatur Chur</title>
 <style>
   :root{ --blau:#0068A4; --orange:#EE7733; --grau:#6b7280; --hell:#eef2f5; --rot:#c0392b; }
   *{ box-sizing:border-box; }
@@ -102,6 +102,9 @@ let CURVE=null;
 
 const $=id=>document.getElementById(id);
 async function csv(url){ const r=await fetch(url+'?_='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); const t=await r.text(); return t.split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(';')); }
+// Grosse Jahres-Dateien (Stunden/Tage) nur selten neu laden, dazwischen Cache
+const HCACHE={data:null,t:0}, DCACHE={data:null,t:0};
+async function csvCached(url,store,maxAgeMs){ if(store.data && Date.now()-store.t<maxAgeMs) return store.data; const d=await csv(url); store.data=d; store.t=Date.now(); return d; }
 const num=v=>(v===''||v==null)?null:parseFloat(v.replace(',','.'));
 const colIdx=(rows,name)=>rows[0].indexOf(name);
 function parseMeteoDate(str){ if(!str)return null; const m=String(str).trim().match(/^(\d{2})\.(\d{2})\.(\d{4})(?: (\d{2}):(\d{2}))?$/); if(m){const[,d,mo,y,h='00',mi='00']=m; const dt=new Date(Date.UTC(+y,+mo-1,+d,+h,+mi)); if(!isNaN(dt))return dt;} const d2=new Date(str); return isNaN(d2)?null:d2; }
@@ -174,7 +177,7 @@ function tile(val,lab,cls){ const d=document.createElement('div'); d.className='
 async function load(){
   if(!navigator.onLine) return fail('offline');
   try{
-    const [nowRows,hRows]=await Promise.all([csv(NOW_URL),csv(HREC_URL).catch(()=>null)]);
+    const [nowRows,hRows]=await Promise.all([csv(NOW_URL),csvCached(HREC_URL,HCACHE,20*60000).catch(()=>HCACHE.data)]);
     const iT=colIdx(nowRows,'tre200s0'), iTime=colIdx(nowRows,'reference_timestamp');
     if(iT<0||iTime<0) throw new Error('Spalten nicht gefunden');
     const cutoff=Date.now()-24*3600*1000;
@@ -204,19 +207,22 @@ async function load(){
     // Kontext: drei gleichrangige Kacheln
     const ctx=$('ctx'); clear(ctx); const extra=$('extra'); clear(extra);
     const normToday=NORMAL[localMMDD(new Date())];
-    if(today.length && normToday!=null){
-      const mean=sum/today.length, delta=mean-normToday, warm=delta>=0;
-      const t0=document.createElement('div'); t0.className='stat mean'; t0.innerHTML=`<b>${mean.toFixed(1)} °C</b><span>Tagesmittel heute <span style="white-space:nowrap">(seit Mitternacht)</span></span>`; ctx.appendChild(t0);
-      const t1=document.createElement('div'); t1.className='stat '+(warm?'warm':'cool'); t1.innerHTML=`<b>${warm?'+':'−'}${Math.abs(delta).toFixed(1)} °C</b><span>${warm?'wärmer':'kühler'} als üblich <span style="white-space:nowrap">(${normToday}&nbsp;°C)</span></span>`; ctx.appendChild(t1);
-      $('note-normal').textContent=` «Üblich» = Durchschnitt aller ${deDay(new Date())} der Jahre 1991–2020 (${normToday} °C).`;
+    {
+      const mean24 = pts.reduce((a,p)=>a+p.v,0)/pts.length;
+      const t0=document.createElement('div'); t0.className='stat mean'; t0.innerHTML=`<b>${mean24.toFixed(1)} °C</b><span>Mittel der <span style="white-space:nowrap">letzten 24 h</span></span>`; ctx.appendChild(t0);
+      if(normToday!=null){
+        const delta=mean24-normToday, warm=delta>=0;
+        const t1=document.createElement('div'); t1.className='stat '+(warm?'warm':'cool'); t1.innerHTML=`<b>${warm?'+':'−'}${Math.abs(delta).toFixed(1)} °C</b><span>${warm?'wärmer':'kühler'} als üblich <span style="white-space:nowrap">(${normToday}&nbsp;°C)</span></span>`; ctx.appendChild(t1);
+        $('note-normal').textContent=` Vergleich: Mittel der letzten 24 h gegenüber dem üblichen Tagesmittel (Durchschnitt aller ${deDay(new Date())} 1991–2020: ${normToday} °C).`;
+      }
     }
     if(maxPt){ ctx.appendChild(tile(`${(REC_HOT.t-maxPt.v).toFixed(1)} °C`, `bis zum Hitzerekord (${REC_HOT.t.toFixed(0)} °C, ${REC_HOT.d.slice(-4)})`, 'rec')); }
     if(minPt && minPt.v>=20){ const t=document.createElement('span'); t.className='tropen'; t.textContent='Tropennacht – Minimum nicht unter 20 °C'; extra.appendChild(t); }
     // Sommertage laufendes Jahr
     try{
-      const d=await csv(DREC_URL); const iMax=colIdx(d,'tre200dx'), iDay=colIdx(d,'reference_timestamp');
+      const d=await csvCached(DREC_URL,DCACHE,30*60000); const iMax=colIdx(d,'tre200dx'), iDay=colIdx(d,'reference_timestamp');
       if(iMax>=0&&iDay>=0){ let sd=0; for(let k=1;k<d.length;k++){ const dt=parseMeteoDate(d[k][iDay]); const mx=num(d[k][iMax]); if(dt&&dt.getUTCFullYear()===YEAR&&mx!=null&&mx>=25)sd++; }
-        if(sd>0){ if(extra.firstChild) addBr(extra); addSpan(extra,String(sd),'big'); addSpan(extra,` Sommertage ${YEAR} bisher · Schnitt 1991–2020: ${SUMMER_NORMAL}/Jahr`); } }
+        if(sd>0){ if(extra.firstChild) addBr(extra); addSpan(extra,String(sd),'big'); addSpan(extra,` Sommertage ${YEAR} bisher · Durchschnitt 1991–2020: ${SUMMER_NORMAL}/Jahr`); } }
     }catch(e){}
     $('dot').classList.remove('off'); $('livelbl').textContent='live';
   }catch(e){ fail(e.message); }
