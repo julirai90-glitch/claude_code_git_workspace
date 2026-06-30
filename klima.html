@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klima Graubünden · Übersicht</title>
+<style>
+  :root{ --blau:#0068A4; --orange:#EE7733; --grau:#6b7280; --hell:#eef2f5; }
+  *{ box-sizing:border-box; }
+  body{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:#1f2937; margin:0; padding:24px 18px 48px; background:#fff; line-height:1.5; }
+  .wrap{ max-width:760px; margin:0 auto; }
+  .kicker{ color:var(--orange); font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.78rem; }
+  h1{ font-size:1.8rem; margin:4px 0 6px; }
+  .lead{ color:var(--grau); margin:0 0 26px; }
+  h2{ font-size:1.05rem; margin:30px 0 10px; padding-bottom:6px; border-bottom:2px solid var(--hell); }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+  a.card{ display:block; text-decoration:none; color:inherit; border:1px solid #e5e7eb; border-radius:12px; padding:14px 16px; transition:box-shadow .15s, border-color .15s, transform .1s; background:#fff; }
+  a.card:hover{ box-shadow:0 6px 18px rgba(0,0,0,.08); border-color:var(--blau); transform:translateY(-1px); }
+  a.card b{ display:block; font-size:1.02rem; margin-bottom:3px; }
+  a.card span{ font-size:.82rem; color:var(--grau); }
+  a.card .tag{ display:inline-block; font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:2px 7px; border-radius:20px; margin-bottom:8px; }
+  .tag.live{ background:#e7f6ec; color:#16a34a; } .tag.proto{ background:#fdecea; color:#c0392b; } .tag.serie{ background:var(--hell); color:var(--blau); }
+  .note{ font-size:.78rem; color:var(--grau); margin-top:34px; border-top:1px solid #e5e7eb; padding-top:14px; }
+  code{ background:var(--hell); padding:1px 5px; border-radius:4px; font-size:.85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Graubünden in Zahlen</div>
+  <h1>Klima Graubünden – Übersicht</h1>
+  <p class="lead">Prototypen und Visualisierungen rund ums Bündner Klima, auf Basis der homogenen Messreihen und Live-Daten von MeteoSchweiz (Open Data).</p>
+
+  <h2>Live</h2>
+  <div class="grid">
+    <a class="card" href="live-chur-v2.html">
+      <span class="tag live">live</span>
+      <b>Live-Temperatur Chur</b>
+      <span>Aktuelle Temperatur, 24-h-Verlauf, Vergleich zum langjährigen Normal, Rekorde. Aktualisiert sich selbst.</span>
+    </a>
+  </div>
+
+  <h2>Stationsseiten</h2>
+  <div class="grid">
+    <a class="card" href="station-davos.html"><span class="tag serie">Station</span><b>Davos</b><span>1594 m · Landschaft Davos. Stripes, Sommer-/Frosttage, Niederschlag, Rekorde.</span></a>
+    <a class="card" href="station-samedan.html"><span class="tag serie">Station</span><b>Samedan</b><span>1709 m · Oberengadin, Kältepol (Rekord −37.9 °C).</span></a>
+    <a class="card" href="station-san-bernardino.html"><span class="tag serie">Station</span><b>S. Bernardino</b><span>1639 m · Misox/Südbünden. Temperatur + Frosttage.</span></a>
+    <a class="card" href="station-bad-ragaz.html"><span class="tag serie">Station</span><b>Bad Ragaz</b><span>497 m · Rheintal (SG, nächste Tieflagen-Langreihe).</span></a>
+  </div>
+
+  <h2>Vergleich & Prototyp</h2>
+  <div class="grid">
+    <a class="card" href="vergleich-warming-stripes.html"><span class="tag serie">Vergleich</span><b>Vier Stationen, ein Trend</b><span>Warming Stripes von Bad Ragaz bis Samedan, gemeinsame Farbskala.</span></a>
+    <a class="card" href="prototyp-klima-davos.html"><span class="tag proto">Prototyp</span><b>Davos – fünf Ansichten</b><span>Werkbank: Warming Stripes, Dumbbell, Temperatur, Sommer/Frost, Niederschlag.</span></a>
+  </div>
+
+  <p class="note">
+    Quelle: MeteoSchweiz Open Data (<code>data.geo.admin.ch</code>). Stationsseiten und Vergleich sind <b>Prototypen</b>, nicht für Publikation.
+    Live-Werte sind provisorisch/unkorrigiert. Projektdoku: <code>KLIMA-PROJEKT-HANDOFF.md</code>.
+  </p>
+</div>
+</body>
+</html>
