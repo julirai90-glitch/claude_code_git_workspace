@@ -153,8 +153,9 @@ function drawChart(pts){
 
   const startMs=pts[0].ms, endMs=pts[pts.length-1].ms;
   const totalH=(endMs-startMs)/3600000||1;
-  // px per hour: ~150px per day = 6.25px/h, minimum so 24h is at least 200px
-  const pxH=Math.max(6.25, 200/24);
+  // px per hour: always fill container; for longer ranges become scrollably wider
+  const containerW=scroller.clientWidth||660;
+  const pxH=Math.max(containerW/totalH, 6.25);
   const W=Math.ceil(totalH*pxH)+MR+ML;
   svg.style.width=W+'px';
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
