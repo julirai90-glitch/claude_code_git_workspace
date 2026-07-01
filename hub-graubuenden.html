@@ -13,7 +13,22 @@
   .kicker{ color:var(--orange); font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.72rem; }
   h1{ margin:4px 0 2px; font-size:1.3rem; }
   .sub{ color:var(--grau); font-size:.84rem; margin:0; }
-  #map{ height:500px; width:100%; }
+
+  /* overlay panel */
+  .overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:1000;
+           background:#fff;flex-direction:column;border-radius:8px;overflow:hidden;
+           box-shadow:0 8px 32px rgba(0,0,0,.18);}
+  .overlay.open{display:flex;}
+  .overlay-head{display:flex;align-items:center;justify-content:space-between;
+                padding:10px 14px;background:#0068A4;color:#fff;flex-shrink:0;}
+  .overlay-title{font-weight:700;font-size:.95rem;}
+  .overlay-close{background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;
+                 line-height:1;padding:0 4px;opacity:.85;}
+  .overlay-close:hover{opacity:1;}
+  .overlay iframe{flex:1;border:none;width:100%;display:block;}
+  #map-wrap{position:relative;height:500px;}
+  #map{height:100%;}
+
   .leaflet-popup-content-wrapper{ border-radius:12px; box-shadow:0 4px 18px rgba(0,0,0,.12); }
   .leaflet-popup-content{ margin:12px 14px; }
   .popup-name{ font-weight:700; font-size:1rem; color:#1f2937; }
@@ -29,7 +44,16 @@
   <h1>Klima Graubünden</h1>
   <p class="sub">Elf Wetterstationen mit aktuellen Temperaturwerten – auf Station klicken für Dashboard</p>
 </div>
-<div id="map"></div>
+<div id="map-wrap">
+  <div id="map"></div>
+  <div class="overlay" id="overlay">
+    <div class="overlay-head">
+      <span class="overlay-title" id="overlay-title">Dashboard</span>
+      <button class="overlay-close" id="overlay-close" aria-label="Schliessen">×</button>
+    </div>
+    <iframe id="overlay-frame" src="" scrolling="auto"></iframe>
+  </div>
+</div>
 <p class="note">Daten: MeteoSchweiz Open Data, automatisches Messnetz (SMN). Aktuelle Werte provisorisch und unkorrigiert.</p>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -177,7 +201,7 @@ STATIONS.forEach(st => {
   m.bindPopup(`
     <div class="popup-name">${st.name}</div>
     <div class="popup-height">${st.height} m · <span id="tmp-${st.code}">lädt …</span></div>
-    <button onclick="window.top.location.href='${BASE_URL + st.file}'" class="popup-btn">Dashboard öffnen →</button>
+    <button onclick="openDash('${st.name}','${BASE_URL + st.file}')" class="popup-btn">Dashboard öffnen →</button>
   `);
   markers[st.code] = m;
   loadTemp(st, m);
@@ -202,6 +226,17 @@ async function loadTemp(st, marker) {
 
 // Refresh every 10 minutes
 setInterval(() => STATIONS.forEach(st => loadTemp(st, markers[st.code])), 10 * 60 * 1000);
+
+function openDash(name, url) {
+  document.getElementById('overlay-title').textContent = name;
+  document.getElementById('overlay-frame').src = url + '?v=3';
+  document.getElementById('overlay').classList.add('open');
+  map.closePopup();
+}
+document.getElementById('overlay-close').addEventListener('click', () => {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('overlay-frame').src = '';
+});
 </script>
 </body>
 </html>
