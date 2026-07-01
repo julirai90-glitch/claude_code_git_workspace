@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Juni 2026 Chur – Tagesmittel</title>
+<style>
+  :root{--blau:#0068A4;--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:696px;margin:0 auto;border:1px solid #e5e7eb;border-radius:14px;
+        padding:14px 16px 16px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;}
+  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--orange);border-radius:14px 14px 0 0;}
+  .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.68rem;margin-bottom:2px;}
+  .main-title{font-size:1.1rem;font-weight:800;color:#1f2937;margin:2px 0 2px;}
+  .subtitle{font-size:.78rem;color:#6b7280;margin:0 0 12px;}
+  svg{width:100%;display:block;touch-action:none;cursor:crosshair;overflow:visible;}
+  .legend{display:flex;gap:16px;font-size:.74rem;color:#6b7280;margin-top:6px;flex-wrap:wrap;}
+  .legend span{display:flex;align-items:center;gap:5px;}
+  .leg-bar{width:14px;height:10px;border-radius:2px;display:inline-block;}
+  .leg-line{width:20px;height:2px;display:inline-block;border-top:2px dashed #9ca3af;}
+  .note{font-size:.66rem;color:#6b7280;margin-top:10px;line-height:1.4;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
+       border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:6px 10px;
+       font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .tip b{display:block;font-size:.9rem;margin-bottom:2px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent"></div>
+  <div class="kicker">Chur · Juni 2026</div>
+  <div class="main-title">Tagesdurchschnitt: Juni 2026 vs. Normal</div>
+  <div class="subtitle">Balken = Tagesmittel 2026 · gestrichelte Linie = Durchschnitt 1991–2020</div>
+  <svg id="svg" viewBox="0 0 660 220" role="img" aria-label="Tagesmitteltemperatur Juni 2026 Chur"></svg>
+  <div class="legend">
+    <span><span class="leg-bar" style="background:#c0392b"></span> wärmer als normal</span>
+    <span><span class="leg-bar" style="background:#2471a3"></span> kühler als normal</span>
+    <span><span class="leg-line"></span> Normal 1991–2020</span>
+  </div>
+  <p class="note">Quelle: MeteoSchweiz, automatische Station Chur (SMN, 556 m). <b>2026 provisorisch und unkorrigiert.</b> Normal = geglätteter Tagesdurchschnitt 1991–2020.</p>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+const DAYS={1:17.6,2:16.8,3:14.1,4:15.2,5:14.8,6:16.3,7:18.8,8:20.4,9:14.9,10:11.8,11:13.5,12:13.8,13:20.2,14:20.0,15:19.3,16:20.1,17:23.2,18:25.3,19:24.0,20:25.0,21:26.4,22:27.1,23:26.6,24:27.5,25:28.7,26:28.2,27:27.8,28:24.3,29:22.8,30:22.9};
+const NORM={1:16.4,2:16.5,3:16.5,4:16.6,5:16.7,6:16.8,7:16.9,8:17.0,9:17.1,10:17.2,11:17.3,12:17.4,13:17.5,14:17.6,15:17.7,16:17.7,17:17.8,18:17.9,19:18.0,20:18.2,21:18.3,22:18.4,23:18.5,24:18.6,25:18.8,26:18.8,27:18.9,28:19.0,29:19.0,30:19.0};
+const days=Object.keys(DAYS).map(Number).sort((a,b)=>a-b);
+const W=660,H=220,m={l:30,r:10,t:14,b:32};
+const allV=[...Object.values(DAYS),...Object.values(NORM)];
+const ymin=Math.floor(Math.min(...allV)/2)*2-1;
+const ymax=Math.ceil(Math.max(...allV)/2)*2+1;
+const X=d=>m.l+(d-1)/(days.length-1)*(W-m.l-m.r);
+const Y=v=>H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);
+const bw=(W-m.l-m.r)/days.length*0.7;
+const svg=document.getElementById('svg');
+let s='';
+// grid
+for(let v=Math.ceil(ymin/2)*2;v<=ymax;v+=2){
+  s+=`<line x1="${m.l}" y1="${Y(v).toFixed(1)}" x2="${W-m.r}" y2="${Y(v).toFixed(1)}" stroke="#f0f0f0"/>`;
+  s+=`<text x="${m.l-4}" y="${(Y(v)+3).toFixed(1)}" text-anchor="end" font-size="9.5" fill="#9ca3af">${v}°</text>`;
+}
+// shaded area between 2026 and normal
+let areaAbove='', areaBelow='';
+days.forEach((d,i)=>{
+  const x=X(d), n=NORM[d], v=DAYS[d];
+  const y1=Y(Math.max(v,n)), y2=Y(Math.min(v,n));
+  if(v>=n) areaAbove+=`<rect x="${(x-bw/2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${(y2-y1).toFixed(1)}" fill="#fdecea" opacity=".5"/>`;
+  else areaBelow+=`<rect x="${(x-bw/2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${(y2-y1).toFixed(1)}" fill="#ebf3fb" opacity=".5"/>`;
+});
+s+=areaAbove+areaBelow;
+// bars
+days.forEach(d=>{
+  const x=X(d), v=DAYS[d], n=NORM[d], warm=v>=n;
+  s+=`<rect x="${(x-bw/2).toFixed(1)}" y="${Y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-m.b-Y(v)).toFixed(1)}" fill="${warm?'#c0392b':'#2471a3'}" opacity="0.85" data-d="${d}"/>`;
+});
+// normal dashed line
+let p='';
+days.forEach(d=>{ p+=(p?'L':'M')+X(d).toFixed(1)+' '+Y(NORM[d]).toFixed(1); });
+s+=`<path d="${p}" fill="none" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="5 3"/>`;
+// x-axis day labels (every 5th day)
+days.forEach(d=>{
+  if(d===1||d%5===0){
+    s+=`<text x="${X(d).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="10" fill="#9ca3af">${d}.</text>`;
+    s+=`<line x1="${X(d).toFixed(1)}" y1="${H-m.b}" x2="${X(d).toFixed(1)}" y2="${(H-m.b+3).toFixed(1)}" stroke="#e5e7eb"/>`;
+  }
+});
+// x-axis label
+s+=`<text x="${(m.l+(W-m.l-m.r)/2).toFixed(1)}" y="${H-1}" text-anchor="middle" font-size="9.5" fill="#9ca3af">Juni 2026</text>`;
+svg.innerHTML=s;
+
+// tooltip
+const tip=document.getElementById('tip');
+svg.addEventListener('pointermove',ev=>{
+  const r=svg.getBoundingClientRect();
+  const xi=(ev.clientX-r.left)/r.width*W;
+  let best=days[0], bd=1e9;
+  days.forEach(d=>{ const dist=Math.abs(X(d)-xi); if(dist<bd){bd=dist;best=d;} });
+  const v=DAYS[best], n=NORM[best], diff=v-n;
+  tip.innerHTML=`<b>${best}. Juni</b>${v.toFixed(1)} °C · ${diff>=0?'+':''}${diff.toFixed(1)} vs. Normal (${n.toFixed(1)} °C)`;
+  tip.style.opacity=1;
+  let lx=ev.clientX+12; if(lx+220>window.innerWidth)lx=ev.clientX-224;
+  tip.style.left=Math.max(4,lx)+'px'; tip.style.top=(ev.clientY-38)+'px';
+});
+svg.addEventListener('pointerleave',()=>tip.style.opacity=0);
+</script>
+</body>
+</html>
