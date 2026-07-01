@@ -15,9 +15,8 @@
   .sub{ color:var(--grau); font-size:.84rem; margin:0; }
 
   /* overlay panel */
-  .overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:1000;
-           background:#fff;flex-direction:column;border-radius:8px;overflow:hidden;
-           box-shadow:0 8px 32px rgba(0,0,0,.18);}
+  .overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:2000;
+           background:#fff;flex-direction:column;overflow:hidden;}
   .overlay.open{display:flex;}
   .overlay-head{display:flex;align-items:center;justify-content:space-between;
                 padding:10px 14px;background:#0068A4;color:#fff;flex-shrink:0;}
