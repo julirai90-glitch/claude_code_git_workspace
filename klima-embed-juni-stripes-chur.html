@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Juni-Temperatur Chur 1887–2026</title>
+<style>
+  :root{--blau:#0068A4;--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:480px;margin:0 auto;border:1px solid #e5e7eb;border-radius:14px;
+        padding:14px 16px 16px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--blau);}
+  .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.68rem;margin-bottom:2px;}
+  .title{font-size:.95rem;font-weight:700;margin:0 0 10px;line-height:1.3;}
+  svg{width:100%;display:block;touch-action:none;cursor:crosshair;overflow:visible;}
+  .scalebar{display:flex;align-items:center;gap:6px;font-size:.68rem;color:var(--grau);margin-top:6px;}
+  .scalebar .grad{height:10px;flex:1;border-radius:3px;
+    background:linear-gradient(90deg,#08306b,#4a90c2,#f7f7f7,#d6604d,#67000d);}
+  .callout{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0;}
+  .chip{background:var(--hell);border-radius:8px;padding:6px 10px;font-size:.74rem;}
+  .chip b{display:block;font-size:1.05rem;line-height:1.2;}
+  .chip.hot b{color:#c0392b;} .chip.rec b{color:#c0392b;}
+  .note{font-size:.66rem;color:var(--grau);margin-top:10px;line-height:1.4;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
+       border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:6px 10px;
+       font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .tip b{display:block;font-size:.9rem;margin-bottom:2px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent"></div>
+  <div class="kicker">Chur · Juni-Temperatur seit 1887</div>
+  <div class="title">Jeder Streifen ist ein Juni – blau = kühler, rot = wärmer als 1961–1990</div>
+  <svg id="svg" viewBox="0 0 460 120" role="img" aria-label="Juni-Stripes Chur 1887-2026"></svg>
+  <div class="scalebar">
+    <span id="sc-min">kühler</span><div class="grad"></div><span id="sc-max">wärmer</span>
+  </div>
+  <div class="callout">
+    <div class="chip hot"><b id="rank26"></b>Juni 2026 im Vergleich</div>
+    <div class="chip rec"><b>22.8 °C · 2003</b>Heissester Juni seit 1887</div>
+  </div>
+  <p class="note">Quelle: MeteoSchweiz, automatische Station Chur (SMN). Juni-Mitteltemperatur pro Jahr.
+  Referenzperiode 1961–1990 (Mittel: 15.81 °C). <b>2026 provisorisch und unkorrigiert.</b>
+  Chur-Reihe nicht homogenisiert (SMN) – für Trendaussagen eingeschränkt belastbar.</p>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+
+const STOPS=[[8,48,107],[74,144,194],[247,247,247],[214,96,77],[103,0,13]];
+function stripeColor(anom,maxAbs){
+  let t=Math.max(0,Math.min(1,(anom/maxAbs+1)/2));
+  const seg=t*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(seg)),f=seg-i;
+  const A=STOPS[i],B=STOPS[i+1];
+  return `rgb(${[0,1,2].map(k=>Math.round(A[k]+(B[k]-A[k])*f)).join(',')})`;
+}
+
+const DATA={"1887": 17.07, "1888": 15.96, "1889": 16.9, "1890": 14.73, "1891": 15.92, "1892": 15.71, "1893": 15.98, "1894": 15.41, "1895": 16.0, "1896": 16.0, "1897": 17.75, "1898": 14.65, "1899": 15.91, "1900": 16.52, "1901": 16.5, "1902": 14.9, "1903": 15.41, "1904": 16.78, "1905": 16.66, "1906": 15.2, "1907": 15.69, "1908": 17.75, "1909": 14.46, "1910": 16.21, "1911": 15.44, "1912": 16.12, "1913": 15.56, "1914": 14.22, "1915": 18.02, "1916": 13.3, "1917": 18.24, "1918": 13.42, "1919": 15.66, "1920": 15.56, "1921": 15.61, "1922": 16.31, "1923": 12.37, "1924": 15.3, "1925": 17.01, "1926": 12.92, "1927": 15.76, "1928": 16.12, "1929": 16.59, "1930": 18.96, "1931": 18.11, "1932": 15.08, "1933": 13.38, "1934": 15.89, "1935": 18.06, "1936": 15.72, "1937": 17.48, "1938": 17.22, "1939": 16.57, "1940": 15.62, "1941": 16.78, "1942": 16.03, "1943": 14.28, "1944": 15.01, "1945": 17.6, "1946": 14.72, "1947": 17.66, "1948": 14.73, "1949": 15.96, "1950": 18.26, "1951": 15.83, "1952": 17.41, "1953": 14.7, "1954": 16.01, "1955": 15.97, "1956": 13.25, "1957": 16.7, "1958": 15.78, "1959": 16.09, "1960": 17.41, "1961": 17.09, "1962": 15.69, "1963": 16.06, "1964": 17.99, "1965": 16.54, "1966": 17.11, "1967": 15.69, "1968": 16.65, "1969": 14.14, "1970": 18.07, "1971": 14.2, "1972": 15.15, "1973": 16.61, "1974": 14.33, "1975": 14.56, "1976": 17.86, "1977": 16.04, "1978": 15.02, "1979": 16.35, "1980": 14.03, "1981": 16.29, "1982": 17.31, "1983": 16.64, "1984": 14.96, "1985": 13.97, "1986": 16.09, "1987": 13.9, "1988": 15.34, "1989": 15.21, "1990": 15.44, "1991": 15.3, "1992": 16.59, "1993": 16.88, "1994": 17.43, "1995": 14.52, "1996": 17.73, "1997": 16.29, "1998": 17.83, "1999": 15.67, "2000": 18.6, "2001": 15.47, "2002": 19.35, "2003": 22.84, "2004": 16.53, "2005": 18.7, "2006": 18.41, "2007": 18.13, "2008": 18.25, "2009": 17.29, "2010": 17.86, "2011": 17.76, "2012": 18.21, "2013": 16.51, "2014": 18.37, "2015": 18.48, "2016": 16.96, "2017": 20.14, "2018": 19.38, "2019": 20.83, "2020": 16.81, "2021": 20.11, "2022": 19.95, "2023": 20.44, "2024": 18.23, "2025": 20.92, "2026": 20.91};
+const REF=15.81;
+const years=Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+const anoms=years.map(y=>DATA[y]-REF);
+const maxAbs=Math.max(...anoms.map(Math.abs));
+const ranked=[...years].sort((a,b)=>DATA[b]-DATA[a]);
+const rank26=ranked.indexOf(2026)+1;
+
+document.getElementById('rank26').textContent=`Platz ${rank26} von ${years.length}`;
+document.getElementById('sc-min').textContent=(REF-maxAbs).toFixed(1)+' °C';
+document.getElementById('sc-max').textContent=(REF+maxAbs).toFixed(1)+' °C';
+
+const svg=document.getElementById('svg');
+const W=460,H=120,axH=18,plotH=H-axH;
+const bw=W/years.length;
+let s='';
+years.forEach((y,i)=>{
+  const c=stripeColor(DATA[y]-REF,maxAbs);
+  const x=(i*bw).toFixed(2);
+  s+=`<rect x="${x}" y="0" width="${(bw+0.5).toFixed(2)}" height="${plotH}" fill="${c}" data-y="${y}" data-v="${DATA[y]}"/>`;
+});
+// axis ticks
+[1900,1950,2000,2026].forEach(y=>{
+  const i=years.indexOf(y); if(i<0)return;
+  const x=((i+0.5)*bw).toFixed(1);
+  s+=`<line x1="${x}" y1="${plotH}" x2="${x}" y2="${plotH+4}" stroke="#9ca3af"/>`;
+  s+=`<text x="${x}" y="${H-2}" text-anchor="middle" font-size="9" fill="#9ca3af">${y}</text>`;
+});
+// 2003 label
+const i03=years.indexOf(2003); if(i03>=0){
+  const x=((i03+0.5)*bw).toFixed(1);
+  s+=`<line x1="${x}" y1="0" x2="${x}" y2="${plotH}" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>`;
+  s+=`<text x="${x}" y="11" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">2003</text>`;
+}
+// 2026 label
+const i26=years.indexOf(2026); if(i26>=0){
+  const x=((i26+0.5)*bw).toFixed(1);
+  s+=`<line x1="${x}" y1="0" x2="${x}" y2="${plotH}" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>`;
+  s+=`<text x="${Math.min(W-16,x)}" y="11" text-anchor="end" font-size="8" fill="#fff" font-weight="700">2026</text>`;
+}
+svg.innerHTML=s;
+
+const tip=document.getElementById('tip');
+svg.addEventListener('pointermove',ev=>{
+  const r=svg.getBoundingClientRect();
+  const xi=(ev.clientX-r.left)/r.width*W;
+  const i=Math.max(0,Math.min(years.length-1,Math.floor(xi/bw)));
+  const y=years[i],v=DATA[y],d=v-REF;
+  tip.innerHTML=`<b>${y}</b>${v.toFixed(1)} °C · ${d>=0?'+':''}${d.toFixed(1)} °C vs. Ref.`;
+  tip.style.opacity=1;
+  let lx=ev.clientX+12; if(lx+160>window.innerWidth)lx=ev.clientX-164;
+  tip.style.left=Math.max(4,lx)+'px'; tip.style.top=(ev.clientY-38)+'px';
+});
+svg.addEventListener('pointerleave',()=>tip.style.opacity=0);
+</script>
+</body>
+</html>
