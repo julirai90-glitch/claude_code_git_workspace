@@ -34,7 +34,7 @@
   <div class="accent"></div>
   <div class="kicker">Klima Graubünden</div><div class="main-title">Chur: Juni-Temperatur seit 1887</div>
   <div class="title">Jeder Streifen = ein Juni. Blau: kühler als üblich. Rot: wärmer.</div>
-  <svg id="svg" viewBox="0 0 460 120" role="img" aria-label="Juni-Stripes Chur 1887-2026"></svg>
+  <svg id="svg" viewBox="0 0 460 132" role="img" aria-label="Juni-Stripes Chur 1887-2026"></svg>
   <div class="scalebar">
     <span id="sc-min">kühler</span><div class="grad"></div><span id="sc-max">wärmer</span>
   </div>
@@ -68,7 +68,7 @@ document.getElementById('sc-min').textContent=(REF-maxAbs).toFixed(1)+' °C';
 document.getElementById('sc-max').textContent=(REF+maxAbs).toFixed(1)+' °C';
 
 const svg=document.getElementById('svg');
-const W=460,H=120,axH=18,plotH=H-axH;
+const W=460,H=132,axH=26,plotH=H-axH;
 const bw=W/years.length;
 let s='';
 years.forEach((y,i)=>{
@@ -81,7 +81,7 @@ years.forEach((y,i)=>{
   const i=years.indexOf(y); if(i<0)return;
   const x=((i+0.5)*bw).toFixed(1);
   s+=`<line x1="${x}" y1="${plotH}" x2="${x}" y2="${plotH+4}" stroke="#9ca3af"/>`;
-  s+=`<text x="${x}" y="${H-2}" text-anchor="middle" font-size="9" fill="#9ca3af">${y}</text>`;
+  s+=`<text x="${x}" y="${H-2}" text-anchor="middle" font-size="11.5" fill="#6b7280" font-weight="500">${y}</text>`;
 });
 // 2003 label
 const i03=years.indexOf(2003); if(i03>=0){
