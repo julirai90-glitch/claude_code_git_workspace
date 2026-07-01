@@ -2,52 +2,71 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Live-Temperatur Davos</title>
 <style>
-  :root{ --blau:#0068A4; --orange:#EE7733; --grau:#6b7280; --hell:#eef2f5; --rot:#c0392b; }
-  *{ box-sizing:border-box; }
-  body{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:#1f2937; margin:0; padding:16px; background:#fff; }
-  .card{ max-width:460px; margin:0 auto; border:1px solid #e5e7eb; border-radius:16px; padding:18px 20px 20px; box-shadow:0 4px 18px rgba(0,0,0,.06); position:relative; overflow:hidden; }
-  .accent{ position:absolute; top:0; left:0; right:0; height:4px; background:var(--blau); transition:background .6s ease; }
-  .head{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
-  .kicker{ color:var(--orange); font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.72rem; }
-  .live{ display:inline-flex; align-items:center; gap:6px; font-size:.72rem; color:var(--grau); }
-  .dot{ width:9px; height:9px; border-radius:50%; background:#16a34a; box-shadow:0 0 0 0 rgba(22,163,74,.6); animation:pulse 2s infinite; }
-  .dot.off{ background:#9ca3af; animation:none; box-shadow:none; }
-  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)} 70%{box-shadow:0 0 0 8px rgba(22,163,74,0)} 100%{box-shadow:0 0 0 0 rgba(22,163,74,0)} }
-  @media (prefers-reduced-motion: reduce){ .dot{ animation:none; } #nowpt{ animation:none; } }
-  .now{ display:flex; align-items:baseline; gap:10px; margin:12px 0 2px; }
-  .now b{ font-size:3.6rem; line-height:1; font-weight:800; color:var(--blau); transition:color .6s ease; font-variant-numeric:tabular-nums; }
-  .now .u{ font-size:1.4rem; color:var(--grau); font-weight:700; }
-  .stamp{ font-size:.78rem; color:var(--grau); margin-bottom:6px; min-height:1.35em; }
-  .curvewrap{ margin:12px 0 4px; }
-  .curve{ width:100%; height:auto; display:block; overflow:visible; cursor:crosshair; touch-action:none; }
-  .tip{ position:fixed; pointer-events:none; background:#fff; border:1px solid #d1d5db; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.14); padding:7px 10px; font-size:.78rem; opacity:0; transition:opacity .07s; z-index:60; }
-  .tip b{ display:block; font-size:.95rem; margin-bottom:2px; }
-  .tip .r{ display:flex; justify-content:space-between; gap:14px; } .tip .r span:last-child{ font-weight:600; }
-  #nowpt{ animation:ping 2s infinite; }
-  @keyframes ping{ 0%{r:4} 50%{r:6} 100%{r:4} }
-  .caption{ display:flex; justify-content:space-between; font-size:.74rem; color:var(--grau); margin-top:4px; }
-  .caption b{ font-weight:700; } .caption .mx b{ color:var(--rot); } .caption .mn b{ color:var(--blau); }
-  .bar{ position:relative; height:12px; border-radius:6px; margin:22px 0 4px;
-        background:linear-gradient(90deg,#1d4e89 0%,#4a90c2 23%,#cfd8dc 46%,#f0b07a 72%,#c0392b 100%); }
-  .bar .cur{ position:absolute; top:-4px; width:4px; height:20px; border-radius:2px; background:#0a3d62; transition:left .5s ease; }
-  .bar .tick{ position:absolute; top:-3px; width:2px; height:18px; border-radius:1px; opacity:.85; }
-  .bar .tick.hot{ background:var(--rot); } .bar .tick.cold{ background:#1d4e89; }
-  .bar .lbl{ position:absolute; top:-19px; font-size:.6rem; transform:translateX(-50%); white-space:nowrap; font-weight:700; }
-  .bar .lbl.hot{ color:var(--rot); } .bar .lbl.cold{ color:#1d4e89; }
-  .scale{ display:flex; justify-content:space-between; font-size:.66rem; color:#9ca3af; }
-  .stats{ display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
-  .stat{ flex:1; min-width:118px; background:var(--hell); border-radius:10px; padding:10px 12px; }
-  .stat b{ font-size:1.25rem; display:block; line-height:1.15; font-variant-numeric:tabular-nums; }
-  .stat span{ font-size:.72rem; color:var(--grau); }
-  .stat.warm b{ color:var(--orange); } .stat.cool b{ color:var(--blau); } .stat.rec b{ color:var(--rot); } .stat.mean b{ color:#1f2937; }
-  .extra{ margin-top:12px; font-size:.84rem; color:var(--grau); }
-  .extra .big{ font-size:1.05rem; font-weight:700; color:#1f2937; }
-  .tropen{ display:inline-block; background:#fdecea; color:var(--rot); font-weight:600; font-size:.78rem; padding:3px 9px; border-radius:20px; }
-  .note{ font-size:.7rem; color:var(--grau); margin-top:16px; line-height:1.45; }
-  .err{ color:#b45309; font-size:.82rem; }
+  :root{--blau:#0068A4;--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;--rot:#c0392b;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:696px;margin:0 auto;border:1px solid #e5e7eb;border-radius:16px;
+        padding:16px 18px 18px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--blau);transition:background .6s;}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+  .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.72rem;}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;color:var(--grau);}
+  .dot{width:9px;height:9px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite;}
+  .dot.off{background:#9ca3af;animation:none;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}70%{box-shadow:0 0 0 8px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+  .now{display:flex;align-items:baseline;gap:10px;margin:0 0 2px;}
+  .now b{font-size:3.4rem;line-height:1;font-weight:800;color:var(--blau);transition:color .6s;font-variant-numeric:tabular-nums;}
+  .now .u{font-size:1.3rem;color:var(--grau);font-weight:700;}
+  .stamp{font-size:.76rem;color:var(--grau);margin-bottom:10px;min-height:1.2em;}
+  /* scrollable chart */
+  .tabs{display:flex;gap:6px;margin-bottom:8px;}
+  .tab{background:var(--hell);border:none;border-radius:8px;padding:4px 11px;
+       font-size:.74rem;cursor:pointer;color:var(--grau);font-family:inherit;}
+  .tab.active{background:var(--blau);color:#fff;font-weight:600;}
+  .chart-outer{position:relative;}
+  .scroll-wrap{overflow-x:auto;overflow-y:hidden;width:100%;
+               -webkit-overflow-scrolling:touch;
+               scrollbar-width:thin;scrollbar-color:#d1d5db transparent;}
+  .scroll-wrap::-webkit-scrollbar{height:4px;}
+  .scroll-wrap::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
+  .chart-svg{display:block;height:120px;}
+  .now-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);
+           background:#fff;border:1px solid #d1d5db;border-radius:20px;
+           padding:4px 10px;font-size:.7rem;color:#374151;cursor:pointer;
+           box-shadow:0 2px 8px rgba(0,0,0,.1);white-space:nowrap;
+           opacity:0;pointer-events:none;transition:opacity .2s;}
+  .now-btn.vis{opacity:1;pointer-events:auto;}
+  /* stats */
+  .stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .stat{flex:1;min-width:110px;background:var(--hell);border-radius:10px;padding:9px 11px;}
+  .stat b{font-size:1.15rem;display:block;line-height:1.2;font-variant-numeric:tabular-nums;}
+  .stat span{font-size:.7rem;color:var(--grau);line-height:1.3;}
+  .stat.warm b{color:var(--orange);}.stat.cool b{color:var(--blau);}
+  .stat.rec b{color:var(--rot);}.stat.mean b{color:#1f2937;}
+  /* record bar */
+  .bar{position:relative;height:11px;border-radius:6px;margin:14px 0 3px;
+       background:linear-gradient(90deg,#1d4e89 0%,#4a90c2 23%,#cfd8dc 46%,#f0b07a 72%,#c0392b 100%);}
+  .bar .cur{position:absolute;top:-4px;width:4px;height:19px;border-radius:2px;background:#0a3d62;transition:left .5s;}
+  .bar .tick{position:absolute;top:-3px;width:2px;height:17px;border-radius:1px;opacity:.85;}
+  .bar .tick.hot{background:var(--rot);}.bar .tick.cold{background:#1d4e89;}
+  .bar .lbl{position:absolute;top:-18px;font-size:.58rem;transform:translateX(-50%);white-space:nowrap;font-weight:700;}
+  .bar .lbl.hot{color:var(--rot);}.bar .lbl.cold{color:#1d4e89;}
+  .scale{display:flex;justify-content:space-between;font-size:.64rem;color:#9ca3af;}
+  /* tropen */
+  .extra{margin-top:10px;font-size:.82rem;color:var(--grau);}
+  .extra .big{font-size:1rem;font-weight:700;color:#1f2937;}
+  .tropen{display:inline-block;background:#fdecea;color:var(--rot);font-weight:600;
+          font-size:.76rem;padding:3px 9px;border-radius:20px;}
+  .note{font-size:.68rem;color:var(--grau);margin-top:14px;line-height:1.45;}
+  .err{color:#b45309;font-size:.8rem;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
+       border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:7px 10px;
+       font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .tip b{display:block;font-size:.92rem;margin-bottom:2px;}
 </style>
 </head>
 <body>
@@ -57,18 +76,24 @@
     <span class="kicker">Davos · Temperatur jetzt</span>
     <span class="live"><span class="dot" id="dot"></span><span id="livelbl">live</span></span>
   </div>
-
   <div class="now"><b id="cur">–</b><span class="u">°C</span></div>
   <div class="stamp" id="stamp">lade aktuelle Messung …</div>
 
-  <div class="curvewrap">
-    <svg class="curve" id="curve" viewBox="0 0 460 108" role="img" aria-label="Temperaturverlauf der letzten 24 Stunden mit Normalwert"></svg>
-    <div class="caption">
-      <span class="mn" id="cap-min">–</span>
-      <span style="color:#9ca3af">– – Normal 1991–2020</span>
-      <span class="mx" id="cap-max">–</span>
-    </div>
+  <div class="tabs">
+    <button class="tab" data-days="1">24 h</button>
+    <button class="tab active" data-days="3">3 Tage</button>
+    <button class="tab" data-days="7">7 Tage</button>
+    <button class="tab" data-days="30">30 Tage</button>
   </div>
+  <div class="chart-outer">
+    <div class="scroll-wrap" id="scroller">
+      <svg class="chart-svg" id="curve" role="img" aria-label="Temperaturverlauf"></svg>
+    </div>
+    <button class="now-btn" id="nowbtn">Jetzt →</button>
+  </div>
+
+  <div class="stats" id="ctx"></div>
+  <div class="extra" id="extra"></div>
 
   <div class="bar" id="bar">
     <div class="tick cold" id="tick-cold"></div><div class="lbl cold" id="lbl-cold"></div>
@@ -77,15 +102,14 @@
   </div>
   <div class="scale"><span>−35 °C</span><span>Allzeit-Rekorde</span><span>+35 °C</span></div>
 
-  <div class="stats" id="ctx"></div>
-  <div class="extra" id="extra"></div>
-
   <p class="note" id="note">
-    Quelle: MeteoSchweiz, automatische Station Davos (1594&nbsp;m). <b>Aktuelle Werte provisorisch und unkorrigiert</b> (nicht qualitätsgeprüft).
-    Verlauf der letzten 24 h, Zeiten in Schweizer Zeit.<span id="note-normal"> «Üblich» = Durchschnitt des jeweiligen Kalendertags 1991–2020.</span> Aktualisiert sich automatisch.
+    Quelle: MeteoSchweiz, automatische Station Davos (1594&nbsp;m).
+    <b>Aktuelle Werte provisorisch und unkorrigiert.</b>
+    Zeiten in Schweizer Zeit. Gestrichelt = Tagesdurchschnitt 1991–2020.
+    <span id="note-normal"></span> Aktualisiert sich automatisch.
   </p>
 </div>
-
+<div class="tip" id="tip"></div>
 <script>
 const STATION='dav';
 const BASE='https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/'+STATION+'/';
@@ -95,174 +119,215 @@ const DREC_URL=BASE+'ogd-smn_'+STATION+'_d_recent.csv';
 const REC_HOT={t:30.0,d:'23. Juli 1876'};
 const REC_COLD={t:-32.0,d:'2. Januar 1905'};
 const SUMMER_NORMAL=6;
-const NORMAL={"01-01":-4.6,"01-02":-4.6,"01-03":-4.5,"01-04":-4.4,"01-05":-4.3,"01-06":-4.2,"01-07":-4.2,"01-08":-4.2,"01-09":-4.2,"01-10":-4.3,"01-11":-4.3,"01-12":-4.2,"01-13":-4.2,"01-14":-4.2,"01-15":-4.3,"01-16":-4.4,"01-17":-4.5,"01-18":-4.7,"01-19":-4.8,"01-20":-4.9,"01-21":-5.0,"01-22":-5.1,"01-23":-5.0,"01-24":-5.1,"01-25":-5.1,"01-26":-5.0,"01-27":-4.9,"01-28":-4.9,"01-29":-4.9,"01-30":-4.8,"01-31":-4.8,"02-01":-4.8,"02-02":-4.7,"02-03":-4.7,"02-04":-4.7,"02-05":-4.7,"02-06":-4.7,"02-07":-4.7,"02-08":-4.6,"02-09":-4.6,"02-10":-4.5,"02-11":-4.6,"02-12":-4.6,"02-13":-4.6,"02-14":-4.5,"02-15":-4.5,"02-16":-4.5,"02-17":-4.4,"02-18":-4.3,"02-19":-4.2,"02-20":-4.1,"02-21":-3.9,"02-22":-3.7,"02-23":-3.5,"02-24":-3.4,"02-25":-3.3,"02-26":-3.1,"02-27":-3.0,"02-28":-2.9,"02-29":-2.9,"03-01":-2.7,"03-02":-2.6,"03-03":-2.4,"03-04":-2.2,"03-05":-2.1,"03-06":-1.9,"03-07":-1.7,"03-08":-1.7,"03-09":-1.5,"03-10":-1.3,"03-11":-1.1,"03-12":-1.0,"03-13":-0.8,"03-14":-0.6,"03-15":-0.5,"03-16":-0.3,"03-17":-0.2,"03-18":-0.2,"03-19":-0.1,"03-20":-0.1,"03-21":-0.0,"03-22":0.0,"03-23":0.1,"03-24":0.2,"03-25":0.2,"03-26":0.3,"03-27":0.5,"03-28":0.6,"03-29":0.7,"03-30":0.8,"03-31":0.9,"04-01":1.0,"04-02":1.1,"04-03":1.3,"04-04":1.5,"04-05":1.6,"04-06":1.6,"04-07":1.7,"04-08":1.8,"04-09":1.8,"04-10":1.8,"04-11":1.8,"04-12":1.9,"04-13":2.0,"04-14":2.2,"04-15":2.4,"04-16":2.7,"04-17":2.9,"04-18":3.1,"04-19":3.3,"04-20":3.5,"04-21":3.8,"04-22":4.0,"04-23":4.2,"04-24":4.4,"04-25":4.7,"04-26":4.9,"04-27":5.2,"04-28":5.3,"04-29":5.4,"04-30":5.5,"05-01":5.7,"05-02":5.8,"05-03":6.0,"05-04":6.1,"05-05":6.2,"05-06":6.4,"05-07":6.5,"05-08":6.5,"05-09":6.6,"05-10":6.7,"05-11":6.8,"05-12":6.9,"05-13":7.0,"05-14":7.2,"05-15":7.3,"05-16":7.3,"05-17":7.4,"05-18":7.5,"05-19":7.7,"05-20":7.8,"05-21":7.9,"05-22":8.0,"05-23":8.2,"05-24":8.4,"05-25":8.5,"05-26":8.6,"05-27":8.8,"05-28":8.9,"05-29":9.1,"05-30":9.3,"05-31":9.4,"06-01":9.5,"06-02":9.6,"06-03":9.6,"06-04":9.7,"06-05":9.8,"06-06":9.9,"06-07":10.0,"06-08":10.2,"06-09":10.3,"06-10":10.4,"06-11":10.5,"06-12":10.6,"06-13":10.7,"06-14":10.9,"06-15":11.0,"06-16":11.0,"06-17":11.2,"06-18":11.2,"06-19":11.4,"06-20":11.5,"06-21":11.7,"06-22":11.8,"06-23":11.9,"06-24":12.0,"06-25":12.2,"06-26":12.3,"06-27":12.4,"06-28":12.5,"06-29":12.5,"06-30":12.5,"07-01":12.5,"07-02":12.5,"07-03":12.5,"07-04":12.5,"07-05":12.4,"07-06":12.4,"07-07":12.4,"07-08":12.3,"07-09":12.4,"07-10":12.4,"07-11":12.3,"07-12":12.4,"07-13":12.4,"07-14":12.5,"07-15":12.6,"07-16":12.7,"07-17":12.8,"07-18":12.8,"07-19":12.9,"07-20":13.0,"07-21":13.1,"07-22":13.2,"07-23":13.3,"07-24":13.3,"07-25":13.4,"07-26":13.4,"07-27":13.4,"07-28":13.4,"07-29":13.4,"07-30":13.4,"07-31":13.4,"08-01":13.4,"08-02":13.5,"08-03":13.4,"08-04":13.3,"08-05":13.3,"08-06":13.2,"08-07":13.1,"08-08":13.1,"08-09":13.0,"08-10":12.9,"08-11":12.9,"08-12":12.9,"08-13":12.8,"08-14":12.8,"08-15":12.7,"08-16":12.7,"08-17":12.7,"08-18":12.7,"08-19":12.7,"08-20":12.6,"08-21":12.6,"08-22":12.5,"08-23":12.3,"08-24":12.2,"08-25":12.0,"08-26":11.7,"08-27":11.5,"08-28":11.3,"08-29":11.1,"08-30":10.9,"08-31":10.7,"09-01":10.5,"09-02":10.4,"09-03":10.2,"09-04":10.0,"09-05":9.9,"09-06":9.8,"09-07":9.6,"09-08":9.6,"09-09":9.5,"09-10":9.4,"09-11":9.3,"09-12":9.1,"09-13":9.1,"09-14":9.0,"09-15":8.9,"09-16":8.9,"09-17":8.7,"09-18":8.5,"09-19":8.3,"09-20":8.2,"09-21":8.1,"09-22":8.0,"09-23":8.0,"09-24":7.9,"09-25":7.8,"09-26":7.7,"09-27":7.6,"09-28":7.5,"09-29":7.4,"09-30":7.2,"10-01":7.0,"10-02":6.9,"10-03":6.9,"10-04":6.8,"10-05":6.7,"10-06":6.6,"10-07":6.5,"10-08":6.3,"10-09":6.1,"10-10":5.9,"10-11":5.7,"10-12":5.6,"10-13":5.4,"10-14":5.3,"10-15":5.1,"10-16":5.0,"10-17":4.8,"10-18":4.7,"10-19":4.5,"10-20":4.3,"10-21":4.2,"10-22":4.1,"10-23":3.9,"10-24":3.9,"10-25":3.9,"10-26":3.8,"10-27":3.8,"10-28":3.8,"10-29":3.6,"10-30":3.5,"10-31":3.3,"11-01":3.1,"11-02":2.9,"11-03":2.6,"11-04":2.5,"11-05":2.3,"11-06":2.1,"11-07":1.8,"11-08":1.6,"11-09":1.3,"11-10":1.0,"11-11":0.6,"11-12":0.2,"11-13":-0.1,"11-14":-0.3,"11-15":-0.5,"11-16":-0.6,"11-17":-0.7,"11-18":-0.8,"11-19":-0.9,"11-20":-1.1,"11-21":-1.3,"11-22":-1.4,"11-23":-1.5,"11-24":-1.7,"11-25":-1.7,"11-26":-1.8,"11-27":-1.8,"11-28":-1.8,"11-29":-1.9,"11-30":-2.0,"12-01":-2.1,"12-02":-2.2,"12-03":-2.4,"12-04":-2.5,"12-05":-2.7,"12-06":-2.8,"12-07":-2.9,"12-08":-3.1,"12-09":-3.2,"12-10":-3.3,"12-11":-3.4,"12-12":-3.5,"12-13":-3.6,"12-14":-3.6,"12-15":-3.6,"12-16":-3.6,"12-17":-3.5,"12-18":-3.5,"12-19":-3.6,"12-20":-3.7,"12-21":-3.8,"12-22":-3.9,"12-23":-3.9,"12-24":-3.9,"12-25":-3.9,"12-26":-4.0,"12-27":-4.1,"12-28":-4.2,"12-29":-4.3,"12-30":-4.4,"12-31":-4.5};            // Tages-Normal (MM-DD -> °C), 1991–2020
-const YEAR=new Date().getFullYear();
 const BAR_MIN=-35, BAR_MAX=35;
-let CURVE=null;
+const YEAR=new Date().getFullYear();
+const NORMAL={"01-01":-4.6,"01-02":-4.6,"01-03":-4.5,"01-04":-4.4,"01-05":-4.3,"01-06":-4.2,"01-07":-4.2,"01-08":-4.2,"01-09":-4.2,"01-10":-4.3,"01-11":-4.3,"01-12":-4.2,"01-13":-4.2,"01-14":-4.2,"01-15":-4.3,"01-16":-4.4,"01-17":-4.5,"01-18":-4.7,"01-19":-4.8,"01-20":-4.9,"01-21":-5.0,"01-22":-5.1,"01-23":-5.0,"01-24":-5.1,"01-25":-5.1,"01-26":-5.0,"01-27":-4.9,"01-28":-4.9,"01-29":-4.9,"01-30":-4.8,"01-31":-4.8,"02-01":-4.8,"02-02":-4.7,"02-03":-4.7,"02-04":-4.7,"02-05":-4.7,"02-06":-4.7,"02-07":-4.7,"02-08":-4.6,"02-09":-4.6,"02-10":-4.5,"02-11":-4.6,"02-12":-4.6,"02-13":-4.6,"02-14":-4.5,"02-15":-4.5,"02-16":-4.5,"02-17":-4.4,"02-18":-4.3,"02-19":-4.2,"02-20":-4.1,"02-21":-3.9,"02-22":-3.7,"02-23":-3.5,"02-24":-3.4,"02-25":-3.3,"02-26":-3.1,"02-27":-3.0,"02-28":-2.9,"02-29":-2.9,"03-01":-2.7,"03-02":-2.6,"03-03":-2.4,"03-04":-2.2,"03-05":-2.1,"03-06":-1.9,"03-07":-1.7,"03-08":-1.7,"03-09":-1.5,"03-10":-1.3,"03-11":-1.1,"03-12":-1.0,"03-13":-0.8,"03-14":-0.6,"03-15":-0.5,"03-16":-0.3,"03-17":-0.2,"03-18":-0.2,"03-19":-0.1,"03-20":-0.1,"03-21":-0.0,"03-22":0.0,"03-23":0.1,"03-24":0.2,"03-25":0.2,"03-26":0.3,"03-27":0.5,"03-28":0.6,"03-29":0.7,"03-30":0.8,"03-31":0.9,"04-01":1.0,"04-02":1.1,"04-03":1.3,"04-04":1.5,"04-05":1.6,"04-06":1.6,"04-07":1.7,"04-08":1.8,"04-09":1.8,"04-10":1.8,"04-11":1.8,"04-12":1.9,"04-13":2.0,"04-14":2.2,"04-15":2.4,"04-16":2.7,"04-17":2.9,"04-18":3.1,"04-19":3.3,"04-20":3.5,"04-21":3.8,"04-22":4.0,"04-23":4.2,"04-24":4.4,"04-25":4.7,"04-26":4.9,"04-27":5.2,"04-28":5.3,"04-29":5.4,"04-30":5.5,"05-01":5.7,"05-02":5.8,"05-03":6.0,"05-04":6.1,"05-05":6.2,"05-06":6.4,"05-07":6.5,"05-08":6.5,"05-09":6.6,"05-10":6.7,"05-11":6.8,"05-12":6.9,"05-13":7.0,"05-14":7.2,"05-15":7.3,"05-16":7.3,"05-17":7.4,"05-18":7.5,"05-19":7.7,"05-20":7.8,"05-21":7.9,"05-22":8.0,"05-23":8.2,"05-24":8.4,"05-25":8.5,"05-26":8.6,"05-27":8.8,"05-28":8.9,"05-29":9.1,"05-30":9.3,"05-31":9.4,"06-01":9.5,"06-02":9.6,"06-03":9.6,"06-04":9.7,"06-05":9.8,"06-06":9.9,"06-07":10.0,"06-08":10.2,"06-09":10.3,"06-10":10.4,"06-11":10.5,"06-12":10.6,"06-13":10.7,"06-14":10.9,"06-15":11.0,"06-16":11.0,"06-17":11.2,"06-18":11.2,"06-19":11.4,"06-20":11.5,"06-21":11.7,"06-22":11.8,"06-23":11.9,"06-24":12.0,"06-25":12.2,"06-26":12.3,"06-27":12.4,"06-28":12.5,"06-29":12.5,"06-30":12.5,"07-01":12.5,"07-02":12.5,"07-03":12.5,"07-04":12.5,"07-05":12.4,"07-06":12.4,"07-07":12.4,"07-08":12.3,"07-09":12.4,"07-10":12.4,"07-11":12.3,"07-12":12.4,"07-13":12.4,"07-14":12.5,"07-15":12.6,"07-16":12.7,"07-17":12.8,"07-18":12.8,"07-19":12.9,"07-20":13.0,"07-21":13.1,"07-22":13.2,"07-23":13.3,"07-24":13.3,"07-25":13.4,"07-26":13.4,"07-27":13.4,"07-28":13.4,"07-29":13.4,"07-30":13.4,"07-31":13.4,"08-01":13.4,"08-02":13.5,"08-03":13.4,"08-04":13.3,"08-05":13.3,"08-06":13.2,"08-07":13.1,"08-08":13.1,"08-09":13.0,"08-10":12.9,"08-11":12.9,"08-12":12.9,"08-13":12.8,"08-14":12.8,"08-15":12.7,"08-16":12.7,"08-17":12.7,"08-18":12.7,"08-19":12.7,"08-20":12.6,"08-21":12.6,"08-22":12.5,"08-23":12.3,"08-24":12.2,"08-25":12.0,"08-26":11.7,"08-27":11.5,"08-28":11.3,"08-29":11.1,"08-30":10.9,"08-31":10.7,"09-01":10.5,"09-02":10.4,"09-03":10.2,"09-04":10.0,"09-05":9.9,"09-06":9.8,"09-07":9.6,"09-08":9.6,"09-09":9.5,"09-10":9.4,"09-11":9.3,"09-12":9.1,"09-13":9.1,"09-14":9.0,"09-15":8.9,"09-16":8.9,"09-17":8.7,"09-18":8.5,"09-19":8.3,"09-20":8.2,"09-21":8.1,"09-22":8.0,"09-23":8.0,"09-24":7.9,"09-25":7.8,"09-26":7.7,"09-27":7.6,"09-28":7.5,"09-29":7.4,"09-30":7.2,"10-01":7.0,"10-02":6.9,"10-03":6.9,"10-04":6.8,"10-05":6.7,"10-06":6.6,"10-07":6.5,"10-08":6.3,"10-09":6.1,"10-10":5.9,"10-11":5.7,"10-12":5.6,"10-13":5.4,"10-14":5.3,"10-15":5.1,"10-16":5.0,"10-17":4.8,"10-18":4.7,"10-19":4.5,"10-20":4.3,"10-21":4.2,"10-22":4.1,"10-23":3.9,"10-24":3.9,"10-25":3.9,"10-26":3.8,"10-27":3.8,"10-28":3.8,"10-29":3.6,"10-30":3.5,"10-31":3.3,"11-01":3.1,"11-02":2.9,"11-03":2.6,"11-04":2.5,"11-05":2.3,"11-06":2.1,"11-07":1.8,"11-08":1.6,"11-09":1.3,"11-10":1.0,"11-11":0.6,"11-12":0.2,"11-13":-0.1,"11-14":-0.3,"11-15":-0.5,"11-16":-0.6,"11-17":-0.7,"11-18":-0.8,"11-19":-0.9,"11-20":-1.1,"11-21":-1.3,"11-22":-1.4,"11-23":-1.5,"11-24":-1.7,"11-25":-1.7,"11-26":-1.8,"11-27":-1.8,"11-28":-1.8,"11-29":-1.9,"11-30":-2.0,"12-01":-2.1,"12-02":-2.2,"12-03":-2.4,"12-04":-2.5,"12-05":-2.7,"12-06":-2.8,"12-07":-2.9,"12-08":-3.1,"12-09":-3.2,"12-10":-3.3,"12-11":-3.4,"12-12":-3.5,"12-13":-3.6,"12-14":-3.6,"12-15":-3.6,"12-16":-3.6,"12-17":-3.5,"12-18":-3.5,"12-19":-3.6,"12-20":-3.7,"12-21":-3.8,"12-22":-3.9,"12-23":-3.9,"12-24":-3.9,"12-25":-3.9,"12-26":-4.0,"12-27":-4.1,"12-28":-4.2,"12-29":-4.3,"12-30":-4.4,"12-31":-4.5};
 
-const $=id=>document.getElementById(id);
-async function csv(url){ const r=await fetch(url+'?_='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); const t=await r.text(); return t.split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(';')); }
-// Grosse Jahres-Dateien (Stunden/Tage) nur selten neu laden, dazwischen Cache
-const HCACHE={data:null,t:0}, DCACHE={data:null,t:0};
-async function csvCached(url,store,maxAgeMs){ if(store.data && Date.now()-store.t<maxAgeMs) return store.data; const d=await csv(url); store.data=d; store.t=Date.now(); return d; }
-const num=v=>(v===''||v==null)?null:parseFloat(v.replace(',','.'));
-const colIdx=(rows,name)=>rows[0].indexOf(name);
-function parseMeteoDate(str){ if(!str)return null; const m=String(str).trim().match(/^(\d{2})\.(\d{2})\.(\d{4})(?: (\d{2}):(\d{2}))?$/); if(m){const[,d,mo,y,h='00',mi='00']=m; const dt=new Date(Date.UTC(+y,+mo-1,+d,+h,+mi)); if(!isNaN(dt))return dt;} const d2=new Date(str); return isNaN(d2)?null:d2; }
+/* ---- helpers ---- */
 const ZRH={timeZone:'Europe/Zurich'};
-const hhmm=dt=>dt?dt.toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit',...ZRH}):'–';
-const localDay=dt=>dt.toLocaleDateString('en-CA',ZRH);          // YYYY-MM-DD (Zürich)
-const localMMDD=dt=>localDay(dt).slice(5);                       // MM-DD
+const localDay=dt=>dt.toLocaleDateString('en-CA',ZRH);
+const localMMDD=dt=>localDay(dt).slice(5);
+const hhmm=dt=>dt.toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit',...ZRH});
+const shortDate=dt=>dt.toLocaleDateString('de-CH',{day:'numeric',month:'short',timeZone:'Europe/Zurich'});
 const deDay=dt=>dt.toLocaleDateString('de-CH',{day:'numeric',month:'long',...ZRH});
+function parseMeteoDate(str){if(!str)return null;const m=String(str).trim().match(/^(\d{2})\.(\d{2})\.(\d{4})(?: (\d{2}):(\d{2}))?$/);if(m){const[,d,mo,y,h='00',mi='00']=m;const dt=new Date(Date.UTC(+y,+mo-1,+d,+h,+mi));if(!isNaN(dt))return dt;}return null;}
+const num=v=>(v===''||v==null)?null:parseFloat(String(v).replace(',','.'));
 
 const TSTOPS=[[-15,[29,78,137]],[0,[74,144,194]],[10,[150,170,180]],[18,[238,155,90]],[26,[232,112,58]],[34,[192,57,43]]];
-const rgb=c=>`rgb(${c[0]},${c[1]},${c[2]})`;
-function tempColor(v){ if(v<=TSTOPS[0][0])return rgb(TSTOPS[0][1]); const n=TSTOPS.length; if(v>=TSTOPS[n-1][0])return rgb(TSTOPS[n-1][1]); for(let i=0;i<n-1;i++){const[a,ca]=TSTOPS[i],[b,cb]=TSTOPS[i+1]; if(v>=a&&v<=b){const f=(v-a)/(b-a); return rgb([0,1,2].map(k=>Math.round(ca[k]+(cb[k]-ca[k])*f)));}} }
+function tempColor(v){if(v==null)return'#9ca3af';if(v<=TSTOPS[0][0])return`rgb(${TSTOPS[0][1]})`;const n=TSTOPS.length;if(v>=TSTOPS[n-1][0])return`rgb(${TSTOPS[n-1][1]})`;for(let i=0;i<n-1;i++){const[a,ca]=TSTOPS[i],[b,cb]=TSTOPS[i+1];if(v>=a&&v<=b){const f=(v-a)/(b-a);return`rgb(${[0,1,2].map(k=>Math.round(ca[k]+(cb[k]-ca[k])*f)).join(',')})`;}}return'#888';}
 
-function barPct(t){ return Math.max(0,Math.min(100,(t-BAR_MIN)/(BAR_MAX-BAR_MIN)*100)); }
+/* ---- caches ---- */
+const HCACHE={data:null,t:0},DCACHE={data:null,t:0};
+async function csvFetch(url){const r=await fetch(url+'?_='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return(await r.text()).split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(';'));}
+async function csvCached(url,store,maxMs){if(store.data&&Date.now()-store.t<maxMs)return store.data;const d=await csvFetch(url);store.data=d;store.t=Date.now();return d;}
+
+/* ---- state ---- */
+let ALL_PTS=[];
+let DAYS=3;
+let CHART={};
+const $=id=>document.getElementById(id);
+const scroller=$('scroller');
+const nowBtn=$('nowbtn');
+
+/* ---- bar ---- */
+const barPct=t=>Math.max(0,Math.min(100,(t-BAR_MIN)/(BAR_MAX-BAR_MIN)*100));
 function placeBar(cur){
   $('curmark').style.left=`calc(${barPct(cur)}% - 2px)`;
-  $('tick-hot').style.left=`calc(${barPct(REC_HOT.t)}% - 1px)`; $('lbl-hot').style.left=barPct(REC_HOT.t)+'%'; $('lbl-hot').textContent=REC_HOT.t.toFixed(1)+'°';
-  $('tick-cold').style.left=`calc(${barPct(REC_COLD.t)}% - 1px)`; $('lbl-cold').style.left=barPct(REC_COLD.t)+'%'; $('lbl-cold').textContent=REC_COLD.t.toFixed(0)+'°';
+  $('tick-hot').style.left=`calc(${barPct(REC_HOT.t)}% - 1px)`;$('lbl-hot').style.left=barPct(REC_HOT.t)+'%';$('lbl-hot').textContent=REC_HOT.t.toFixed(1)+'°';
+  $('tick-cold').style.left=`calc(${barPct(REC_COLD.t)}% - 1px)`;$('lbl-cold').style.left=barPct(REC_COLD.t)+'%';$('lbl-cold').textContent=REC_COLD.t.toFixed(0)+'°';
 }
 
-function drawCurve(pts, maxPt, minPt){
-  const svg=$('curve'); const W=460,H=108,m={l:10,r:10,t:12,b:22};
-  if(pts.length<2){ svg.innerHTML=''; return; }
-  const xs=pts.map(p=>p.ms), vs=pts.map(p=>p.v);
-  const xmin=Math.min(...xs), xmax=Math.max(...xs);
-  // Tage im Fenster -> Normalwerte
+/* ---- chart ---- */
+const SVG_H=120,ML=0,MR=0,MT=12,MB=26;
+function drawChart(pts){
+  const svg=$('curve');
+  if(pts.length<2){svg.innerHTML='<text x="20" y="55" fill="#9ca3af" font-size="13">Keine Daten</text>';return;}
   const dayKeys=[...new Set(pts.map(p=>localDay(new Date(p.ms))))];
   const normVals=dayKeys.map(k=>NORMAL[k.slice(5)]).filter(v=>v!=null);
-  let vmin=Math.min(...vs,...normVals), vmax=Math.max(...vs,...normVals); if(vmax-vmin<3){vmax+=1.5;vmin-=1.5;}
-  const X=x=>m.l+(x-xmin)/(xmax-xmin||1)*(W-m.l-m.r);
-  const Y=v=>H-m.b-(v-vmin)/(vmax-vmin)*(H-m.t-m.b);
-  const last=pts[pts.length-1], cc=tempColor(last.v);
-  let d=''; pts.forEach((p,i)=>{ d+=(i?'L':'M')+X(p.ms).toFixed(1)+' '+Y(p.v).toFixed(1); });
-  const area=d+`L${X(xmax).toFixed(1)} ${H-m.b}L${X(xmin).toFixed(1)} ${H-m.b}Z`;
-  let s=`<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cc}" stop-opacity=".20"/><stop offset="1" stop-color="${cc}" stop-opacity="0"/></linearGradient></defs>`;
-  // Mitternachts-Trenner + Tageslabels
-  dayKeys.forEach(k=>{
+  let vmin=Math.min(...pts.map(p=>p.v),...normVals)-1, vmax=Math.max(...pts.map(p=>p.v),...normVals)+1;
+  if(vmax-vmin<6){const mid=(vmax+vmin)/2;vmin=mid-3;vmax=mid+3;}
+  const startMs=pts[0].ms,endMs=pts[pts.length-1].ms,totalH=(endMs-startMs)/3600000||1;
+  const cw=scroller.getBoundingClientRect().width||scroller.offsetWidth||600;
+  const pxH=Math.max(cw/totalH,6.25);
+  const W=Math.max(Math.ceil(totalH*pxH),Math.floor(cw));
+  svg.style.width=W+'px';
+  svg.setAttribute('viewBox',`0 0 ${W} ${SVG_H}`);
+  const X=ms=>ML+(ms-startMs)/(endMs-startMs)*(W-ML-MR);
+  const Y=v=>SVG_H-MB-(v-vmin)/(vmax-vmin)*(SVG_H-MT-MB);
+  const last=pts[pts.length-1],cc=tempColor(last.v);
+  // gradient stops
+  let gstops='';pts.forEach(p=>{const pct=((p.ms-startMs)/(endMs-startMs)*100).toFixed(1);gstops+=`<stop offset="${pct}%" stop-color="${tempColor(p.v)}"/>`;});
+  let s=`<defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">${gstops}</linearGradient><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cc}" stop-opacity=".16"/><stop offset="1" stop-color="${cc}" stop-opacity="0"/></linearGradient><clipPath id="cl"><rect x="${ML}" y="${MT}" width="${W-ML-MR}" height="${SVG_H-MT-MB}"/></clipPath></defs>`;
+  // day dividers + normal lines
+  dayKeys.forEach((k,di)=>{
     const dayPts=pts.filter(p=>localDay(new Date(p.ms))===k);
-    const x0=X(Math.min(...dayPts.map(p=>p.ms))), x1=X(Math.max(...dayPts.map(p=>p.ms)));
+    if(!dayPts.length)return;
+    if(di>0){const x=X(dayPts[0].ms);s+=`<line x1="${x.toFixed(1)}" y1="${MT}" x2="${x.toFixed(1)}" y2="${SVG_H-MB}" stroke="#e8eaed"/>`;} 
+    const mid=dayPts[Math.floor(dayPts.length/2)].ms;
+    const dt=new Date(mid);
+    s+=`<text x="${X(mid).toFixed(1)}" y="${SVG_H-3}" text-anchor="middle" font-size="9" fill="#b0b7c0">${shortDate(dt)}</text>`;
     const nv=NORMAL[k.slice(5)];
-    if(nv!=null){ s+=`<line x1="${x0.toFixed(1)}" y1="${Y(nv).toFixed(1)}" x2="${x1.toFixed(1)}" y2="${Y(nv).toFixed(1)}" stroke="#9ca3af" stroke-width="1.3" stroke-dasharray="4 3"/>`; }
+    if(nv!=null){const x0=X(dayPts[0].ms),x1=X(dayPts[dayPts.length-1].ms),ny=Y(nv).toFixed(1);s+=`<line x1="${x0.toFixed(1)}" y1="${ny}" x2="${x1.toFixed(1)}" y2="${ny}" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="4 3"/>`;}
   });
-  // 6-Stunden-Zeitachse (Schweizer Zeit)
-  for(let t=Math.ceil(xmin/3600000)*3600000; t<=xmax; t+=3600000){
-    const dt=new Date(t), hh=+dt.toLocaleString('en-GB',{hour:'2-digit',hour12:false,timeZone:'Europe/Zurich'});
-    if(hh%6!==0) continue;
+  // 6h ticks
+  for(let t=Math.ceil(startMs/3600000)*3600000;t<=endMs;t+=3600000){
+    const dt=new Date(t),hh=+dt.toLocaleString('en-GB',{hour:'2-digit',hour12:false,timeZone:'Europe/Zurich'});
+    if(hh%6!==0)continue;
     const x=X(t);
-    s+=`<line x1="${x.toFixed(1)}" y1="${H-m.b}" x2="${x.toFixed(1)}" y2="${(H-m.b+3).toFixed(1)}" stroke="#cbd5e1"/>`;
-    const lbl=hh===0?dt.toLocaleDateString('de-CH',{day:'numeric',month:'numeric',timeZone:'Europe/Zurich'}):hh+'h';
-    s+=`<text x="${x.toFixed(1)}" y="${H-4}" text-anchor="middle" font-size="8.5" fill="#9ca3af">${lbl}</text>`;
+    s+=`<line x1="${x.toFixed(1)}" y1="${SVG_H-MB}" x2="${x.toFixed(1)}" y2="${SVG_H-MB+3}" stroke="#d1d5db"/>`;
+    if(hh!==0)s+=`<text x="${x.toFixed(1)}" y="${SVG_H-3}" text-anchor="middle" font-size="9" fill="#c4c9d0">${hh}h</text>`;
   }
-  // Trennlinie zwischen Tagen
-  for(let i=1;i<pts.length;i++){ if(localDay(new Date(pts[i].ms))!==localDay(new Date(pts[i-1].ms))){ const xb=(X(pts[i].ms)+X(pts[i-1].ms))/2; s+=`<line x1="${xb.toFixed(1)}" y1="${m.t}" x2="${xb.toFixed(1)}" y2="${H-m.b}" stroke="#eef0f2"/>`; } }
-  s+=`<path d="${area}" fill="url(#ag)"/>`;
-  s+=`<path d="${d}" fill="none" stroke="${cc}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>`;
-  if(maxPt) s+=`<circle cx="${X(maxPt.ms).toFixed(1)}" cy="${Y(maxPt.v).toFixed(1)}" r="3.2" fill="#c0392b"/>`;
-  if(minPt) s+=`<circle cx="${X(minPt.ms).toFixed(1)}" cy="${Y(minPt.v).toFixed(1)}" r="3.2" fill="#2471a3"/>`;
-  s+=`<circle id="nowpt" cx="${X(last.ms).toFixed(1)}" cy="${Y(last.v).toFixed(1)}" r="4" fill="${cc}"/>`;
-  s+=`<line id="hovline" y1="${m.t}" y2="${H-m.b}" stroke="#64748b" stroke-width="1" stroke-dasharray="3 2" opacity="0"/>`;
-  s+=`<circle id="hovpt" r="4.5" fill="#fff" stroke="#0a3d62" stroke-width="2" opacity="0"/>`;
+  // area + line
+  let d='';pts.forEach((p,i)=>{d+=(i?'L':'M')+X(p.ms).toFixed(1)+' '+Y(p.v).toFixed(1);});
+  s+=`<path d="${d}L${X(endMs).toFixed(1)} ${SVG_H-MB}L${X(startMs).toFixed(1)} ${SVG_H-MB}Z" fill="url(#ag)" clip-path="url(#cl)"/>`;
+  s+=`<path d="${d}" fill="none" stroke="url(#lg)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" clip-path="url(#cl)"/>`;
+  // pulsing now dot
+  s+=`<circle cx="${X(last.ms).toFixed(1)}" cy="${Y(last.v).toFixed(1)}" r="4.5" fill="${cc}"/>`;
+  s+=`<circle cx="${X(last.ms).toFixed(1)}" cy="${Y(last.v).toFixed(1)}" r="4.5" fill="${cc}" opacity=".35"><animate attributeName="r" values="4.5;9;4.5" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".35;0;.35" dur="2s" repeatCount="indefinite"/></circle>`;
+  s+=`<line id="hl" y1="${MT}" y2="${SVG_H-MB}" stroke="#64748b" stroke-width="1" stroke-dasharray="3 2" opacity="0"/>`;
+  s+=`<circle id="hp" r="4.5" fill="#fff" stroke="#0a3d62" stroke-width="2" opacity="0"/>`;
   svg.innerHTML=s;
-  CURVE={ items: pts.map(p=>({ms:p.ms,v:p.v,x:X(p.ms),y:Y(p.v),norm:NORMAL[localMMDD(new Date(p.ms))]})), yTop:m.t, yBot:H-m.b };
+  CHART={pts,X,Y,W};
 }
 
-function clear(el){ while(el.firstChild) el.removeChild(el.firstChild); }
-function addBr(p){ p.appendChild(document.createElement('br')); }
-function addSpan(p,txt,cls){ const s=document.createElement('span'); if(cls)s.className=cls; s.textContent=txt; p.appendChild(s); }
-function tile(val,lab,cls){ const d=document.createElement('div'); d.className='stat'+(cls?' '+cls:''); const b=document.createElement('b'); b.textContent=val; const s=document.createElement('span'); s.textContent=lab; d.appendChild(b); d.appendChild(s); return d; }
+/* ---- range ---- */
+function setRange(days){
+  DAYS=days;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',+t.dataset.days===days));
+  const cutoff=Date.now()-days*24*3600000;
+  drawChart(ALL_PTS.filter(p=>p.ms>=cutoff));
+  requestAnimationFrame(()=>{scroller.scrollLeft=scroller.scrollWidth;});
+}
 
+/* ---- jetzt btn ---- */
+scroller.addEventListener('scroll',()=>{
+  const atEnd=scroller.scrollLeft+scroller.clientWidth>=scroller.scrollWidth-10;
+  nowBtn.classList.toggle('vis',!atEnd);
+});
+nowBtn.addEventListener('click',()=>scroller.scrollTo({left:scroller.scrollWidth,behavior:'smooth'}));
+
+/* ---- tooltip ---- */
+const tip=$('tip');
+const svgEl=$('curve');
+function hover(ev){
+  if(!CHART.pts||!CHART.pts.length)return;
+  const rect=svgEl.getBoundingClientRect();
+  const cx=ev.touches?ev.touches[0].clientX:ev.clientX;
+  const svgX=(cx-rect.left)/rect.width*CHART.W;
+  let best=CHART.pts[0],bd=1e12;
+  CHART.pts.forEach(p=>{const d=Math.abs(CHART.X(p.ms)-svgX);if(d<bd){bd=d;best=p;}});
+  const dt=new Date(best.ms),nv=NORMAL[localMMDD(dt)],diff=nv!=null?best.v-nv:null;
+  tip.innerHTML=`<b>${shortDate(dt)}, ${hhmm(dt)}</b>${best.v.toFixed(1)} °C${diff!=null?' · '+(diff>=0?'+':'')+diff.toFixed(1)+' vs. Normal':''}`;
+  tip.style.opacity=1;
+  let lx=cx+14;if(lx+200>window.innerWidth)lx=cx-204;
+  let ty=(ev.touches?ev.touches[0].clientY:ev.clientY)-44;
+  tip.style.left=Math.max(4,lx)+'px';tip.style.top=Math.max(4,ty)+'px';
+  const hl=document.getElementById('hl'),hp=document.getElementById('hp');
+  if(hl){hl.setAttribute('x1',CHART.X(best.ms).toFixed(1));hl.setAttribute('x2',CHART.X(best.ms).toFixed(1));hl.setAttribute('opacity','0.7');}
+  if(hp){hp.setAttribute('cx',CHART.X(best.ms).toFixed(1));hp.setAttribute('cy',CHART.Y(best.v).toFixed(1));hp.setAttribute('opacity','1');}
+}
+svgEl.addEventListener('pointermove',hover);
+svgEl.addEventListener('pointerdown',hover);
+svgEl.addEventListener('pointerleave',()=>{tip.style.opacity=0;['hl','hp'].forEach(id=>{const el=document.getElementById(id);if(el)el.setAttribute('opacity','0');});});
+
+/* ---- tabs ---- */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setRange(+t.dataset.days)));
+
+/* ---- load ---- */
 async function load(){
-  if(!navigator.onLine) return fail('offline');
+  if(!navigator.onLine)return fail('offline');
   try{
-    const [nowRows,hRows]=await Promise.all([csv(NOW_URL),csvCached(HREC_URL,HCACHE,20*60000).catch(()=>HCACHE.data)]);
-    const iT=colIdx(nowRows,'tre200s0'), iTime=colIdx(nowRows,'reference_timestamp');
-    if(iT<0||iTime<0) throw new Error('Spalten nicht gefunden');
-    const cutoff=Date.now()-24*3600*1000;
+    const [hRows,nowRows]=await Promise.all([
+      csvCached(HREC_URL,HCACHE,20*60000),
+      csvFetch(NOW_URL)
+    ]);
+    const iHt=hRows[0].indexOf('reference_timestamp'),iHv=hRows[0].indexOf('tre200h0');
+    const iNt=nowRows[0].indexOf('reference_timestamp'),iNv=nowRows[0].indexOf('tre200s0');
     const map=new Map();
-    if(hRows){ const iH=colIdx(hRows,'tre200h0'), iHt=colIdx(hRows,'reference_timestamp');
-      for(let k=1;k<hRows.length;k++){ const v=num(hRows[k][iH]); const dt=parseMeteoDate(hRows[k][iHt]); if(v==null||!dt)continue; if(dt.getTime()<cutoff)continue; map.set(dt.getTime(),v); } }
+    for(let i=1;i<hRows.length;i++){const dt=parseMeteoDate(hRows[i][iHt]);const v=num(hRows[i][iHv]);if(dt&&v!=null)map.set(dt.getTime(),v);}
     let cur=null,curDt=null;
-    for(let k=1;k<nowRows.length;k++){ const v=num(nowRows[k][iT]); const dt=parseMeteoDate(nowRows[k][iTime]); if(v==null||!dt)continue; cur=v; curDt=dt; if(dt.getTime()>=cutoff) map.set(dt.getTime(),v); }
-    if(cur==null) throw new Error('keine Werte');
-    const pts=[...map.entries()].map(([ms,v])=>({ms,v})).sort((a,b)=>a.ms-b.ms);
+    for(let i=1;i<nowRows.length;i++){const dt=parseMeteoDate(nowRows[i][iNt]);const v=num(nowRows[i][iNv]);if(dt&&v!=null){map.set(dt.getTime(),v);cur=v;curDt=dt;}}
+    if(cur==null)throw new Error('keine Werte');
+    ALL_PTS=[...map.entries()].map(([ms,v])=>({ms,v})).sort((a,b)=>a.ms-b.ms);
 
     const cc=tempColor(cur);
-    $('cur').textContent=cur.toFixed(1); $('cur').style.color=cc; $('accent').style.background=cc;
-    const ageMin=Math.round((Date.now()-curDt.getTime())/60000);
-    $('stamp').textContent=`Stand: ${hhmm(curDt)} Uhr · vor ${ageMin} Min`;
-
-    // heutige Tageswerte
-    const todayKey=localDay(new Date());
-    const today=pts.filter(p=>localDay(new Date(p.ms))===todayKey);
-    let maxPt=null,minPt=null,sum=0;
-    today.forEach(p=>{ if(!maxPt||p.v>maxPt.v)maxPt=p; if(!minPt||p.v<minPt.v)minPt=p; sum+=p.v; });
-    drawCurve(pts,maxPt,minPt);
-    $('cap-max').innerHTML = maxPt?`Max <b>${maxPt.v.toFixed(1)}°</b> ${hhmm(new Date(maxPt.ms))}`:'';
-    $('cap-min').innerHTML = minPt?`Min <b>${minPt.v.toFixed(1)}°</b> ${hhmm(new Date(minPt.ms))}`:'';
+    $('cur').textContent=cur.toFixed(1);$('cur').style.color=cc;$('accent').style.background=cc;
+    const age=Math.round((Date.now()-curDt.getTime())/60000);
+    $('stamp').textContent=`Stand: ${hhmm(curDt)} Uhr · vor ${age} Min`;
     placeBar(cur);
+    $('dot').classList.remove('off');$('livelbl').textContent='live';
 
-    // Kontext: drei gleichrangige Kacheln
-    const ctx=$('ctx'); clear(ctx); const extra=$('extra'); clear(extra);
-    const normToday=NORMAL[localMMDD(new Date())];
-    {
-      const mean24 = pts.reduce((a,p)=>a+p.v,0)/pts.length;
-      const t0=document.createElement('div'); t0.className='stat mean'; t0.innerHTML=`<b>${mean24.toFixed(1)} °C</b><span>Mittel der <span style="white-space:nowrap">letzten 24 h</span></span>`; ctx.appendChild(t0);
+    // stats
+    const last24=ALL_PTS.filter(p=>p.ms>=Date.now()-24*3600000);
+    const ctx=$('ctx');ctx.innerHTML='';
+    const extra=$('extra');extra.innerHTML='';
+    if(last24.length){
+      const mean24=last24.reduce((a,p)=>a+p.v,0)/last24.length;
+      const mx=Math.max(...last24.map(p=>p.v));
+      const mn=Math.min(...last24.map(p=>p.v));
+      const normToday=NORMAL[localMMDD(new Date())];
+      // mean tile
+      const t0=document.createElement('div');t0.className='stat mean';
+      t0.innerHTML=`<b>${mean24.toFixed(1)} °C</b><span>Mittel 24 h</span>`;ctx.appendChild(t0);
+      // wärmer/kühler tile
       if(normToday!=null){
-        const delta=mean24-normToday, warm=delta>=0;
-        const t1=document.createElement('div'); t1.className='stat '+(warm?'warm':'cool'); t1.innerHTML=`<b>${warm?'+':'−'}${Math.abs(delta).toFixed(1)} °C</b><span>${warm?'wärmer':'kühler'} als üblich <span style="white-space:nowrap">(${normToday}&nbsp;°C)</span></span>`; ctx.appendChild(t1);
-        $('note-normal').textContent=` Vergleich: Mittel der letzten 24 h gegenüber dem üblichen Tagesmittel (Durchschnitt aller ${deDay(new Date())} 1991–2020: ${normToday} °C).`;
+        const delta=mean24-normToday,warm=delta>=0;
+        const t1=document.createElement('div');t1.className='stat '+(warm?'warm':'cool');
+        t1.innerHTML=`<b>${warm?'+':'−'}${Math.abs(delta).toFixed(1)} °C</b><span>${warm?'wärmer':'kühler'} als üblich<br>(Normal: ${normToday} °C)</span>`;ctx.appendChild(t1);
+        $('note-normal').textContent=`Vergleich: Mittel 24 h vs. üblicher ${deDay(new Date())} (1991–2020: ${normToday} °C).`;
       }
+      // distance to record
+      const t2=document.createElement('div');t2.className='stat rec';
+      t2.innerHTML=`<b>${(REC_HOT.t-mx).toFixed(1)} °C</b><span>unter Rekord<br>(${REC_HOT.t} °C, ${REC_HOT.d.slice(-4)})</span>`;ctx.appendChild(t2);
+      // tropennacht
+      if(mn>=20){const sp=document.createElement('span');sp.className='tropen';sp.textContent='Tropennacht – Minimum nicht unter 20 °C';extra.appendChild(sp);}
     }
-    if(maxPt){ ctx.appendChild(tile(`${(REC_HOT.t-maxPt.v).toFixed(1)} °C`, `Tageshöchst unter Rekord (${REC_HOT.t.toFixed(1)} °C, ${REC_HOT.d.slice(-4)})`, 'rec')); }
-    if(minPt && minPt.v>=20){ const t=document.createElement('span'); t.className='tropen'; t.textContent='Tropennacht – Minimum nicht unter 20 °C'; extra.appendChild(t); }
-    // Sommertage laufendes Jahr
+    // summer days
     try{
-      const d=await csvCached(DREC_URL,DCACHE,30*60000); const iMax=colIdx(d,'tre200dx'), iDay=colIdx(d,'reference_timestamp');
-      if(iMax>=0&&iDay>=0){ let sd=0; for(let k=1;k<d.length;k++){ const dt=parseMeteoDate(d[k][iDay]); const mx=num(d[k][iMax]); if(dt&&dt.getUTCFullYear()===YEAR&&mx!=null&&mx>=25)sd++; }
-        if(sd>0){ if(extra.firstChild) addBr(extra); addSpan(extra,String(sd),'big'); addSpan(extra,` Sommertage ${YEAR} bisher · Durchschnitt 1991–2020: ${SUMMER_NORMAL}/Jahr`); } }
+      const d=await csvCached(DREC_URL,DCACHE,30*60000);
+      const iMax=d[0].indexOf('tre200dx'),iDay=d[0].indexOf('reference_timestamp');
+      if(iMax>=0&&iDay>=0){
+        let sd=0;for(let k=1;k<d.length;k++){const dt=parseMeteoDate(d[k][iDay]);const mx=num(d[k][iMax]);if(dt&&dt.getUTCFullYear()===YEAR&&mx!=null&&mx>=25)sd++;}
+        if(sd>0){
+          if(extra.firstChild)extra.appendChild(document.createElement('br'));
+          const big=document.createElement('span');big.className='big';big.textContent=sd;extra.appendChild(big);
+          const lab=document.createTextNode(` Sommertage ${YEAR} bisher${SUMMER_NORMAL?' · Normal: '+SUMMER_NORMAL+'/Jahr':''}`);extra.appendChild(lab);
+        }
+      }
     }catch(e){}
-    $('dot').classList.remove('off'); $('livelbl').textContent='live';
-  }catch(e){ fail(e.message); }
+
+    setRange(DAYS);
+  }catch(e){fail(e.message);}
 }
 function fail(msg){
-  $('dot').classList.add('off'); $('livelbl').textContent='offline'; $('cur').textContent='–'; $('cur').style.color='var(--grau)';
-  const st=$('stamp'); clear(st); const sp=document.createElement('span'); sp.className='err';
-  sp.textContent=msg==='offline'?'Keine Netzverbindung. Versuche es gleich erneut …':'Live-Daten momentan nicht verfügbar.'; st.appendChild(sp);
-  const ctx=$('ctx'); clear(ctx); const ex=$('extra'); clear(ex); addSpan(ex,`Hitzerekord: ${REC_HOT.t.toFixed(1)} °C (${REC_HOT.d}) · Kälterekord: ${REC_COLD.t.toFixed(1)} °C (${REC_COLD.d})`);
+  $('dot').classList.add('off');$('livelbl').textContent='offline';
+  $('cur').textContent='–';$('cur').style.color='var(--grau)';
+  $('stamp').innerHTML=`<span class="err">${msg==='offline'?'Keine Verbindung.':'Daten momentan nicht verfügbar.'}</span>`;
 }
-
-// Hover/Touch auf der Kurve
-const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
-const curveEl=$('curve');
-function hover(ev){
-  if(!CURVE||!CURVE.items.length) return;
-  const rect=curveEl.getBoundingClientRect();
-  const cx=ev.touches?ev.touches[0].clientX:ev.clientX, cy=ev.touches?ev.touches[0].clientY:ev.clientY;
-  const sx=(cx-rect.left)/rect.width*460;
-  let best=CURVE.items[0],bd=1e9; for(const it of CURVE.items){ const d=Math.abs(it.x-sx); if(d<bd){bd=d;best=it;} }
-  const hl=$('hovline'), hp=$('hovpt');
-  if(hl){ hl.setAttribute('x1',best.x.toFixed(1)); hl.setAttribute('x2',best.x.toFixed(1)); hl.setAttribute('opacity','1'); }
-  if(hp){ hp.setAttribute('cx',best.x.toFixed(1)); hp.setAttribute('cy',best.y.toFixed(1)); hp.setAttribute('opacity','1'); }
-  const h=`<b>${hhmm(new Date(best.ms))} Uhr</b><div class="r"><span>Temperatur</span><span>${best.v.toFixed(1)} °C</span></div>`;
-  tip.innerHTML=h; tip.style.opacity=1;
-  let lx=cx+14; if(lx+180>window.innerWidth) lx=cx-186; let ty=cy+14; if(ty+90>window.innerHeight) ty=cy-96;
-  tip.style.left=Math.max(6,lx)+'px'; tip.style.top=Math.max(6,ty)+'px';
-}
-function hoverOff(){ tip.style.opacity=0; const hl=$('hovline'),hp=$('hovpt'); if(hl)hl.setAttribute('opacity','0'); if(hp)hp.setAttribute('opacity','0'); }
-curveEl.addEventListener('pointermove',hover);
-curveEl.addEventListener('pointerdown',hover);
-curveEl.addEventListener('pointerleave',hoverOff);
-
-let timer=null;
-function start(){ if(!timer){ load(); timer=setInterval(load,3*60*1000); } }
-function stop(){ if(timer){ clearInterval(timer); timer=null; } }
-document.addEventListener('visibilitychange',()=>document.hidden?stop():start());
-window.addEventListener('online',()=>load());
-window.addEventListener('offline',()=>{ $('dot').classList.add('off'); $('livelbl').textContent='offline'; });
-start();
+document.addEventListener('visibilitychange',()=>document.hidden?null:load());
+window.addEventListener('online',load);
+let timer=setInterval(load,3*60*1000);
+load();
 </script>
 </body>
 </html>
