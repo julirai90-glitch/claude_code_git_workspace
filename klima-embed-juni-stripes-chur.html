@@ -36,7 +36,7 @@
   <div class="kicker">Klima Graubünden</div>
   <div class="main-title">Chur: durchschnittliche Juni-Temperatur seit 1887</div>
   <div class="title">Jeder Streifen = ein Juni. Blau: kühler als üblich. Rot: wärmer.</div>
-  <svg id="svg" viewBox="0 0 660 162" role="img" aria-label="Juni-Stripes Chur 1887-2026"></svg>
+  <svg id="svg" viewBox="0 0 660 170" role="img" aria-label="Juni-Stripes Chur 1887-2026"></svg>
   <div class="scalebar">
     <span id="sc-min">kühler</span><div class="grad"></div><span id="sc-max">wärmer</span>
   </div>
@@ -66,7 +66,7 @@ document.getElementById('sc-min').textContent=(REF-maxAbs).toFixed(1)+' °C';
 document.getElementById('sc-max').textContent=(REF+maxAbs).toFixed(1)+' °C';
 
 const svg=document.getElementById('svg');
-const W=660,H=162,axH=34,plotH=H-axH;
+const W=660,H=170,axH=40,plotH=H-axH;
 const bw=W/years.length;
 let s='';
 
@@ -82,7 +82,7 @@ years.forEach((y,i)=>{
   const i=years.indexOf(y); if(i<0)return;
   const x=((i+0.5)*bw).toFixed(1);
   s+=`<line x1="${x}" y1="${plotH}" x2="${x}" y2="${plotH+5}" stroke="#9ca3af" stroke-width="1"/>`;
-  s+=`<text x="${x}" y="${H-4}" text-anchor="middle" font-size="13" fill="#9ca3af" font-weight="500">${y}</text>`;
+  s+=`<text x="${x}" y="${H-4}" text-anchor="middle" font-size="20" fill="#9ca3af" font-weight="500">${y}</text>`;
 });
 
 // 2003: thin coloured marker line + label in axis area
@@ -90,7 +90,7 @@ const i03=years.indexOf(2003);
 if(i03>=0){
   const x=((i03+0.5)*bw).toFixed(1);
   s+=`<line x1="${x}" y1="0" x2="${x}" y2="${plotH+5}" stroke="#c0392b" stroke-width="1.2" opacity="0.55"/>`;
-  s+=`<text x="${x}" y="${H-4}" text-anchor="middle" font-size="13" fill="#c0392b" font-weight="700">2003</text>`;
+  s+=`<text x="${x}" y="${H-4}" text-anchor="middle" font-size="20" fill="#c0392b" font-weight="700">2003</text>`;
 }
 
 // 2026: thin coloured marker line + label in axis area
@@ -100,7 +100,7 @@ if(i26>=0){
   s+=`<line x1="${x}" y1="0" x2="${x}" y2="${plotH+5}" stroke="#EE7733" stroke-width="1.5" opacity="0.7"/>`;
   // anchor end so it doesn't overflow right
   const tx=Math.min(parseFloat(x),W-2);
-  s+=`<text x="${tx}" y="${H-4}" text-anchor="end" font-size="13" fill="#EE7733" font-weight="700">2026</text>`;
+  s+=`<text x="${tx}" y="${H-4}" text-anchor="end" font-size="20" fill="#EE7733" font-weight="700">2026</text>`;
 }
 
 svg.innerHTML=s;
