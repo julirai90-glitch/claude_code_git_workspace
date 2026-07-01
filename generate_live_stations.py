@@ -210,7 +210,7 @@ STATIONS.forEach(st => {{
   m.bindPopup(`
     <div class="popup-name">${{st.name}}</div>
     <div class="popup-height">${{st.height}} m · <span id="tmp-${{st.code}}">lädt …</span></div>
-    <a href="${{BASE_URL + st.file}}" target="_top" class="popup-btn">Dashboard öffnen →</a>
+    <button onclick="window.top.location.href='${{BASE_URL + st.file}}'" class="popup-btn">Dashboard öffnen →</button>
   `);
   markers[st.code] = m;
   loadTemp(st, m);
