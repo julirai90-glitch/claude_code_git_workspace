@@ -121,7 +121,7 @@ function tempColor(v){ if(v<=TSTOPS[0][0])return rgb(TSTOPS[0][1]); const n=TSTO
 function barPct(t){ return Math.max(0,Math.min(100,(t-BAR_MIN)/(BAR_MAX-BAR_MIN)*100)); }
 function placeBar(cur){
   $('curmark').style.left=`calc(${barPct(cur)}% - 2px)`;
-  $('tick-hot').style.left=`calc(${barPct(REC_HOT.t)}% - 1px)`; $('lbl-hot').style.left=barPct(REC_HOT.t)+'%'; $('lbl-hot').textContent=REC_HOT.t.toFixed(0)+'°';
+  $('tick-hot').style.left=`calc(${barPct(REC_HOT.t)}% - 1px)`; $('lbl-hot').style.left=barPct(REC_HOT.t)+'%'; $('lbl-hot').textContent=REC_HOT.t.toFixed(1)+'°';
   $('tick-cold').style.left=`calc(${barPct(REC_COLD.t)}% - 1px)`; $('lbl-cold').style.left=barPct(REC_COLD.t)+'%'; $('lbl-cold').textContent=REC_COLD.t.toFixed(0)+'°';
 }
 
@@ -216,7 +216,7 @@ async function load(){
         $('note-normal').textContent=` Vergleich: Mittel der letzten 24 h gegenüber dem üblichen Tagesmittel (Durchschnitt aller ${deDay(new Date())} 1991–2020: ${normToday} °C).`;
       }
     }
-    if(maxPt){ ctx.appendChild(tile(`${(REC_HOT.t-maxPt.v).toFixed(1)} °C`, `bis zum Hitzerekord (${REC_HOT.t.toFixed(0)} °C, ${REC_HOT.d.slice(-4)})`, 'rec')); }
+    if(maxPt){ ctx.appendChild(tile(`${(REC_HOT.t-maxPt.v).toFixed(1)} °C`, `Tageshöchst unter Rekord (${REC_HOT.t.toFixed(1)} °C, ${REC_HOT.d.slice(-4)})`, 'rec')); }
     if(minPt && minPt.v>=20){ const t=document.createElement('span'); t.className='tropen'; t.textContent='Tropennacht – Minimum nicht unter 20 °C'; extra.appendChild(t); }
     // Sommertage laufendes Jahr
     try{
