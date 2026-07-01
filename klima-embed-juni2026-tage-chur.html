@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Juni 2026 Chur – Tagesmittel</title>
 <style>
-  :root{--blau:#0068A4;--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;}
+  :root{--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;}
   *{box-sizing:border-box;}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
        color:#1f2937;margin:0;padding:12px;background:#fff;}
@@ -35,57 +35,50 @@
   <div class="subtitle">Balken = Tagesmittel 2026 · gestrichelte Linie = Durchschnitt 1991–2020</div>
   <svg id="svg" viewBox="0 0 660 220" role="img" aria-label="Tagesmitteltemperatur Juni 2026 Chur"></svg>
   <div class="legend">
-    <span><span class="leg-bar" style="background:#c0392b"></span> wärmer als normal</span>
-    <span><span class="leg-bar" style="background:#2471a3"></span> kühler als normal</span>
+    <span><span class="leg-bar" style="background:#EE7733"></span> Sommertag (max ≥ 25 °C)</span>
+    <span><span class="leg-bar" style="background:#a0b4c8"></span> kein Sommertag</span>
     <span><span class="leg-line"></span> Normal 1991–2020</span>
   </div>
-  <p class="note">Quelle: MeteoSchweiz, automatische Station Chur (SMN, 556 m). <b>2026 provisorisch und unkorrigiert.</b> Normal = geglätteter Tagesdurchschnitt 1991–2020.</p>
+  <p class="note">Quelle: MeteoSchweiz, automatische Station Chur (SMN, 556 m). <b>2026 provisorisch und unkorrigiert.</b> Normal = geglätteter Tagesdurchschnitt 1991–2020. Sommertag = Tagesmaximum ≥ 25 °C.</p>
 </div>
 <div class="tip" id="tip"></div>
 <script>
 const DAYS={1:17.6,2:16.8,3:14.1,4:15.2,5:14.8,6:16.3,7:18.8,8:20.4,9:14.9,10:11.8,11:13.5,12:13.8,13:20.2,14:20.0,15:19.3,16:20.1,17:23.2,18:25.3,19:24.0,20:25.0,21:26.4,22:27.1,23:26.6,24:27.5,25:28.7,26:28.2,27:27.8,28:24.3,29:22.8,30:22.9};
 const NORM={1:16.4,2:16.5,3:16.5,4:16.6,5:16.7,6:16.8,7:16.9,8:17.0,9:17.1,10:17.2,11:17.3,12:17.4,13:17.5,14:17.6,15:17.7,16:17.7,17:17.8,18:17.9,19:18.0,20:18.2,21:18.3,22:18.4,23:18.5,24:18.6,25:18.8,26:18.8,27:18.9,28:19.0,29:19.0,30:19.0};
+const TMAX={1:23.3,2:25.2,3:18.6,4:20.6,5:20.5,6:21.5,7:24.2,8:28.2,9:17.0,10:15.3,11:18.7,12:16.6,13:28.0,14:26.4,15:26.1,16:26.7,17:30.7,18:32.4,19:34.3,20:33.2,21:34.7,22:34.7,23:34.4,24:35.6,25:36.6,26:35.7,27:36.7,28:35.0,29:30.6,30:30.0};
 const days=Object.keys(DAYS).map(Number).sort((a,b)=>a-b);
-const W=660,H=220,m={l:30,r:10,t:14,b:32};
+const W=660,H=220,m={l:38,r:10,t:14,b:32};
+const slotW=(W-m.l-m.r)/days.length;
+const bw=slotW*0.75;
+const X=d=>m.l+(d-0.5)*slotW;
 const allV=[...Object.values(DAYS),...Object.values(NORM)];
 const ymin=Math.floor(Math.min(...allV)/2)*2-1;
 const ymax=Math.ceil(Math.max(...allV)/2)*2+1;
-const X=d=>m.l+(d-1)/(days.length-1)*(W-m.l-m.r);
 const Y=v=>H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);
-const bw=(W-m.l-m.r)/days.length*0.7;
 const svg=document.getElementById('svg');
 let s='';
 // grid
 for(let v=Math.ceil(ymin/2)*2;v<=ymax;v+=2){
   s+=`<line x1="${m.l}" y1="${Y(v).toFixed(1)}" x2="${W-m.r}" y2="${Y(v).toFixed(1)}" stroke="#f0f0f0"/>`;
-  s+=`<text x="${m.l-4}" y="${(Y(v)+3).toFixed(1)}" text-anchor="end" font-size="9.5" fill="#9ca3af">${v}°</text>`;
+  s+=`<text x="${m.l-5}" y="${(Y(v)+3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="#9ca3af">${v}°</text>`;
 }
-// shaded area between 2026 and normal
-let areaAbove='', areaBelow='';
-days.forEach((d,i)=>{
-  const x=X(d), n=NORM[d], v=DAYS[d];
-  const y1=Y(Math.max(v,n)), y2=Y(Math.min(v,n));
-  if(v>=n) areaAbove+=`<rect x="${(x-bw/2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${(y2-y1).toFixed(1)}" fill="#fdecea" opacity=".5"/>`;
-  else areaBelow+=`<rect x="${(x-bw/2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${(y2-y1).toFixed(1)}" fill="#ebf3fb" opacity=".5"/>`;
-});
-s+=areaAbove+areaBelow;
 // bars
 days.forEach(d=>{
-  const x=X(d), v=DAYS[d], n=NORM[d], warm=v>=n;
-  s+=`<rect x="${(x-bw/2).toFixed(1)}" y="${Y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-m.b-Y(v)).toFixed(1)}" fill="${warm?'#c0392b':'#2471a3'}" opacity="0.85" data-d="${d}"/>`;
+  const x=X(d), v=DAYS[d];
+  const sommer=TMAX[d]>=25;
+  s+=`<rect x="${(x-bw/2).toFixed(1)}" y="${Y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-m.b-Y(v)).toFixed(1)}" fill="${sommer?'#EE7733':'#a0b4c8'}" opacity="0.88" data-d="${d}"/>`;
 });
 // normal dashed line
 let p='';
 days.forEach(d=>{ p+=(p?'L':'M')+X(d).toFixed(1)+' '+Y(NORM[d]).toFixed(1); });
-s+=`<path d="${p}" fill="none" stroke="#9ca3af" stroke-width="1.8" stroke-dasharray="5 3"/>`;
-// x-axis day labels (every 5th day)
+s+=`<path d="${p}" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-dasharray="5 3"/>`;
+// x-axis day labels (every 5th)
 days.forEach(d=>{
   if(d===1||d%5===0){
     s+=`<text x="${X(d).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="10" fill="#9ca3af">${d}.</text>`;
     s+=`<line x1="${X(d).toFixed(1)}" y1="${H-m.b}" x2="${X(d).toFixed(1)}" y2="${(H-m.b+3).toFixed(1)}" stroke="#e5e7eb"/>`;
   }
 });
-// x-axis label
 s+=`<text x="${(m.l+(W-m.l-m.r)/2).toFixed(1)}" y="${H-1}" text-anchor="middle" font-size="9.5" fill="#9ca3af">Juni 2026</text>`;
 svg.innerHTML=s;
 
@@ -96,10 +89,11 @@ svg.addEventListener('pointermove',ev=>{
   const xi=(ev.clientX-r.left)/r.width*W;
   let best=days[0], bd=1e9;
   days.forEach(d=>{ const dist=Math.abs(X(d)-xi); if(dist<bd){bd=dist;best=d;} });
-  const v=DAYS[best], n=NORM[best], diff=v-n;
-  tip.innerHTML=`<b>${best}. Juni</b>${v.toFixed(1)} °C · ${diff>=0?'+':''}${diff.toFixed(1)} vs. Normal (${n.toFixed(1)} °C)`;
+  const v=DAYS[best], n=NORM[best], mx=TMAX[best], diff=v-n;
+  const sTag=mx>=25?'<span style="color:#EE7733;font-weight:700">Sommertag</span>':'kein Sommertag';
+  tip.innerHTML=`<b>${best}. Juni 2026</b>Mittel: ${v.toFixed(1)} °C (${diff>=0?'+':''}${diff.toFixed(1)} vs. Norm) · Max: ${mx.toFixed(1)} °C · ${sTag}`;
   tip.style.opacity=1;
-  let lx=ev.clientX+12; if(lx+220>window.innerWidth)lx=ev.clientX-224;
+  let lx=ev.clientX+12; if(lx+260>window.innerWidth)lx=ev.clientX-264;
   tip.style.left=Math.max(4,lx)+'px'; tip.style.top=(ev.clientY-38)+'px';
 });
 svg.addEventListener('pointerleave',()=>tip.style.opacity=0);
