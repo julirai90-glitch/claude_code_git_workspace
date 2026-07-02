@@ -3,27 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Juni 2026 Chur – Tagesmittel</title>
+<title>Juni 2026 Chur – Tagesmittel vs. Normal</title>
 <style>
-  :root{--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;}
+  :root{--orange:#EE7733;--blau:#0068A4;--grau:#6b7280;--hell:#eef2f5;--rot:#c0392b;}
   *{box-sizing:border-box;}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-       color:#1f2937;margin:0;padding:12px;background:#fff;}
-  .card{max-width:696px;margin:0 auto;border:1px solid #e5e7eb;border-radius:14px;
-        padding:14px 16px 16px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;}
-  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--orange);border-radius:14px 14px 0 0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:696px;margin:0 auto;border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px 16px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--orange);}
   .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.68rem;margin-bottom:2px;}
-  .main-title{font-size:1.1rem;font-weight:800;color:#1f2937;margin:2px 0 2px;}
-  .subtitle{font-size:.78rem;color:#6b7280;margin:0 0 12px;}
+  .main-title{font-size:1.12rem;font-weight:800;margin:2px 0;}
+  .subtitle{font-size:.78rem;color:var(--grau);margin:0 0 12px;}
+  .kpis{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .kpi{flex:1;min-width:120px;background:var(--hell);border-radius:9px;padding:8px 11px;}
+  .kpi b{display:block;font-size:1.15rem;line-height:1.15;font-variant-numeric:tabular-nums;}
+  .kpi span{font-size:.7rem;color:var(--grau);}
+  .kpi.peak b{color:var(--rot);}.kpi.mean b{color:var(--blau);}
   svg{width:100%;display:block;touch-action:none;cursor:crosshair;overflow:visible;}
-  .legend{display:flex;gap:16px;font-size:.74rem;color:#6b7280;margin-top:6px;flex-wrap:wrap;}
+  .legend{display:flex;gap:14px;font-size:.74rem;color:var(--grau);margin-top:8px;flex-wrap:wrap;}
   .legend span{display:flex;align-items:center;gap:5px;}
   .leg-bar{width:14px;height:10px;border-radius:2px;display:inline-block;}
-  .leg-line{width:20px;height:2px;display:inline-block;border-top:2px dashed #9ca3af;}
-  .note{font-size:.66rem;color:#6b7280;margin-top:10px;line-height:1.4;}
-  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
-       border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:6px 10px;
-       font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .leg-line{width:20px;border-top:2px dashed #9ca3af;display:inline-block;}
+  .note{font-size:.66rem;color:var(--grau);margin-top:12px;line-height:1.45;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:6px 10px;font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
   .tip b{display:block;font-size:.9rem;margin-bottom:2px;}
 </style>
 </head>
@@ -32,69 +33,95 @@
   <div class="accent"></div>
   <div class="kicker">Chur · Juni 2026</div>
   <div class="main-title">Tagesdurchschnitt: Juni 2026 vs. Normal</div>
-  <div class="subtitle">Balken = Tagesmittel 2026 · gestrichelte Linie = Durchschnitt 1991–2020</div>
-  <svg id="svg" viewBox="0 0 660 220" role="img" aria-label="Tagesmitteltemperatur Juni 2026 Chur"></svg>
+  <div class="subtitle">Balken = Tagesmittel · gestrichelte Linie = Durchschnitt 1991–2020</div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <svg id="svg" role="img" aria-label="Tagesmitteltemperatur Juni 2026 Chur im Vergleich zum Normalwert"></svg>
   <div class="legend">
-    <span><span class="leg-bar" style="background:#EE7733"></span> Sommertag (max ≥ 25 °C)</span>
+    <span><span class="leg-bar" style="background:#EE7733"></span> Sommertag (Max ≥ 25 °C)</span>
     <span><span class="leg-bar" style="background:#a0b4c8"></span> kein Sommertag</span>
     <span><span class="leg-line"></span> Normal 1991–2020</span>
   </div>
-  <p class="note">Quelle: MeteoSchweiz, automatische Station Chur (SMN, 556 m). <b>2026 provisorisch und unkorrigiert.</b> Normal = geglätteter Tagesdurchschnitt 1991–2020. Sommertag = Tagesmaximum ≥ 25 °C.</p>
+  <p class="note" id="note"></p>
 </div>
 <div class="tip" id="tip"></div>
 <script>
-const DAYS={1:17.6,2:16.8,3:14.1,4:15.2,5:14.8,6:16.3,7:18.8,8:20.4,9:14.9,10:11.8,11:13.5,12:13.8,13:20.2,14:20.0,15:19.3,16:20.1,17:23.2,18:25.3,19:24.0,20:25.0,21:26.4,22:27.1,23:26.6,24:27.5,25:28.7,26:28.2,27:27.8,28:24.3,29:22.8,30:22.9};
+"use strict";
+// === Verifizierte Daten (MeteoSchweiz SMN Chur, Stand 30.06.2026, provisorisch) ===
+// Tagesmittel (tre200d0), Tagesmaximum (tre200dx) – exakt gegen data.geo.admin.ch geprüft.
+const MEAN={1:17.6,2:16.8,3:14.1,4:15.2,5:14.8,6:16.3,7:18.8,8:20.4,9:14.9,10:11.8,11:13.5,12:13.8,13:20.2,14:20.0,15:19.3,16:20.1,17:23.2,18:25.3,19:24.0,20:25.0,21:26.4,22:27.1,23:26.6,24:27.5,25:28.7,26:28.2,27:27.8,28:24.3,29:22.8,30:22.9};
+const MAX ={1:23.3,2:25.2,3:18.6,4:20.6,5:20.5,6:21.5,7:24.2,8:28.2,9:17.0,10:15.3,11:18.7,12:16.6,13:28.0,14:26.4,15:26.1,16:26.7,17:30.7,18:32.4,19:34.3,20:33.2,21:34.7,22:34.7,23:34.4,24:35.6,25:36.6,26:35.7,27:36.7,28:35.0,29:30.6,30:30.0};
 const NORM={1:16.4,2:16.5,3:16.5,4:16.6,5:16.7,6:16.8,7:16.9,8:17.0,9:17.1,10:17.2,11:17.3,12:17.4,13:17.5,14:17.6,15:17.7,16:17.7,17:17.8,18:17.9,19:18.0,20:18.2,21:18.3,22:18.4,23:18.5,24:18.6,25:18.8,26:18.8,27:18.9,28:19.0,29:19.0,30:19.0};
-const TMAX={1:23.3,2:25.2,3:18.6,4:20.6,5:20.5,6:21.5,7:24.2,8:28.2,9:17.0,10:15.3,11:18.7,12:16.6,13:28.0,14:26.4,15:26.1,16:26.7,17:30.7,18:32.4,19:34.3,20:33.2,21:34.7,22:34.7,23:34.4,24:35.6,25:36.6,26:35.7,27:36.7,28:35.0,29:30.6,30:30.0};
-const days=Object.keys(DAYS).map(Number).sort((a,b)=>a-b);
-const W=660,H=220,m={l:38,r:10,t:14,b:32};
-const slotW=(W-m.l-m.r)/days.length;
-const bw=slotW*0.75;
-const X=d=>m.l+(d-0.5)*slotW;
-const allV=[...Object.values(DAYS),...Object.values(NORM)];
-const ymin=Math.floor(Math.min(...allV)/2)*2-1;
-const ymax=Math.ceil(Math.max(...allV)/2)*2+1;
-const Y=v=>H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);
-const svg=document.getElementById('svg');
-let s='';
-// grid
-for(let v=Math.ceil(ymin/2)*2;v<=ymax;v+=2){
-  s+=`<line x1="${m.l}" y1="${Y(v).toFixed(1)}" x2="${W-m.r}" y2="${Y(v).toFixed(1)}" stroke="#f0f0f0"/>`;
-  s+=`<text x="${m.l-5}" y="${(Y(v)+3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="#9ca3af">${v}°</text>`;
-}
-// bars
-days.forEach(d=>{
-  const x=X(d), v=DAYS[d];
-  const sommer=TMAX[d]>=25;
-  s+=`<rect x="${(x-bw/2).toFixed(1)}" y="${Y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-m.b-Y(v)).toFixed(1)}" fill="${sommer?'#EE7733':'#a0b4c8'}" opacity="0.88" data-d="${d}"/>`;
-});
-// normal dashed line
-let p='';
-days.forEach(d=>{ p+=(p?'L':'M')+X(d).toFixed(1)+' '+Y(NORM[d]).toFixed(1); });
-s+=`<path d="${p}" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-dasharray="5 3"/>`;
-// x-axis day labels (every 5th)
-days.forEach(d=>{
-  if(d===1||d%5===0){
-    s+=`<text x="${X(d).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="10" fill="#9ca3af">${d}.</text>`;
-    s+=`<line x1="${X(d).toFixed(1)}" y1="${H-m.b}" x2="${X(d).toFixed(1)}" y2="${(H-m.b+3).toFixed(1)}" stroke="#e5e7eb"/>`;
-  }
-});
-s+=`<text x="${(m.l+(W-m.l-m.r)/2).toFixed(1)}" y="${H-1}" text-anchor="middle" font-size="9.5" fill="#9ca3af">Juni 2026</text>`;
-svg.innerHTML=s;
+const STAND="30. Juni 2026";
 
-// tooltip
-const tip=document.getElementById('tip');
+const days=Object.keys(MEAN).map(Number).sort((a,b)=>a-b);
+const $=id=>document.getElementById(id);
+
+// === Kennzahlen aus den Daten berechnen (keine Handeingabe → kein Widerspruch) ===
+const meanVals=days.map(d=>MEAN[d]);
+const monMean=meanVals.reduce((a,b)=>a+b,0)/meanVals.length;
+let peakDay=days[0]; days.forEach(d=>{ if(MAX[d]>MAX[peakDay]) peakDay=d; });
+const sommer=days.filter(d=>MAX[d]>=25).length;
+const hitze =days.filter(d=>MAX[d]>=30).length;
+$('kpis').innerHTML=
+  `<div class="kpi mean"><b>${monMean.toFixed(1)} °C</b><span>Monatsmittel (Normal: 17.7 °C)</span></div>`+
+  `<div class="kpi peak"><b>${MAX[peakDay].toFixed(1)} °C</b><span>Höchster Tageswert (${peakDay}. Juni)</span></div>`+
+  `<div class="kpi"><b>${sommer}</b><span>Sommertage (Max ≥ 25 °C)</span></div>`+
+  `<div class="kpi"><b>${hitze}</b><span>Hitzetage (Max ≥ 30 °C)</span></div>`;
+$('note').innerHTML=`Quelle: MeteoSchweiz (Open Government Data, CC BY), automatische Station Chur (SMN, 556&nbsp;m). <b>2026 provisorisch und unkorrigiert</b>, Stand ${STAND}. Kennzahlen: eigene Auswertung. Normal = geglätteter Tagesdurchschnitt 1991–2020. Sommertag = Tagesmaximum ≥ 25 °C.`;
+
+// === responsives Rendern (pixelbasiert → auf dem Handy lesbar) ===
+const svg=$('svg');
+function render(){
+  const W=Math.round(svg.getBoundingClientRect().width)||660;
+  const small=W<460, H=small?190:210, m={l:34,r:8,t:12,b:30};
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.style.height=H+'px';
+  const slotW=(W-m.l-m.r)/days.length, bw=slotW*0.74;
+  const X=d=>m.l+(d-0.5)*slotW;
+  const allV=[...meanVals,...days.map(d=>NORM[d])];
+  const ymin=Math.floor(Math.min(...allV)/2)*2-1, ymax=Math.ceil(Math.max(...allV)/2)*2+1;
+  const Y=v=>H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);
+  let s='';
+  for(let v=Math.ceil(ymin/2)*2;v<=ymax;v+=2){
+    s+=`<line x1="${m.l}" y1="${Y(v).toFixed(1)}" x2="${W-m.r}" y2="${Y(v).toFixed(1)}" stroke="#f0f0f0"/>`;
+    s+=`<text x="${m.l-5}" y="${(Y(v)+3.5).toFixed(1)}" text-anchor="end" font-size="10" fill="#9ca3af">${v}°</text>`;
+  }
+  days.forEach(d=>{
+    const x=X(d), v=MEAN[d], isSommer=MAX[d]>=25, isPeak=d===peakDay;
+    s+=`<rect x="${(x-bw/2).toFixed(1)}" y="${Y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-m.b-Y(v)).toFixed(1)}" fill="${isSommer?'#EE7733':'#a0b4c8'}" opacity="0.9"${isPeak?' stroke="#c0392b" stroke-width="1.4"':''}/>`;
+  });
+  // Normal-Linie
+  let p=''; days.forEach(d=>{ p+=(p?'L':'M')+X(d).toFixed(1)+' '+Y(NORM[d]).toFixed(1); });
+  s+=`<path d="${p}" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-dasharray="5 3"/>`;
+  // Höchstwert-Markierung (Max-Tag, damit er nicht mit dem höchsten Mittel-Balken verwechselt wird)
+  s+=`<text x="${X(peakDay).toFixed(1)}" y="${(Y(MEAN[peakDay])-6).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c0392b">↑${MAX[peakDay].toFixed(1)}°</text>`;
+  // x-Achse
+  days.forEach(d=>{ if(d===1||d%5===0){
+    s+=`<line x1="${X(d).toFixed(1)}" y1="${H-m.b}" x2="${X(d).toFixed(1)}" y2="${(H-m.b+3).toFixed(1)}" stroke="#e5e7eb"/>`;
+    s+=`<text x="${X(d).toFixed(1)}" y="${H-10}" text-anchor="middle" font-size="10" fill="#9ca3af">${d}.</text>`;
+  }});
+  s+=`<text x="${(m.l+(W-m.l-m.r)/2).toFixed(1)}" y="${H-1}" text-anchor="middle" font-size="9.5" fill="#9ca3af">Juni 2026</text>`;
+  svg.innerHTML=s;
+  META={m,slotW,X,W};
+}
+let META=null, raf;
+window.addEventListener('resize',()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(render); });
+render();
+
+// === Tooltip ===
+const tip=$('tip');
 svg.addEventListener('pointermove',ev=>{
-  const r=svg.getBoundingClientRect();
-  const xi=(ev.clientX-r.left)/r.width*W;
-  let best=days[0], bd=1e9;
-  days.forEach(d=>{ const dist=Math.abs(X(d)-xi); if(dist<bd){bd=dist;best=d;} });
-  const v=DAYS[best], n=NORM[best], mx=TMAX[best], diff=v-n;
+  if(!META)return;
+  const r=svg.getBoundingClientRect(), xi=(ev.clientX-r.left)/r.width*META.W;
+  let best=days[0],bd=1e9; days.forEach(d=>{ const dist=Math.abs(META.X(d)-xi); if(dist<bd){bd=dist;best=d;} });
+  const v=MEAN[best], n=NORM[best], mx=MAX[best], diff=v-n;
   const sTag=mx>=25?'<span style="color:#EE7733;font-weight:700">Sommertag</span>':'kein Sommertag';
-  tip.innerHTML=`<b>${best}. Juni 2026</b>Mittel: ${v.toFixed(1)} °C (${diff>=0?'+':''}${diff.toFixed(1)} vs. Norm) · Max: ${mx.toFixed(1)} °C · ${sTag}`;
+  tip.innerHTML=`<b>${best}. Juni 2026</b>Tagesmittel: ${v.toFixed(1)} °C (${diff>=0?'+':'−'}${Math.abs(diff).toFixed(1)} vs. Normal)<br>Höchstwert: ${mx.toFixed(1)} °C · ${sTag}`;
   tip.style.opacity=1;
-  let lx=ev.clientX+12; if(lx+260>window.innerWidth)lx=ev.clientX-264;
-  tip.style.left=Math.max(4,lx)+'px'; tip.style.top=(ev.clientY-38)+'px';
+  let lx=ev.clientX+12; if(lx+240>window.innerWidth)lx=ev.clientX-244;
+  let ty=ev.clientY-46; if(ty<4)ty=ev.clientY+16;
+  tip.style.left=Math.max(4,lx)+'px'; tip.style.top=ty+'px';
 });
 svg.addEventListener('pointerleave',()=>tip.style.opacity=0);
 </script>

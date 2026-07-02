@@ -103,10 +103,10 @@
   <div class="scale"><span>−40 °C</span><span>Allzeit-Rekorde</span><span>+35 °C</span></div>
 
   <p class="note" id="note">
-    Quelle: MeteoSchweiz, automatische Station Samedan (1709&nbsp;m).
+    Quelle: MeteoSchweiz (Open Government Data, CC BY), automatische Station Samedan (1709&nbsp;m).
     <b>Aktuelle Werte provisorisch und unkorrigiert.</b>
     Zeiten in Schweizer Zeit. Gestrichelt = Tagesdurchschnitt 1991–2020.
-    <span id="note-normal"></span> Aktualisiert sich automatisch.
+    <span id="note-normal"></span> Rekorde und Kennzahlen: eigene Auswertung. Aktualisiert sich automatisch.
   </p>
 </div>
 <div class="tip" id="tip"></div>
@@ -298,7 +298,7 @@ async function load(){
       }
       // distance to record
       const t2=document.createElement('div');t2.className='stat rec';
-      t2.innerHTML=`<b>${(REC_HOT.t-mx).toFixed(1)} °C</b><span>unter Rekord<br>(${REC_HOT.t} °C, ${REC_HOT.d.slice(-4)})</span>`;ctx.appendChild(t2);
+      t2.innerHTML=`<b>${(REC_HOT.t-mx).toFixed(1)} °C</b><span>unter Tagesrekord<br>(${REC_HOT.t} °C, ${REC_HOT.d.slice(-4)})</span>`;ctx.appendChild(t2);
       // tropennacht
       if(mn>=20){const sp=document.createElement('span');sp.className='tropen';sp.textContent='Tropennacht – Minimum nicht unter 20 °C';extra.appendChild(sp);}
     }
