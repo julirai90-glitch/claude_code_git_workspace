@@ -118,7 +118,7 @@ function swissParts(d){ // {h:Stunde dezimal, dow:0-6} in Europe/Zurich
   const dowMap={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
   return {h:(+get('hour'))+(+get('minute'))/60, dow:dowMap[get('weekday')]};
 }
-const C = {frei:"#2e9e5b", zaeh:"#EE7733", stau:"#d6342c", keine_daten:"#c4c4c4"};
+const C = {frei:"#009988", zaeh:"#EE7733", stau:"#CC3311", keine_daten:"#c4c4c4"};
 const tip = d3.select("#tip");
 let LATEST, BASE, BOUND, sel=null, metric="flow", boardSort="load";
 
