@@ -29,6 +29,14 @@
        opacity:0;transition:opacity .1s;max-width:240px;z-index:5}
   .tip b{color:var(--ink)} .tip .r{display:flex;justify-content:space-between;gap:1.2em;margin-top:2px}
 
+  /* ---- Karte ---- */
+  #map{width:100%;display:block;background:#f5f7f9;border:1px solid var(--line);border-radius:8px}
+  .road{fill:none;stroke:#cfd6dd;stroke-width:2;stroke-linecap:round}
+  .bound{fill:#eef2f5;stroke:#cdd5dd;stroke-width:1}
+  .site{stroke:#fff;stroke-width:1.3;cursor:pointer;transition:r .15s}
+  .site.sel{stroke:var(--ink);stroke-width:2.4}
+  @media(max-width:560px){#map{display:none}}
+
   /* ---- Sortleiste ---- */
   .bbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4em;margin:.2em 2px .5em}
   .bhead{font-size:.76rem;color:var(--muted)}
@@ -106,6 +114,7 @@
     <span><i class="dot" style="background:var(--stau)"></i>stockend</span>
     <span><i class="dot" style="background:var(--nodata)"></i>keine Daten</span>
   </div>
+  <svg id="map"></svg>
   <div id="seedbox"></div>
   <div id="board"></div>
   <div class="foot" id="foot"></div>
@@ -129,13 +138,16 @@ const LOADC = {low:"#2e9e5b", mid:"#EE7733", high:"#d6342c", na:"#c4c4c4"};
 const tip = d3.select("#tip");
 let LATEST, BASE, sel=null, metric="flow", boardSort="load";
 
+let BOUND=null;
 Promise.all([
   d3.json(apiUrl("latest")),
-  d3.json(apiUrl("baseline")).catch(()=>null)
-]).then(([latest,base])=>{
-  LATEST=sanitize(latest); BASE=base;
+  d3.json(apiUrl("baseline")).catch(()=>null),
+  d3.json(ASSET_BASE+"/gr_boundary.json").catch(()=>null)
+]).then(([latest,base,bound])=>{
+  LATEST=sanitize(latest); BASE=base; BOUND=bound;
   updateStand(latest);
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
+  drawMap();
   renderBoard();
   d3.select("#foot").html(
     '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr an den automatischen Zählstellen des Bundes '
@@ -157,8 +169,51 @@ function updateStand(latest){
 function refreshLatest(){
   d3.json(apiUrl("latest")).then(latest=>{
     if(!latest||!latest.sites)return;
-    LATEST=sanitize(latest); updateStand(latest); renderBoard();
+    LATEST=sanitize(latest); updateStand(latest); drawMap(); renderBoard();
   }).catch(()=>{});
+}
+
+function flatRings(geom){return geom.coordinates.reduce((a,ring)=>a.concat(ring),[]);}
+function drawMap(){
+  const W=760,H=430;
+  const svg=d3.select("#map").attr("viewBox",`0 0 ${W} ${H}`).attr("height",H);
+  svg.selectAll("*").remove();
+  const pts=LATEST.sites.filter(s=>s.lat&&s.lon);
+  let lon0=d3.min(pts,d=>d.lon),lon1=d3.max(pts,d=>d.lon),
+      lat0=d3.min(pts,d=>d.lat),lat1=d3.max(pts,d=>d.lat);
+  if(BOUND){flatRings(BOUND).forEach(p=>{lon0=Math.min(lon0,p[0]);lon1=Math.max(lon1,p[0]);lat0=Math.min(lat0,p[1]);lat1=Math.max(lat1,p[1]);});}
+  const pad=14,kx=Math.cos((lat0+lat1)/2*Math.PI/180);
+  const gW=(lon1-lon0)*kx,gH=(lat1-lat0);
+  const s=Math.min((W-2*pad)/gW,(H-2*pad)/gH);
+  const offX=pad+((W-2*pad)-gW*s)/2,offY=pad+((H-2*pad)-gH*s)/2;
+  const proj=(lon,lat)=>[offX+(lon-lon0)*kx*s,offY+(lat1-lat)*s];
+  if(BOUND){
+    const d=BOUND.coordinates.map(ring=>"M"+ring.map(p=>proj(p[0],p[1]).join(",")).join("L")+"Z").join("");
+    svg.append("path").attr("class","bound").attr("d",d);
+  }
+  const routeKey=r=>/^A13[a-z]$/.test(r)?"A13":r;
+  const byRoad=d3.group(pts,d=>routeKey(d.road));
+  byRoad.forEach(arr=>{
+    if(arr.length<2)return;
+    const horiz=(d3.max(arr,d=>d.lon)-d3.min(arr,d=>d.lon))>=(d3.max(arr,d=>d.lat)-d3.min(arr,d=>d.lat));
+    const ss=arr.slice().sort((a,b)=>horiz?a.lon-b.lon:a.lat-b.lat);
+    svg.append("path").attr("class","road").attr("d","M"+ss.map(d=>proj(d.lon,d.lat).join(",")).join("L"));
+  });
+  const r=d3.scaleSqrt().domain([0,d3.max(pts,tot)||1]).range([3.5,15]);
+  svg.append("g").selectAll("circle").data(pts,d=>d.id).join("circle")
+    .attr("class",d=>"site"+(d.id===sel?" sel":""))
+    .attr("data-id",d=>d.id)
+    .attr("cx",d=>proj(d.lon,d.lat)[0]).attr("cy",d=>proj(d.lon,d.lat)[1])
+    .attr("r",d=>r(tot(d))).attr("fill",d=>C[worst(d)])
+    .on("mousemove",(e,d)=>{
+      const fl=v=>v==null?"–":v+" Fz/h",sp=v=>v==null?"–":v+" km/h",p=d.dirs.positive,n=d.dirs.negative;
+      tip.html('<b>'+d.place+'</b> <span style="color:#6b7280">('+d.road+')</span>'
+        +'<div class="r"><span>'+p.label+'</span><span>'+fl(p.flow)+'·'+sp(p.speed)+'</span></div>'
+        +'<div class="r"><span>'+n.label+'</span><span>'+fl(n.flow)+'·'+sp(n.speed)+'</span></div>')
+        .style("left",(e.clientX+14)+"px").style("top",(e.clientY+12)+"px").style("opacity",1);
+    })
+    .on("mouseleave",()=>tip.style("opacity",0))
+    .on("click",(e,d)=>select(d.id,true));
 }
 
 // Plausibilitaets-Filter (identisch zur Listen-Ansicht)
