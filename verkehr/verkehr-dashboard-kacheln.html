@@ -8,7 +8,7 @@
 <style>
   :root{
     --blau:#0068A4; --orange:#EE7733;
-    --frei:#2e9e5b; --zaeh:#EE7733; --stau:#d6342c; --nodata:#c4c4c4;
+    --frei:#009988; --zaeh:#EE7733; --stau:#CC3311; --nodata:#c4c4c4;
     --ink:#1d2430; --muted:#6b7280; --line:#e6e8ec; --bg:#ffffff;
   }
   *{box-sizing:border-box}
@@ -111,7 +111,7 @@
     <span style="margin-left:.4em">·</span>
     <span><i class="dot" style="background:var(--frei)"></i>fliesst</span>
     <span><i class="dot" style="background:var(--zaeh)"></i>zäh</span>
-    <span><i class="dot" style="background:var(--stau)"></i>stockend</span>
+    <span><i class="dot" style="background:var(--stau)"></i>stockend/Stau</span>
     <span><i class="dot" style="background:var(--nodata)"></i>keine Daten</span>
   </div>
   <svg id="map"></svg>
@@ -134,7 +134,7 @@ function swissParts(d){
   return {h:(+get('hour'))+(+get('minute'))/60, dow:dowMap[get('weekday')]};
 }
 const C = {frei:"#2e9e5b", zaeh:"#EE7733", stau:"#d6342c", keine_daten:"#c4c4c4"};
-const LOADC = {low:"#2e9e5b", mid:"#EE7733", high:"#d6342c", na:"#c4c4c4"};
+const LOADC = {low:"#009988", mid:"#EE7733", high:"#CC3311", na:"#c4c4c4"};
 const tip = d3.select("#tip");
 let LATEST, BASE, sel=null, metric="flow", boardSort="load";
 
