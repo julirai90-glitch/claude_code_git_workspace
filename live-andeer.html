@@ -34,7 +34,13 @@
   .scroll-wrap::-webkit-scrollbar{height:4px;}
   .scroll-wrap::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
   .chart-svg{display:block;height:120px;}
-  .now-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);
+  .yaxis{position:absolute;top:0;right:0;height:120px;width:36px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 45%);}
+  .yaxis .t{position:absolute;right:3px;transform:translateY(-50%);font-size:9px;color:#9ca3af;font-variant-numeric:tabular-nums;}
+  .chartlegend{position:absolute;top:3px;left:4px;pointer-events:none;display:flex;gap:9px;font-size:9px;color:#6b7280;background:rgba(255,255,255,.72);padding:1px 5px;border-radius:5px;}
+  .chartlegend i{display:inline-block;width:13px;height:0;vertical-align:middle;margin-right:3px;}
+  .chartlegend .max{border-top:2px solid #c0392b;}
+  .chartlegend .avg{border-top:2px dashed #9ca3af;}
+  .now-btn{position:absolute;right:44px;top:50%;transform:translateY(-50%);
            background:#fff;border:1px solid #d1d5db;border-radius:20px;
            padding:4px 10px;font-size:.7rem;color:#374151;cursor:pointer;
            box-shadow:0 2px 8px rgba(0,0,0,.1);white-space:nowrap;
@@ -83,12 +89,14 @@
     <button class="tab" data-days="1">24 h</button>
     <button class="tab active" data-days="3">3 Tage</button>
     <button class="tab" data-days="7">7 Tage</button>
-    <button class="tab" data-days="30">30 Tage</button>
+    <button class="tab" data-days="14">14 Tage</button>
   </div>
   <div class="chart-outer">
     <div class="scroll-wrap" id="scroller">
       <svg class="chart-svg" id="curve" role="img" aria-label="Temperaturverlauf"></svg>
     </div>
+    <div class="yaxis" id="yaxis"></div>
+    <div class="chartlegend"><span><i class="max"></i>Tagesrekord</span><span><i class="avg"></i>Durchschnitt</span></div>
     <button class="now-btn" id="nowbtn">Jetzt →</button>
   </div>
 
@@ -104,9 +112,9 @@
 
   <p class="note" id="note">
     Quelle: MeteoSchweiz (Open Government Data, CC BY), automatische Station Andeer (987&nbsp;m).
-    <b>Aktuelle Werte provisorisch und unkorrigiert.</b>
+    Aktuelle Werte provisorisch und unkorrigiert.
     Zeiten in Schweizer Zeit. Gestrichelt = Tagesdurchschnitt 1991–2020.
-    <span id="note-normal"></span> Rekorde und Kennzahlen: eigene Auswertung. Aktualisiert sich automatisch.
+    <span id="note-normal"></span> Rote Linie = Tagesrekord (höchster je an diesem Datum gemessener Wert, vor 2026). Rekorde und Kennzahlen: eigene Auswertung. Aktualisiert sich automatisch.
   </p>
 </div>
 <div class="tip" id="tip"></div>
@@ -122,6 +130,7 @@ const SUMMER_NORMAL=37;
 const BAR_MIN=-30, BAR_MAX=40;
 const YEAR=new Date().getFullYear();
 const NORMAL={"01-01":-1.6,"01-02":-1.6,"01-03":-1.6,"01-04":-1.6,"01-05":-1.6,"01-06":-1.5,"01-07":-1.4,"01-08":-1.5,"01-09":-1.5,"01-10":-1.6,"01-11":-1.7,"01-12":-1.7,"01-13":-1.7,"01-14":-1.8,"01-15":-1.9,"01-16":-2.0,"01-17":-2.3,"01-18":-2.4,"01-19":-2.5,"01-20":-2.5,"01-21":-2.5,"01-22":-2.5,"01-23":-2.5,"01-24":-2.5,"01-25":-2.4,"01-26":-2.3,"01-27":-2.2,"01-28":-2.2,"01-29":-2.2,"01-30":-2.1,"01-31":-2.0,"02-01":-1.9,"02-02":-1.8,"02-03":-1.7,"02-04":-1.8,"02-05":-1.9,"02-06":-1.9,"02-07":-1.9,"02-08":-1.8,"02-09":-1.7,"02-10":-1.5,"02-11":-1.4,"02-12":-1.3,"02-13":-1.3,"02-14":-1.2,"02-15":-1.0,"02-16":-0.9,"02-17":-0.8,"02-18":-0.7,"02-19":-0.6,"02-20":-0.4,"02-21":-0.1,"02-22":0.2,"02-23":0.3,"02-24":0.4,"02-25":0.4,"02-26":0.6,"02-27":0.7,"02-28":0.9,"02-29":0.9,"03-01":1.0,"03-02":1.0,"03-03":1.2,"03-04":1.3,"03-05":1.5,"03-06":1.7,"03-07":1.8,"03-08":1.8,"03-09":1.9,"03-10":2.1,"03-11":2.3,"03-12":2.4,"03-13":2.5,"03-14":2.7,"03-15":2.9,"03-16":3.2,"03-17":3.4,"03-18":3.5,"03-19":3.6,"03-20":3.7,"03-21":4.0,"03-22":4.2,"03-23":4.4,"03-24":4.5,"03-25":4.6,"03-26":4.7,"03-27":5.0,"03-28":5.3,"03-29":5.4,"03-30":5.6,"03-31":5.8,"04-01":6.0,"04-02":6.3,"04-03":6.6,"04-04":6.8,"04-05":6.9,"04-06":7.0,"04-07":7.1,"04-08":7.2,"04-09":7.4,"04-10":7.5,"04-11":7.5,"04-12":7.5,"04-13":7.6,"04-14":7.7,"04-15":7.9,"04-16":8.0,"04-17":8.1,"04-18":8.2,"04-19":8.3,"04-20":8.4,"04-21":8.4,"04-22":8.6,"04-23":8.6,"04-24":8.7,"04-25":8.7,"04-26":8.8,"04-27":9.0,"04-28":9.1,"04-29":9.1,"04-30":9.2,"05-01":9.3,"05-02":9.5,"05-03":9.7,"05-04":9.8,"05-05":10.0,"05-06":10.2,"05-07":10.3,"05-08":10.2,"05-09":10.2,"05-10":10.3,"05-11":10.5,"05-12":10.6,"05-13":10.7,"05-14":10.9,"05-15":11.0,"05-16":11.1,"05-17":11.1,"05-18":11.2,"05-19":11.3,"05-20":11.4,"05-21":11.6,"05-22":11.8,"05-23":12.0,"05-24":12.3,"05-25":12.5,"05-26":12.6,"05-27":12.9,"05-28":13.1,"05-29":13.3,"05-30":13.4,"05-31":13.5,"06-01":13.6,"06-02":13.7,"06-03":13.8,"06-04":13.9,"06-05":14.1,"06-06":14.2,"06-07":14.4,"06-08":14.5,"06-09":14.7,"06-10":14.8,"06-11":14.8,"06-12":14.9,"06-13":14.9,"06-14":15.0,"06-15":15.1,"06-16":15.2,"06-17":15.3,"06-18":15.4,"06-19":15.5,"06-20":15.6,"06-21":15.7,"06-22":15.8,"06-23":16.0,"06-24":16.1,"06-25":16.3,"06-26":16.4,"06-27":16.5,"06-28":16.7,"06-29":16.8,"06-30":16.8,"07-01":16.9,"07-02":17.0,"07-03":17.0,"07-04":17.0,"07-05":17.0,"07-06":17.0,"07-07":16.9,"07-08":16.8,"07-09":16.7,"07-10":16.6,"07-11":16.6,"07-12":16.6,"07-13":16.5,"07-14":16.5,"07-15":16.5,"07-16":16.6,"07-17":16.5,"07-18":16.5,"07-19":16.5,"07-20":16.5,"07-21":16.5,"07-22":16.6,"07-23":16.6,"07-24":16.7,"07-25":16.8,"07-26":16.9,"07-27":16.9,"07-28":16.9,"07-29":17.0,"07-30":16.9,"07-31":17.0,"08-01":17.1,"08-02":17.1,"08-03":17.1,"08-04":17.0,"08-05":16.9,"08-06":16.9,"08-07":16.8,"08-08":16.7,"08-09":16.5,"08-10":16.5,"08-11":16.5,"08-12":16.4,"08-13":16.4,"08-14":16.3,"08-15":16.2,"08-16":16.2,"08-17":16.2,"08-18":16.2,"08-19":16.2,"08-20":16.2,"08-21":16.2,"08-22":16.2,"08-23":16.1,"08-24":16.1,"08-25":15.9,"08-26":15.6,"08-27":15.4,"08-28":15.3,"08-29":15.1,"08-30":14.9,"08-31":14.7,"09-01":14.4,"09-02":14.3,"09-03":14.0,"09-04":13.9,"09-05":13.7,"09-06":13.6,"09-07":13.4,"09-08":13.3,"09-09":13.2,"09-10":13.2,"09-11":13.1,"09-12":12.9,"09-13":12.7,"09-14":12.5,"09-15":12.4,"09-16":12.3,"09-17":12.2,"09-18":11.9,"09-19":11.7,"09-20":11.5,"09-21":11.4,"09-22":11.3,"09-23":11.2,"09-24":11.1,"09-25":11.0,"09-26":10.8,"09-27":10.7,"09-28":10.7,"09-29":10.6,"09-30":10.5,"10-01":10.4,"10-02":10.3,"10-03":10.3,"10-04":10.2,"10-05":10.0,"10-06":9.8,"10-07":9.6,"10-08":9.3,"10-09":9.0,"10-10":8.8,"10-11":8.6,"10-12":8.5,"10-13":8.3,"10-14":8.2,"10-15":8.0,"10-16":7.8,"10-17":7.7,"10-18":7.6,"10-19":7.6,"10-20":7.5,"10-21":7.3,"10-22":7.1,"10-23":7.0,"10-24":6.9,"10-25":6.9,"10-26":6.9,"10-27":6.9,"10-28":6.9,"10-29":6.8,"10-30":6.6,"10-31":6.5,"11-01":6.2,"11-02":6.0,"11-03":5.8,"11-04":5.7,"11-05":5.6,"11-06":5.5,"11-07":5.4,"11-08":5.3,"11-09":5.0,"11-10":4.7,"11-11":4.4,"11-12":4.0,"11-13":3.7,"11-14":3.6,"11-15":3.4,"11-16":3.3,"11-17":3.2,"11-18":3.1,"11-19":2.8,"11-20":2.6,"11-21":2.5,"11-22":2.3,"11-23":2.1,"11-24":1.8,"11-25":1.6,"11-26":1.3,"11-27":1.2,"11-28":1.0,"11-29":0.8,"11-30":0.7,"12-01":0.5,"12-02":0.3,"12-03":-0.0,"12-04":-0.2,"12-05":-0.4,"12-06":-0.6,"12-07":-0.7,"12-08":-0.7,"12-09":-0.7,"12-10":-0.8,"12-11":-0.8,"12-12":-0.8,"12-13":-0.7,"12-14":-0.6,"12-15":-0.5,"12-16":-0.4,"12-17":-0.2,"12-18":-0.1,"12-19":-0.1,"12-20":-0.1,"12-21":-0.1,"12-22":-0.2,"12-23":-0.3,"12-24":-0.4,"12-25":-0.4,"12-26":-0.3,"12-27":-0.5,"12-28":-0.7,"12-29":-1.0,"12-30":-1.2,"12-31":-1.5};
+const REKORD={"01-01":13.2,"01-02":13.4,"01-03":8.7,"01-04":10,"01-05":10.7,"01-06":9.8,"01-07":12,"01-08":10.5,"01-09":14,"01-10":7.7,"01-11":8.7,"01-12":6.3,"01-13":9.6,"01-14":9.5,"01-15":9.8,"01-16":10.2,"01-17":9.8,"01-18":7.9,"01-19":9.5,"01-20":7.7,"01-21":7.9,"01-22":11.8,"01-23":11.4,"01-24":13.4,"01-25":12.2,"01-26":8.8,"01-27":10.3,"01-28":10.3,"01-29":9.4,"01-30":9.8,"01-31":8.3,"02-01":10.1,"02-02":10.3,"02-03":11,"02-04":10.4,"02-05":11.3,"02-06":12.3,"02-07":17.8,"02-08":11.7,"02-09":12,"02-10":12.7,"02-11":12.7,"02-12":12,"02-13":12.3,"02-14":12.9,"02-15":15.2,"02-16":15.6,"02-17":12.6,"02-18":15.3,"02-19":12.7,"02-20":13.4,"02-21":15.1,"02-22":15,"02-23":14.2,"02-24":15.7,"02-25":14.8,"02-26":13.2,"02-27":12,"02-28":14.8,"02-29":11.9,"03-01":12.9,"03-02":13.8,"03-03":13.3,"03-04":14.2,"03-05":14.1,"03-06":13,"03-07":12.8,"03-08":13.6,"03-09":13.7,"03-10":15.5,"03-11":13.8,"03-12":17.9,"03-13":16.3,"03-14":15.8,"03-15":16.2,"03-16":17.5,"03-17":18.3,"03-18":19.1,"03-19":17.1,"03-20":17.6,"03-21":16.3,"03-22":18.5,"03-23":18.6,"03-24":19.2,"03-25":17.4,"03-26":16.5,"03-27":17.5,"03-28":19.1,"03-29":18.9,"03-30":21.9,"03-31":20.8,"04-01":19.6,"04-02":20,"04-03":20.7,"04-04":19,"04-05":18.7,"04-06":22.6,"04-07":23.5,"04-08":22.2,"04-09":21.6,"04-10":20.2,"04-11":20.1,"04-12":21.2,"04-13":23.8,"04-14":25.1,"04-15":22,"04-16":20.9,"04-17":21.8,"04-18":23.2,"04-19":22.7,"04-20":22.7,"04-21":23.5,"04-22":23.3,"04-23":23.1,"04-24":21.8,"04-25":22,"04-26":19.5,"04-27":21.7,"04-28":22.9,"04-29":21.1,"04-30":23,"05-01":24,"05-02":24.1,"05-03":22.2,"05-04":21.8,"05-05":22.1,"05-06":24.1,"05-07":23.4,"05-08":23.2,"05-09":24.8,"05-10":23.6,"05-11":25.8,"05-12":25.3,"05-13":25.4,"05-14":22.6,"05-15":25.3,"05-16":22.6,"05-17":24.7,"05-18":25.3,"05-19":25.6,"05-20":27.7,"05-21":24.5,"05-22":26.4,"05-23":28.2,"05-24":28.1,"05-25":28.2,"05-26":26.5,"05-27":26.7,"05-28":27.9,"05-29":27.8,"05-30":27.2,"05-31":28.8,"06-01":27,"06-02":25.7,"06-03":27.6,"06-04":28.8,"06-05":29.9,"06-06":29,"06-07":29.2,"06-08":31.3,"06-09":32.2,"06-10":31,"06-11":29.5,"06-12":29.1,"06-13":30.4,"06-14":30.5,"06-15":29.2,"06-16":28.1,"06-17":28.6,"06-18":31.4,"06-19":30.3,"06-20":30.2,"06-21":28.9,"06-22":30.6,"06-23":31.9,"06-24":30.9,"06-25":32.1,"06-26":32.6,"06-27":32.7,"06-28":29.7,"06-29":31.1,"06-30":31.9,"07-01":30.5,"07-02":31.2,"07-03":31.5,"07-04":32,"07-05":32.8,"07-06":29.1,"07-07":32.1,"07-08":29.4,"07-09":31.4,"07-10":31.7,"07-11":32.2,"07-12":30.1,"07-13":28.8,"07-14":30.1,"07-15":30.2,"07-16":31.6,"07-17":31.6,"07-18":31.8,"07-19":31.6,"07-20":32.2,"07-21":31.8,"07-22":32.3,"07-23":31.1,"07-24":32.4,"07-25":32.2,"07-26":30.7,"07-27":31.7,"07-28":31.8,"07-29":29.4,"07-30":31.2,"07-31":31.5,"08-01":29.9,"08-02":31,"08-03":31.6,"08-04":31,"08-05":31.7,"08-06":31.8,"08-07":32.8,"08-08":32.4,"08-09":30.9,"08-10":29.8,"08-11":33.6,"08-12":32.3,"08-13":31.8,"08-14":30.4,"08-15":30.2,"08-16":30.3,"08-17":28.3,"08-18":30.7,"08-19":32.5,"08-20":31.6,"08-21":31.3,"08-22":32.4,"08-23":31.5,"08-24":32.8,"08-25":31.3,"08-26":29.8,"08-27":29.9,"08-28":29.8,"08-29":30.2,"08-30":30.5,"08-31":30.2,"09-01":29.7,"09-02":27.9,"09-03":27.5,"09-04":26.6,"09-05":27,"09-06":27,"09-07":28,"09-08":27,"09-09":28.2,"09-10":28.1,"09-11":28.3,"09-12":27.8,"09-13":26.4,"09-14":27.7,"09-15":26.5,"09-16":25.2,"09-17":24.7,"09-18":25.3,"09-19":30,"09-20":27.5,"09-21":25.7,"09-22":23.4,"09-23":27.1,"09-24":22.6,"09-25":24.6,"09-26":21.8,"09-27":23.6,"09-28":23.2,"09-29":23.4,"09-30":22.4,"10-01":22.7,"10-02":24.5,"10-03":23.8,"10-04":21.1,"10-05":24.5,"10-06":22.3,"10-07":27.2,"10-08":22.4,"10-09":22,"10-10":20.1,"10-11":22.2,"10-12":22.3,"10-13":23.7,"10-14":20.9,"10-15":22.2,"10-16":21.8,"10-17":23.3,"10-18":21.3,"10-19":21.9,"10-20":21.4,"10-21":21.1,"10-22":21.2,"10-23":20.9,"10-24":19.4,"10-25":19.5,"10-26":20.7,"10-27":19.1,"10-28":20.5,"10-29":20.2,"10-30":23.2,"10-31":22.3,"11-01":17.6,"11-02":18.6,"11-03":18.8,"11-04":16.2,"11-05":17.8,"11-06":18.8,"11-07":18.2,"11-08":17.6,"11-09":15.4,"11-10":15.6,"11-11":14.7,"11-12":17.2,"11-13":17.6,"11-14":15.3,"11-15":16.3,"11-16":14.6,"11-17":16.1,"11-18":14.2,"11-19":12.8,"11-20":19,"11-21":14.4,"11-22":12.6,"11-23":14.9,"11-24":13.8,"11-25":16.2,"11-26":12.9,"11-27":12.4,"11-28":12.5,"11-29":14.5,"11-30":15.4,"12-01":11.9,"12-02":11.4,"12-03":10,"12-04":9.7,"12-05":8.9,"12-06":10,"12-07":14,"12-08":12,"12-09":14.3,"12-10":9.9,"12-11":9.4,"12-12":8.3,"12-13":9,"12-14":10,"12-15":11.6,"12-16":11.3,"12-17":12,"12-18":11.3,"12-19":11.1,"12-20":14.1,"12-21":13.1,"12-22":10.8,"12-23":12.4,"12-24":12.7,"12-25":12.8,"12-26":11.5,"12-27":9.2,"12-28":10.2,"12-29":9.4,"12-30":10.1,"12-31":15.1};   // Tagesrekord je Kalendertag (Tagesmax), Jahre vor 2026
 
 /* ---- helpers ---- */
 const ZRH={timeZone:'Europe/Zurich'};
@@ -158,13 +167,17 @@ function placeBar(cur){
 }
 
 /* ---- chart ---- */
-const SVG_H=120,ML=0,MR=0,MT=12,MB=26;
+const SVG_H=120,ML=0,MR=40,MT=12,MB=26;
+const niceStep=r=>r<=12?2:r<=30?5:10;
+function drawYAxis(vmin,vmax){const yax=$('yaxis'),step=niceStep(vmax-vmin);const Y=v=>SVG_H-MB-(v-vmin)/(vmax-vmin)*(SVG_H-MT-MB);let h='';for(let v=Math.ceil(vmin/step)*step;v<=vmax;v+=step){h+=`<span class="t" style="top:${Y(v).toFixed(1)}px">${v}°</span>`;}yax.innerHTML=h;}
+function smoothPath(p){if(p.length<2)return p.length?`M${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`:'';let d=`M${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;for(let i=0;i<p.length-1;i++){const a=p[i-1]||p[i],b=p[i],c=p[i+1],e=p[i+2]||p[i+1];const c1x=b.x+(c.x-a.x)/6,c1y=b.y+(c.y-a.y)/6,c2x=c.x-(e.x-b.x)/6,c2y=c.y-(e.y-b.y)/6;d+=` C${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${c.x.toFixed(1)} ${c.y.toFixed(1)}`;}return d;}
 function drawChart(pts){
   const svg=$('curve');
   if(pts.length<2){svg.innerHTML='<text x="20" y="55" fill="#9ca3af" font-size="13">Keine Daten</text>';return;}
   const dayKeys=[...new Set(pts.map(p=>localDay(new Date(p.ms))))];
   const normVals=dayKeys.map(k=>NORMAL[k.slice(5)]).filter(v=>v!=null);
-  let vmin=Math.min(...pts.map(p=>p.v),...normVals)-1, vmax=Math.max(...pts.map(p=>p.v),...normVals)+1;
+  const recVals=dayKeys.map(k=>REKORD[k.slice(5)]).filter(v=>v!=null);
+  let vmin=Math.min(...pts.map(p=>p.v),...normVals)-1, vmax=Math.max(...pts.map(p=>p.v),...normVals,...recVals)+1;
   if(vmax-vmin<6){const mid=(vmax+vmin)/2;vmin=mid-3;vmax=mid+3;}
   const startMs=pts[0].ms,endMs=pts[pts.length-1].ms,totalH=(endMs-startMs)/3600000||1;
   const cw=scroller.getBoundingClientRect().width||scroller.offsetWidth||600;
@@ -178,7 +191,10 @@ function drawChart(pts){
   // gradient stops
   let gstops='';pts.forEach(p=>{const pct=((p.ms-startMs)/(endMs-startMs)*100).toFixed(1);gstops+=`<stop offset="${pct}%" stop-color="${tempColor(p.v)}"/>`;});
   let s=`<defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">${gstops}</linearGradient><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cc}" stop-opacity=".16"/><stop offset="1" stop-color="${cc}" stop-opacity="0"/></linearGradient><clipPath id="cl"><rect x="${ML}" y="${MT}" width="${W-ML-MR}" height="${SVG_H-MT-MB}"/></clipPath></defs>`;
-  // day dividers + normal lines
+  // horizontale Gitterlinien (auf Y-Achsen-Ticks)
+  const gs=niceStep(vmax-vmin);
+  for(let v=Math.ceil(vmin/gs)*gs;v<=vmax;v+=gs){s+=`<line x1="${ML}" y1="${Y(v).toFixed(1)}" x2="${(W-MR).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="#f1f3f5"/>`;}
+  // Tageswechsel + Normal- und Rekord-Linie (je Kalendertag)
   dayKeys.forEach((k,di)=>{
     const dayPts=pts.filter(p=>localDay(new Date(p.ms))===k);
     if(!dayPts.length)return;
@@ -186,16 +202,24 @@ function drawChart(pts){
     const mid=dayPts[Math.floor(dayPts.length/2)].ms;
     const dt=new Date(mid);
     s+=`<text x="${X(mid).toFixed(1)}" y="${SVG_H-3}" text-anchor="middle" font-size="9" fill="#b0b7c0">${shortDate(dt)}</text>`;
-    const nv=NORMAL[k.slice(5)];
-    if(nv!=null){const x0=X(dayPts[0].ms),x1=X(dayPts[dayPts.length-1].ms),ny=Y(nv).toFixed(1);s+=`<line x1="${x0.toFixed(1)}" y1="${ny}" x2="${x1.toFixed(1)}" y2="${ny}" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="4 3"/>`;}
   });
+  // Normal- und Rekord-Linie als geglättete Kurven durch die Tageswerte (Knoten = Tagesmitte)
+  const rnodes=dayKeys.map(k=>{const dp=pts.filter(p=>localDay(new Date(p.ms))===k);return {k,x:X(dp[Math.floor(dp.length/2)].ms)};});
+  function envelope(tbl,stroke,dash){
+    let nn=rnodes.map(nd=>{const v=tbl[nd.k.slice(5)];return v==null?null:{x:nd.x,y:Y(v)};}).filter(Boolean);
+    if(!nn.length)return;
+    nn=[{x:ML,y:nn[0].y},...nn,{x:W-MR,y:nn[nn.length-1].y}];
+    s+=`<path d="${smoothPath(nn)}" fill="none" stroke="${stroke}" stroke-width="1.3"${dash?' stroke-dasharray="4 3"':''} opacity=".9" clip-path="url(#cl)"/>`;
+  }
+  envelope(NORMAL,'#9ca3af',true);
+  envelope(REKORD,'#c0392b',false);
   // 6h ticks
   for(let t=Math.ceil(startMs/3600000)*3600000;t<=endMs;t+=3600000){
     const dt=new Date(t),hh=+dt.toLocaleString('en-GB',{hour:'2-digit',hour12:false,timeZone:'Europe/Zurich'});
     if(hh%6!==0)continue;
     const x=X(t);
     s+=`<line x1="${x.toFixed(1)}" y1="${SVG_H-MB}" x2="${x.toFixed(1)}" y2="${SVG_H-MB+3}" stroke="#d1d5db"/>`;
-    if(hh!==0)s+=`<text x="${x.toFixed(1)}" y="${SVG_H-3}" text-anchor="middle" font-size="9" fill="#c4c9d0">${hh}h</text>`;
+    if(hh!==0)s+=`<text x="${x.toFixed(1)}" y="${SVG_H-15}" text-anchor="middle" font-size="8.5" fill="#c4c9d0">${hh}h</text>`;
   }
   // area + line
   let d='';pts.forEach((p,i)=>{d+=(i?'L':'M')+X(p.ms).toFixed(1)+' '+Y(p.v).toFixed(1);});
@@ -207,7 +231,8 @@ function drawChart(pts){
   s+=`<line id="hl" y1="${MT}" y2="${SVG_H-MB}" stroke="#64748b" stroke-width="1" stroke-dasharray="3 2" opacity="0"/>`;
   s+=`<circle id="hp" r="4.5" fill="#fff" stroke="#0a3d62" stroke-width="2" opacity="0"/>`;
   svg.innerHTML=s;
-  CHART={pts,X,Y,W};
+  CHART={pts,X,Y,W,vmin,vmax};
+  drawYAxis(vmin,vmax);
 }
 
 /* ---- range ---- */
@@ -236,8 +261,8 @@ function hover(ev){
   const svgX=(cx-rect.left)/rect.width*CHART.W;
   let best=CHART.pts[0],bd=1e12;
   CHART.pts.forEach(p=>{const d=Math.abs(CHART.X(p.ms)-svgX);if(d<bd){bd=d;best=p;}});
-  const dt=new Date(best.ms),nv=NORMAL[localMMDD(dt)],diff=nv!=null?best.v-nv:null;
-  tip.innerHTML=`<b>${shortDate(dt)}, ${hhmm(dt)}</b>${best.v.toFixed(1)} °C${diff!=null?' · '+(diff>=0?'+':'')+diff.toFixed(1)+' vs. Normal':''}`;
+  const dt=new Date(best.ms),nv=NORMAL[localMMDD(dt)],rv=REKORD[localMMDD(dt)],diff=nv!=null?best.v-nv:null;
+  tip.innerHTML=`<b>${shortDate(dt)}, ${hhmm(dt)}</b>${best.v.toFixed(1)} °C${diff!=null?' · '+(diff>=0?'+':'')+diff.toFixed(1)+' vs. Normal':''}${rv!=null?'<br>Tagesrekord: '+rv.toFixed(1)+' °C':''}`;
   tip.style.opacity=1;
   let lx=cx+14;if(lx+200>window.innerWidth)lx=cx-204;
   let ty=(ev.touches?ev.touches[0].clientY:ev.clientY)-44;
@@ -288,13 +313,13 @@ async function load(){
       const normToday=NORMAL[localMMDD(new Date())];
       // mean tile
       const t0=document.createElement('div');t0.className='stat mean';
-      t0.innerHTML=`<b>${mean24.toFixed(1)} °C</b><span>Mittel 24 h</span>`;ctx.appendChild(t0);
+      t0.innerHTML=`<b>${mean24.toFixed(1)} °C</b><span>Mittel der letzten 24h</span>`;ctx.appendChild(t0);
       // wärmer/kühler tile
       if(normToday!=null){
         const delta=mean24-normToday,warm=delta>=0;
         const t1=document.createElement('div');t1.className='stat '+(warm?'warm':'cool');
         t1.innerHTML=`<b>${warm?'+':'−'}${Math.abs(delta).toFixed(1)} °C</b><span>${warm?'wärmer':'kühler'} als üblich<br>(Normal: ${normToday} °C)</span>`;ctx.appendChild(t1);
-        $('note-normal').textContent=`Vergleich: Mittel 24 h vs. üblicher ${deDay(new Date())} (1991–2020: ${normToday} °C).`;
+        $('note-normal').textContent=`Vergleich: Mittel der letzten 24h vs. üblicher ${deDay(new Date())} (1991–2020: ${normToday} °C).`;
       }
       // distance to record
       const t2=document.createElement('div');t2.className='stat rec';
