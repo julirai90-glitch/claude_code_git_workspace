@@ -71,6 +71,8 @@
   .tdirs .d .dv b{font-weight:600}
   .trend{font-size:.62rem;color:var(--muted);margin-left:.12em;line-height:1}
   .tfoot{font-size:.7rem;color:var(--muted);border-top:1px solid var(--line);padding-top:5px}
+  .bfilter{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .5em;margin:.1em 2px .5em}
+  .bflabel{font-size:.72rem;color:var(--muted);flex:0 0 auto}
 
   /* ---- Detail (klappt direkt unter der angeklickten Kachel auf) ---- */
   .tdetail{grid-column:1/-1;margin:2px 0 6px;border:1px solid var(--line);border-radius:10px;padding:12px 12px 8px;background:#fafbfc;animation:bexp .18s ease}
@@ -135,8 +137,9 @@ function swissParts(d){
 }
 const C = {frei:"#009988", zaeh:"#EE7733", stau:"#CC3311", keine_daten:"#c4c4c4"};
 const LOADC = {low:"#009988", mid:"#EE7733", high:"#CC3311", na:"#c4c4c4"};
+const KT = {"CH:0035":"SG","CH:0053":"GL","CH:0216":"SZ","CH:0245":"SG","CH:0308":"SZ","CH:0314":"SG","CH:0318":"SG","CH:0394":"GL","CH:0588":"SG","CH:0603":"SG","CH:0829":"GL","CH:0830":"GL"};
 const tip = d3.select("#tip");
-let LATEST, BASE, sel=null, metric="flow", boardSort="load";
+let LATEST, BASE, sel=null, metric="flow", boardSort="load", filterKt="alle", filterRoute="alle";
 
 let BOUND=null;
 Promise.all([
@@ -340,11 +343,27 @@ function sortRows(){
   else /* load */            rows.sort((a,b)=>{const d=(loadInfo(b).ratio)-(loadInfo(a).ratio);return d!==0?d:tot(b)-tot(a);});
   return rows;
 }
-function axisClass(s){return /^A13|^A28/.test(s.road)?"haupt":"pass";}
+function ktOf(s){return KT[s.id]||"GR";}
+function corridorClass(s){
+  const kt=ktOf(s);
+  if(kt!=="GR") return (s.road==="A3"||s.road==="A13a")?"a3":"andere";
+  return /^A13|^A28/.test(s.road)?"haupt":"pass";
+}
 
 function renderBoard(){
-  const rows=sortRows();
-  const btn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
+  const allRows=sortRows();
+  const rows=allRows.filter(s=>{
+    if(filterKt!=="alle"&&ktOf(s)!==filterKt) return false;
+    const cc=corridorClass(s);
+    if(filterRoute==="A13"&&cc!=="haupt") return false;
+    if(filterRoute==="A3"&&cc!=="a3") return false;
+    if(filterRoute==="pass"&&cc!=="pass") return false;
+    if(filterRoute==="andere"&&cc!=="andere") return false;
+    return true;
+  });
+  const sbtn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
+  const kbtn=(v,l)=>'<button data-fkt="'+v+'" class="'+(filterKt===v?'on':'')+'">'+l+'</button>';
+  const rbtn=(v,l)=>'<button data-frt="'+v+'" class="'+(filterRoute===v?'on':'')+'">'+l+'</button>';
   const dirRow=(s,dir)=>{const x=s.dirs[dir];
     const arrow=dir==='positive'?'→':'←';
     const a=x.flow==null?0:trend(s.id+'|'+dir);
@@ -365,18 +384,28 @@ function renderBoard(){
       +'<div class="tdirs">'+dirRow(s,'positive')+dirRow(s,'negative')+'</div>'
       +(dctot!=null?'<div class="tfoot" title="Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung">heute bisher ca. <b>'+dctot.toLocaleString('de-CH')+'</b> Fahrzeuge</div>':'')
       +'</div>';};
-  const haupt=rows.filter(s=>axisClass(s)==="haupt");
-  const pass =rows.filter(s=>axisClass(s)==="pass");
+  const haupt =rows.filter(s=>corridorClass(s)==="haupt");
+  const pass  =rows.filter(s=>corridorClass(s)==="pass");
+  const a3    =rows.filter(s=>corridorClass(s)==="a3");
+  const andere=rows.filter(s=>corridorClass(s)==="andere");
   // Detail-Panel direkt nach der angeklickten Kachel einfuegen (full-width im Raster)
   const tilesHtml=arr=>arr.map(s=>tile(s)+(s.id===sel?'<div class="tdetail" data-for="'+s.id+'"></div>':'')).join('');
   const section=(title,arr)=>arr.length?('<div class="bgroup">'+title+' <span>('+arr.length+')</span></div><div class="tgrid">'+tilesHtml(arr)+'</div>'):'';
   d3.select("#board").html(
     '<div class="bbar"><span class="bhead">Balken = Verkehrsmenge · Punkt = Fluss · tippen für Tagesverlauf</span>'
-    +'<span class="toggle bsort">'+btn('load','Auslastung')+btn('vol','Verkehr')+btn('az','A–Z')+'</span></div>'
-    +section('Hauptachsen <small>A13/A28</small>',haupt)
-    +section('Pässe &amp; Nebenstrassen',pass)
+    +'<span class="toggle bsort">'+sbtn('load','Auslastung')+sbtn('vol','Verkehr')+sbtn('az','A–Z')+'</span></div>'
+    +'<div class="bfilter"><span class="bflabel">Kanton:</span>'
+    +'<span class="toggle">'+kbtn('alle','Alle')+kbtn('GR','GR')+kbtn('SG','SG')+kbtn('GL','GL')+kbtn('SZ','SZ')+'</span>'
+    +'<span class="bflabel" style="margin-left:.4em">Strecke:</span>'
+    +'<span class="toggle">'+rbtn('alle','Alle')+rbtn('A13','A13')+rbtn('A3','A3')+rbtn('pass','Pässe')+rbtn('andere','Weitere')+'</span></div>'
+    +section('Hauptachsen <small>A13/A28 · Graubünden</small>',haupt)
+    +section('Pässe &amp; Nebenstrassen <small>Graubünden</small>',pass)
+    +section('A3-Korridor <small>Richtung Zürich</small>',a3)
+    +section('Weitere Stationen <small>Glarus / Schmerikon</small>',andere)
   );
   d3.selectAll(".bsort button").on("click",function(){boardSort=this.getAttribute("data-sort");renderBoard();});
+  d3.selectAll("[data-fkt]").on("click",function(){filterKt=this.getAttribute("data-fkt");renderBoard();});
+  d3.selectAll("[data-frt]").on("click",function(){filterRoute=this.getAttribute("data-frt");renderBoard();});
   d3.selectAll(".tile").on("click",function(){select(this.getAttribute("data-id"), true);});
 
   if(sel){
