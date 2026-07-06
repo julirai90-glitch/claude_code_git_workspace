@@ -493,7 +493,8 @@ function chartCard(s,dir,prov){
      })
      .on("mouseleave",function(){guide.style("opacity",0);hdot.style("opacity",0);hideTip();});
   // Hinweis solange wenige Vergleichstage erfasst sind (Faktentreue: keine Schein-Robustheit)
-  if(bl){
+  const blHasData = bl && bl.flow_med && bl.flow_med.some(v=>v!=null);
+  if(blHasData){
     const cat=dayType();
     const n=(BASE.n&&BASE.n[cat])||0;
     if(n<4) card.append("p").attr("class","bnote").html('Vergleichslinie vorläufig – erst '+n+' Vergleichstag'+(n===1?'':'e')+' ('+CATLABEL[cat]+') erfasst');
