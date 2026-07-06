@@ -527,7 +527,7 @@ function chartCard(s,dir,prov){
     const cat=dayType();
     const n=(BASE.n&&BASE.n[cat])||0;
     if(n<4) card.append("p").attr("class","bnote").html('Vergleichslinie vorläufig – erst '+n+' Vergleichstag'+(n===1?'':'e')+' ('+CATLABEL[cat]+') erfasst');
-  } else if(metric==="flow" && (!BASE || !BASE.generated)){
+  } else if(metric==="flow"){
     card.append("p").attr("class","bnote").html('Vergleichslinie folgt, sobald genug Tage erfasst sind');
   }
 }
