@@ -318,7 +318,7 @@ async function load(){
       if(normToday!=null){
         const delta=mean24-normToday,warm=delta>=0;
         const t1=document.createElement('div');t1.className='stat '+(warm?'warm':'cool');
-        t1.innerHTML=`<b>${warm?'+':'−'}${Math.abs(delta).toFixed(1)} °C</b><span>${warm?'wärmer':'kühler'} als üblich<br>(Normal: ${normToday} °C)</span>`;ctx.appendChild(t1);
+        t1.innerHTML=`<b>${warm?'+':'−'}${Math.abs(delta).toFixed(1)} °C</b><span>Mittel der letzten 24h ${warm?'wärmer':'kühler'} als üblich<br>(Normal: ${normToday} °C)</span>`;ctx.appendChild(t1);
         $('note-normal').textContent=`Vergleich: Mittel der letzten 24h vs. üblicher ${deDay(new Date())} (1991–2020: ${normToday} °C).`;
       }
       // distance to today's calendar-day record (Tagesrekord = höchster je an diesem Datum gemessener Wert, vor 2026)
@@ -326,7 +326,7 @@ async function load(){
       if(recToday!=null){
         const diff=recToday-mx,broken=diff<0;
         const t2=document.createElement('div');t2.className='stat rec';
-        t2.innerHTML=`<b>${broken?'+':''}${Math.abs(diff).toFixed(1)} °C</b><span>${broken?'über':'unter'} Tagesrekord (${deDay(new Date())})<br>(bisher ${recToday} °C)</span>`;ctx.appendChild(t2);
+        t2.innerHTML=`<b>${broken?'+':''}${Math.abs(diff).toFixed(1)} °C</b><span>Maximum der letzten 24h ${broken?'über':'unter'} Tagesrekord (${deDay(new Date())})<br>(bisher ${recToday} °C)</span>`;ctx.appendChild(t2);
       }
       // tropennacht
       if(mn>=20){const sp=document.createElement('span');sp.className='tropen';sp.textContent='Tropennacht – Minimum nicht unter 20 °C';extra.appendChild(sp);}
