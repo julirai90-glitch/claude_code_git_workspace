@@ -296,7 +296,7 @@ function showRichPopup(s, marker){
     +'</div>';
   marker.unbindPopup();
   marker.bindPopup(html,{maxWidth:260,closeButton:true,autoPan:true}).openPopup();
-  marker.once('popupopen',()=>setTimeout(()=>renderMiniChart(s,pid),30));
+  setTimeout(()=>renderMiniChart(s,pid),50);
 }
 
 function renderMiniChart(s, svgId){
