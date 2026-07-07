@@ -6,6 +6,8 @@
 <title>Verkehr in Graubünden – live</title>
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root{
     --blau:#0068A4; --orange:#EE7733;
@@ -24,15 +26,9 @@
   .legend{display:flex;flex-wrap:wrap;gap:.6em 1.1em;font-size:.78rem;color:var(--muted);margin:.2em 0 .7em}
   .legend span{display:inline-flex;align-items:center;gap:.32em}
   .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
-  #map{width:100%;display:block;background:#f5f7f9;border:1px solid var(--line);border-radius:8px}
-  .road{fill:none;stroke:#cfd6dd;stroke-width:2;stroke-linecap:round}
-  .bound{fill:#eef2f5;stroke:#cdd5dd;stroke-width:1}
-  .site{stroke:#fff;stroke-width:1.3;cursor:pointer;transition:r .15s}
-  .site.sel{stroke:var(--ink);stroke-width:2.4}
-  .tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--line);
-       border-radius:7px;padding:7px 9px;font-size:.78rem;box-shadow:0 4px 14px rgba(20,30,50,.13);
-       opacity:0;transition:opacity .1s;max-width:240px;z-index:5}
-  .tip b{color:var(--ink)} .tip .r{display:flex;justify-content:space-between;gap:1.2em;margin-top:2px}
+  #map{width:100%;height:420px;border:1px solid var(--line);border-radius:8px;z-index:0}
+  .leaflet-popup-content{font-size:.82rem;line-height:1.4;margin:6px 10px}
+  .leaflet-popup-content b{color:var(--ink)}
   .detail{margin-top:14px}
   .dhead{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.4em;margin-bottom:.1em}
   .dhead h2{font-size:1.06rem;margin:.2em 0}
@@ -85,6 +81,10 @@
   .bfilter{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .5em;margin:.1em 2px .5em}
   .bflabel{font-size:.72rem;color:var(--muted);flex:0 0 auto}
   @media(max-width:560px){ #map{display:none} .bplace{font-size:.95rem} .bfilter{gap:.25em} }
+  body.maponly .sub,body.maponly #board,body.maponly #foot,body.maponly #seedbox,body.maponly #map-embed-wrap{display:none!important}
+  body.maponly #map{height:500px!important;border-radius:0;border-left:none;border-right:none;border-top:none}
+  body.maponly .wrap{padding:4px 0 0}
+  @media(max-width:560px){body.maponly #map{display:block!important}}
   .bembed-btn{display:inline-flex;align-items:center;gap:.35em;font-size:.75rem;color:var(--muted);background:#f2f4f7;border:1px solid var(--line);border-radius:6px;padding:.28em .65em;cursor:pointer;margin-top:.7em;transition:background .1s}
   .bembed-btn:hover{background:#e6e9ed;color:var(--ink)}
   .bembed-panel{background:#f8f9fa;border:1px solid var(--line);border-radius:6px;padding:9px 11px;margin-top:.4em}
@@ -107,12 +107,13 @@
     <span><i class="dot" style="background:var(--nodata)"></i>keine Daten</span>
     <span>Punktgrösse = Fahrzeuge/h</span>
   </div>
-  <svg id="map"></svg>
+  <div id="map"></div>
+  <div id="map-embed-wrap"></div>
   <div id="seedbox"></div>
   <div id="board"></div>
   <div class="foot" id="foot"></div>
 </div>
-<div class="tip" id="tip"></div>
+<div id="tip" style="position:fixed;pointer-events:none;background:#fff;border:1px solid #e6e8ec;border-radius:7px;padding:7px 9px;font-size:.78rem;box-shadow:0 4px 14px rgba(20,30,50,.13);opacity:0;transition:opacity .1s;max-width:240px;z-index:9999"></div>
 
 <script>
 // ---- konfigurierbar: Datenquelle (Umzug = nur diese URL ändern) ----
@@ -130,15 +131,17 @@ function swissParts(d){ // {h:Stunde dezimal, dow:0-6} in Europe/Zurich
 }
 const C = {frei:"#009988", zaeh:"#EE7733", stau:"#CC3311", keine_daten:"#c4c4c4"};
 const KT = {"CH:0035":"SG","CH:0053":"GL","CH:0216":"SZ","CH:0245":"SG","CH:0308":"SZ","CH:0314":"SG","CH:0318":"SG","CH:0394":"GL","CH:0588":"SG","CH:0603":"SG","CH:0829":"GL","CH:0830":"GL"};
-const tip = d3.select("#tip");
-let LATEST, BASE, BOUND, sel=null, metric="flow", boardSort="load", filterKt="alle", filterRoute="alle";
+const VIEW = new URLSearchParams(location.search).get('view');
+if(VIEW==='map') document.body.classList.add('maponly');
+const tip=d3.select("#tip");
+let LATEST, BASE, sel=null, metric="flow", boardSort="load", filterKt="alle", filterRoute="alle";
+let leafletMap=null; const leafletMarkers={};
 
 Promise.all([
   d3.json(apiUrl("latest")),
-  d3.json(apiUrl("baseline")).catch(()=>null),
-  d3.json(ASSET_BASE+"/gr_boundary.json").catch(()=>null)
-]).then(([latest,base,bound])=>{
-  LATEST=sanitize(latest); BASE=base; BOUND=bound;
+  d3.json(apiUrl("baseline")).catch(()=>null)
+]).then(([latest,base])=>{
+  LATEST=sanitize(latest); BASE=base;
   updateStand(latest);
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
   drawMap();
@@ -148,6 +151,20 @@ Promise.all([
   const top=urlStation?latest.sites.find(x=>x.id===urlStation):null
             ||latest.sites.slice().sort((a,b)=>tot(b)-tot(a))[0];
   select(top.id);
+  // Karten-Embed-Button rendern
+  const mapPageUrl=location.origin+location.pathname;
+  const mapIframeCode='<iframe src="'+mapPageUrl+'?view=map" width="100%" height="500" frameborder="0" style="border:none;max-width:100%" allowtransparency="true" scrolling="no"></iframe>';
+  const mew=document.getElementById('map-embed-wrap');
+  const mbtn=document.createElement('button'); mbtn.className='bembed-btn'; mbtn.innerHTML='&#x3C;/&#x3E; Karte einbetten (WordPress)'; mew.appendChild(mbtn);
+  const mpanel=document.createElement('div'); mpanel.className='bembed-panel'; mpanel.style.display='none'; mew.appendChild(mpanel);
+  mpanel.innerHTML='<p class="bembed-label">Nur die interaktive Karte als iframe einbetten:</p>'
+    +'<div class="bembed-code">'+mapIframeCode.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+  const mcopy=document.createElement('button'); mcopy.className='bembed-copy'; mcopy.textContent='Kopieren'; mpanel.appendChild(mcopy);
+  mcopy.onclick=function(){
+    navigator.clipboard.writeText(mapIframeCode).then(()=>{mcopy.textContent='✓ Kopiert!';mcopy.classList.add('ok');setTimeout(()=>{mcopy.textContent='Kopieren';mcopy.classList.remove('ok');},2000);})
+    .catch(()=>{const ta=document.createElement('textarea');ta.value=mapIframeCode;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);mcopy.textContent='✓ Kopiert!';mcopy.classList.add('ok');setTimeout(()=>{mcopy.textContent='Kopieren';mcopy.classList.remove('ok');},2000);});
+  };
+  mbtn.onclick=()=>{mpanel.style.display=mpanel.style.display==='none'?'block':'none';};
   d3.select("#foot").html(
     '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr (Fahrzeuge/Stunde, Ø-Tempo) an den '
     +'automatischen Zählstellen des Bundes auf den Nationalstrassen in Graubünden – Abruf alle 5 Min. '
@@ -253,67 +270,53 @@ function worst(s){
   return order[a]>=order[b]?a:b;
 }
 
-function flatRings(geom){ // Polygon -> flache Liste aller [lon,lat]
-  return geom.coordinates.reduce((a,ring)=>a.concat(ring),[]);
-}
-function drawMap(){
-  const W=696, H=430;
-  const svg=d3.select("#map").attr("viewBox",`0 0 ${W} ${H}`).attr("height",H);
-  svg.selectAll("*").remove();
-  const pts=LATEST.sites.filter(s=>s.lat&&s.lon);
-  // --- bulletproof lineare Projektion (equirectangular, cos-Korrektur) ---
-  let lon0=d3.min(pts,d=>d.lon), lon1=d3.max(pts,d=>d.lon),
-      lat0=d3.min(pts,d=>d.lat), lat1=d3.max(pts,d=>d.lat);
-  if(BOUND){ // Grenze in den Ausschnitt einbeziehen
-    flatRings(BOUND).forEach(p=>{lon0=Math.min(lon0,p[0]);lon1=Math.max(lon1,p[0]);
-                                 lat0=Math.min(lat0,p[1]);lat1=Math.max(lat1,p[1]);});
-  }
-  const pad=14, kx=Math.cos((lat0+lat1)/2*Math.PI/180);
-  const gW=(lon1-lon0)*kx, gH=(lat1-lat0);
-  const s=Math.min((W-2*pad)/gW,(H-2*pad)/gH);
-  const offX=pad+((W-2*pad)-gW*s)/2, offY=pad+((H-2*pad)-gH*s)/2;
-  const proj=(lon,lat)=>[offX+(lon-lon0)*kx*s, offY+(lat1-lat)*s];
-
-  if(BOUND){
-    const d=BOUND.coordinates.map(ring=>"M"+ring.map(p=>proj(p[0],p[1]).join(",")).join("L")+"Z").join("");
-    svg.append("path").attr("class","bound").attr("d",d);
-  }
-  // Strassen als Linien durch sortierte Zähler je Route.
-  // A13a/A13b/A13c = eine durchgehende Route (A13); H-Strassen mit Buchstaben
-  // (H3a/H3b, H28a/b/c) sind dagegen verschiedene Strassen -> nicht mergen.
-  const routeKey=r=>/^A13[a-z]$/.test(r)?"A13":r;
-  const byRoad=d3.group(pts,d=>routeKey(d.road));
-  byRoad.forEach(arr=>{
-    if(arr.length<2)return;
-    const horiz=(d3.max(arr,d=>d.lon)-d3.min(arr,d=>d.lon))>=(d3.max(arr,d=>d.lat)-d3.min(arr,d=>d.lat));
-    const ss=arr.slice().sort((a,b)=>horiz?a.lon-b.lon:a.lat-b.lat);
-    svg.append("path").attr("class","road")
-       .attr("d","M"+ss.map(d=>proj(d.lon,d.lat).join(",")).join("L"));
-  });
-
-  const r=d3.scaleSqrt().domain([0,d3.max(pts,tot)||1]).range([3.5,15]);
-  svg.append("g").selectAll("circle").data(pts,d=>d.id).join("circle")
-    .attr("class","site").attr("data-id",d=>d.id)
-    .attr("cx",d=>proj(d.lon,d.lat)[0]).attr("cy",d=>proj(d.lon,d.lat)[1])
-    .attr("r",d=>r(tot(d))).attr("fill",d=>C[worst(d)])
-    .on("mousemove",(e,d)=>showTip(e,d)).on("mouseleave",hideTip)
-    .on("click",(e,d)=>select(d.id));
-}
-
-function showTip(e,d){
-  const fl=v=>v==null?"–":v+" Fz/h", sp=v=>v==null?"–":v+" km/h", p=d.dirs.positive,n=d.dirs.negative;
-  tip.html('<b>'+d.place+'</b> <span style="color:#6b7280">('+d.road+')</span>'
-    +'<div class="r"><span>'+p.label+'</span><span>'+fl(p.flow)+' · '+sp(p.speed)+'</span></div>'
-    +'<div class="r"><span>'+n.label+'</span><span>'+fl(n.flow)+' · '+sp(n.speed)+'</span></div>')
-    .style("left",(e.clientX+14)+"px").style("top",(e.clientY+12)+"px").style("opacity",1);
-}
 function hideTip(){tip.style("opacity",0);}
+function drawMap(){
+  const pts=LATEST.sites.filter(s=>s.lat&&s.lon);
+  const rScale=d3.scaleSqrt().domain([0,d3.max(pts,tot)||1]).range([5,18]);
+  if(!leafletMap){
+    leafletMap=L.map('map',{scrollWheelZoom:false,zoomControl:true});
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom:19
+    }).addTo(leafletMap);
+    const lats=pts.map(s=>s.lat), lons=pts.map(s=>s.lon);
+    leafletMap.fitBounds([
+      [Math.min(...lats)-0.05,Math.min(...lons)-0.15],
+      [Math.max(...lats)+0.05,Math.max(...lons)+0.15]
+    ]);
+  }
+  pts.forEach(s=>{
+    const color=C[worst(s)], r=rScale(tot(s));
+    const isSel=s.id===sel;
+    const style={radius:r,fillColor:color,color:isSel?'#1d2430':'#ffffff',weight:isSel?2.5:1.5,fillOpacity:1,opacity:1};
+    if(leafletMarkers[s.id]){
+      leafletMarkers[s.id].setStyle(style); leafletMarkers[s.id].setRadius(r);
+    } else {
+      const marker=L.circleMarker([s.lat,s.lon],style).addTo(leafletMap);
+      const fl=v=>v==null?'–':v+' Fz/h', sp=v=>v==null?'–':v+' km/h';
+      marker.on('mouseover',function(){
+        const p=s.dirs.positive,n=s.dirs.negative;
+        marker.bindPopup('<b>'+s.place+'</b> <span style="color:#6b7280">('+s.road+')</span><br>'
+          +'<span style="font-size:.85em">'+p.label+': '+fl(p.flow)+' · '+sp(p.speed)+'<br>'
+          +n.label+': '+fl(n.flow)+' · '+sp(n.speed)+'</span>',
+          {closeButton:false,offset:[0,-r]}).openPopup();
+      });
+      marker.on('mouseout',function(){marker.closePopup();});
+      marker.on('click',()=>select(s.id));
+      leafletMarkers[s.id]=marker;
+    }
+  });
+}
 
 function select(id, scroll){
-  sel = (sel===id) ? null : id;          // Toggle: erneuter Klick klappt zu
-  d3.selectAll(".site").classed("sel",function(){return this.getAttribute("data-id")===sel;});
-  renderBoard();                          // Liste neu zeichnen (inkl. aufgeklapptem Panel)
-  if(sel && scroll){
+  sel=(sel===id)?null:id;
+  Object.entries(leafletMarkers).forEach(([mid,marker])=>{
+    marker.setStyle({color:mid===sel?'#1d2430':'#ffffff',weight:mid===sel?2.5:1.5});
+    if(mid===sel) marker.bringToFront();
+  });
+  renderBoard();
+  if(sel&&scroll){
     const row=document.querySelector('.brow[data-id="'+sel+'"]');
     if(row) row.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
