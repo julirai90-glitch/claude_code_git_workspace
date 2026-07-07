@@ -271,6 +271,61 @@ function worst(s){
 }
 
 function hideTip(){tip.style("opacity",0);}
+
+function showRichPopup(s, marker){
+  const p=s.dirs.positive, n=s.dirs.negative;
+  const fv=dir=>{const v=flow15(s.id+'|'+dir);return v!=null?v:s.dirs[dir].flow;};
+  const fl=v=>v==null?'–':Number(v).toLocaleString('de-CH')+' Fz/h';
+  const sp=v=>v==null?'–':v+' km/h';
+  const dot=st=>'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+C[st]+';margin-right:4px;vertical-align:middle"></span>';
+  const pid='mp'+s.id.replace(/[^a-z0-9]/gi,'_');
+  const html='<div style="min-width:230px;font-size:.82rem;line-height:1.45">'
+    +'<b style="font-size:.95rem">'+s.place+'</b> <span style="color:#6b7280;font-size:.8em">('+s.road+')</span>'
+    +'<div style="margin:.4em 0 .3em">'
+    +dot(p.status)+'<span style="color:#6b7280;font-size:.8em">'+p.label+'</span><br>'
+    +'<span style="margin-left:12px"><b>'+fl(fv('positive'))+'</b> · '+sp(p.speed)+'</span>'
+    +'</div><div style="margin-bottom:.4em">'
+    +dot(n.status)+'<span style="color:#6b7280;font-size:.8em">'+n.label+'</span><br>'
+    +'<span style="margin-left:12px"><b>'+fl(fv('negative'))+'</b> · '+sp(n.speed)+'</span>'
+    +'</div>'
+    +'<div style="font-size:.7rem;color:#9aa4b0;margin-bottom:.15em">'
+    +'<span style="color:#0068A4;font-weight:700">—</span> '+p.label+'&ensp;'
+    +'<span style="color:#EE7733;font-weight:700">—</span> '+n.label
+    +'</div>'
+    +'<svg id="'+pid+'" width="228" height="72"></svg>'
+    +'</div>';
+  marker.unbindPopup();
+  marker.bindPopup(html,{maxWidth:260,closeButton:true,autoPan:true}).openPopup();
+  marker.once('popupopen',()=>setTimeout(()=>renderMiniChart(s,pid),30));
+}
+
+function renderMiniChart(s, svgId){
+  const el=document.getElementById(svgId);
+  if(!el) return;
+  const W=228,H=72,m={t:4,r:4,b:16,l:30};
+  const svg=d3.select(el); svg.selectAll('*').remove();
+  const bPos=bucketize((window.__today&&window.__today.series&&window.__today.series[s.id+'|positive'])||[]);
+  const bNeg=bucketize((window.__today&&window.__today.series&&window.__today.series[s.id+'|negative'])||[]);
+  const allVals=[...bPos,...bNeg].map(d=>d.flow).filter(v=>v!=null);
+  if(!allVals.length) return;
+  const x=d3.scaleLinear().domain([0,24]).range([m.l,W-m.r]);
+  const y=d3.scaleLinear().domain([0,d3.max(allVals)*1.1]).nice().range([H-m.b,m.t]);
+  svg.append('g').attr('transform','translate(0,'+(H-m.b)+')')
+    .call(d3.axisBottom(x).ticks(6).tickFormat(d=>d+'h').tickSize(3))
+    .call(g=>{g.select('.domain').remove();g.selectAll('text').style('font-size','9px').style('fill','#9aa4b0');g.selectAll('line').style('stroke','#e6e8ec');});
+  svg.append('g').attr('transform','translate('+m.l+',0)')
+    .call(d3.axisLeft(y).ticks(3).tickFormat(d3.format('~s')).tickSize(3))
+    .call(g=>{g.select('.domain').remove();g.selectAll('text').style('font-size','9px').style('fill','#9aa4b0');g.selectAll('line').style('stroke','#e6e8ec');});
+  const mkLine=color=>buckets=>svg.append('path').datum(buckets)
+    .attr('fill','none').attr('stroke',color).attr('stroke-width',1.8)
+    .attr('d',d3.line().x(d=>x(d.h)).y(d=>y(d.flow)).defined(d=>d.flow!=null).curve(d3.curveMonotoneX));
+  if(bNeg.length) mkLine('#EE7733')(bNeg);
+  if(bPos.length) mkLine('#0068A4')(bPos);
+  const nowH=swissParts(new Date()).h;
+  svg.append('line').attr('x1',x(nowH)).attr('x2',x(nowH)).attr('y1',m.t).attr('y2',H-m.b)
+    .attr('stroke','#EE7733').attr('stroke-width',1).attr('stroke-dasharray','2 2').attr('opacity',.6);
+}
+
 function drawMap(){
   const pts=LATEST.sites.filter(s=>s.lat&&s.lon);
   const rScale=d3.scaleSqrt().domain([0,d3.max(pts,tot)||1]).range([5,18]);
@@ -295,15 +350,19 @@ function drawMap(){
     } else {
       const marker=L.circleMarker([s.lat,s.lon],style).addTo(leafletMap);
       const fl=v=>v==null?'–':v+' Fz/h', sp=v=>v==null?'–':v+' km/h';
-      marker.on('mouseover',function(){
-        const p=s.dirs.positive,n=s.dirs.negative;
-        marker.bindPopup('<b>'+s.place+'</b> <span style="color:#6b7280">('+s.road+')</span><br>'
-          +'<span style="font-size:.85em">'+p.label+': '+fl(p.flow)+' · '+sp(p.speed)+'<br>'
-          +n.label+': '+fl(n.flow)+' · '+sp(n.speed)+'</span>',
-          {closeButton:false,offset:[0,-r]}).openPopup();
-      });
-      marker.on('mouseout',function(){marker.closePopup();});
-      marker.on('click',()=>select(s.id));
+      if(VIEW!=='map'){
+        marker.on('mouseover',function(){
+          const p=s.dirs.positive,n=s.dirs.negative;
+          marker.bindPopup('<b>'+s.place+'</b> <span style="color:#6b7280">('+s.road+')</span><br>'
+            +'<span style="font-size:.85em">'+p.label+': '+fl(p.flow)+' · '+sp(p.speed)+'<br>'
+            +n.label+': '+fl(n.flow)+' · '+sp(n.speed)+'</span>',
+            {closeButton:false,offset:[0,-r]}).openPopup();
+        });
+        marker.on('mouseout',function(){marker.closePopup();});
+        marker.on('click',()=>select(s.id));
+      } else {
+        marker.on('click',()=>showRichPopup(s,marker));
+      }
       leafletMarkers[s.id]=marker;
     }
   });
