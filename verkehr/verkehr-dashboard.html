@@ -85,6 +85,14 @@
   .bfilter{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .5em;margin:.1em 2px .5em}
   .bflabel{font-size:.72rem;color:var(--muted);flex:0 0 auto}
   @media(max-width:560px){ #map{display:none} .bplace{font-size:.95rem} .bfilter{gap:.25em} }
+  .bembed-btn{display:inline-flex;align-items:center;gap:.35em;font-size:.75rem;color:var(--muted);background:#f2f4f7;border:1px solid var(--line);border-radius:6px;padding:.28em .65em;cursor:pointer;margin-top:.7em;transition:background .1s}
+  .bembed-btn:hover{background:#e6e9ed;color:var(--ink)}
+  .bembed-panel{background:#f8f9fa;border:1px solid var(--line);border-radius:6px;padding:9px 11px;margin-top:.4em}
+  .bembed-label{font-size:.74rem;color:var(--muted);margin:0 0 .4em}
+  .bembed-code{font-family:ui-monospace,SFMono-Regular,monospace;font-size:.7rem;word-break:break-all;background:#fff;border:1px solid var(--line);border-radius:4px;padding:7px 9px;color:var(--ink);line-height:1.5;margin:.2em 0 .5em;white-space:pre-wrap}
+  .bembed-copy{background:var(--blau);color:#fff;border:0;border-radius:5px;padding:.3em .75em;font-size:.75rem;cursor:pointer;transition:background .1s}
+  .bembed-copy:hover{background:#0057a0}
+  .bembed-copy.ok{background:#009988}
 </style>
 </head>
 <body>
@@ -135,8 +143,10 @@ Promise.all([
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
   drawMap();
   renderBoard();
-  // Default-Auswahl: höchstes Gesamtaufkommen
-  const top=latest.sites.slice().sort((a,b)=>tot(b)-tot(a))[0];
+  // Default-Auswahl: URL-Parameter ?station= oder höchstes Gesamtaufkommen
+  const urlStation=new URLSearchParams(location.search).get('station');
+  const top=urlStation?latest.sites.find(x=>x.id===urlStation):null
+            ||latest.sites.slice().sort((a,b)=>tot(b)-tot(a))[0];
   select(top.id);
   d3.select("#foot").html(
     '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr (Fahrzeuge/Stunde, Ø-Tempo) an den '
@@ -383,6 +393,9 @@ const CATLABEL={modo:"Mo–Do",fr:"Freitag",sa:"Samstag",so:"Sonntag"};
 function renderExpand(container, s){
   if(!container||container.empty())return;
   const prov=!s.dirs.positive.verified;
+  const embedId='emb-'+s.id.replace(/[^a-z0-9]/gi,'_');
+  const pageUrl=location.origin+location.pathname;
+  const iframeCode='<iframe src="'+pageUrl+'?station='+encodeURIComponent(s.id)+'" width="100%" height="620" frameborder="0" style="border:none;max-width:100%" allowtransparency="true" scrolling="no"></iframe>';
   container.html(
     '<div class="dhead"><span class="dtitle">'+s.place+' · Tagesverlauf <span style="color:#6b7280;font-weight:400;font-size:.85em">'+s.road+'</span></span>'
     +'<span class="toggle"><button class="mbtn'+(metric==="flow"?" on":"")+'" data-m="flow">Fahrzeuge/h</button>'
@@ -390,6 +403,30 @@ function renderExpand(container, s){
     +'<div class="charts" id="charts"></div>');
   container.selectAll(".mbtn").on("click",function(){metric=this.getAttribute("data-m");renderBoard();});
   ["positive","negative"].forEach(dir=>chartCard(s,dir,prov));
+  // Embed-Code-Panel
+  const embedWrap=container.append("div").style("margin-top",".6em");
+  const embedBtn=embedWrap.append("button").attr("class","bembed-btn").attr("id",embedId+"-btn")
+    .html("&#x3C;/&#x3E; Embed-Code für WordPress");
+  const embedPanel=embedWrap.append("div").attr("class","bembed-panel").style("display","none");
+  embedPanel.append("p").attr("class","bembed-label").text("Diesen Code als HTML-Block in WordPress einfügen:");
+  embedPanel.append("div").attr("class","bembed-code").text(iframeCode);
+  const copyBtn=embedPanel.append("button").attr("class","bembed-copy").text("Kopieren");
+  copyBtn.on("click",function(){
+    const btn=this;
+    navigator.clipboard.writeText(iframeCode).then(()=>{
+      btn.textContent="✓ Kopiert!"; btn.classList.add("ok");
+      setTimeout(()=>{btn.textContent="Kopieren";btn.classList.remove("ok");},2000);
+    }).catch(()=>{
+      const ta=document.createElement("textarea"); ta.value=iframeCode;
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
+      btn.textContent="✓ Kopiert!"; btn.classList.add("ok");
+      setTimeout(()=>{btn.textContent="Kopieren";btn.classList.remove("ok");},2000);
+    });
+  });
+  embedBtn.on("click",function(){
+    const p=embedPanel.node();
+    p.style.display=p.style.display==="none"?"block":"none";
+  });
 }
 
 // Viertelstunden-Mittel: rohe 5-Min-Punkte in feste 15-Min-Bloecke legen und mitteln.
