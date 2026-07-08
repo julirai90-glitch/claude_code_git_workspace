@@ -583,12 +583,13 @@ function chartCard(s,dir,prov){
         const val=metric==="flow"?best.flow:best.speed;
         if(val!=null)hdot.attr("cx",bx).attr("cy",y(val)).style("opacity",1);else hdot.style("opacity",0);
         let typ="";
-        if(bl){const arr=metric==="flow"?bl.flow_med:bl.speed_med;const mv=arr&&arr[best.idx];if(mv!=null)typ='<div class="r"><span>typisch</span><span>'+mv+(metric==="flow"?' Fz/h':' km/h')+'</span></div>';}
+        const row="display:flex;justify-content:space-between;gap:1.2em;margin-top:2px";
+        if(bl){const arr=metric==="flow"?bl.flow_med:bl.speed_med;const mv=arr&&arr[best.idx];if(mv!=null)typ='<div style="'+row+'"><span>typisch</span><span>'+mv+(metric==="flow"?' Fz/h':' km/h')+'</span></div>';}
         const e=best.idx+1, endLbl=String(Math.floor(e/4)%24).padStart(2,'0')+':'+String((e%4)*15).padStart(2,'0');
-        tip.html('<b>'+best.label+'–'+endLbl+'</b> · Ø Viertelstunde'
-          +'<div class="r"><span>Fahrzeuge</span><span>'+(best.flow==null?'–':'ca. '+Math.round(best.flow)+' Fz/h')+'</span></div>'
-          +'<div class="r"><span>Tempo</span><span>'+(best.speed==null?'–':'ca. '+(Math.round(best.speed*10)/10)+' km/h')+'</span></div>'+typ)
-          .style("left",(ev.pageX+14)+"px").style("top",(ev.pageY+12)+"px").style("opacity",1);
+        tip.html('<b style="color:var(--ink)">'+best.label+'–'+endLbl+'</b> · Ø Viertelstunde'
+          +'<div style="'+row+'"><span>Fahrzeuge</span><span>'+(best.flow==null?'–':'ca. '+Math.round(best.flow)+' Fz/h')+'</span></div>'
+          +'<div style="'+row+'"><span>Tempo</span><span>'+(best.speed==null?'–':'ca. '+(Math.round(best.speed*10)/10)+' km/h')+'</span></div>'+typ)
+          .style("left",(ev.clientX+14)+"px").style("top",(ev.clientY+12)+"px").style("opacity",1);
      })
      .on("mouseleave",function(){guide.style("opacity",0);hdot.style("opacity",0);hideTip();});
   // Hinweis solange wenige Vergleichstage erfasst sind (Faktentreue: keine Schein-Robustheit)
