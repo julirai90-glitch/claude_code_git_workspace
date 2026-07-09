@@ -27,7 +27,11 @@ Datei-Mapping chu→live-chur-v2.html, lat→live-berguen.html, rob→live-posch
 
 ---
 
-## Phase 1 — Rekordwache (n8n) — zuerst umsetzen
+## Phase 1 — Rekordwache (n8n) — zuerst umsetzen ✅ erledigt (09.07.2026)
+
+`rekorde.json` + `build_rekorde_json.py` committet. n8n-Workflow "Klima-Rekordwache"
+(ID `mGLX7fSYOleZLXnl`) gebaut, validiert, mit echten Live-Daten getestet, dokumentiert
+und **aktiviert** — läuft ab morgen 06:30 Europe/Zurich.
 
 Ziel: Jeden Morgen automatisch prüfen, ob gestern an einer der 15 Stationen der
 Tagesrekord (Kalendertag) oder Allzeitrekord gebrochen wurde → E-Mail (Gmail) mit
@@ -51,7 +55,7 @@ fertigem Faktensatz + Beleg-Link. Deckt zugleich den Healthcheck ab (stille Ausf
 n8n läuft auf dem Hetzner-Server; MCP-Tools `n8n-complete` verwenden (Konventionen in
 globaler CLAUDE.md beachten: nodeType-Formate, Webhook `.body`, IF-branch explizit).
 
-- **Trigger:** Schedule, täglich 08:30 Europe/Zurich (d_recent hat den Vortag dann sicher;
+- **Trigger:** Schedule, täglich 06:30 Europe/Zurich (d_recent hat den Vortag dann sicher;
   Zeitstempel in den CSVs sind UTC).
 - **Ablauf je Station (15×, Code-Node oder SplitInBatches):**
   1. `GET https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/<code>/ogd-smn_<code>_d_recent.csv`
@@ -63,7 +67,7 @@ globaler CLAUDE.md beachten: nodeType-Formate, Webhook `.body`, IF-branch expliz
   4. Fehlerfälle sammeln statt verschlucken: HTTP != 200, Spalte fehlt, gestrige Zeile fehlt,
      Wert leer → in Fehlerliste.
 - **Gmail-Node** (Credential in n8n bereits eingerichtet, bestätigt 09.07.2026): Nur senden,
-  wenn Rekorde ODER Fehler vorliegen (kein Daily-Spam). Empfänger: julirai90@gmail.com.
+  wenn Rekorde ODER Fehler vorliegen (kein Daily-Spam). Empfänger: julian.reich@somedia.ch.
   Betreff dynamisch: `🌡 Rekordwache: <n> Rekord(e) am <Datum>` bzw. `⚠️ Rekordwache: Datenfehler`.
   Body (HTML) Beispiel:
   ```
