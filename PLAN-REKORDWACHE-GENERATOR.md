@@ -30,7 +30,7 @@ Datei-Mapping chu→live-chur-v2.html, lat→live-berguen.html, rob→live-posch
 ## Phase 1 — Rekordwache (n8n) — zuerst umsetzen
 
 Ziel: Jeden Morgen automatisch prüfen, ob gestern an einer der 15 Stationen der
-Tagesrekord (Kalendertag) oder Allzeitrekord gebrochen wurde → Telegram-Meldung mit
+Tagesrekord (Kalendertag) oder Allzeitrekord gebrochen wurde → E-Mail (Gmail) mit
 fertigem Faktensatz + Beleg-Link. Deckt zugleich den Healthcheck ab (stille Ausfälle).
 
 ### 1a) `rekorde.json` im Repo erzeugen
@@ -62,17 +62,16 @@ globaler CLAUDE.md beachten: nodeType-Formate, Webhook `.body`, IF-branch expliz
      - optional Flag: `rekord[MM-TT] - tmax < 0.5` → "knapp verpasst" (nice-to-have, Default aus)
   4. Fehlerfälle sammeln statt verschlucken: HTTP != 200, Spalte fehlt, gestrige Zeile fehlt,
      Wert leer → in Fehlerliste.
-- **Telegram-Node:** Nur senden, wenn Rekorde ODER Fehler vorliegen (kein Daily-Spam).
-  Format Beispiel:
+- **Gmail-Node** (Credential in n8n bereits eingerichtet, bestätigt 09.07.2026): Nur senden,
+  wenn Rekorde ODER Fehler vorliegen (kein Daily-Spam). Empfänger: julirai90@gmail.com.
+  Betreff dynamisch: `🌡 Rekordwache: <n> Rekord(e) am <Datum>` bzw. `⚠️ Rekordwache: Datenfehler`.
+  Body (HTML) Beispiel:
   ```
   🌡 REKORDWACHE 10.07.2026
   🔴 Elm: 29.4 °C – neuer Tagesrekord für den 9. Juli (bisher 28.1 °C, 2015)
   ⚫️ Fehler: gla – gestrige Zeile fehlt in d_recent
   Beleg: data.geo.admin.ch/ch.meteoschweiz.ogd-smn/elm/ogd-smn_elm_d_recent.csv
   ```
-- **Offener Punkt (prüfen, nicht raten):** Existiert in n8n bereits ein Telegram-Credential?
-  Bot `claudedulappi21_bot` existiert (Memory `project_telegram_kanal`), Chat-ID/Token als
-  n8n-Credential ggf. neu anlegen — Julian fragen, falls nicht vorhanden.
 - Validieren (`n8n_validate_workflow`), mit Pin-Testdaten testen, Sticky-Note-Doku
   (Skill n8n-dokumentation), erst nach Julians OK aktivieren.
 
