@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live-Temperatur Glarus</title>
+<style>
+  :root{--blau:#0068A4;--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;--rot:#c0392b;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:696px;margin:0 auto;border:1px solid #e5e7eb;border-radius:16px;
+        padding:16px 18px 18px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--blau);transition:background .6s;}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+  .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.72rem;}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;color:var(--grau);}
+  .dot{width:9px;height:9px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite;}
+  .dot.off{background:#9ca3af;animation:none;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}70%{box-shadow:0 0 0 8px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+  .now{display:flex;align-items:baseline;gap:10px;margin:0 0 2px;}
+  .now b{font-size:3.4rem;line-height:1;font-weight:800;color:var(--blau);transition:color .6s;font-variant-numeric:tabular-nums;}
+  .now .u{font-size:1.3rem;color:var(--grau);font-weight:700;}
+  .stamp{font-size:.76rem;color:var(--grau);margin-bottom:10px;min-height:1.2em;}
+  /* scrollable chart */
+  .tabs{display:flex;gap:6px;margin-bottom:8px;}
+  .tab{background:var(--hell);border:none;border-radius:8px;padding:4px 11px;
+       font-size:.74rem;cursor:pointer;color:var(--grau);font-family:inherit;}
+  .tab.active{background:var(--blau);color:#fff;font-weight:600;}
+  .chart-outer{position:relative;}
+  .scroll-wrap{overflow-x:auto;overflow-y:hidden;width:100%;
+               -webkit-overflow-scrolling:touch;
+               scrollbar-width:thin;scrollbar-color:#d1d5db transparent;}
+  .scroll-wrap::-webkit-scrollbar{height:4px;}
+  .scroll-wrap::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
+  .chart-svg{display:block;height:120px;}
+  .yaxis{position:absolute;top:0;right:0;height:120px;width:36px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 45%);}
+  .yaxis .t{position:absolute;right:3px;transform:translateY(-50%);font-size:9px;color:#9ca3af;font-variant-numeric:tabular-nums;}
+  .chartlegend{position:absolute;top:3px;left:4px;pointer-events:none;display:flex;gap:9px;font-size:9px;color:#6b7280;background:rgba(255,255,255,.72);padding:1px 5px;border-radius:5px;}
+  .chartlegend i{display:inline-block;width:13px;height:0;vertical-align:middle;margin-right:3px;}
+  .chartlegend .max{border-top:2px solid #c0392b;}
+  .chartlegend .avg{border-top:2px dashed #9ca3af;}
+  .now-btn{position:absolute;right:44px;top:50%;transform:translateY(-50%);
+           background:#fff;border:1px solid #d1d5db;border-radius:20px;
+           padding:4px 10px;font-size:.7rem;color:#374151;cursor:pointer;
+           box-shadow:0 2px 8px rgba(0,0,0,.1);white-space:nowrap;
+           opacity:0;pointer-events:none;transition:opacity .2s;}
+  .now-btn.vis{opacity:1;pointer-events:auto;}
+  /* stats */
+  .stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .stat{flex:1;min-width:110px;background:var(--hell);border-radius:10px;padding:9px 11px;}
+  .stat b{font-size:1.15rem;display:block;line-height:1.2;font-variant-numeric:tabular-nums;}
+  .stat span{font-size:.7rem;color:var(--grau);line-height:1.3;}
+  .stat.warm b{color:var(--orange);}.stat.cool b{color:var(--blau);}
+  .stat.rec b{color:var(--rot);}.stat.mean b{color:#1f2937;}
+  /* record bar */
+  .bar{position:relative;height:11px;border-radius:6px;margin:14px 0 3px;
+       background:linear-gradient(90deg,#1d4e89 0%,#4a90c2 23%,#cfd8dc 46%,#f0b07a 72%,#c0392b 100%);}
+  .bar .cur{position:absolute;top:-4px;width:4px;height:19px;border-radius:2px;background:#0a3d62;transition:left .5s;}
+  .bar .tick{position:absolute;top:-3px;width:2px;height:17px;border-radius:1px;opacity:.85;}
+  .bar .tick.hot{background:var(--rot);}.bar .tick.cold{background:#1d4e89;}
+  .bar .lbl{position:absolute;top:-18px;font-size:.58rem;transform:translateX(-50%);white-space:nowrap;font-weight:700;}
+  .bar .lbl.hot{color:var(--rot);}.bar .lbl.cold{color:#1d4e89;}
+  .scale{display:flex;justify-content:space-between;font-size:.64rem;color:#9ca3af;}
+  /* tropen */
+  .extra{margin-top:10px;font-size:.82rem;color:var(--grau);}
+  .extra .big{font-size:1rem;font-weight:700;color:#1f2937;}
+  .tropen{display:inline-block;background:#fdecea;color:var(--rot);font-weight:600;
+          font-size:.76rem;padding:3px 9px;border-radius:20px;}
+  .note{font-size:.68rem;color:var(--grau);margin-top:14px;line-height:1.45;}
+  .err{color:#b45309;font-size:.8rem;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
+       border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:7px 10px;
+       font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .tip b{display:block;font-size:.92rem;margin-bottom:2px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent" id="accent"></div>
+  <div class="head">
+    <span class="kicker">Glarus · Temperatur jetzt</span>
+    <span class="live"><span class="dot" id="dot"></span><span id="livelbl">live</span></span>
+  </div>
+  <div class="now"><b id="cur">–</b><span class="u">°C</span></div>
+  <div class="stamp" id="stamp">lade aktuelle Messung …</div>
+
+  <div class="tabs">
+    <button class="tab" data-days="1">24 h</button>
+    <button class="tab active" data-days="3">3 Tage</button>
+    <button class="tab" data-days="7">7 Tage</button>
+    <button class="tab" data-days="14">14 Tage</button>
+  </div>
+  <div class="chart-outer">
+    <div class="scroll-wrap" id="scroller">
+      <svg class="chart-svg" id="curve" role="img" aria-label="Temperaturverlauf"></svg>
+    </div>
+    <div class="yaxis" id="yaxis"></div>
+    <div class="chartlegend"><span><i class="max"></i>Tagesrekord</span><span><i class="avg"></i>Durchschnitt</span></div>
+    <button class="now-btn" id="nowbtn">Jetzt →</button>
+  </div>
+
+  <div class="stats" id="ctx"></div>
+  <div class="extra" id="extra"></div>
+
+  <div class="bar" id="bar">
+    <div class="tick cold" id="tick-cold"></div><div class="lbl cold" id="lbl-cold"></div>
+    <div class="tick hot" id="tick-hot"></div><div class="lbl hot" id="lbl-hot"></div>
+    <div class="cur" id="curmark"></div>
+  </div>
+  <div class="scale"><span>−25 °C</span><span>Allzeit-Rekorde</span><span>+40 °C</span></div>
+
+  <p class="note" id="note">
+    Quelle: MeteoSchweiz (Open Government Data, CC BY), automatische Station Glarus (517&nbsp;m).
+    Aktuelle Werte provisorisch und unkorrigiert.
+    Zeiten in Schweizer Zeit. Gestrichelt = Tagesdurchschnitt 1991–2020.
+    <span id="note-normal"></span> Rote Linie = Tagesrekord (höchster je an diesem Datum gemessener Wert, vor 2026). Rekorde und Kennzahlen: eigene Auswertung. Aktualisiert sich automatisch.
+  </p>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+const STATION='gla';
+const BASE='https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/'+STATION+'/';
+const NOW_URL=BASE+'ogd-smn_'+STATION+'_t_now.csv';
+const HREC_URL=BASE+'ogd-smn_'+STATION+'_h_recent.csv';
+const DREC_URL=BASE+'ogd-smn_'+STATION+'_d_recent.csv';
+const REC_HOT={t:35.6,d:'11. Juli 1984'};
+const REC_COLD={t:-21.6,d:'14. Januar 1963'};
+const SUMMER_NORMAL=41;
+const BAR_MIN=-25, BAR_MAX=40;
+const YEAR=new Date().getFullYear();
+const NORMAL={"01-01":0.2,"01-02":0,"01-03":0.1,"01-04":0.2,"01-05":-0.1,"01-06":0.4,"01-07":0.9,"01-08":1,"01-09":1.1,"01-10":1.1,"01-11":1.3,"01-12":0.6,"01-13":0.2,"01-14":-0.2,"01-15":-0.9,"01-16":-0.7,"01-17":-0.4,"01-18":-0.6,"01-19":0,"01-20":0,"01-21":0.2,"01-22":-0.6,"01-23":-0.8,"01-24":-0.8,"01-25":-0.9,"01-26":-1.1,"01-27":-0.3,"01-28":0.1,"01-29":-0.5,"01-30":-0.6,"01-31":-0.8,"02-01":-0.5,"02-02":0.1,"02-03":0.6,"02-04":0.6,"02-05":0.6,"02-06":0.5,"02-07":1.2,"02-08":0.8,"02-09":0.7,"02-10":0.7,"02-11":0.3,"02-12":0.1,"02-13":-0.1,"02-14":0,"02-15":0.6,"02-16":1.2,"02-17":1.1,"02-18":0.9,"02-19":1,"02-20":1.2,"02-21":2,"02-22":1.8,"02-23":1.6,"02-24":1.3,"02-25":1.8,"02-26":2,"02-27":2.3,"02-28":3,"02-29":4,"03-01":2.9,"03-02":2.9,"03-03":3.5,"03-04":3.5,"03-05":3.1,"03-06":3.3,"03-07":3.7,"03-08":4,"03-09":4.4,"03-10":4.6,"03-11":4.7,"03-12":5.1,"03-13":5,"03-14":4.9,"03-15":5.7,"03-16":6.1,"03-17":6.5,"03-18":6.4,"03-19":5.9,"03-20":5.9,"03-21":6.2,"03-22":5.5,"03-23":5.8,"03-24":6.1,"03-25":6.4,"03-26":5.8,"03-27":5.7,"03-28":6,"03-29":6.7,"03-30":7.2,"03-31":7.7,"04-01":7.7,"04-02":8.2,"04-03":9.5,"04-04":8,"04-05":7.2,"04-06":7.6,"04-07":7.7,"04-08":7.5,"04-09":8.4,"04-10":9.1,"04-11":8.7,"04-12":8.4,"04-13":8.2,"04-14":8.4,"04-15":8.6,"04-16":8.6,"04-17":8.7,"04-18":8.4,"04-19":8.5,"04-20":9.2,"04-21":10.5,"04-22":11.8,"04-23":11.7,"04-24":11.6,"04-25":12.6,"04-26":12.3,"04-27":11.7,"04-28":11.6,"04-29":11.7,"04-30":11.8,"05-01":11.8,"05-02":11.9,"05-03":11.7,"05-04":11.7,"05-05":11.4,"05-06":11.7,"05-07":12.7,"05-08":13.3,"05-09":13.3,"05-10":13.9,"05-11":14,"05-12":12.9,"05-13":13.1,"05-14":12.7,"05-15":12.2,"05-16":12.7,"05-17":13.7,"05-18":13.7,"05-19":13.5,"05-20":13.2,"05-21":13.4,"05-22":14.1,"05-23":14.1,"05-24":15.2,"05-25":15.5,"05-26":15.8,"05-27":15.2,"05-28":15.2,"05-29":14.9,"05-30":15.2,"05-31":14.9,"06-01":15.2,"06-02":15.7,"06-03":15.4,"06-04":15.5,"06-05":16.3,"06-06":15.6,"06-07":16.1,"06-08":16,"06-09":16.1,"06-10":16.7,"06-11":15.7,"06-12":15.9,"06-13":16.1,"06-14":16.2,"06-15":16.9,"06-16":16.8,"06-17":16.8,"06-18":17,"06-19":17.1,"06-20":17.3,"06-21":17.6,"06-22":17.4,"06-23":17.3,"06-24":17.4,"06-25":17.5,"06-26":17.9,"06-27":18.2,"06-28":18,"06-29":18,"06-30":18.6,"07-01":18.3,"07-02":18.2,"07-03":18.2,"07-04":18.5,"07-05":18.6,"07-06":18,"07-07":17.6,"07-08":17.2,"07-09":17.4,"07-10":17.3,"07-11":17.2,"07-12":17.7,"07-13":17.6,"07-14":17.7,"07-15":18,"07-16":18.6,"07-17":18.4,"07-18":18.3,"07-19":18.9,"07-20":19.2,"07-21":18.8,"07-22":18.6,"07-23":18.7,"07-24":18,"07-25":18.4,"07-26":18.7,"07-27":19.3,"07-28":18.7,"07-29":18.7,"07-30":19,"07-31":18.8,"08-01":18.9,"08-02":19,"08-03":18.6,"08-04":18.8,"08-05":19.1,"08-06":18.8,"08-07":18.6,"08-08":18.5,"08-09":18.4,"08-10":17.8,"08-11":17.9,"08-12":17.9,"08-13":17.8,"08-14":17.6,"08-15":17.6,"08-16":17.8,"08-17":18.2,"08-18":18.5,"08-19":18.7,"08-20":18.2,"08-21":17.8,"08-22":18,"08-23":18.1,"08-24":17.5,"08-25":17.4,"08-26":17.9,"08-27":17.4,"08-28":16.9,"08-29":16,"08-30":15.5,"08-31":15.2,"09-01":14.9,"09-02":15.2,"09-03":15.6,"09-04":15.3,"09-05":15,"09-06":15.2,"09-07":15.2,"09-08":14.9,"09-09":14.9,"09-10":15.1,"09-11":15.2,"09-12":14.8,"09-13":14.2,"09-14":13.8,"09-15":14,"09-16":14.2,"09-17":13.3,"09-18":13.2,"09-19":13.4,"09-20":13.4,"09-21":13.5,"09-22":13.7,"09-23":13.4,"09-24":13,"09-25":12.1,"09-26":12.1,"09-27":12.5,"09-28":12.7,"09-29":12.4,"09-30":12.2,"10-01":12.5,"10-02":12.5,"10-03":11.9,"10-04":11.4,"10-05":11.4,"10-06":11.5,"10-07":11,"10-08":10.8,"10-09":11.4,"10-10":11,"10-11":10.9,"10-12":10.7,"10-13":10.3,"10-14":10.4,"10-15":10.1,"10-16":9.5,"10-17":9.2,"10-18":8.6,"10-19":8.5,"10-20":9.2,"10-21":9.3,"10-22":8.6,"10-23":8.5,"10-24":8.4,"10-25":8.6,"10-26":8.3,"10-27":7.8,"10-28":8.2,"10-29":7.6,"10-30":7.5,"10-31":7.7,"11-01":7.4,"11-02":7.8,"11-03":8.1,"11-04":7.8,"11-05":7.7,"11-06":6.7,"11-07":6,"11-08":5.8,"11-09":5.3,"11-10":5,"11-11":5.6,"11-12":5.5,"11-13":5.6,"11-14":5.2,"11-15":4.4,"11-16":4.4,"11-17":3.8,"11-18":3,"11-19":2.8,"11-20":3.1,"11-21":3.2,"11-22":2.8,"11-23":3.8,"11-24":3.8,"11-25":3.3,"11-26":2.9,"11-27":1.9,"11-28":1.6,"11-29":2.1,"11-30":1.9,"12-01":1.7,"12-02":2.3,"12-03":1.6,"12-04":2.3,"12-05":2.1,"12-06":1.7,"12-07":1.6,"12-08":1.6,"12-09":1,"12-10":0.9,"12-11":0.8,"12-12":0.3,"12-13":0.1,"12-14":0.7,"12-15":0,"12-16":0.3,"12-17":0.9,"12-18":1,"12-19":1.2,"12-20":1.3,"12-21":0.9,"12-22":1.2,"12-23":1.5,"12-24":1.4,"12-25":1.1,"12-26":0.1,"12-27":0.1,"12-28":-0.1,"12-29":-0.7,"12-30":-0.7,"12-31":0};
+const REKORD={"01-01":15.8,"01-02":15.9,"01-03":13.2,"01-04":13.6,"01-05":14.6,"01-06":17,"01-07":16.3,"01-08":14.1,"01-09":14.8,"01-10":17.2,"01-11":15.7,"01-12":15.6,"01-13":13.4,"01-14":12.8,"01-15":17,"01-16":17,"01-17":16,"01-18":15.7,"01-19":16.5,"01-20":12.5,"01-21":13.6,"01-22":13.6,"01-23":12.4,"01-24":15.9,"01-25":15.6,"01-26":12.1,"01-27":17.6,"01-28":15.6,"01-29":12.5,"01-30":12.7,"01-31":16.2,"02-01":13.7,"02-02":15.1,"02-03":18.8,"02-04":18.1,"02-05":14.3,"02-06":16.9,"02-07":17.6,"02-08":16.6,"02-09":14.5,"02-10":17,"02-11":14.5,"02-12":13.6,"02-13":16.2,"02-14":12.3,"02-15":15.7,"02-16":16.7,"02-17":14.5,"02-18":17,"02-19":15.1,"02-20":17.5,"02-21":19.4,"02-22":19.1,"02-23":18.7,"02-24":17.5,"02-25":17,"02-26":16,"02-27":18.8,"02-28":16.7,"02-29":18.2,"03-01":15.1,"03-02":16.3,"03-03":16.5,"03-04":18.2,"03-05":16.8,"03-06":18.3,"03-07":18.5,"03-08":21.2,"03-09":19,"03-10":17.8,"03-11":18.1,"03-12":18.2,"03-13":18.1,"03-14":18.5,"03-15":19.7,"03-16":19.4,"03-17":19.9,"03-18":20.8,"03-19":19.3,"03-20":21.8,"03-21":22.2,"03-22":24.8,"03-23":21,"03-24":19.6,"03-25":21,"03-26":19.9,"03-27":21.2,"03-28":20.4,"03-29":20.7,"03-30":22,"03-31":22,"04-01":22.9,"04-02":23,"04-03":22.6,"04-04":22.7,"04-05":22.5,"04-06":24.8,"04-07":24.1,"04-08":27.2,"04-09":22.8,"04-10":22,"04-11":22,"04-12":22.4,"04-13":24.2,"04-14":25.4,"04-15":24.2,"04-16":22.7,"04-17":23.8,"04-18":23.8,"04-19":24.3,"04-20":26.8,"04-21":26.2,"04-22":26.6,"04-23":25,"04-24":24.6,"04-25":26.5,"04-26":25.3,"04-27":26.8,"04-28":27.1,"04-29":25.6,"04-30":24.7,"05-01":27.1,"05-02":27.8,"05-03":25,"05-04":27,"05-05":29.4,"05-06":27.9,"05-07":28.2,"05-08":29.7,"05-09":26.5,"05-10":28,"05-11":28.6,"05-12":27.8,"05-13":28,"05-14":29,"05-15":27.4,"05-16":28,"05-17":29.2,"05-18":27.4,"05-19":29.6,"05-20":29.8,"05-21":28,"05-22":26.9,"05-23":27.6,"05-24":30.7,"05-25":32.6,"05-26":30.4,"05-27":28.8,"05-28":31.5,"05-29":30.5,"05-30":29,"05-31":27.9,"06-01":29,"06-02":30.4,"06-03":29.6,"06-04":31,"06-05":31.3,"06-06":32,"06-07":30.1,"06-08":30,"06-09":32.6,"06-10":32,"06-11":30,"06-12":31.5,"06-13":33.2,"06-14":32.5,"06-15":30,"06-16":29.3,"06-17":32.4,"06-18":34.6,"06-19":34.8,"06-20":32.3,"06-21":30.6,"06-22":31.3,"06-23":32.8,"06-24":32.4,"06-25":32.5,"06-26":32.6,"06-27":33,"06-28":31.6,"06-29":32.1,"06-30":35,"07-01":31,"07-02":32.9,"07-03":32.6,"07-04":33.5,"07-05":33.7,"07-06":31.2,"07-07":34.1,"07-08":31.2,"07-09":33.8,"07-10":32,"07-11":35.6,"07-12":31.8,"07-13":29.9,"07-14":33.1,"07-15":33.5,"07-16":34.8,"07-17":32.6,"07-18":31.9,"07-19":32.9,"07-20":33.3,"07-21":32.7,"07-22":32.6,"07-23":32.9,"07-24":33,"07-25":33.5,"07-26":33.6,"07-27":33.9,"07-28":35,"07-29":30.3,"07-30":32.5,"07-31":35.1,"08-01":34.3,"08-02":32.1,"08-03":33.1,"08-04":35.1,"08-05":33.8,"08-06":33,"08-07":33.6,"08-08":33.8,"08-09":34.2,"08-10":34.1,"08-11":33.6,"08-12":33.9,"08-13":35.6,"08-14":30.4,"08-15":31.3,"08-16":31.2,"08-17":31.9,"08-18":30.4,"08-19":31,"08-20":33.1,"08-21":31.1,"08-22":31.4,"08-23":30.9,"08-24":32.4,"08-25":29.3,"08-26":31.3,"08-27":29.3,"08-28":30.9,"08-29":29.9,"08-30":31.1,"08-31":29.8,"09-01":29.1,"09-02":26,"09-03":27.7,"09-04":28.4,"09-05":28.1,"09-06":27.5,"09-07":30.6,"09-08":28.1,"09-09":28,"09-10":28.4,"09-11":28.1,"09-12":28.2,"09-13":26.3,"09-14":27.1,"09-15":28,"09-16":27.8,"09-17":29.5,"09-18":26.5,"09-19":25.4,"09-20":26.2,"09-21":27,"09-22":25.4,"09-23":28.3,"09-24":25.4,"09-25":26.1,"09-26":26.6,"09-27":26.3,"09-28":26.8,"09-29":25.7,"09-30":27.8,"10-01":23.5,"10-02":22.9,"10-03":24.8,"10-04":27.6,"10-05":23.5,"10-06":25.7,"10-07":24.5,"10-08":23.5,"10-09":25.6,"10-10":24.8,"10-11":24.8,"10-12":26.7,"10-13":25,"10-14":24.4,"10-15":26.7,"10-16":26.3,"10-17":23.2,"10-18":23.9,"10-19":23.4,"10-20":25.2,"10-21":20.5,"10-22":25.1,"10-23":26.3,"10-24":24.1,"10-25":19.5,"10-26":21,"10-27":22,"10-28":23.6,"10-29":21.6,"10-30":20.3,"10-31":22.4,"11-01":23.4,"11-02":21.3,"11-03":20.6,"11-04":21.3,"11-05":24.1,"11-06":23.2,"11-07":20.8,"11-08":23.8,"11-09":21.9,"11-10":19.2,"11-11":21.3,"11-12":21.9,"11-13":19.8,"11-14":21.4,"11-15":21.4,"11-16":20,"11-17":19.6,"11-18":18.3,"11-19":15.7,"11-20":17.3,"11-21":19.5,"11-22":19.4,"11-23":20.1,"11-24":19.8,"11-25":21.5,"11-26":19.1,"11-27":18.1,"11-28":10.5,"11-29":16.5,"11-30":16.8,"12-01":19.1,"12-02":19.8,"12-03":16,"12-04":18.9,"12-05":19.4,"12-06":11.2,"12-07":18.3,"12-08":19.3,"12-09":13,"12-10":16.4,"12-11":18,"12-12":13.6,"12-13":13.1,"12-14":16.6,"12-15":15.5,"12-16":22.3,"12-17":20,"12-18":19.3,"12-19":18.2,"12-20":19.7,"12-21":13,"12-22":17.8,"12-23":15,"12-24":15.8,"12-25":16,"12-26":12.9,"12-27":17.3,"12-28":15.5,"12-29":12.3,"12-30":14,"12-31":14.4};   // Tagesrekord je Kalendertag (Tagesmax), Jahre vor 2026
+const REKORD_YEAR={"01-01":1977,"01-02":2003,"01-03":1976,"01-04":2008,"01-05":2001,"01-06":1988,"01-07":1994,"01-08":2018,"01-09":2018,"01-10":1996,"01-11":1996,"01-12":1996,"01-13":2004,"01-14":1988,"01-15":1975,"01-16":1975,"01-17":1975,"01-18":2007,"01-19":2007,"01-20":2007,"01-21":2021,"01-22":2021,"01-23":2002,"01-24":2001,"01-25":2025,"01-26":2025,"01-27":2025,"01-28":1990,"01-29":1988,"01-30":1971,"01-31":1990,"02-01":2016,"02-02":2017,"02-03":2002,"02-04":2020,"02-05":1994,"02-06":2021,"02-07":1972,"02-08":2001,"02-09":2016,"02-10":2020,"02-11":1974,"02-12":2002,"02-13":1995,"02-14":2024,"02-15":2014,"02-16":2024,"02-17":2022,"02-18":1972,"02-19":1977,"02-20":1966,"02-21":2021,"02-22":2021,"02-23":2020,"02-24":2008,"02-25":2021,"02-26":1961,"02-27":1994,"02-28":1960,"02-29":1960,"03-01":2008,"03-02":1997,"03-03":1975,"03-04":1997,"03-05":1991,"03-06":1991,"03-07":1991,"03-08":1991,"03-09":1967,"03-10":1994,"03-11":1990,"03-12":1989,"03-13":2002,"03-14":1979,"03-15":2011,"03-16":2012,"03-17":2004,"03-18":2004,"03-19":1972,"03-20":1974,"03-21":1974,"03-22":1974,"03-23":1977,"03-24":1994,"03-25":1974,"03-26":2010,"03-27":1989,"03-28":1989,"03-29":2024,"03-30":1989,"03-31":1989,"04-01":2021,"04-02":1976,"04-03":2016,"04-04":1985,"04-05":1961,"04-06":2024,"04-07":2024,"04-08":2024,"04-09":2024,"04-10":1963,"04-11":2020,"04-12":2020,"04-13":2007,"04-14":2007,"04-15":2007,"04-16":1964,"04-17":2013,"04-18":2018,"04-19":2018,"04-20":1968,"04-21":2018,"04-22":1968,"04-23":1968,"04-24":2007,"04-25":2007,"04-26":1969,"04-27":2012,"04-28":2012,"04-29":2007,"04-30":2005,"05-01":1973,"05-02":2005,"05-03":1999,"05-04":1973,"05-05":2003,"05-06":2003,"05-07":2003,"05-08":1976,"05-09":1976,"05-10":2000,"05-11":2012,"05-12":1998,"05-13":1998,"05-14":1969,"05-15":1992,"05-16":2000,"05-17":1971,"05-18":1975,"05-19":1971,"05-20":2022,"05-21":2009,"05-22":2014,"05-23":2009,"05-24":2009,"05-25":2009,"05-26":1993,"05-27":2017,"05-28":1967,"05-29":2017,"05-30":2017,"05-31":2025,"06-01":1973,"06-02":1999,"06-03":2019,"06-04":2019,"06-05":2019,"06-06":1998,"06-07":1996,"06-08":2014,"06-09":2014,"06-10":2014,"06-11":2003,"06-12":2003,"06-13":1977,"06-14":1980,"06-15":2006,"06-16":2021,"06-17":2013,"06-18":2013,"06-19":2022,"06-20":2023,"06-21":2017,"06-22":2017,"06-23":2003,"06-24":2005,"06-25":1967,"06-26":2019,"06-27":2019,"06-28":2005,"06-29":2012,"06-30":2003,"07-01":2015,"07-02":2015,"07-03":2015,"07-04":2015,"07-05":2015,"07-06":2001,"07-07":2015,"07-08":2017,"07-09":2023,"07-10":2010,"07-11":1984,"07-12":2011,"07-13":1974,"07-14":2010,"07-15":2023,"07-16":2003,"07-17":2015,"07-18":1964,"07-19":2022,"07-20":2003,"07-21":2006,"07-22":2015,"07-23":1983,"07-24":2019,"07-25":2019,"07-26":1983,"07-27":2013,"07-28":2013,"07-29":2018,"07-30":2018,"07-31":2018,"08-01":2017,"08-02":2013,"08-03":2018,"08-04":2018,"08-05":2018,"08-06":2003,"08-07":2003,"08-08":2003,"08-09":2018,"08-10":2003,"08-11":2003,"08-12":2003,"08-13":2003,"08-14":1962,"08-15":2025,"08-16":1974,"08-17":1974,"08-18":1971,"08-19":1971,"08-20":2000,"08-21":2023,"08-22":2023,"08-23":2023,"08-24":2023,"08-25":1960,"08-26":2011,"08-27":2001,"08-28":1992,"08-29":2015,"08-30":2015,"08-31":2015,"09-01":2024,"09-02":1984,"09-03":1973,"09-04":1973,"09-05":1973,"09-06":1973,"09-07":2024,"09-08":2023,"09-09":2023,"09-10":1970,"09-11":2023,"09-12":1962,"09-13":1974,"09-14":1987,"09-15":1964,"09-16":1961,"09-17":1975,"09-18":1961,"09-19":2003,"09-20":2025,"09-21":1981,"09-22":1993,"09-23":1994,"09-24":1994,"09-25":1982,"09-26":1982,"09-27":1992,"09-28":1961,"09-29":1975,"09-30":1975,"10-01":1996,"10-02":2023,"10-03":1966,"10-04":1966,"10-05":1966,"10-06":1981,"10-07":1977,"10-08":2014,"10-09":2014,"10-10":1979,"10-11":1991,"10-12":1990,"10-13":1990,"10-14":2018,"10-15":1990,"10-16":1987,"10-17":1967,"10-18":1988,"10-19":1988,"10-20":2023,"10-21":2021,"10-22":2013,"10-23":2019,"10-24":2016,"10-25":1984,"10-26":1961,"10-27":1972,"10-28":1989,"10-29":2023,"10-30":1968,"10-31":2021,"11-01":1968,"11-02":1968,"11-03":2011,"11-04":2011,"11-05":2011,"11-06":1997,"11-07":1962,"11-08":1962,"11-09":1984,"11-10":1976,"11-11":1995,"11-12":2018,"11-13":2000,"11-14":2025,"11-15":2025,"11-16":2006,"11-17":2006,"11-18":1974,"11-19":2015,"11-20":2016,"11-21":2016,"11-22":2016,"11-23":2003,"11-24":2006,"11-25":2006,"11-26":2006,"11-27":1961,"11-28":1961,"11-29":1970,"11-30":1970,"12-01":2003,"12-02":2003,"12-03":1963,"12-04":2003,"12-05":1985,"12-06":1979,"12-07":2000,"12-08":2000,"12-09":1993,"12-10":1979,"12-11":1978,"12-12":1961,"12-13":2000,"12-14":1989,"12-15":1989,"12-16":1989,"12-17":1989,"12-18":1989,"12-19":2019,"12-20":1993,"12-21":1973,"12-22":1989,"12-23":1973,"12-24":2013,"12-25":2013,"12-26":1999,"12-27":2002,"12-28":2002,"12-29":1981,"12-30":1981,"12-31":1981};
+
+/* ---- helpers ---- */
+const ZRH={timeZone:'Europe/Zurich'};
+const localDay=dt=>dt.toLocaleDateString('en-CA',ZRH);
+const localMMDD=dt=>localDay(dt).slice(5);
+const hhmm=dt=>dt.toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit',...ZRH});
+const shortDate=dt=>dt.toLocaleDateString('de-CH',{day:'numeric',month:'short',timeZone:'Europe/Zurich'});
+const deDay=dt=>dt.toLocaleDateString('de-CH',{day:'numeric',month:'long',...ZRH});
+const fullDate=(mmdd,year)=>{const[mo,da]=mmdd.split('-').map(Number);return new Date(year,mo-1,da).toLocaleDateString('de-CH',{day:'numeric',month:'long',year:'numeric'});};
+function parseMeteoDate(str){if(!str)return null;const m=String(str).trim().match(/^(\d{2})\.(\d{2})\.(\d{4})(?: (\d{2}):(\d{2}))?$/);if(m){const[,d,mo,y,h='00',mi='00']=m;const dt=new Date(Date.UTC(+y,+mo-1,+d,+h,+mi));if(!isNaN(dt))return dt;}return null;}
+const num=v=>(v===''||v==null)?null:parseFloat(String(v).replace(',','.'));
+
+const TSTOPS=[[-15,[29,78,137]],[0,[74,144,194]],[10,[150,170,180]],[18,[238,155,90]],[26,[232,112,58]],[34,[192,57,43]]];
+function tempColor(v){if(v==null)return'#9ca3af';if(v<=TSTOPS[0][0])return`rgb(${TSTOPS[0][1]})`;const n=TSTOPS.length;if(v>=TSTOPS[n-1][0])return`rgb(${TSTOPS[n-1][1]})`;for(let i=0;i<n-1;i++){const[a,ca]=TSTOPS[i],[b,cb]=TSTOPS[i+1];if(v>=a&&v<=b){const f=(v-a)/(b-a);return`rgb(${[0,1,2].map(k=>Math.round(ca[k]+(cb[k]-ca[k])*f)).join(',')})`;}}return'#888';}
+
+/* ---- caches ---- */
+const HCACHE={data:null,t:0},DCACHE={data:null,t:0};
+async function csvFetch(url){const r=await fetch(url+'?_='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return(await r.text()).split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(';'));}
+async function csvCached(url,store,maxMs){if(store.data&&Date.now()-store.t<maxMs)return store.data;const d=await csvFetch(url);store.data=d;store.t=Date.now();return d;}
+
+/* ---- state ---- */
+let ALL_PTS=[];
+let DAYS=3;
+let CHART={};
+const $=id=>document.getElementById(id);
+const scroller=$('scroller');
+const nowBtn=$('nowbtn');
+
+/* ---- bar ---- */
+const barPct=t=>Math.max(0,Math.min(100,(t-BAR_MIN)/(BAR_MAX-BAR_MIN)*100));
+function placeBar(cur){
+  $('curmark').style.left=`calc(${barPct(cur)}% - 2px)`;
+  $('tick-hot').style.left=`calc(${barPct(REC_HOT.t)}% - 1px)`;$('lbl-hot').style.left=barPct(REC_HOT.t)+'%';$('lbl-hot').textContent=REC_HOT.t.toFixed(1)+'°';
+  $('tick-cold').style.left=`calc(${barPct(REC_COLD.t)}% - 1px)`;$('lbl-cold').style.left=barPct(REC_COLD.t)+'%';$('lbl-cold').textContent=REC_COLD.t.toFixed(0)+'°';
+}
+
+/* ---- chart ---- */
+const SVG_H=120,ML=0,MR=40,MT=12,MB=26;
+const niceStep=r=>r<=12?2:r<=30?5:10;
+function drawYAxis(vmin,vmax){const yax=$('yaxis'),step=niceStep(vmax-vmin);const Y=v=>SVG_H-MB-(v-vmin)/(vmax-vmin)*(SVG_H-MT-MB);let h='';for(let v=Math.ceil(vmin/step)*step;v<=vmax;v+=step){h+=`<span class="t" style="top:${Y(v).toFixed(1)}px">${v}°</span>`;}yax.innerHTML=h;}
+function smoothPath(p){if(p.length<2)return p.length?`M${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`:'';let d=`M${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;for(let i=0;i<p.length-1;i++){const a=p[i-1]||p[i],b=p[i],c=p[i+1],e=p[i+2]||p[i+1];const c1x=b.x+(c.x-a.x)/6,c1y=b.y+(c.y-a.y)/6,c2x=c.x-(e.x-b.x)/6,c2y=c.y-(e.y-b.y)/6;d+=` C${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${c.x.toFixed(1)} ${c.y.toFixed(1)}`;}return d;}
+function drawChart(pts){
+  const svg=$('curve');
+  if(pts.length<2){svg.innerHTML='<text x="20" y="55" fill="#9ca3af" font-size="13">Keine Daten</text>';return;}
+  const dayKeys=[...new Set(pts.map(p=>localDay(new Date(p.ms))))];
+  const normVals=dayKeys.map(k=>NORMAL[k.slice(5)]).filter(v=>v!=null);
+  const recVals=dayKeys.map(k=>REKORD[k.slice(5)]).filter(v=>v!=null);
+  let vmin=Math.min(...pts.map(p=>p.v),...normVals)-1, vmax=Math.max(...pts.map(p=>p.v),...normVals,...recVals)+1;
+  if(vmax-vmin<6){const mid=(vmax+vmin)/2;vmin=mid-3;vmax=mid+3;}
+  const startMs=pts[0].ms,endMs=pts[pts.length-1].ms,totalH=(endMs-startMs)/3600000||1;
+  const cw=scroller.getBoundingClientRect().width||scroller.offsetWidth||600;
+  const pxH=Math.max(cw/totalH,6.25);
+  const W=Math.max(Math.ceil(totalH*pxH),Math.floor(cw));
+  svg.style.width=W+'px';
+  svg.setAttribute('viewBox',`0 0 ${W} ${SVG_H}`);
+  const X=ms=>ML+(ms-startMs)/(endMs-startMs)*(W-ML-MR);
+  const Y=v=>SVG_H-MB-(v-vmin)/(vmax-vmin)*(SVG_H-MT-MB);
+  const last=pts[pts.length-1],cc=tempColor(last.v);
+  // gradient stops
+  let gstops='';pts.forEach(p=>{const pct=((p.ms-startMs)/(endMs-startMs)*100).toFixed(1);gstops+=`<stop offset="${pct}%" stop-color="${tempColor(p.v)}"/>`;});
+  let s=`<defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">${gstops}</linearGradient><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cc}" stop-opacity=".16"/><stop offset="1" stop-color="${cc}" stop-opacity="0"/></linearGradient><clipPath id="cl"><rect x="${ML}" y="${MT}" width="${W-ML-MR}" height="${SVG_H-MT-MB}"/></clipPath></defs>`;
+  // horizontale Gitterlinien (auf Y-Achsen-Ticks)
+  const gs=niceStep(vmax-vmin);
+  for(let v=Math.ceil(vmin/gs)*gs;v<=vmax;v+=gs){s+=`<line x1="${ML}" y1="${Y(v).toFixed(1)}" x2="${(W-MR).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="#f1f3f5"/>`;}
+  // Tageswechsel + Normal- und Rekord-Linie (je Kalendertag)
+  dayKeys.forEach((k,di)=>{
+    const dayPts=pts.filter(p=>localDay(new Date(p.ms))===k);
+    if(!dayPts.length)return;
+    if(di>0){const x=X(dayPts[0].ms);s+=`<line x1="${x.toFixed(1)}" y1="${MT}" x2="${x.toFixed(1)}" y2="${SVG_H-MB}" stroke="#e8eaed"/>`;} 
+    const mid=dayPts[Math.floor(dayPts.length/2)].ms;
+    const dt=new Date(mid);
+    s+=`<text x="${X(mid).toFixed(1)}" y="${SVG_H-3}" text-anchor="middle" font-size="9" fill="#b0b7c0">${shortDate(dt)}</text>`;
+  });
+  // Normal- und Rekord-Linie als geglättete Kurven durch die Tageswerte (Knoten = Tagesmitte)
+  const rnodes=dayKeys.map(k=>{const dp=pts.filter(p=>localDay(new Date(p.ms))===k);return {k,x:X(dp[Math.floor(dp.length/2)].ms)};});
+  function envelope(tbl,stroke,dash){
+    let nn=rnodes.map(nd=>{const v=tbl[nd.k.slice(5)];return v==null?null:{x:nd.x,y:Y(v)};}).filter(Boolean);
+    if(!nn.length)return;
+    nn=[{x:ML,y:nn[0].y},...nn,{x:W-MR,y:nn[nn.length-1].y}];
+    s+=`<path d="${smoothPath(nn)}" fill="none" stroke="${stroke}" stroke-width="1.3"${dash?' stroke-dasharray="4 3"':''} opacity=".9" clip-path="url(#cl)"/>`;
+  }
+  envelope(NORMAL,'#9ca3af',true);
+  envelope(REKORD,'#c0392b',false);
+  // 6h ticks
+  for(let t=Math.ceil(startMs/3600000)*3600000;t<=endMs;t+=3600000){
+    const dt=new Date(t),hh=+dt.toLocaleString('en-GB',{hour:'2-digit',hour12:false,timeZone:'Europe/Zurich'});
+    if(hh%6!==0)continue;
+    const x=X(t);
+    s+=`<line x1="${x.toFixed(1)}" y1="${SVG_H-MB}" x2="${x.toFixed(1)}" y2="${SVG_H-MB+3}" stroke="#d1d5db"/>`;
+    if(hh!==0)s+=`<text x="${x.toFixed(1)}" y="${SVG_H-15}" text-anchor="middle" font-size="8.5" fill="#c4c9d0">${hh}h</text>`;
+  }
+  // area + line
+  let d='';pts.forEach((p,i)=>{d+=(i?'L':'M')+X(p.ms).toFixed(1)+' '+Y(p.v).toFixed(1);});
+  s+=`<path d="${d}L${X(endMs).toFixed(1)} ${SVG_H-MB}L${X(startMs).toFixed(1)} ${SVG_H-MB}Z" fill="url(#ag)" clip-path="url(#cl)"/>`;
+  s+=`<path d="${d}" fill="none" stroke="url(#lg)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" clip-path="url(#cl)"/>`;
+  // pulsing now dot
+  s+=`<circle cx="${X(last.ms).toFixed(1)}" cy="${Y(last.v).toFixed(1)}" r="4.5" fill="${cc}"/>`;
+  s+=`<circle cx="${X(last.ms).toFixed(1)}" cy="${Y(last.v).toFixed(1)}" r="4.5" fill="${cc}" opacity=".35"><animate attributeName="r" values="4.5;9;4.5" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".35;0;.35" dur="2s" repeatCount="indefinite"/></circle>`;
+  s+=`<line id="hl" y1="${MT}" y2="${SVG_H-MB}" stroke="#64748b" stroke-width="1" stroke-dasharray="3 2" opacity="0"/>`;
+  s+=`<circle id="hp" r="4.5" fill="#fff" stroke="#0a3d62" stroke-width="2" opacity="0"/>`;
+  svg.innerHTML=s;
+  CHART={pts,X,Y,W,vmin,vmax};
+  drawYAxis(vmin,vmax);
+}
+
+/* ---- range ---- */
+function setRange(days){
+  DAYS=days;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',+t.dataset.days===days));
+  const cutoff=Date.now()-days*24*3600000;
+  drawChart(ALL_PTS.filter(p=>p.ms>=cutoff));
+  requestAnimationFrame(()=>{scroller.scrollLeft=scroller.scrollWidth;});
+}
+
+/* ---- jetzt btn ---- */
+scroller.addEventListener('scroll',()=>{
+  const atEnd=scroller.scrollLeft+scroller.clientWidth>=scroller.scrollWidth-10;
+  nowBtn.classList.toggle('vis',!atEnd);
+});
+nowBtn.addEventListener('click',()=>scroller.scrollTo({left:scroller.scrollWidth,behavior:'smooth'}));
+
+/* ---- tooltip ---- */
+const tip=$('tip');
+const svgEl=$('curve');
+function hover(ev){
+  if(!CHART.pts||!CHART.pts.length)return;
+  const rect=svgEl.getBoundingClientRect();
+  const cx=ev.touches?ev.touches[0].clientX:ev.clientX;
+  const svgX=(cx-rect.left)/rect.width*CHART.W;
+  let best=CHART.pts[0],bd=1e12;
+  CHART.pts.forEach(p=>{const d=Math.abs(CHART.X(p.ms)-svgX);if(d<bd){bd=d;best=p;}});
+  const dt=new Date(best.ms),nv=NORMAL[localMMDD(dt)],rv=REKORD[localMMDD(dt)],diff=nv!=null?best.v-nv:null;
+  tip.innerHTML=`<b>${shortDate(dt)}, ${hhmm(dt)}</b>${best.v.toFixed(1)} °C${diff!=null?' · '+(diff>=0?'+':'')+diff.toFixed(1)+' vs. Normal':''}${rv!=null?'<br>Tagesrekord: '+rv.toFixed(1)+' °C':''}`;
+  tip.style.opacity=1;
+  let lx=cx+14;if(lx+200>window.innerWidth)lx=cx-204;
+  let ty=(ev.touches?ev.touches[0].clientY:ev.clientY)-44;
+  tip.style.left=Math.max(4,lx)+'px';tip.style.top=Math.max(4,ty)+'px';
+  const hl=document.getElementById('hl'),hp=document.getElementById('hp');
+  if(hl){hl.setAttribute('x1',CHART.X(best.ms).toFixed(1));hl.setAttribute('x2',CHART.X(best.ms).toFixed(1));hl.setAttribute('opacity','0.7');}
+  if(hp){hp.setAttribute('cx',CHART.X(best.ms).toFixed(1));hp.setAttribute('cy',CHART.Y(best.v).toFixed(1));hp.setAttribute('opacity','1');}
+}
+svgEl.addEventListener('pointermove',hover);
+svgEl.addEventListener('pointerdown',hover);
+svgEl.addEventListener('pointerleave',()=>{tip.style.opacity=0;['hl','hp'].forEach(id=>{const el=document.getElementById(id);if(el)el.setAttribute('opacity','0');});});
+
+/* ---- tabs ---- */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setRange(+t.dataset.days)));
+
+/* ---- load ---- */
+async function load(){
+  if(!navigator.onLine)return fail('offline');
+  try{
+    const [hRows,nowRows]=await Promise.all([
+      csvCached(HREC_URL,HCACHE,20*60000),
+      csvFetch(NOW_URL)
+    ]);
+    const iHt=hRows[0].indexOf('reference_timestamp'),iHv=hRows[0].indexOf('tre200h0');
+    const iNt=nowRows[0].indexOf('reference_timestamp'),iNv=nowRows[0].indexOf('tre200s0');
+    const map=new Map();
+    for(let i=1;i<hRows.length;i++){const dt=parseMeteoDate(hRows[i][iHt]);const v=num(hRows[i][iHv]);if(dt&&v!=null)map.set(dt.getTime(),v);}
+    let cur=null,curDt=null;
+    for(let i=1;i<nowRows.length;i++){const dt=parseMeteoDate(nowRows[i][iNt]);const v=num(nowRows[i][iNv]);if(dt&&v!=null){map.set(dt.getTime(),v);cur=v;curDt=dt;}}
+    if(cur==null)throw new Error('keine Werte');
+    ALL_PTS=[...map.entries()].map(([ms,v])=>({ms,v})).sort((a,b)=>a.ms-b.ms);
+
+    const cc=tempColor(cur);
+    $('cur').textContent=cur.toFixed(1);$('cur').style.color=cc;$('accent').style.background=cc;
+    const age=Math.round((Date.now()-curDt.getTime())/60000);
+    $('stamp').textContent=`Stand: ${hhmm(curDt)} Uhr · vor ${age} Min`;
+    placeBar(cur);
+    $('dot').classList.remove('off');$('livelbl').textContent='live';
+
+    // stats
+    const last24=ALL_PTS.filter(p=>p.ms>=Date.now()-24*3600000);
+    const ctx=$('ctx');ctx.innerHTML='';
+    const extra=$('extra');extra.innerHTML='';
+    if(last24.length){
+      const mean24=last24.reduce((a,p)=>a+p.v,0)/last24.length;
+      const mx=Math.max(...last24.map(p=>p.v));
+      const mn=Math.min(...last24.map(p=>p.v));
+      const normToday=NORMAL[localMMDD(new Date())];
+      const recToday=REKORD[localMMDD(new Date())];
+      const today=deDay(new Date());
+      // 1: Mittel der letzten 24h (absolut)
+      const t0=document.createElement('div');t0.className='stat mean';
+      t0.innerHTML=`<b>${mean24.toFixed(1)} °C</b><span>Mittel der letzten 24h</span>`;ctx.appendChild(t0);
+      // 2: 24h-Mittel-Normwert 1991-2020 (absolut, Farbe je nach Vergleich zu Kachel 1)
+      if(normToday!=null){
+        const warm=mean24>=normToday;
+        const t1=document.createElement('div');t1.className='stat '+(warm?'warm':'cool');
+        t1.innerHTML=`<b>${normToday} °C</b><span>24-Stunden-Mittel aller ${today} von 1991–2020</span>`;ctx.appendChild(t1);
+        $('note-normal').textContent=`Vergleich: Mittel der letzten 24h vs. üblicher ${today} (1991–2020: ${normToday} °C).`;
+      }
+      // 3: Maximum der letzten 24h (absolut)
+      const t2=document.createElement('div');t2.className='stat mean';
+      t2.innerHTML=`<b>${mx.toFixed(1)} °C</b><span>Maximum der letzten 24h</span>`;ctx.appendChild(t2);
+      // 4: historischer Tagesrekord für diesen Kalendertag (Wert + Datum inkl. Jahr)
+      const recYear=REKORD_YEAR[localMMDD(new Date())];
+      if(recToday!=null && recYear!=null){
+        const t3=document.createElement('div');t3.className='stat rec';
+        t3.innerHTML=`<b>${recToday} °C</b><span>Tagesrekord<br>${fullDate(localMMDD(new Date()),recYear)}</span>`;ctx.appendChild(t3);
+      }
+      // tropennacht
+      if(mn>=20){const sp=document.createElement('span');sp.className='tropen';sp.textContent='Tropennacht – Minimum nicht unter 20 °C';extra.appendChild(sp);}
+    }
+    // summer days
+    try{
+      const d=await csvCached(DREC_URL,DCACHE,30*60000);
+      const iMax=d[0].indexOf('tre200dx'),iDay=d[0].indexOf('reference_timestamp');
+      if(iMax>=0&&iDay>=0){
+        let sd=0;for(let k=1;k<d.length;k++){const dt=parseMeteoDate(d[k][iDay]);const mx=num(d[k][iMax]);if(dt&&dt.getUTCFullYear()===YEAR&&mx!=null&&mx>=25)sd++;}
+        if(sd>0){
+          if(extra.firstChild)extra.appendChild(document.createElement('br'));
+          const big=document.createElement('span');big.className='big';big.textContent=sd;extra.appendChild(big);
+          const lab=document.createTextNode(` Sommertage ${YEAR} bisher${SUMMER_NORMAL?' · Normal: '+SUMMER_NORMAL+'/Jahr':''}`);extra.appendChild(lab);
+        }
+      }
+    }catch(e){}
+
+    setRange(DAYS);
+  }catch(e){fail(e.message);}
+}
+function fail(msg){
+  $('dot').classList.add('off');$('livelbl').textContent='offline';
+  $('cur').textContent='–';$('cur').style.color='var(--grau)';
+  $('stamp').innerHTML=`<span class="err">${msg==='offline'?'Keine Verbindung.':'Daten momentan nicht verfügbar.'}</span>`;
+}
+document.addEventListener('visibilitychange',()=>document.hidden?null:load());
+window.addEventListener('online',load);
+let timer=setInterval(load,3*60*1000);
+load();
+</script>
+</body>
+</html>
