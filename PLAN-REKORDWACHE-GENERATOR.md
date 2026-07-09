@@ -89,7 +89,14 @@ globaler CLAUDE.md beachten: nodeType-Formate, Webhook `.body`, IF-branch expliz
 
 ---
 
-## Phase 2 — Generator konsolidieren
+## Phase 2 — Generator konsolidieren ✅ erledigt (09.07.2026)
+
+`station_constants.json` + `_live-template.html` + `generate_live_stations.py` (neu,
+lokaler Pfad) erzeugen alle 15 Dashboards, beide Hubs und `rekorde.json` aus einer
+Quelle. Verifiziert: Diff gegen vorherigen Stand nur Whitespace/Reihenfolge + eine
+Typo-Korrektur (Disentis' Bindestrich → richtiges Minuszeichen). Rekord-Badge (Punkt 5)
+mit umgesetzt. Punkt 6 (Stripes für 13 GR-Stationen) bewusst nicht gemacht — braucht
+Rückfrage, siehe unten.
 
 Ziel: **Eine** Quelle der Wahrheit statt 15 duplizierte HTML; künftige Design-Änderungen =
 1 Template-Edit + Regenerierung. Behebt auch Feature-Drift GR/GL.
