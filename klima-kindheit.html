@@ -256,6 +256,9 @@ $('form').addEventListener('submit', async ev=>{
       if(mx!=null){
         html += `<div class="stat warm"><b>${mx.toFixed(1)} °C</b><span>Tagesmaximum an deinem Geburtstag</span></div>`;
       }
+      if(mean!=null){
+        html += `<div class="stat"><b>${mean.toFixed(1)} °C</b><span>Tagesdurchschnitt an deinem Geburtstag</span></div>`;
+      }
       if(normal!=null){
         html += `<div class="stat"><b>${normal} °C</b><span>üblicher Tagesdurchschnitt für den ${bd}. ${MONTHS_DE[bm-1]} (1991–2020)</span></div>`;
       }
