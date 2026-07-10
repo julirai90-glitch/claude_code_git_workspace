@@ -230,6 +230,11 @@ $('form').addEventListener('submit', async ev=>{
     const iMax = header.indexOf('tre200dx');
     const iMean = header.indexOf('tre200d0');
     const iPrecip = header.indexOf('rre150d0');
+    const iWind = header.indexOf('fu3010d0');
+    const iGust = header.indexOf('fu3010d1');
+    const iSun = header.indexOf('sre000d0');
+    const iHumid = header.indexOf('ure200d0');
+    const iSnow = header.indexOf('htoautd0');
     const allRows = hist.concat(recent.slice(1));
 
     // 1) Wetter am Geburtstag
@@ -241,6 +246,11 @@ $('form').addEventListener('submit', async ev=>{
     } else {
       const mx = num(birthRow[iMax]), mean = num(birthRow[iMean]);
       const precip = iPrecip>=0 ? num(birthRow[iPrecip]) : null;
+      const wind = iWind>=0 ? num(birthRow[iWind]) : null;
+      const gust = iGust>=0 ? num(birthRow[iGust]) : null;
+      const sunMin = iSun>=0 ? num(birthRow[iSun]) : null;
+      const humid = iHumid>=0 ? num(birthRow[iHumid]) : null;
+      const snow = iSnow>=0 ? num(birthRow[iSnow]) : null;
       const normal = st.normal[mmdd], rekord = st.rekord[mmdd], rekordYear = st.rekord_year[mmdd];
       let html = '<div class="big-stat">';
       if(mx!=null){
@@ -254,6 +264,19 @@ $('form').addEventListener('submit', async ev=>{
       }
       if(precip!=null){
         html += `<div class="stat cool"><b>${precip.toFixed(1)} mm</b><span>Niederschlag an deinem Geburtstag</span></div>`;
+      }
+      if(wind!=null){
+        const gustTxt = gust!=null ? ` (Böen bis ${gust.toFixed(0)} km/h)` : '';
+        html += `<div class="stat"><b>${wind.toFixed(0)} km/h</b><span>Wind, Tagesmittel${gustTxt}</span></div>`;
+      }
+      if(sunMin!=null){
+        html += `<div class="stat warm"><b>${(sunMin/60).toFixed(1)} Std.</b><span>Sonnenschein an deinem Geburtstag</span></div>`;
+      }
+      if(humid!=null){
+        html += `<div class="stat"><b>${humid.toFixed(0)}%</b><span>Relative Luftfeuchtigkeit, Tagesmittel</span></div>`;
+      }
+      if(snow!=null && snow>0){
+        html += `<div class="stat cool"><b>${snow.toFixed(0)} cm</b><span>Schneehöhe (Morgenmessung)</span></div>`;
       }
       html += '</div>';
       if(mx==null) html += '<p class="hint">Kein Tagesmaximum für dieses Datum verfügbar.</p>';
