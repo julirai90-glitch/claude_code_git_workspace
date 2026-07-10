@@ -141,6 +141,11 @@ const KT = {"CH:0035":"SG","CH:0053":"GL","CH:0216":"SZ","CH:0245":"SG","CH:0308
 const tip = d3.select("#tip");
 let LATEST, BASE, sel=null, metric="flow", boardSort="load", filterKt="alle", filterRoute="alle";
 let leafletMap=null; const leafletMarkers={};
+// Archiv (vergangene Tage): f=history haelt nur ein rollierendes 42-Tage-Fenster,
+// data/archiv/<datum>.json wird von einem naechtlichen GitHub-Actions-Job dauerhaft
+// nachgefuehrt (siehe verkehr/_research/build_archive_from_history.py).
+let ARCHIV_INDEX=null, archivDate=null; const ARCHIV_CACHE={};
+d3.json(ASSET_BASE+"/archiv/index.json").then(idx=>{ARCHIV_INDEX=(idx&&idx.days)||[]; if(LATEST&&sel) renderBoard();}).catch(()=>{ARCHIV_INDEX=[];});
 
 Promise.all([
   d3.json(apiUrl("latest")),
@@ -322,6 +327,7 @@ function loadInfo(s){
 
 function select(id, scroll){
   sel = (sel===id) ? null : id;
+  archivDate=null;   // neue Station -> zurueck auf Live
   Object.entries(leafletMarkers).forEach(([mid,marker])=>{
     marker.setStyle({color:mid===sel?'#1d2430':'#ffffff',weight:mid===sel?2.5:1.5});
     if(mid===sel) marker.bringToFront();
@@ -421,11 +427,51 @@ function renderExpand(container, s){
   const prov=!s.dirs.positive.verified;
   container.html(
     '<div class="dhead"><span class="dtitle">'+s.place+' · Tagesverlauf <span style="color:#6b7280;font-weight:400;font-size:.85em">'+s.road+'</span></span>'
+    +'<span style="display:flex;align-items:center;gap:.4em;flex-wrap:wrap">'
     +'<span class="toggle"><button class="mbtn'+(metric==="flow"?" on":"")+'" data-m="flow">Fahrzeuge/h</button>'
-    +'<button class="mbtn'+(metric==="speed"?" on":"")+'" data-m="speed">Tempo km/h</button></span></div>'
+    +'<button class="mbtn'+(metric==="speed"?" on":"")+'" data-m="speed">Tempo km/h</button></span>'
+    +archivSelectHtml()+'</span></div>'
     +'<div class="charts" id="charts"></div>');
   container.selectAll(".mbtn").on("click",function(){metric=this.getAttribute("data-m");renderBoard();});
+  container.select(".archivsel").on("change",function(){
+    const v=this.value;
+    if(!v){ archivDate=null; renderBoard(); return; }
+    archivDate=v;
+    if(ARCHIV_CACHE[v]){ renderBoard(); return; }
+    d3.json(ASSET_BASE+"/archiv/"+v+".json").then(day=>{ARCHIV_CACHE[v]=day; renderBoard();})
+      .catch(()=>{archivDate=null; renderBoard();});
+  });
   ["positive","negative"].forEach(dir=>chartCard(s,dir,prov));
+}
+
+// Dropdown fuer vergangene Tage. ARCHIV_INDEX kann beim allerersten Render noch
+// null sein (Fetch nicht fertig) -> dann einfach nichts anzeigen, der Index-Fetch
+// stoesst danach selbst ein renderBoard() an, sobald er da ist.
+function archivSelectHtml(){
+  if(!ARCHIV_INDEX||!ARCHIV_INDEX.length) return '';
+  const opts=['<option value="">Live</option>'].concat(ARCHIV_INDEX.slice().reverse().map(d=>{
+    const dt=new Date(d.date+'T12:00:00Z');
+    const wd=dt.toLocaleDateString('de-CH',{weekday:'short',timeZone:'UTC'});
+    const dm=dt.toLocaleDateString('de-CH',{day:'2-digit',month:'2-digit',timeZone:'UTC'});
+    const label=wd+' '+dm+(d.partial?' ⚠':'');
+    return '<option value="'+d.date+'"'+(d.date===archivDate?' selected':'')+'>'+label+'</option>';
+  }));
+  return '<select class="archivsel" style="font-size:.78rem;border:1px solid var(--line);border-radius:6px;padding:.25em .4em;color:var(--ink)">'+opts.join('')+'</select>';
+}
+
+// Vor-gebinnte 15-Min-Werte aus dem Archiv (data/archiv/<datum>.json, [flow,speed] je Slot)
+// ins gleiche {idx,h,flow,speed,label}-Format wie bucketize() bringen -> Rest-Code
+// (Linie, Hover, Y-Skala) braucht keine Fallunterscheidung.
+function bucketsFromArchive(arr){
+  if(!arr) return [];
+  const out=[];
+  for(let idx=0; idx<arr.length; idx++){
+    const flow=arr[idx][0], speed=arr[idx][1];
+    if(flow==null && speed==null) continue;
+    out.push({idx, h:(idx*15+7.5)/60, flow, speed,
+      label:String(Math.floor(idx/4)).padStart(2,'0')+':'+String((idx%4)*15).padStart(2,'0')});
+  }
+  return out;
 }
 
 function bucketize(ser){
@@ -448,29 +494,43 @@ function chartCard(s,dir,prov){
   const card=d3.select("#charts").append("div").attr("class","card");
   card.append("h3").html(dd.label+(prov?' <span class="prov" title="Richtung noch nicht empirisch bestätigt">⚠ provisorisch</span>':''));
   const k0=s.id+"|"+dir;
-  let headline, hasVal;
-  if(metric==="flow"){ const lh=lastHourCount(k0); hasVal=lh!=null;
-    headline='letzte Stunde: <b>'+(hasVal?'ca. '+lh.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'; }
-  else { const rs=recentSpeed(k0); hasVal=rs!=null;
-    headline='Tempo: <b>'+(hasVal?'ca. '+rs+' km/h':'–')+'</b> <span style="font-weight:400;color:var(--muted)">(Ø 15 Min)</span>'; }
-  let tword="";
-  if(hasVal){
-    const tr=trend(k0, metric);
-    const w=tr>0?"▲ steigend":tr<0?"▼ sinkend":"– stabil";
-    tword=' · <span class="trendword" title="Kurzfrist-Tendenz der letzten ~30 Min">'+w+'</span>';
+  const archivDay=archivDate?ARCHIV_CACHE[archivDate]:null;
+  if(archivDay){
+    const arr=(archivDay.series&&archivDay.series[k0])||[];
+    const flows=arr.map(p=>p[0]).filter(v=>v!=null), speeds=arr.map(p=>p[1]).filter(v=>v!=null);
+    const partialNote=archivDay.partial?' <span style="color:var(--orange)" title="Weniger als 60 von 96 Viertelstunden erfasst">⚠ unvollständiger Tag</span>':'';
+    if(metric==="flow"){
+      const tot=flows.length?Math.round(flows.reduce((a,b)=>a+b,0)/4):null;
+      card.append("p").attr("class","now").html('Tagestotal: <b>'+(tot!=null?'ca. '+tot.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'+partialNote);
+    } else {
+      const avgSp=speeds.length?Math.round(speeds.reduce((a,b)=>a+b,0)/speeds.length*10)/10:null;
+      card.append("p").attr("class","now").html('Ø Tempo (ganzer Tag): <b>'+(avgSp!=null?avgSp+' km/h':'–')+'</b>'+partialNote);
+    }
+  } else {
+    let headline, hasVal;
+    if(metric==="flow"){ const lh=lastHourCount(k0); hasVal=lh!=null;
+      headline='letzte Stunde: <b>'+(hasVal?'ca. '+lh.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'; }
+    else { const rs=recentSpeed(k0); hasVal=rs!=null;
+      headline='Tempo: <b>'+(hasVal?'ca. '+rs+' km/h':'–')+'</b> <span style="font-weight:400;color:var(--muted)">(Ø 15 Min)</span>'; }
+    let tword="";
+    if(hasVal){
+      const tr=trend(k0, metric);
+      const w=tr>0?"▲ steigend":tr<0?"▼ sinkend":"– stabil";
+      tword=' · <span class="trendword" title="Kurzfrist-Tendenz der letzten ~30 Min">'+w+'</span>';
+    }
+    card.append("p").attr("class","now").html(headline+tword);
+    const dc=dayCount(k0);
+    if(dc!=null) card.append("p").attr("class","daycount")
+      .attr("title","Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung, kein exakter Zählerstand")
+      .html('heute bisher: <b>ca. '+dc.toLocaleString('de-CH')+'</b> Fahrzeuge');
   }
-  card.append("p").attr("class","now").html(headline+tword);
-  const dc=dayCount(k0);
-  if(dc!=null) card.append("p").attr("class","daycount")
-    .attr("title","Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung, kein exakter Zählerstand")
-    .html('heute bisher: <b>ca. '+dc.toLocaleString('de-CH')+'</b> Fahrzeuge');
   const W=330,H=150,m={t:6,r:8,b:18,l:34};
   const svg=card.append("svg").attr("viewBox",`0 0 ${W} ${H}`).style("width","100%").style("height","auto");
   const x=d3.scaleLinear().domain([0,24]).range([m.l,W-m.r]);
   const key=k0;
-  const today=(window.__today&&window.__today.series&&window.__today.series[key])||[];
-  const buckets=bucketize(today);
-  const bl=(BASE&&BASE.data&&BASE.data[key])?BASE.data[key][dayType()]:null;
+  const buckets=archivDay?bucketsFromArchive((archivDay.series&&archivDay.series[key])||null)
+    :bucketize((window.__today&&window.__today.series&&window.__today.series[key])||[]);
+  const bl=(BASE&&BASE.data&&BASE.data[key])?BASE.data[key][archivDay?archivDay.dt:dayType()]:null;
   const slotX=i=>i/4;
   const medArr = bl ? (metric==="flow"?bl.flow_med:bl.speed_med) : null;
   const p25=bl?bl.flow_p25:null, p75=bl?bl.flow_p75:null;
@@ -496,8 +556,10 @@ function chartCard(s,dir,prov){
       .defined(d=>(metric==="flow"?d.flow:d.speed)!=null).curve(d3.curveMonotoneX);
     svg.append("path").datum(buckets).attr("class","today").attr("d",tl);
   }
-  const nowH=swissParts(new Date()).h;
-  svg.append("line").attr("class","nowln").attr("x1",x(nowH)).attr("x2",x(nowH)).attr("y1",m.t).attr("y2",H-m.b);
+  if(!archivDay){
+    const nowH=swissParts(new Date()).h;
+    svg.append("line").attr("class","nowln").attr("x1",x(nowH)).attr("x2",x(nowH)).attr("y1",m.t).attr("y2",H-m.b);
+  }
   const guide=svg.append("line").attr("class","hoverln").attr("y1",m.t).attr("y2",H-m.b).style("opacity",0);
   const hdot=svg.append("circle").attr("class","hoverdot").attr("r",3.2).style("opacity",0);
   svg.append("rect").attr("x",m.l).attr("y",m.t).attr("width",W-m.r-m.l).attr("height",H-m.b-m.t)
@@ -523,7 +585,7 @@ function chartCard(s,dir,prov){
      .on("mouseleave",function(){guide.style("opacity",0);hdot.style("opacity",0);hideTip();});
   const blHasData = bl && bl.flow_med && bl.flow_med.some(v=>v!=null);
   if(blHasData){
-    const cat=dayType();
+    const cat=archivDay?archivDay.dt:dayType();
     const n=(BASE.n&&BASE.n[cat])||0;
     if(n<4) card.append("p").attr("class","bnote").html('Vergleichslinie vorläufig – erst '+n+' Vergleichstag'+(n===1?'':'e')+' ('+CATLABEL[cat]+') erfasst');
   } else if(metric==="flow"){
