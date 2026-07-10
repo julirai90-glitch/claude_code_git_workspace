@@ -1,0 +1,74 @@
+{
+ "days": [
+  {
+   "date": "2026-06-26",
+   "dt": "werktag",
+   "partial": false
+  },
+  {
+   "date": "2026-06-27",
+   "dt": "we",
+   "partial": true
+  },
+  {
+   "date": "2026-06-28",
+   "dt": "so",
+   "partial": true
+  },
+  {
+   "date": "2026-06-29",
+   "dt": "modo",
+   "partial": false
+  },
+  {
+   "date": "2026-06-30",
+   "dt": "modo",
+   "partial": false
+  },
+  {
+   "date": "2026-07-01",
+   "dt": "modo",
+   "partial": false
+  },
+  {
+   "date": "2026-07-02",
+   "dt": "modo",
+   "partial": false
+  },
+  {
+   "date": "2026-07-03",
+   "dt": "fr",
+   "partial": false
+  },
+  {
+   "date": "2026-07-04",
+   "dt": "sa",
+   "partial": false
+  },
+  {
+   "date": "2026-07-05",
+   "dt": "so",
+   "partial": false
+  },
+  {
+   "date": "2026-07-06",
+   "dt": "modo",
+   "partial": false
+  },
+  {
+   "date": "2026-07-07",
+   "dt": "modo",
+   "partial": false
+  },
+  {
+   "date": "2026-07-08",
+   "dt": "modo",
+   "partial": false
+  },
+  {
+   "date": "2026-07-09",
+   "dt": "modo",
+   "partial": false
+  }
+ ]
+}
