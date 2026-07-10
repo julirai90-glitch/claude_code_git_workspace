@@ -43,6 +43,11 @@
        font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
   .tip b{display:block;font-size:.92rem;margin-bottom:2px;}
   .loading{color:var(--grau);font-size:.86rem;padding:20px 0;text-align:center;}
+  .share-bar{max-width:696px;margin:0 auto 14px;display:flex;align-items:center;gap:10px;}
+  .share-btn{font-family:inherit;font-size:.84rem;font-weight:700;color:var(--blau);background:#fff;
+       border:1.5px solid var(--blau);border-radius:8px;padding:8px 14px;cursor:pointer;}
+  .share-btn:hover{background:#eef6fb;}
+  .share-msg{font-size:.76rem;color:var(--grau);}
 </style>
 </head>
 <body>
@@ -69,6 +74,10 @@
 </div>
 
 <div id="result" style="display:none">
+  <div class="share-bar">
+    <button type="button" id="shareBtn" class="share-btn">🔗 Teilen</button>
+    <span class="share-msg" id="shareMsg"></span>
+  </div>
   <div class="card" id="card-weather">
     <div class="head"><span class="kicker" id="weather-kicker"></span></div>
     <h2 class="section-title">Wetter an deinem Geburtstag</h2>
@@ -97,6 +106,7 @@ const SMN_BASE = 'https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/';
 const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 
 let STATIONS = null; // code -> station_constants entry
+let LAST_RESULT = null; // fuer den Teilen-Button
 const $ = id => document.getElementById(id);
 const tip = $('tip');
 
@@ -126,9 +136,27 @@ async function init(){
   const sel = $('station');
   const codes = Object.keys(STATIONS).sort((a,b)=>STATIONS[a].name.localeCompare(STATIONS[b].name,'de'));
   sel.innerHTML = codes.map(c=>`<option value="${c}">${STATIONS[c].name} (${STATIONS[c].canton})</option>`).join('');
-  sel.value = 'chu';
+
+  // Geteilten Link erkennen: ?station=chu&bdate=1982-07-10 vorausfuellen und direkt anzeigen
+  const params = new URLSearchParams(location.search);
+  const urlStation = params.get('station');
+  const urlBdate = params.get('bdate');
+  const validStation = urlStation && STATIONS[urlStation];
+  sel.value = validStation ? urlStation : 'chu';
   updateHint();
   sel.addEventListener('change', updateHint);
+
+  if(validStation && urlBdate && /^\d{4}-\d{2}-\d{2}$/.test(urlBdate)){
+    $('bdate').value = urlBdate;
+    await runCompute();
+  }
+}
+
+function updateShareUrl(code, bdateVal){
+  const url = new URL(location.href);
+  url.searchParams.set('station', code);
+  url.searchParams.set('bdate', bdateVal);
+  history.replaceState(null, '', url);
 }
 function updateHint(){
   const st = STATIONS[$('station').value];
@@ -212,9 +240,11 @@ function countSummerDays(rows, iDate, iMax, year){
 }
 
 /* ---- Hauptablauf ---- */
-$('form').addEventListener('submit', async ev=>{
-  ev.preventDefault();
+$('form').addEventListener('submit', ev=>{ ev.preventDefault(); runCompute(); });
+
+async function runCompute(){
   const errEl = $('errMsg'); errEl.style.display='none';
+  $('shareMsg').textContent='';
   const btn = $('submitBtn'); btn.disabled = true; btn.textContent = 'Lade Daten …';
   try{
     const bdateVal = $('bdate').value; // yyyy-mm-dd
@@ -222,6 +252,7 @@ $('form').addEventListener('submit', async ev=>{
     const [by, bm, bd] = bdateVal.split('-').map(Number);
     const code = $('station').value;
     const st = STATIONS[code];
+    let mean = null, sunMin = null; // fuer den Teilen-Text nach aussen sichtbar
     const mmdd = String(bm).padStart(2,'0') + '-' + String(bd).padStart(2,'0');
     const birthDateCSV = String(bd).padStart(2,'0') + '.' + String(bm).padStart(2,'0') + '.' + by + ' 00:00';
 
@@ -249,11 +280,11 @@ $('form').addEventListener('submit', async ev=>{
     if(!birthRow){
       weatherBody.innerHTML = `<p class="err">Für dieses Datum liegt bei ${st.name} keine Messung vor (Datenlücke).</p>`;
     } else {
-      const mx = num(birthRow[iMax]), mean = num(birthRow[iMean]);
+      const mx = num(birthRow[iMax]); mean = num(birthRow[iMean]);
       const precip = iPrecip>=0 ? num(birthRow[iPrecip]) : null;
       const wind = iWind>=0 ? num(birthRow[iWind]) : null;
       const gust = iGust>=0 ? num(birthRow[iGust]) : null;
-      const sunMin = iSun>=0 ? num(birthRow[iSun]) : null;
+      sunMin = iSun>=0 ? num(birthRow[iSun]) : null;
       const humid = iHumid>=0 ? num(birthRow[iHumid]) : null;
       const snow = iSnow>=0 ? num(birthRow[iSnow]) : null;
       const normal = st.normal[mmdd], rekord = st.rekord[mmdd], rekordYear = st.rekord_year[mmdd];
@@ -323,11 +354,39 @@ $('form').addEventListener('submit', async ev=>{
     summerBody.innerHTML = sHtml;
 
     $('result').style.display = 'block';
+    LAST_RESULT = { name: st.name, by, bm, bd, mean, sunMin };
+    updateShareUrl(code, bdateVal);
   } catch(e){
     errEl.textContent = e.message;
     errEl.style.display = 'block';
   } finally {
     btn.disabled = false; btn.textContent = 'Zeigen';
+  }
+}
+
+/* ---- Teilen ---- */
+$('shareBtn').addEventListener('click', async ()=>{
+  if(!LAST_RESULT) return;
+  const { name, by, bm, bd, mean, sunMin } = LAST_RESULT;
+  const dateLabel = fullDateDe(bd, bm, by);
+  const meanTxt = mean!=null ? `im Schnitt ${mean.toFixed(1)} °C` : 'leider unbekanntem Wetter';
+  const sunTxt = sunMin!=null ? ` bei ${(sunMin/60).toFixed(1)} Stunden Sonne` : '';
+  const text = `An meinem Geburtstag (${dateLabel}) waren es in ${name} ${meanTxt}${sunTxt}. Wie war's an deinem?`;
+  const url = location.href;
+  const shareMsg = $('shareMsg');
+  if(navigator.share){
+    try{ await navigator.share({ title: 'Mein Klima-Geburtstag', text, url }); }
+    catch(e){ /* Nutzer hat abgebrochen - kein Fehler anzeigen */ }
+  } else if(navigator.clipboard){
+    try{
+      await navigator.clipboard.writeText(text + ' ' + url);
+      shareMsg.textContent = 'Text + Link kopiert!';
+      setTimeout(()=>{ shareMsg.textContent=''; }, 3000);
+    }catch(e){
+      shareMsg.textContent = 'Kopieren fehlgeschlagen – Link: ' + url;
+    }
+  } else {
+    shareMsg.textContent = 'Link: ' + url;
   }
 });
 
