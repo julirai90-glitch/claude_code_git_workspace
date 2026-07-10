@@ -38,9 +38,6 @@ STATION_FILES = {
     "gla": "glarus/live-glarus.html",
 }
 
-# Stations with warming-stripes + precipitation-vessel data (Glarus dashboards only)
-STRIPES_STATIONS = {"elm", "gla"}
-
 RE_STATIONS_ARRAY = re.compile(r"const STATIONS\s*=\s*(\[.*?\]);", re.DOTALL)
 RE_REC_HOT = re.compile(r"const REC_HOT=\{t:(-?[\d.]+),d:'([^']+)'\}")
 RE_REC_COLD = re.compile(r"const REC_COLD=\{t:(-?[\d.]+),d:'([^']+)'\}")
@@ -49,8 +46,11 @@ RE_BAR = re.compile(r"const BAR_MIN=(-?\d+),\s*BAR_MAX=(-?\d+);")
 RE_NORMAL = re.compile(r"const NORMAL=(\{.*?\});")
 RE_REKORD = re.compile(r"const REKORD=(\{.*?\});")
 RE_REKORD_YEAR = re.compile(r"const REKORD_YEAR=(\{.*?\});")
+# Stripes: present on all 15 dashboards. Precip: present on all except Schiers
+# (insufficient rre150d0 coverage for a 1991-2020 normal, see build_gr_stripes.py).
 RE_STRIPES = re.compile(r"const STRIPES=(\[.*?\]);")
 RE_TREF = re.compile(r"const TREF=(-?[\d.]+);")
+RE_TREF_PERIOD = re.compile(r"const TREF_PERIOD='([^']*)';")
 RE_PRECIP_NORMAL = re.compile(r"const PRECIP_NORMAL=(\{.*?\});")
 RE_STRIPES_SRC = re.compile(r"const STRIPES_SRC=`([^`]*)`;")
 
@@ -111,27 +111,26 @@ def extract_station(code: str, filename: str) -> dict:
         "rekord_year": json.loads(required["rekord_year"].group(1)),
     }
 
-    if code in STRIPES_STATIONS:
-        stripes_m = RE_STRIPES.search(html)
+    stripes_m = RE_STRIPES.search(html)
+    if stripes_m:
         tref_m = RE_TREF.search(html)
-        precip_m = RE_PRECIP_NORMAL.search(html)
+        period_m = RE_TREF_PERIOD.search(html)
         src_m = RE_STRIPES_SRC.search(html)
         missing_s = [
             name
-            for name, m in (
-                ("stripes", stripes_m),
-                ("tref", tref_m),
-                ("precip_normal", precip_m),
-                ("stripes_src", src_m),
-            )
+            for name, m in (("tref", tref_m), ("tref_period", period_m), ("stripes_src", src_m))
             if m is None
         ]
         if missing_s:
             raise SystemExit(f"[{code}] {filename}: fehlende Stripes-Felder {missing_s}")
         data["stripes"] = json.loads(json_like(stripes_m.group(1)))
         data["tref"] = float(tref_m.group(1))
-        data["precip_normal"] = json.loads(precip_m.group(1))
+        data["tref_period"] = period_m.group(1)
         data["stripes_src"] = src_m.group(1)
+
+    precip_m = RE_PRECIP_NORMAL.search(html)
+    if precip_m:
+        data["precip_normal"] = json.loads(precip_m.group(1))
 
     return data
 
@@ -150,11 +149,11 @@ def check_consistency(code: str, data: dict) -> list[str]:
     if data["bar_min"] >= data["bar_max"]:
         errors.append(f"[{code}] bar_min={data['bar_min']} >= bar_max={data['bar_max']}")
 
-    if "stripes" in data:
-        if len(data["stripes"]) < 50:
-            errors.append(f"[{code}] stripes hat nur {len(data['stripes'])} Jahre")
-        if len(data["precip_normal"]) != 12:
-            errors.append(f"[{code}] precip_normal hat {len(data['precip_normal'])} Monate statt 12")
+    if "stripes" in data and len(data["stripes"]) < 5:
+        errors.append(f"[{code}] stripes hat nur {len(data['stripes'])} Jahre")
+
+    if "precip_normal" in data and len(data["precip_normal"]) != 12:
+        errors.append(f"[{code}] precip_normal hat {len(data['precip_normal'])} Monate statt 12")
 
     return errors
 

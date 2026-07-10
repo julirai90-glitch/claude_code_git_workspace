@@ -30,6 +30,7 @@ HUBS = {
 }
 
 RE_STRIPES_SECTION = re.compile(r"\{\{#STRIPES\}\}(.*?)\{\{/STRIPES\}\}", re.DOTALL)
+RE_PRECIP_SECTION = re.compile(r"\{\{#PRECIP\}\}(.*?)\{\{/PRECIP\}\}", re.DOTALL)
 RE_TOKEN = re.compile(r"\{\{[A-Z_]+\}\}")
 RE_STATIONS_ARRAY = re.compile(r"const STATIONS\s*=\s*\[.*?\];", re.DOTALL)
 
@@ -78,16 +79,16 @@ def dashboard_ctx(code: str, st: dict) -> dict:
     if "stripes" in st:
         ctx["STRIPES_JSON"] = stripes_json(st["stripes"])
         ctx["TREF"] = repr_num(st["tref"])
-        ctx["PRECIP_NORMAL_JSON"] = compact_json(st["precip_normal"])
+        ctx["TREF_PERIOD"] = st["tref_period"]
         ctx["STRIPES_SRC"] = st["stripes_src"]
+    if st.get("precip_normal"):
+        ctx["PRECIP_NORMAL_JSON"] = compact_json(st["precip_normal"])
     return ctx
 
 
-def render_template(template: str, ctx: dict, has_stripes: bool) -> str:
-    def section_sub(m):
-        return m.group(1) if has_stripes else ""
-
-    out = RE_STRIPES_SECTION.sub(section_sub, template)
+def render_template(template: str, ctx: dict, has_stripes: bool, has_precip: bool) -> str:
+    out = RE_STRIPES_SECTION.sub(lambda m: m.group(1) if has_stripes else "", template)
+    out = RE_PRECIP_SECTION.sub(lambda m: m.group(1) if has_precip else "", out)
     for key, val in ctx.items():
         out = out.replace("{{" + key + "}}", val)
 
@@ -156,7 +157,9 @@ def main() -> None:
 
     for code, st in constants.items():
         ctx = dashboard_ctx(code, st)
-        rendered = render_template(template, ctx, has_stripes="stripes" in st)
+        rendered = render_template(
+            template, ctx, has_stripes="stripes" in st, has_precip=bool(st.get("precip_normal"))
+        )
         write_if_changed(ROOT / st["out_file"], rendered, args.check, changed)
 
     for canton, hub_file in HUBS.items():

@@ -75,11 +75,9 @@
        border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:7px 10px;
        font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
   .tip b{display:block;font-size:.92rem;margin-bottom:2px;}
-{{#STRIPES}}
   .section-title{font-size:1rem;margin:0 0 8px;font-weight:700;color:#1f2937;}
   .card + .card{margin-top:14px;}
   #stripes,#precip{width:100%;display:block;}
-{{/STRIPES}}
 </style>
 </head>
 <body>
@@ -131,13 +129,15 @@
   <div class="chart"><svg id="stripes" role="img" aria-label="Warming Stripes Jahresmitteltemperatur"></svg></div>
   <p class="note" id="note-stripes"></p>
 </div>
+{{/STRIPES}}
+{{#PRECIP}}
 <div class="card">
   <div class="head"><span class="kicker">{{NAME}} · Niederschlag im laufenden Jahr</span></div>
   <h2 class="section-title">Wie nass ist das Jahr bisher?</h2>
   <div class="chart"><svg id="precip" role="img" aria-label="Monatlicher Niederschlag gegen Normal"></svg></div>
   <p class="note">Säule = gefallener Niederschlag im laufenden Jahr, Strich = Monatsnormal 1991–2020. Prozent = Anteil des Normals; laufender Monat noch unvollständig. Quelle: MeteoSchweiz Open Data, eigene Auswertung.</p>
 </div>
-{{/STRIPES}}
+{{/PRECIP}}
 <div class="tip" id="tip"></div>
 <script>
 const STATION='{{CODE}}';
@@ -156,10 +156,13 @@ const REKORD_YEAR={{REKORD_YEAR_JSON}};
 {{#STRIPES}}
 const STRIPES={{STRIPES_JSON}};
 const TREF={{TREF}};
-const PRECIP_NORMAL={{PRECIP_NORMAL_JSON}};
+const TREF_PERIOD='{{TREF_PERIOD}}';
 const STRIPES_SRC=`{{STRIPES_SRC}}`;
-let LAST_PRECIP=null;
 {{/STRIPES}}
+{{#PRECIP}}
+const PRECIP_NORMAL={{PRECIP_NORMAL_JSON}};
+let LAST_PRECIP=null;
+{{/PRECIP}}
 
 /* ---- helpers ---- */
 const ZRH={timeZone:'Europe/Zurich'};
@@ -265,16 +268,20 @@ function drawChart(pts){
   drawYAxis(vmin,vmax);
 }
 {{#STRIPES}}
-/* ---- stripes + precip ---- */
+/* ---- stripes ---- */
 let STRIPE_META=null;
 const SSTOPS=[[5,48,97],[33,102,172],[67,147,195],[146,197,222],[209,229,240],[253,219,199],[244,165,130],[214,96,77],[178,24,43],[103,0,31]];
 function stripeColor(t,maxAbs){let f=Math.max(0,Math.min(1,((t-TREF)/maxAbs+1)/2));const seg=f*(SSTOPS.length-1),i=Math.min(SSTOPS.length-2,Math.floor(seg)),fr=seg-i,A=SSTOPS[i],B=SSTOPS[i+1];const c=k=>Math.round(A[k]+(B[k]-A[k])*fr);return`rgb(${c(0)},${c(1)},${c(2)})`;}
-function renderStripes(){const svg=$('stripes');if(!svg)return;const W=svg.getBoundingClientRect().width||600;const H=140,axisH=20,plotH=H-axisH;const rows=STRIPES,n=rows.length,bw=W/n;const maxAbs=Math.max(...rows.map(r=>Math.abs(r.t-TREF)))||1;let s='';rows.forEach((r,i)=>{s+=`<rect x="${(i*bw).toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.t,maxAbs)}"><title>${r.y}: ${r.t.toFixed(1)} °C (${(r.t-TREF>=0?'+':'')}${(r.t-TREF).toFixed(1)} K)</title></rect>`;});rows.filter(r=>r.y%20===0).forEach(r=>{const i=rows.indexOf(r);const x=(i+0.5)*bw;s+=`<line x1="${x.toFixed(1)}" y1="${plotH}" x2="${x.toFixed(1)}" y2="${plotH+4}" stroke="#9ca3af"/><text x="${x.toFixed(1)}" y="${plotH+16}" text-anchor="middle" font-size="11" fill="#6b7280">${r.y}</text>`;});svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.height=H+'px';s+=`<line id="mk-stripes" y1="0" y2="${plotH}" stroke="#111" stroke-width="1.5" opacity="0" pointer-events="none"/>`;svg.innerHTML=s;STRIPE_META={rows,bw,W};const last=rows[rows.length-1],an=last.t-TREF;$('note-stripes').innerHTML=`<b>${last.y}: ${last.t.toFixed(1)} °C</b> — ${an>=0?'+':''}${an.toFixed(1)} K gegenüber dem Mittel 1961–1990. ${STRIPES_SRC}`;}
-function stripeHover(ev){if(!STRIPE_META)return;const svg=$('stripes');const rect=svg.getBoundingClientRect();const cx=ev.touches?ev.touches[0].clientX:ev.clientX;const rel=(cx-rect.left)/rect.width*STRIPE_META.W;let idx=Math.floor(rel/STRIPE_META.bw);idx=Math.max(0,Math.min(STRIPE_META.rows.length-1,idx));const r=STRIPE_META.rows[idx],an=r.t-TREF;tip.innerHTML=`<b>${r.y}</b>${r.t.toFixed(1)} °C · ${an>=0?'+':''}${an.toFixed(1)} K vs. 1961–1990`;tip.style.opacity=1;let lx=cx+14;if(lx+200>window.innerWidth)lx=cx-204;let ty=(ev.touches?ev.touches[0].clientY:ev.clientY)-44;tip.style.left=Math.max(4,lx)+'px';tip.style.top=Math.max(4,ty)+'px';const mk=document.getElementById('mk-stripes');if(mk){const x=(idx+0.5)*STRIPE_META.bw;mk.setAttribute('x1',x.toFixed(1));mk.setAttribute('x2',x.toFixed(1));mk.setAttribute('opacity','0.8');}}
+function renderStripes(){const svg=$('stripes');if(!svg)return;const W=svg.getBoundingClientRect().width||600;const H=140,axisH=20,plotH=H-axisH;const rows=STRIPES,y0=rows[0].y,y1=rows[rows.length-1].y,ySpan=y1-y0+1,bw=W/ySpan;const maxAbs=Math.max(...rows.map(r=>Math.abs(r.t-TREF)))||1;let s='';rows.forEach(r=>{const x=(r.y-y0)*bw;s+=`<rect x="${x.toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.t,maxAbs)}"><title>${r.y}: ${r.t.toFixed(1)} °C (${(r.t-TREF>=0?'+':'')}${(r.t-TREF).toFixed(1)} K)</title></rect>`;});rows.filter(r=>r.y%20===0).forEach(r=>{const x=(r.y-y0+0.5)*bw;s+=`<line x1="${x.toFixed(1)}" y1="${plotH}" x2="${x.toFixed(1)}" y2="${plotH+4}" stroke="#9ca3af"/><text x="${x.toFixed(1)}" y="${plotH+16}" text-anchor="middle" font-size="11" fill="#6b7280">${r.y}</text>`;});svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.height=H+'px';s+=`<line id="mk-stripes" y1="0" y2="${plotH}" stroke="#111" stroke-width="1.5" opacity="0" pointer-events="none"/>`;svg.innerHTML=s;STRIPE_META={rows,bw,W,y0};const last=rows[rows.length-1],an=last.t-TREF;$('note-stripes').innerHTML=`<b>${last.y}: ${last.t.toFixed(1)} °C</b> — ${an>=0?'+':''}${an.toFixed(1)} K gegenüber dem Mittel ${TREF_PERIOD}. ${STRIPES_SRC}`;}
+function stripeHover(ev){if(!STRIPE_META)return;const svg=$('stripes');const rect=svg.getBoundingClientRect();const cx=ev.touches?ev.touches[0].clientX:ev.clientX;const rel=(cx-rect.left)/rect.width*STRIPE_META.W;const targetYear=STRIPE_META.y0+Math.floor(rel/STRIPE_META.bw);let r=STRIPE_META.rows.find(x=>x.y===targetYear);if(!r)r=STRIPE_META.rows.reduce((best,cur)=>Math.abs(cur.y-targetYear)<Math.abs(best.y-targetYear)?cur:best);const an=r.t-TREF;tip.innerHTML=`<b>${r.y}</b>${r.t.toFixed(1)} °C · ${an>=0?'+':''}${an.toFixed(1)} K vs. ${TREF_PERIOD}`;tip.style.opacity=1;let lx=cx+14;if(lx+200>window.innerWidth)lx=cx-204;let ty=(ev.touches?ev.touches[0].clientY:ev.clientY)-44;tip.style.left=Math.max(4,lx)+'px';tip.style.top=Math.max(4,ty)+'px';const mk=document.getElementById('mk-stripes');if(mk){const x=(r.y-STRIPE_META.y0+0.5)*STRIPE_META.bw;mk.setAttribute('x1',x.toFixed(1));mk.setAttribute('x2',x.toFixed(1));mk.setAttribute('opacity','0.8');}}
+
+{{/STRIPES}}
+{{#PRECIP}}
+/* ---- precip ---- */
 const PMON=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 function renderPrecip(cur){const svg=$('precip');if(!svg)return;LAST_PRECIP=cur;const W=svg.getBoundingClientRect().width||600;const H=188,padT=16,padB=48,padL=6,padR=6;const plotH=H-padT-padB;const normV=Object.values(PRECIP_NORMAL);const curV=cur?Object.values(cur):[];const maxV=Math.max(...normV,...curV)*1.08||1;const colW=(W-padL-padR)/12,barW=colW*0.54;const Y=v=>padT+plotH-(v/maxV)*plotH;const cm=new Date().getMonth()+1;let s='';for(let m=1;m<=12;m++){const cx=padL+(m-0.5)*colW;const norm=PRECIP_NORMAL[m];const act=cur&&cur[m]!=null?cur[m]:null;const running=(m===cm);const future=(m>cm);if(act!=null&&!future){const ya=Y(act),h=padT+plotH-ya;const pct=norm?Math.round(act/norm*100):null;const fill=running?'#9ecae1':(pct>=100?'#2b7bba':'#6baed6');s+=`<rect x="${(cx-barW/2).toFixed(1)}" y="${ya.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="2" fill="${fill}" opacity="${running?0.55:0.92}"><title>${PMON[m-1]}: ${act.toFixed(0)} mm${norm?' ('+pct+'% von '+norm+' mm Normal)':''}</title></rect>`;s+=`<text x="${cx.toFixed(1)}" y="${(padT+plotH+24).toFixed(1)}" text-anchor="middle" font-size="8.5" fill="#6b7280">${act.toFixed(0)}mm</text>`;if(!running&&pct!=null){const lc=pct<70?'#c0392b':(pct>130?'#0068A4':'#6b7280');s+=`<text x="${cx.toFixed(1)}" y="${(padT+plotH+35).toFixed(1)}" text-anchor="middle" font-size="9" font-weight="700" fill="${lc}">${pct}%</text>`;}else if(running){s+=`<text x="${cx.toFixed(1)}" y="${(padT+plotH+35).toFixed(1)}" text-anchor="middle" font-size="8" fill="#9ca3af">(bisher)</text>`;}}if(norm!=null){const yn=Y(norm);s+=`<line x1="${(cx-barW/2-2).toFixed(1)}" y1="${yn.toFixed(1)}" x2="${(cx+barW/2+2).toFixed(1)}" y2="${yn.toFixed(1)}" stroke="#1f2937" stroke-width="1.5"/>`;}s+=`<text x="${cx.toFixed(1)}" y="${(padT+plotH+13).toFixed(1)}" text-anchor="middle" font-size="9" fill="#6b7280">${PMON[m-1]}</text>`;}svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.height=H+'px';svg.innerHTML=s;}
 
-{{/STRIPES}}
+{{/PRECIP}}
 /* ---- range ---- */
 function setRange(days){
   DAYS=days;
@@ -381,10 +388,10 @@ async function load(){
       // tropennacht
       if(mn>=20){const sp=document.createElement('span');sp.className='tropen';sp.textContent='Tropennacht – Minimum nicht unter 20 °C';extra.appendChild(sp);}
     }
-    // summer days{{#STRIPES}} + monthly precip{{/STRIPES}}
+    // summer days{{#PRECIP}} + monthly precip{{/PRECIP}}
     try{
       const d=await csvCached(DREC_URL,DCACHE,30*60000);
-      const iMax=d[0].indexOf('tre200dx'),iDay=d[0].indexOf('reference_timestamp'){{#STRIPES}},iP=d[0].indexOf('rre150d0'){{/STRIPES}};
+      const iMax=d[0].indexOf('tre200dx'),iDay=d[0].indexOf('reference_timestamp'){{#PRECIP}},iP=d[0].indexOf('rre150d0'){{/PRECIP}};
       if(iMax>=0&&iDay>=0){
         let sd=0;for(let k=1;k<d.length;k++){const dt=parseMeteoDate(d[k][iDay]);const mx=num(d[k][iMax]);if(dt&&dt.getUTCFullYear()===YEAR&&mx!=null&&mx>=25)sd++;}
         if(sd>0){
@@ -393,12 +400,12 @@ async function load(){
           const lab=document.createTextNode(` Sommertage ${YEAR} bisher${SUMMER_NORMAL?' · Normal: '+SUMMER_NORMAL+'/Jahr':''}`);extra.appendChild(lab);
         }
       }
-{{#STRIPES}}
+{{#PRECIP}}
       if(iP>=0&&iDay>=0){
         const mon={};for(let k=1;k<d.length;k++){const dt=parseMeteoDate(d[k][iDay]);const p=num(d[k][iP]);if(dt&&dt.getUTCFullYear()===YEAR&&p!=null){const mo=dt.getUTCMonth()+1;mon[mo]=(mon[mo]||0)+p;}}
         renderPrecip(mon);
       }
-{{/STRIPES}}
+{{/PRECIP}}
     }catch(e){}
 
     setRange(DAYS);
@@ -416,8 +423,8 @@ load();
 {{#STRIPES}}
 renderStripes();
 (function(){const sv=$('stripes');if(sv){sv.addEventListener('pointermove',stripeHover);sv.addEventListener('pointerdown',stripeHover);sv.addEventListener('pointerleave',()=>{tip.style.opacity=0;const mk=document.getElementById('mk-stripes');if(mk)mk.setAttribute('opacity','0');});}})();
-window.addEventListener('resize',()=>{renderStripes();if(LAST_PRECIP)renderPrecip(LAST_PRECIP);});
 {{/STRIPES}}
+window.addEventListener('resize',()=>{ {{#STRIPES}}renderStripes();{{/STRIPES}}{{#PRECIP}}if(LAST_PRECIP)renderPrecip(LAST_PRECIP);{{/PRECIP}} });
 </script>
 </body>
 </html>
