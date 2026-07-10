@@ -229,6 +229,7 @@ $('form').addEventListener('submit', async ev=>{
     const iDate = header.indexOf('reference_timestamp');
     const iMax = header.indexOf('tre200dx');
     const iMean = header.indexOf('tre200d0');
+    const iPrecip = header.indexOf('rre150d0');
     const allRows = hist.concat(recent.slice(1));
 
     // 1) Wetter am Geburtstag
@@ -239,6 +240,7 @@ $('form').addEventListener('submit', async ev=>{
       weatherBody.innerHTML = `<p class="err">Für dieses Datum liegt bei ${st.name} keine Messung vor (Datenlücke).</p>`;
     } else {
       const mx = num(birthRow[iMax]), mean = num(birthRow[iMean]);
+      const precip = iPrecip>=0 ? num(birthRow[iPrecip]) : null;
       const normal = st.normal[mmdd], rekord = st.rekord[mmdd], rekordYear = st.rekord_year[mmdd];
       let html = '<div class="big-stat">';
       if(mx!=null){
@@ -250,8 +252,12 @@ $('form').addEventListener('submit', async ev=>{
       if(rekord!=null && rekordYear!=null){
         html += `<div class="stat rec"><b>${rekord} °C</b><span>Tagesrekord für diesen Kalendertag<br>${fullDateDe(bd,bm,rekordYear)}</span></div>`;
       }
+      if(precip!=null){
+        html += `<div class="stat cool"><b>${precip.toFixed(1)} mm</b><span>Niederschlag an deinem Geburtstag</span></div>`;
+      }
       html += '</div>';
       if(mx==null) html += '<p class="hint">Kein Tagesmaximum für dieses Datum verfügbar.</p>';
+      if(precip==null) html += '<p class="hint">Kein Niederschlagswert für dieses Datum verfügbar.</p>';
       weatherBody.innerHTML = html;
     }
 
