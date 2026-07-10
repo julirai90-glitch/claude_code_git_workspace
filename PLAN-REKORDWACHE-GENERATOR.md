@@ -128,13 +128,45 @@ Ziel: **Eine** Quelle der Wahrheit statt 15 duplizierte HTML; künftige Design-�
 
 ---
 
-## Phase 3 — Story-Auswertung (nach Rücksprache)
+## Phase 3 — Story-Auswertung ✅ Kandidat B erledigt (10.07.2026)
 
-Kandidaten (aus Fable-Review, 09.07.2026):
-- **B «Das Klima deiner Kindheit»**: Jahrgang-Eingabe → Sommertage/Temperatur damals vs. heute,
-  aus homogenen NBCN-Jahresreihen (dav/sam/sbe/sia GR, elm GL seit 1878). Reines Frontend.
-- **E «Eistage verschwinden»**: NBCN `ths00xy0` (Eistage) ab 1959, Machart wie Stripes.
-Vor Umsetzung: Julian fragen, welche zuerst, und Ziel-Format (Embed für Artikel vs. eigene Seite).
+**B «Das Klima deiner Kindheit»** umgesetzt als `klima-kindheit.html` (eigene Testseite, Embed
+für Artikel folgt später nach Julians Sichtung): Geburtsdatum + Station → Wetter am exakten
+Tag (Temp., Niederschlag, Wind, Sonnenschein, Feuchte, Schnee wo vorhanden) vs. Kalendertag-
+Normal/-Rekord, Klimastreifen mit Geburtsjahr-Marker + ca.-Schulbeginn-Marker, Sommertage
+damals vs. heute. Lädt `station_constants.json` + MeteoSchweiz-CSVs live im Browser, kein
+Backend. Skaliert automatisch auf mehr Stationen (siehe Phase 4).
+
+- **E «Eistage verschwinden»**: NBCN `ths00xy0` (Eistage) ab 1959, Machart wie Stripes. Noch nicht
+  begonnen.
+
+---
+
+## Phase 4 — CH-weiter Rollout (Konzept geklärt 10.07.2026, Umsetzung nicht gestartet)
+
+Julian wollte nur die Aufwandsabschätzung, keine Umsetzung. Für später festgehalten:
+
+- **158 automatische MeteoSchweiz-Stationen national** (offiziell: `ogd-smn_meta_stations.csv`,
+  liefert je Station auch `station_data_since` — erspart das manuelle Abklopfen wie bei den 13 GR).
+  Aktuell abgedeckt: 15 (13 GR + 2 GL).
+- **Skaliert schon ohne Codeänderung:** Generator (`station_constants.json` → Dashboards, Hubs,
+  `rekorde.json`), `klima-kindheit.html` (lädt Stationsliste dynamisch).
+- **Skript vorhanden, muss nur neu laufen:** `build_gr_stripes.py` (Stripes/Niederschlag) — aber
+  die "kurze/lückenhafte Reihe"-Entscheidung (bei GR 4 von 13 betroffen, ~30%) wird bei 158
+  Stationen entsprechend oft auftreten; sollte als generelle Regel statt Einzelfall-Rückfrage
+  behandelt werden.
+- **Fehlt komplett:** Skript zur Berechnung von NORMAL/REKORD/REKORD_YEAR/REC_HOT/REC_COLD/
+  SUMMER_NORMAL/BAR_MIN/BAR_MAX aus Rohdaten. `rollout_rekord_smooth.py` im Repo sah danach aus,
+  ist aber nur ein altes Patch-Skript mit leerem `REKORD={}`-Platzhalter — keine echte Berechnung.
+  Die Werte in den 15 bestehenden Dashboards stammen aus einer früheren, nicht als Code
+  festgehaltenen Session. Grösstes Risiko: Methodik (366-Tage-Handling inkl. 29. Feb.,
+  "Jahre vor 2026"-Cutoff, Rundung, Mindest-Datenabdeckung/Jahr) muss neu definiert/nachvollzogen
+  werden, sonst sind neue und alte Stationen inkonsistent.
+- **Hub/Karte:** aktuell 1 Hub pro Kanton (GR, GL). Bei 26 Kantonen/158 Stationen braucht es ein
+  Konzept (Kantons-Hubs? eine filterbare CH-Karte? etwas anderes?) — noch nicht entschieden.
+- **Rekordwache (n8n):** aktuell 15 sequenzielle Fetches/Lauf, bei 158 ungetestet.
+- Empfehlung bei Fortsetzung: erst 1 Pilot-Kanton ausserhalb GR/GL (NORMAL/REKORD-Skript bauen +
+  verifizieren), bevor alle 158 drankommen.
 
 ## Bekannte offene Schwachstellen (aus Review, nicht Teil von Phase 1/2)
 - OSM-Tiles in Hubs → für suedostschweiz.ch-Einbettung auf Swisstopo-Tiles (geo.admin.ch) wechseln.
