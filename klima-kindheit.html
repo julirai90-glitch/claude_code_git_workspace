@@ -33,6 +33,9 @@
   .stat.warm b{color:var(--orange);}.stat.cool b{color:var(--blau);}.stat.rec b{color:var(--rot);}
   .chart{position:relative;}
   #stripes{width:100%;display:block;}
+  .stripes-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#d1d5db transparent;}
+  .stripes-scroll::-webkit-scrollbar{height:4px;}
+  .stripes-scroll::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
   .note{font-size:.68rem;color:var(--grau);margin-top:10px;line-height:1.45;}
   .marker-label{font-size:9px;fill:#1f2937;font-weight:700;}
   .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
@@ -75,7 +78,7 @@
   <div class="card" id="card-trend">
     <div class="head"><span class="kicker" id="trend-kicker"></span></div>
     <h2 class="section-title" id="trend-title"></h2>
-    <div class="chart"><svg id="stripes" role="img" aria-label="Warming Stripes mit Geburtsjahr-Markierung"></svg></div>
+    <div class="chart"><div class="stripes-scroll"><svg id="stripes" role="img" aria-label="Warming Stripes mit Geburtsjahr-Markierung"></svg></div></div>
     <p class="note" id="trend-note"></p>
   </div>
 
@@ -143,11 +146,12 @@ function stripeColor(t,tref,maxAbs){
 }
 
 let STRIPE_META = null;
+const STRIPE_MIN_BW=4;
 function renderStripesWithMarker(st, birthYear, schoolYear){
   const svg = $('stripes');
-  const W = svg.getBoundingClientRect().width || 600;
+  const availW = svg.parentElement.getBoundingClientRect().width || 600;
   const H = 150, axisH = 24, plotH = H - axisH;
-  const rows = st.stripes, y0 = rows[0].y, y1 = rows[rows.length-1].y, ySpan = y1-y0+1, bw = W/ySpan;
+  const rows = st.stripes, y0 = rows[0].y, y1 = rows[rows.length-1].y, ySpan = y1-y0+1, bw = Math.max(STRIPE_MIN_BW, availW/ySpan), W = bw*ySpan;
   const maxAbs = Math.max(...rows.map(r=>Math.abs(r.t-st.tref))) || 1;
   let s = '';
   rows.forEach(r=>{
@@ -171,6 +175,7 @@ function renderStripesWithMarker(st, birthYear, schoolYear){
     s += `<text class="marker-label" x="${x.toFixed(1)}" y="${plotH+24}" text-anchor="middle" fill="#6b7280" font-weight="400">ca. Schulbeginn ${schoolYear}</text>`;
   }
   svg.setAttribute('viewBox', `0 -14 ${W} ${H+14}`);
+  svg.style.width = W + 'px';
   svg.style.height = (H+14) + 'px';
   svg.innerHTML = s;
   STRIPE_META = {rows, bw, y0};

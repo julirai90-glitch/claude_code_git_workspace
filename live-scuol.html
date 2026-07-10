@@ -78,6 +78,9 @@
   .section-title{font-size:1rem;margin:0 0 8px;font-weight:700;color:#1f2937;}
   .card + .card{margin-top:14px;}
   #stripes,#precip{width:100%;display:block;}
+  .stripes-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#d1d5db transparent;}
+  .stripes-scroll::-webkit-scrollbar{height:4px;}
+  .stripes-scroll::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
 </style>
 </head>
 <body>
@@ -126,7 +129,7 @@
 <div class="card">
   <div class="head"><span class="kicker">Scuol · Klimastreifen</span></div>
   <h2 class="section-title">So hat sich Scuol erwärmt</h2>
-  <div class="chart"><svg id="stripes" role="img" aria-label="Warming Stripes Jahresmitteltemperatur"></svg></div>
+  <div class="chart"><div class="stripes-scroll"><svg id="stripes" role="img" aria-label="Warming Stripes Jahresmitteltemperatur"></svg></div></div>
   <p class="note" id="note-stripes"></p>
 </div>
 
@@ -272,7 +275,8 @@ function drawChart(pts){
 let STRIPE_META=null;
 const SSTOPS=[[5,48,97],[33,102,172],[67,147,195],[146,197,222],[209,229,240],[253,219,199],[244,165,130],[214,96,77],[178,24,43],[103,0,31]];
 function stripeColor(t,maxAbs){let f=Math.max(0,Math.min(1,((t-TREF)/maxAbs+1)/2));const seg=f*(SSTOPS.length-1),i=Math.min(SSTOPS.length-2,Math.floor(seg)),fr=seg-i,A=SSTOPS[i],B=SSTOPS[i+1];const c=k=>Math.round(A[k]+(B[k]-A[k])*fr);return`rgb(${c(0)},${c(1)},${c(2)})`;}
-function renderStripes(){const svg=$('stripes');if(!svg)return;const W=svg.getBoundingClientRect().width||600;const H=140,axisH=20,plotH=H-axisH;const rows=STRIPES,y0=rows[0].y,y1=rows[rows.length-1].y,ySpan=y1-y0+1,bw=W/ySpan;const maxAbs=Math.max(...rows.map(r=>Math.abs(r.t-TREF)))||1;let s='';rows.forEach(r=>{const x=(r.y-y0)*bw;s+=`<rect x="${x.toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.t,maxAbs)}"><title>${r.y}: ${r.t.toFixed(1)} °C (${(r.t-TREF>=0?'+':'')}${(r.t-TREF).toFixed(1)} °C)</title></rect>`;});rows.filter(r=>r.y%20===0).forEach(r=>{const x=(r.y-y0+0.5)*bw;s+=`<line x1="${x.toFixed(1)}" y1="${plotH}" x2="${x.toFixed(1)}" y2="${plotH+4}" stroke="#9ca3af"/><text x="${x.toFixed(1)}" y="${plotH+16}" text-anchor="middle" font-size="11" fill="#6b7280">${r.y}</text>`;});svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.height=H+'px';s+=`<line id="mk-stripes" y1="0" y2="${plotH}" stroke="#111" stroke-width="1.5" opacity="0" pointer-events="none"/>`;svg.innerHTML=s;STRIPE_META={rows,bw,W,y0};const last=rows[rows.length-1],an=last.t-TREF;$('note-stripes').innerHTML=`<b>${last.y}: ${last.t.toFixed(1)} °C</b> — ${an>=0?'+':''}${an.toFixed(1)} °C gegenüber dem Mittel ${TREF_PERIOD}. ${STRIPES_SRC}`;}
+const STRIPE_MIN_BW=4;
+function renderStripes(){const svg=$('stripes');if(!svg)return;const availW=svg.parentElement.getBoundingClientRect().width||600;const H=140,axisH=20,plotH=H-axisH;const rows=STRIPES,y0=rows[0].y,y1=rows[rows.length-1].y,ySpan=y1-y0+1,bw=Math.max(STRIPE_MIN_BW,availW/ySpan),W=bw*ySpan;const maxAbs=Math.max(...rows.map(r=>Math.abs(r.t-TREF)))||1;let s='';rows.forEach(r=>{const x=(r.y-y0)*bw;s+=`<rect x="${x.toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.t,maxAbs)}"><title>${r.y}: ${r.t.toFixed(1)} °C (${(r.t-TREF>=0?'+':'')}${(r.t-TREF).toFixed(1)} °C)</title></rect>`;});rows.filter(r=>r.y%20===0).forEach(r=>{const x=(r.y-y0+0.5)*bw;s+=`<line x1="${x.toFixed(1)}" y1="${plotH}" x2="${x.toFixed(1)}" y2="${plotH+4}" stroke="#9ca3af"/><text x="${x.toFixed(1)}" y="${plotH+16}" text-anchor="middle" font-size="11" fill="#6b7280">${r.y}</text>`;});svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.width=W+'px';svg.style.height=H+'px';s+=`<line id="mk-stripes" y1="0" y2="${plotH}" stroke="#111" stroke-width="1.5" opacity="0" pointer-events="none"/>`;svg.innerHTML=s;STRIPE_META={rows,bw,W,y0};const last=rows[rows.length-1],an=last.t-TREF;$('note-stripes').innerHTML=`<b>${last.y}: ${last.t.toFixed(1)} °C</b> — ${an>=0?'+':''}${an.toFixed(1)} °C gegenüber dem Mittel ${TREF_PERIOD}. ${STRIPES_SRC}`;}
 function stripeHover(ev){if(!STRIPE_META)return;const svg=$('stripes');const rect=svg.getBoundingClientRect();const cx=ev.touches?ev.touches[0].clientX:ev.clientX;const rel=(cx-rect.left)/rect.width*STRIPE_META.W;const targetYear=STRIPE_META.y0+Math.floor(rel/STRIPE_META.bw);let r=STRIPE_META.rows.find(x=>x.y===targetYear);if(!r)r=STRIPE_META.rows.reduce((best,cur)=>Math.abs(cur.y-targetYear)<Math.abs(best.y-targetYear)?cur:best);const an=r.t-TREF;tip.innerHTML=`<b>${r.y}</b>${r.t.toFixed(1)} °C · ${an>=0?'+':''}${an.toFixed(1)} °C vs. ${TREF_PERIOD}`;tip.style.opacity=1;let lx=cx+14;if(lx+200>window.innerWidth)lx=cx-204;let ty=(ev.touches?ev.touches[0].clientY:ev.clientY)-44;tip.style.left=Math.max(4,lx)+'px';tip.style.top=Math.max(4,ty)+'px';const mk=document.getElementById('mk-stripes');if(mk){const x=(r.y-STRIPE_META.y0+0.5)*STRIPE_META.bw;mk.setAttribute('x1',x.toFixed(1));mk.setAttribute('x2',x.toFixed(1));mk.setAttribute('opacity','0.8');}}
 
 
