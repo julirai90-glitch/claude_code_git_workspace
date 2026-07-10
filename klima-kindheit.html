@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Das Klima deiner Kindheit</title>
+<style>
+  :root{--blau:#0068A4;--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;--rot:#c0392b;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:696px;margin:0 auto 14px;border:1px solid #e5e7eb;border-radius:16px;
+        padding:16px 18px 18px;box-shadow:0 4px 18px rgba(0,0,0,.06);}
+  h1{font-size:1.3rem;margin:0 0 6px;}
+  h2.section-title{font-size:1rem;margin:0 0 8px;font-weight:700;color:#1f2937;}
+  .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.72rem;}
+  .intro{color:var(--grau);font-size:.86rem;line-height:1.5;margin:4px 0 16px;}
+  form{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  label{font-size:.76rem;color:var(--grau);font-weight:600;}
+  input[type=date],select{font-family:inherit;font-size:.9rem;padding:8px 10px;border:1px solid #d1d5db;
+       border-radius:8px;background:#fff;}
+  button{font-family:inherit;font-size:.9rem;font-weight:700;color:#fff;background:var(--blau);
+       border:none;border-radius:8px;padding:10px 18px;cursor:pointer;}
+  button:hover{background:#005a8e;}
+  button:disabled{background:#9ca3af;cursor:wait;}
+  .err{color:var(--rot);font-size:.84rem;margin-top:10px;}
+  .hint{font-size:.7rem;color:#9ca3af;margin-top:4px;}
+  .big-stat{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;}
+  .stat{flex:1;min-width:130px;background:var(--hell);border-radius:10px;padding:10px 12px;}
+  .stat b{font-size:1.3rem;display:block;line-height:1.2;font-variant-numeric:tabular-nums;}
+  .stat span{font-size:.7rem;color:var(--grau);line-height:1.3;}
+  .stat.warm b{color:var(--orange);}.stat.cool b{color:var(--blau);}.stat.rec b{color:var(--rot);}
+  .chart{position:relative;}
+  #stripes{width:100%;display:block;}
+  .note{font-size:.68rem;color:var(--grau);margin-top:10px;line-height:1.45;}
+  .marker-label{font-size:9px;fill:#1f2937;font-weight:700;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
+       border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:7px 10px;
+       font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .tip b{display:block;font-size:.92rem;margin-bottom:2px;}
+  .loading{color:var(--grau);font-size:.86rem;padding:20px 0;text-align:center;}
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="kicker">Graubünden in Zahlen</span>
+  <h1>Das Klima deiner Kindheit</h1>
+  <p class="intro">
+    Wie warm war es an deinem Geburtstag – und wie stark hat sich das Klima seither verändert?
+    Trage Geburtsdatum und eine Wetterstation ein.
+  </p>
+  <form id="form">
+    <div class="field">
+      <label for="bdate">Geburtsdatum</label>
+      <input type="date" id="bdate" required>
+    </div>
+    <div class="field">
+      <label for="station">Station</label>
+      <select id="station"></select>
+    </div>
+    <button type="submit" id="submitBtn">Zeigen</button>
+  </form>
+  <p class="hint" id="stationHint"></p>
+  <p class="err" id="errMsg" style="display:none"></p>
+</div>
+
+<div id="result" style="display:none">
+  <div class="card" id="card-weather">
+    <div class="head"><span class="kicker" id="weather-kicker"></span></div>
+    <h2 class="section-title">Wetter an deinem Geburtstag</h2>
+    <div id="weather-body"></div>
+  </div>
+
+  <div class="card" id="card-trend">
+    <div class="head"><span class="kicker" id="trend-kicker"></span></div>
+    <h2 class="section-title" id="trend-title"></h2>
+    <div class="chart"><svg id="stripes" role="img" aria-label="Warming Stripes mit Geburtsjahr-Markierung"></svg></div>
+    <p class="note" id="trend-note"></p>
+  </div>
+
+  <div class="card" id="card-summer">
+    <div class="head"><span class="kicker" id="summer-kicker"></span></div>
+    <h2 class="section-title">Sommertage: damals vs. heute</h2>
+    <div id="summer-body"></div>
+    <p class="note">Sommertag = Tagesmaximum ≥ 25 °C. Quelle: MeteoSchweiz Open Data (automatisches Netz), eigene Auswertung. Werte für dein Geburtsjahr und das laufende Jahr sind nicht direkt vergleichbar, wenn dein Geburtsjahr nicht vollständig abgedeckt ist (Station noch nicht in Betrieb o.ä.) – wird dann angezeigt.</p>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+const CONSTANTS_URL = 'station_constants.json';
+const SMN_BASE = 'https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/';
+const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+let STATIONS = null; // code -> station_constants entry
+const $ = id => document.getElementById(id);
+const tip = $('tip');
+
+/* ---- helpers (gleiche Logik wie in den Live-Dashboards) ---- */
+function parseMeteoDate(str){
+  if(!str) return null;
+  const m = String(str).trim().match(/^(\d{2})\.(\d{2})\.(\d{4})(?: (\d{2}):(\d{2}))?$/);
+  if(!m) return null;
+  const [,d,mo,y,h='00',mi='00'] = m;
+  const dt = new Date(Date.UTC(+y,+mo-1,+d,+h,+mi));
+  return isNaN(dt) ? null : dt;
+}
+const num = v => (v===''||v==null) ? null : parseFloat(String(v).replace(',','.'));
+function fullDateDe(day,month,year){
+  return `${day}. ${MONTHS_DE[month-1]} ${year}`;
+}
+
+async function csvFetch(url){
+  const r = await fetch(url + '?_=' + Date.now(), {cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP ' + r.status + ' bei ' + url);
+  return (await r.text()).split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(';'));
+}
+
+/* ---- Setup: Stationsliste laden ---- */
+async function init(){
+  STATIONS = await (await fetch(CONSTANTS_URL)).json();
+  const sel = $('station');
+  const codes = Object.keys(STATIONS).sort((a,b)=>STATIONS[a].name.localeCompare(STATIONS[b].name,'de'));
+  sel.innerHTML = codes.map(c=>`<option value="${c}">${STATIONS[c].name} (${STATIONS[c].canton})</option>`).join('');
+  sel.value = 'chu';
+  updateHint();
+  sel.addEventListener('change', updateHint);
+}
+function updateHint(){
+  const st = STATIONS[$('station').value];
+  const firstYear = st.stripes[0].y;
+  $('stationHint').textContent = `Daten für ${st.name} ab ${firstYear} verfügbar (${st.height} m).`;
+}
+
+/* ---- Stripes-Farbskala (identisch zu den Live-Dashboards) ---- */
+const SSTOPS=[[5,48,97],[33,102,172],[67,147,195],[146,197,222],[209,229,240],[253,219,199],[244,165,130],[214,96,77],[178,24,43],[103,0,31]];
+function stripeColor(t,tref,maxAbs){
+  let f=Math.max(0,Math.min(1,((t-tref)/maxAbs+1)/2));
+  const seg=f*(SSTOPS.length-1), i=Math.min(SSTOPS.length-2,Math.floor(seg)), fr=seg-i, A=SSTOPS[i], B=SSTOPS[i+1];
+  const c=k=>Math.round(A[k]+(B[k]-A[k])*fr);
+  return `rgb(${c(0)},${c(1)},${c(2)})`;
+}
+
+let STRIPE_META = null;
+function renderStripesWithMarker(st, birthYear, schoolYear){
+  const svg = $('stripes');
+  const W = svg.getBoundingClientRect().width || 600;
+  const H = 150, axisH = 24, plotH = H - axisH;
+  const rows = st.stripes, y0 = rows[0].y, y1 = rows[rows.length-1].y, ySpan = y1-y0+1, bw = W/ySpan;
+  const maxAbs = Math.max(...rows.map(r=>Math.abs(r.t-st.tref))) || 1;
+  let s = '';
+  rows.forEach(r=>{
+    const x = (r.y-y0)*bw;
+    s += `<rect x="${x.toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.t,st.tref,maxAbs)}"><title>${r.y}: ${r.t.toFixed(1)} °C (${(r.t-st.tref>=0?'+':'')}${(r.t-st.tref).toFixed(1)} K)</title></rect>`;
+  });
+  rows.filter(r=>r.y%20===0).forEach(r=>{
+    const x = (r.y-y0+0.5)*bw;
+    s += `<line x1="${x.toFixed(1)}" y1="${plotH}" x2="${x.toFixed(1)}" y2="${plotH+4}" stroke="#9ca3af"/><text x="${x.toFixed(1)}" y="${plotH+16}" text-anchor="middle" font-size="11" fill="#6b7280">${r.y}</text>`;
+  });
+  // Marker: Geburtsjahr
+  if(birthYear >= y0 && birthYear <= y1){
+    const x = (birthYear-y0+0.5)*bw;
+    s += `<line x1="${x.toFixed(1)}" y1="-4" x2="${x.toFixed(1)}" y2="${plotH+4}" stroke="#1f2937" stroke-width="2"/>`;
+    s += `<text class="marker-label" x="${x.toFixed(1)}" y="-8" text-anchor="middle">geboren ${birthYear}</text>`;
+  }
+  // Marker: ca. Schulbeginn (Naeherung, klar gekennzeichnet)
+  if(schoolYear >= y0 && schoolYear <= y1){
+    const x = (schoolYear-y0+0.5)*bw;
+    s += `<line x1="${x.toFixed(1)}" y1="-4" x2="${x.toFixed(1)}" y2="${plotH+4}" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="3 2"/>`;
+    s += `<text class="marker-label" x="${x.toFixed(1)}" y="${plotH+24}" text-anchor="middle" fill="#6b7280" font-weight="400">ca. Schulbeginn ${schoolYear}</text>`;
+  }
+  svg.setAttribute('viewBox', `0 -14 ${W} ${H+14}`);
+  svg.style.height = (H+14) + 'px';
+  svg.innerHTML = s;
+  STRIPE_META = {rows, bw, y0};
+}
+function stripeHover(ev){
+  if(!STRIPE_META) return;
+  const svg = $('stripes');
+  const rect = svg.getBoundingClientRect();
+  const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+  const rel = (cx-rect.left)/rect.width*rect.width;
+  const targetYear = STRIPE_META.y0 + Math.floor(rel/STRIPE_META.bw);
+  let r = STRIPE_META.rows.find(x=>x.y===targetYear);
+  if(!r) r = STRIPE_META.rows.reduce((best,cur)=>Math.abs(cur.y-targetYear)<Math.abs(best.y-targetYear)?cur:best);
+  tip.innerHTML = `<b>${r.y}</b>${r.t.toFixed(1)} °C`;
+  tip.style.opacity = 1;
+  let lx = cx+14; if(lx+200>window.innerWidth) lx = cx-204;
+  let ty = (ev.touches?ev.touches[0].clientY:ev.clientY)-44;
+  tip.style.left = Math.max(4,lx)+'px'; tip.style.top = Math.max(4,ty)+'px';
+}
+$('stripes').addEventListener('pointermove', stripeHover);
+$('stripes').addEventListener('pointerleave', ()=>{tip.style.opacity=0;});
+
+/* ---- Sommertage in einem Kalenderjahr aus SMN-Tagesdaten zaehlen ---- */
+function countSummerDays(rows, iDate, iMax, year){
+  let n = 0, total = 0;
+  for(let k=1;k<rows.length;k++){
+    const dt = parseMeteoDate(rows[k][iDate]);
+    if(!dt || dt.getUTCFullYear()!==year) continue;
+    total++;
+    const mx = num(rows[k][iMax]);
+    if(mx!=null && mx>=25) n++;
+  }
+  return {count:n, daysWithData:total};
+}
+
+/* ---- Hauptablauf ---- */
+$('form').addEventListener('submit', async ev=>{
+  ev.preventDefault();
+  const errEl = $('errMsg'); errEl.style.display='none';
+  const btn = $('submitBtn'); btn.disabled = true; btn.textContent = 'Lade Daten …';
+  try{
+    const bdateVal = $('bdate').value; // yyyy-mm-dd
+    if(!bdateVal) throw new Error('Bitte ein Geburtsdatum eingeben.');
+    const [by, bm, bd] = bdateVal.split('-').map(Number);
+    const code = $('station').value;
+    const st = STATIONS[code];
+    const mmdd = String(bm).padStart(2,'0') + '-' + String(bd).padStart(2,'0');
+    const birthDateCSV = String(bd).padStart(2,'0') + '.' + String(bm).padStart(2,'0') + '.' + by + ' 00:00';
+
+    if(by < st.stripes[0].y) throw new Error(`Für ${st.name} liegen erst ab ${st.stripes[0].y} Daten vor.`);
+
+    // Tagesdaten laden: historical (bis Vorjahresende) + recent (laufendes Jahr)
+    const [hist, recent] = await Promise.all([
+      csvFetch(SMN_BASE + code + '/ogd-smn_' + code + '_d_historical.csv'),
+      csvFetch(SMN_BASE + code + '/ogd-smn_' + code + '_d_recent.csv')
+    ]);
+    const header = hist[0];
+    const iDate = header.indexOf('reference_timestamp');
+    const iMax = header.indexOf('tre200dx');
+    const iMean = header.indexOf('tre200d0');
+    const allRows = hist.concat(recent.slice(1));
+
+    // 1) Wetter am Geburtstag
+    const birthRow = allRows.find(r => (r[iDate]||'').trim() === birthDateCSV);
+    const weatherBody = $('weather-body');
+    $('weather-kicker').textContent = st.name + ' · ' + fullDateDe(bd,bm,by);
+    if(!birthRow){
+      weatherBody.innerHTML = `<p class="err">Für dieses Datum liegt bei ${st.name} keine Messung vor (Datenlücke).</p>`;
+    } else {
+      const mx = num(birthRow[iMax]), mean = num(birthRow[iMean]);
+      const normal = st.normal[mmdd], rekord = st.rekord[mmdd], rekordYear = st.rekord_year[mmdd];
+      let html = '<div class="big-stat">';
+      if(mx!=null){
+        html += `<div class="stat warm"><b>${mx.toFixed(1)} °C</b><span>Tagesmaximum an deinem Geburtstag</span></div>`;
+      }
+      if(normal!=null){
+        html += `<div class="stat"><b>${normal} °C</b><span>üblicher Tagesdurchschnitt für den ${bd}. ${MONTHS_DE[bm-1]} (1991–2020)</span></div>`;
+      }
+      if(rekord!=null && rekordYear!=null){
+        html += `<div class="stat rec"><b>${rekord} °C</b><span>Tagesrekord für diesen Kalendertag<br>${fullDateDe(bd,bm,rekordYear)}</span></div>`;
+      }
+      html += '</div>';
+      if(mx==null) html += '<p class="hint">Kein Tagesmaximum für dieses Datum verfügbar.</p>';
+      weatherBody.innerHTML = html;
+    }
+
+    // 2) Klima-Trend mit Markern
+    $('trend-kicker').textContent = st.name + ' · Klimastreifen';
+    $('trend-title').textContent = 'So hat sich ' + st.name + ' seit deiner Geburt erwärmt';
+    const schoolYear = by + 6; // grobe Naeherung, keine exakte Schulbeginn-Quelle
+    renderStripesWithMarker(st, by, schoolYear);
+    $('trend-note').innerHTML = `Referenzmittel (0 K-Linie): ${st.tref.toFixed(1)} °C (${st.tref_period}). ` +
+      `„ca. Schulbeginn" ist eine grobe Näherung (Geburtsjahr + 6), keine exakte Quelle – Einschulungsalter und -datum variieren je Kanton und Jahr. ${st.stripes_src}`;
+
+    // 3) Sommertage damals vs. heute
+    const nowYear = new Date().getFullYear();
+    const birthSummer = countSummerDays(allRows, iDate, iMax, by);
+    const nowSummer = countSummerDays(allRows, iDate, iMax, nowYear);
+    const summerBody = $('summer-body');
+    $('summer-kicker').textContent = st.name;
+    let sHtml = '<div class="big-stat">';
+    sHtml += `<div class="stat cool"><b>${birthSummer.count}</b><span>Sommertage in ${by}${birthSummer.daysWithData<340?' (unvollständiges Jahr, '+birthSummer.daysWithData+' Tage mit Daten)':''}</span></div>`;
+    sHtml += `<div class="stat warm"><b>${nowSummer.count}</b><span>Sommertage ${nowYear} bisher (${nowSummer.daysWithData} Tage mit Daten)</span></div>`;
+    if(st.summer_normal){
+      sHtml += `<div class="stat"><b>${st.summer_normal}</b><span>Normal 1991–2020 (ganzes Jahr)</span></div>`;
+    }
+    sHtml += '</div>';
+    summerBody.innerHTML = sHtml;
+
+    $('result').style.display = 'block';
+  } catch(e){
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Zeigen';
+  }
+});
+
+init();
+</script>
+</body>
+</html>
