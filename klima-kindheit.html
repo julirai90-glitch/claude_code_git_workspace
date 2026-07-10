@@ -152,7 +152,7 @@ function renderStripesWithMarker(st, birthYear, schoolYear){
   let s = '';
   rows.forEach(r=>{
     const x = (r.y-y0)*bw;
-    s += `<rect x="${x.toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.t,st.tref,maxAbs)}"><title>${r.y}: ${r.t.toFixed(1)} °C (${(r.t-st.tref>=0?'+':'')}${(r.t-st.tref).toFixed(1)} K)</title></rect>`;
+    s += `<rect x="${x.toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${stripeColor(r.t,st.tref,maxAbs)}"><title>${r.y}: ${r.t.toFixed(1)} °C (${(r.t-st.tref>=0?'+':'')}${(r.t-st.tref).toFixed(1)} °C)</title></rect>`;
   });
   rows.filter(r=>r.y%20===0).forEach(r=>{
     const x = (r.y-y0+0.5)*bw;
