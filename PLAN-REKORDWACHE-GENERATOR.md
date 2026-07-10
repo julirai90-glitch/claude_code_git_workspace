@@ -95,8 +95,11 @@ globaler CLAUDE.md beachten: nodeType-Formate, Webhook `.body`, IF-branch expliz
 lokaler Pfad) erzeugen alle 15 Dashboards, beide Hubs und `rekorde.json` aus einer
 Quelle. Verifiziert: Diff gegen vorherigen Stand nur Whitespace/Reihenfolge + eine
 Typo-Korrektur (Disentis' Bindestrich → richtiges Minuszeichen). Rekord-Badge (Punkt 5)
-mit umgesetzt. Punkt 6 (Stripes für 13 GR-Stationen) bewusst nicht gemacht — braucht
-Rückfrage, siehe unten.
+mit umgesetzt. Punkt 6 (Stripes + Niederschlag für 13 GR-Stationen) **10.07.2026 ebenfalls
+erledigt**: Daten via `build_gr_stripes.py` aus `ogd-smn` d_historical/d_recent berechnet
+(TREF-Periode ehrlich je Station: 1961–1990/1991–2020 wo voll abgedeckt, sonst Mittel der
+verfügbaren Jahre mit echter Beschriftung – nie erfunden). Schiers nur Stripes (Niederschlag
+zu lückenhaft), die anderen 12 GR-Stationen + Elm/Glarus haben beides.
 
 Ziel: **Eine** Quelle der Wahrheit statt 15 duplizierte HTML; künftige Design-Änderungen =
 1 Template-Edit + Regenerierung. Behebt auch Feature-Drift GR/GL.
