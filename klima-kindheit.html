@@ -129,8 +129,8 @@ async function init(){
 }
 function updateHint(){
   const st = STATIONS[$('station').value];
-  const firstYear = st.stripes[0].y;
-  $('stationHint').textContent = `Daten für ${st.name} ab ${firstYear} verfügbar (${st.height} m).`;
+  const stripesNote = st.stripes ? `, Klimastreifen ab ${st.stripes[0].y}` : ', keine Klimastreifen (Messreihe zu kurz)';
+  $('stationHint').textContent = `${st.name} (${st.height} m)${stripesNote}.`;
 }
 
 /* ---- Stripes-Farbskala (identisch zu den Live-Dashboards) ---- */
@@ -220,8 +220,6 @@ $('form').addEventListener('submit', async ev=>{
     const mmdd = String(bm).padStart(2,'0') + '-' + String(bd).padStart(2,'0');
     const birthDateCSV = String(bd).padStart(2,'0') + '.' + String(bm).padStart(2,'0') + '.' + by + ' 00:00';
 
-    if(by < st.stripes[0].y) throw new Error(`Für ${st.name} liegen erst ab ${st.stripes[0].y} Daten vor.`);
-
     // Tagesdaten laden: historical (bis Vorjahresende) + recent (laufendes Jahr)
     const [hist, recent] = await Promise.all([
       csvFetch(SMN_BASE + code + '/ogd-smn_' + code + '_d_historical.csv'),
@@ -257,13 +255,20 @@ $('form').addEventListener('submit', async ev=>{
       weatherBody.innerHTML = html;
     }
 
-    // 2) Klima-Trend mit Markern
-    $('trend-kicker').textContent = st.name + ' · Klimastreifen';
-    $('trend-title').textContent = 'So hat sich ' + st.name + ' seit deiner Geburt erwärmt';
-    const schoolYear = by + 6; // grobe Naeherung, keine exakte Schulbeginn-Quelle
-    renderStripesWithMarker(st, by, schoolYear);
-    $('trend-note').innerHTML = `Referenzmittel (0 K-Linie): ${st.tref.toFixed(1)} °C (${st.tref_period}). ` +
-      `„ca. Schulbeginn" ist eine grobe Näherung (Geburtsjahr + 6), keine exakte Quelle – Einschulungsalter und -datum variieren je Kanton und Jahr. ${st.stripes_src}`;
+    // 2) Klima-Trend mit Markern (nur wenn die Station eine Klimastreifen-Reihe hat)
+    const trendCard = $('card-trend');
+    if(st.stripes){
+      trendCard.style.display = '';
+      $('trend-kicker').textContent = st.name + ' · Klimastreifen';
+      $('trend-title').textContent = 'So hat sich ' + st.name + ' seit deiner Geburt erwärmt';
+      $('stripes').style.display = '';
+      const schoolYear = by + 6; // grobe Naeherung, keine exakte Schulbeginn-Quelle
+      renderStripesWithMarker(st, by, schoolYear);
+      $('trend-note').innerHTML = `Referenzmittel (0 K-Linie): ${st.tref.toFixed(1)} °C (${st.tref_period}). ` +
+        `„ca. Schulbeginn" ist eine grobe Näherung (Geburtsjahr + 6), keine exakte Quelle – Einschulungsalter und -datum variieren je Kanton und Jahr. ${st.stripes_src}`;
+    } else {
+      trendCard.style.display = 'none';
+    }
 
     // 3) Sommertage damals vs. heute
     const nowYear = new Date().getFullYear();
