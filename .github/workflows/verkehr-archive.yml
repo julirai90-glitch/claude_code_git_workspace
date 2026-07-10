@@ -1,0 +1,37 @@
+name: Verkehr GR - Daily Archive
+
+# Der n8n-Webhook (f=history) haelt nur ein rollierendes 42-Tage-Fenster vor
+# (aeltere Tage werden im n8n-Workflow verworfen). Dieser Cron sichert jeden
+# Tag dauerhaft nach verkehr/data/archiv/ auf gh-pages, bevor er aus dem
+# Puffer faellt. Laeuft nachts, deutlich nach Mitternacht Europe/Zurich,
+# damit der n8n-Rollover den Vortag sicher schon abgeschlossen hat.
+on:
+  schedule:
+    - cron: '15 23 * * *'   # 23:15 UTC = 01:15 (Sommer) / 00:15 (Winter) Zurich
+  workflow_dispatch:  # manueller Testlauf
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Archiv aus n8n-history-Puffer aktualisieren
+        run: python verkehr/_research/build_archive_from_history.py
+
+      - name: Neue/geaenderte Archivtage committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add verkehr/data/archiv/
+          git diff --staged --quiet || git commit -m "chore(verkehr): archive $(date -u +%Y-%m-%d)"
+          git push origin HEAD:gh-pages
