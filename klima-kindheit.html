@@ -375,7 +375,7 @@ $('shareBtn').addEventListener('click', async ()=>{
   const url = location.href;
   const shareMsg = $('shareMsg');
   if(navigator.share){
-    try{ await navigator.share({ title: 'Mein Klima-Geburtstag', text, url }); }
+    try{ await navigator.share({ title: 'Mein Geburtstagswetter', text, url }); }
     catch(e){ /* Nutzer hat abgebrochen - kein Fehler anzeigen */ }
   } else if(navigator.clipboard){
     try{
