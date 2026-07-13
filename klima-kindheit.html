@@ -48,6 +48,9 @@
        border:1.5px solid var(--blau);border-radius:8px;padding:8px 14px;cursor:pointer;}
   .share-btn:hover{background:#eef6fb;}
   .share-msg{font-size:.76rem;color:var(--grau);}
+  .ai-badge{display:inline-block;background:#f3f4f6;color:#6b7280;font-size:.66rem;font-weight:700;
+       text-transform:uppercase;letter-spacing:.03em;padding:2px 7px;border-radius:5px;margin-bottom:6px;}
+  .ai-text{font-size:.92rem;line-height:1.6;color:#1f2937;margin:0 0 8px;}
 </style>
 </head>
 <body>
@@ -84,6 +87,13 @@
     <div id="weather-body"></div>
   </div>
 
+  <div class="card" id="card-ai-text" style="display:none">
+    <span class="ai-badge">KI-generiert</span>
+    <h2 class="section-title">Wetterbericht zu diesem Tag</h2>
+    <p class="ai-text" id="ai-text-body">Text wird generiert …</p>
+    <p class="note">Automatisch erstellt aus den Messwerten oben (OpenAI GPT-4.1-mini) – kein redaktioneller Inhalt. Bei Abweichungen gelten die Messwerte oben.</p>
+  </div>
+
   <div class="card" id="card-trend">
     <div class="head"><span class="kicker" id="trend-kicker"></span></div>
     <h2 class="section-title" id="trend-title"></h2>
@@ -103,6 +113,7 @@
 <script>
 const CONSTANTS_URL = 'station_constants.json';
 const SMN_BASE = 'https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/';
+const AI_TEXT_URL = 'https://n8n.julianreich.ch/webhook/geburtstagswetter-text';
 const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 
 let STATIONS = null; // code -> station_constants entry
@@ -128,6 +139,26 @@ async function csvFetch(url){
   const r = await fetch(url + '?_=' + Date.now(), {cache:'no-store'});
   if(!r.ok) throw new Error('HTTP ' + r.status + ' bei ' + url);
   return (await r.text()).split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(';'));
+}
+
+/* ---- KI-generierter Wetterbericht (n8n-Webhook, nur bereits berechnete Zahlen) ---- */
+async function fetchAiText(payload){
+  const card = $('card-ai-text'), body = $('ai-text-body');
+  card.style.display = '';
+  body.textContent = 'Text wird generiert …';
+  try{
+    const r = await fetch(AI_TEXT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    if(!data.text) throw new Error('Keine Antwort erhalten');
+    body.textContent = data.text;
+  } catch(e){
+    card.style.display = 'none'; // bei Fehler Karte einfach ausblenden, Rest der Seite bleibt unberuehrt
+  }
 }
 
 /* ---- Setup: Stationsliste laden ---- */
@@ -245,6 +276,7 @@ $('form').addEventListener('submit', ev=>{ ev.preventDefault(); runCompute(); })
 async function runCompute(){
   const errEl = $('errMsg'); errEl.style.display='none';
   $('shareMsg').textContent='';
+  $('card-ai-text').style.display='none';
   const btn = $('submitBtn'); btn.disabled = true; btn.textContent = 'Lade Daten …';
   try{
     const bdateVal = $('bdate').value; // yyyy-mm-dd
@@ -279,6 +311,7 @@ async function runCompute(){
     $('weather-kicker').textContent = st.name + ' · ' + fullDateDe(bd,bm,by);
     if(!birthRow){
       weatherBody.innerHTML = `<p class="err">Für dieses Datum liegt bei ${st.name} keine Messung vor (Datenlücke).</p>`;
+      $('card-ai-text').style.display = 'none';
     } else {
       const mx = num(birthRow[iMax]); mean = num(birthRow[iMean]);
       const precip = iPrecip>=0 ? num(birthRow[iPrecip]) : null;
@@ -321,6 +354,16 @@ async function runCompute(){
       if(mx==null) html += '<p class="hint">Kein Tagesmaximum für dieses Datum verfügbar.</p>';
       if(precip==null) html += '<p class="hint">Kein Niederschlagswert für dieses Datum verfügbar.</p>';
       weatherBody.innerHTML = html;
+
+      // KI-Text nicht abwarten (fire-and-forget) - Rest der Seite soll nicht auf den Webhook warten
+      fetchAiText({
+        station: st.name, height: st.height, date: fullDateDe(bd,bm,by),
+        mean, max: mx, normal,
+        precip, wind, gust,
+        sun: sunMin!=null ? +(sunMin/60).toFixed(1) : null,
+        humidity: humid,
+        snow: (snow!=null && snow>0) ? snow : null
+      });
     }
 
     // 2) Klima-Trend mit Markern (nur wenn die Station eine Klimastreifen-Reihe hat)
