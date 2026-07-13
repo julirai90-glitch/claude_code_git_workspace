@@ -389,7 +389,7 @@ async function runCompute(){
     $('summer-kicker').textContent = st.name;
     let sHtml = '<div class="big-stat">';
     sHtml += `<div class="stat cool"><b>${birthSummer.count}</b><span>Sommertage in ${by}${birthSummer.daysWithData<340?' (unvollständiges Jahr, '+birthSummer.daysWithData+' Tage mit Daten)':''}</span></div>`;
-    sHtml += `<div class="stat warm"><b>${nowSummer.count}</b><span>Sommertage ${nowYear} bisher (${nowSummer.daysWithData} Tage mit Daten)</span></div>`;
+    sHtml += `<div class="stat warm"><b>${nowSummer.count}</b><span>Sommertage ${nowYear} (${nowSummer.daysWithData} Tage bisher)</span></div>`;
     if(st.summer_normal){
       sHtml += `<div class="stat"><b>${st.summer_normal}</b><span>Normal 1991–2020 (ganzes Jahr)</span></div>`;
     }
