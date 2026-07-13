@@ -81,13 +81,12 @@
   .stripes-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#d1d5db transparent;}
   .stripes-scroll::-webkit-scrollbar{height:4px;}
   .stripes-scroll::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
-  .heatmap-headerrow{display:flex;margin-left:28px;margin-bottom:2px;}
-  .heatmap-headerrow span{width:20px;text-align:center;font-size:9px;color:#9ca3af;}
-  .heatmap-scroll{max-height:280px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
-                  scrollbar-width:thin;scrollbar-color:#d1d5db transparent;}
-  .heatmap-scroll::-webkit-scrollbar{width:4px;}
-  .heatmap-scroll::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
+  .heatmap-headerrow{display:flex;margin-left:34px;margin-bottom:2px;}
+  .heatmap-headerrow span{width:44px;text-align:center;font-size:9px;color:#9ca3af;}
+  .heatmap-scroll{overflow:hidden;}
   #heatmap{width:auto;}
+  .heatmap-toggle{display:none;background:none;border:none;color:var(--blau);font-size:.74rem;
+                  font-weight:600;cursor:pointer;padding:6px 0 2px;font-family:inherit;}
 </style>
 </head>
 <body>
@@ -143,6 +142,7 @@
   </div>
   <div class="heatmap-headerrow" id="heatmapHeader"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
   <div class="heatmap-scroll" id="heatmapScroll"><svg id="heatmap" role="img" aria-label="Kalender-Heatmap Temperaturabweichung vom Mittel"></svg></div>
+  <button class="heatmap-toggle" id="heatmapToggle" type="button">Ganzes Jahr zeigen</button>
   <p class="note" id="note-heatmap">lädt …</p>
 </div>
 <div class="tip" id="tip"></div>
@@ -275,8 +275,8 @@ function drawChart(pts){
 
 /* ---- heatmap ---- */
 const HM_MONTHS=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-const HM_CS=16,HM_GAP=4,HM_PITCH=HM_CS+HM_GAP,HM_ML=28;
-let HEATMAP_DAYS=[],HEATMAP_MODE='mean',HEATMAP_META=null;
+const HM_CS=36,HM_GAP=8,HM_PITCH=HM_CS+HM_GAP,HM_ML=34,HM_COLLAPSED_WEEKS=8;
+let HEATMAP_DAYS=[],HEATMAP_MODE='mean',HEATMAP_META=null,HEATMAP_EXPANDED=false;
 function mmddOfUTC(dt){return String(dt.getUTCMonth()+1).padStart(2,'0')+'-'+String(dt.getUTCDate()).padStart(2,'0');}
 function renderHeatmap(){
   const svg=$('heatmap');if(!svg||!HEATMAP_DAYS.length)return;
@@ -306,10 +306,26 @@ function renderHeatmap(){
   s+=`<rect id="hm-mark" x="0" y="0" width="${HM_CS}" height="${HM_CS}" rx="3" fill="none" stroke="#111" stroke-width="1.5" opacity="0" pointer-events="none"/>`;
   svg.innerHTML=s;
   HEATMAP_META={cells,maxAbs,W,H};
-  requestAnimationFrame(()=>{const sc=$('heatmapScroll');if(sc)sc.scrollTop=sc.scrollHeight;});
+  applyHeatmapCollapse();
   const last=cells[cells.length-1];
   const lastNote=last&&last.diff!=null?` Letzter Wert: ${shortDate(last.date)}, ${last.val.toFixed(1)} °C (${last.diff>=0?'+':''}${last.diff.toFixed(1)} °C vs. Mittel).`:'';
   $('note-heatmap').innerHTML=`Jedes Kästchen ein Tag im laufenden Jahr, gefärbt nach Abweichung vom ${HEATMAP_MODE==='mean'?'Tagesmittel':'Tagesmaximum'} 1991–2020 für diesen Kalendertag. Graue Kästchen: kein Wert verfügbar.${lastNote} Quelle: MeteoSchweiz Open Data, eigene Auswertung.`;
+}
+function applyHeatmapCollapse(){
+  const sc=$('heatmapScroll'),btn=$('heatmapToggle');
+  if(!sc||!HEATMAP_META)return;
+  const collapsedH=HM_COLLAPSED_WEEKS*HM_PITCH-HM_GAP;
+  const fitsCollapsed=HEATMAP_META.H<=collapsedH;
+  if(HEATMAP_EXPANDED||fitsCollapsed){
+    sc.style.maxHeight='none';sc.style.overflow='visible';
+  }else{
+    sc.style.maxHeight=collapsedH+'px';sc.style.overflow='hidden';
+    sc.scrollTop=HEATMAP_META.H-collapsedH; // bottom-anchoren: juengste Wochen sichtbar, kein Nutzer-Scroll noetig
+  }
+  if(btn){
+    btn.style.display=fitsCollapsed?'none':'block';
+    btn.textContent=HEATMAP_EXPANDED?'Weniger zeigen':'Ganzes Jahr zeigen';
+  }
 }
 function heatmapHover(ev){
   if(!HEATMAP_META)return;
@@ -333,6 +349,7 @@ document.querySelectorAll('#heatmapTabs .tab').forEach(t=>t.addEventListener('cl
   document.querySelectorAll('#heatmapTabs .tab').forEach(x=>x.classList.toggle('active',x===t));
   renderHeatmap();
 }));
+(function(){const btn=$('heatmapToggle');if(btn)btn.addEventListener('click',()=>{HEATMAP_EXPANDED=!HEATMAP_EXPANDED;applyHeatmapCollapse();});})();
 
 /* ---- range ---- */
 function setRange(days){
