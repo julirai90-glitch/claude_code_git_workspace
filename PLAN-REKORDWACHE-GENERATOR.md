@@ -149,6 +149,15 @@ Backend. Skaliert automatisch auf mehr Stationen (siehe Phase 4).
   Zahlen-Wiedergabe) – aber explizites Verbot von «Himmel/Wolken/grau/bedeckt» etc., nachdem ein
   Testlauf trotz Grounding-Regel «der Himmel zeigte sich ohne Sonnenschein» formulierte (nicht
   gemessener Fakt). Mit 3 Testläufen nach der Korrektur verifiziert: keine Verstösse mehr.
+  Zweiter Fund (13.07.2026, von Julian anhand eines realen Beispiels entdeckt): Modell verglich
+  Tagesmaximum mit dem (auf Tagesmittel bezogenen) langjährigen Mittel - derselbe Max-vs-Mittel-
+  Fehler wie beim Teilen-Text. Fix: Differenz wird jetzt deterministisch in JavaScript berechnet
+  und als fertige Aussage mitgegeben (`Prompt bauen`-Node), Tagesmaximum ausdrücklich als "kein
+  Vergleichswert" markiert. Ebenfalls gefunden: Beaufort-Windkategorie war je nach Lauf uneinheitlich
+  (mässige/leichte/frische Brise für dieselben 16.2 km/h) - jetzt ebenfalls deterministisch in JS
+  berechnet, Modell übernimmt die Bezeichnung nur noch wörtlich. Mit 3 Testläufen an den realen
+  Werten (Chur, 18.1.2000) verifiziert: Vergleich korrekt, Windkategorie konsistent, Böenwert
+  bleibt erhalten.
 
 ---
 
