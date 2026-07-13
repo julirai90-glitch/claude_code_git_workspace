@@ -36,6 +36,19 @@ STATION_FILES = {
     "gro": "live-grono.html",
     "elm": "glarus/live-elm.html",
     "gla": "glarus/live-glarus.html",
+    "beh": "live-bernina.html",
+    "buf": "live-buffalora.html",
+    "cma": "live-crapmasegn.html",
+    "cov": "live-corvatsch.html",
+    "nas": "live-naluns.html",
+    "pma": "live-martegnas.html",
+    "sbe": "live-sbernardino.html",
+    "sia": "live-sils.html",
+    "smm": "live-stamaria.html",
+    "vab": "live-valbella.html",
+    "vio": "live-vicosoprano.html",
+    "vls": "live-vals.html",
+    "wfj": "live-weissfluhjoch.html",
 }
 
 RE_STATIONS_ARRAY = re.compile(r"const STATIONS\s*=\s*(\[.*?\]);", re.DOTALL)

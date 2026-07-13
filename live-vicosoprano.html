@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live-Temperatur Vicosoprano</title>
+<style>
+  :root{--blau:#0068A4;--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;--rot:#c0392b;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:696px;margin:0 auto;border:1px solid #e5e7eb;border-radius:16px;
+        padding:16px 18px 18px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--blau);transition:background .6s;}
+  .head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+  .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.72rem;}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;color:var(--grau);}
+  .dot{width:9px;height:9px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite;}
+  .dot.off{background:#9ca3af;animation:none;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}70%{box-shadow:0 0 0 8px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+  .now{display:flex;align-items:baseline;gap:10px;margin:0 0 2px;}
+  .now b{font-size:3.4rem;line-height:1;font-weight:800;color:var(--blau);transition:color .6s;font-variant-numeric:tabular-nums;}
+  .now .u{font-size:1.3rem;color:var(--grau);font-weight:700;}
+  .stamp{font-size:.76rem;color:var(--grau);margin-bottom:10px;min-height:1.2em;}
+  /* scrollable chart */
+  .tabs{display:flex;gap:6px;margin-bottom:8px;}
+  .tab{background:var(--hell);border:none;border-radius:8px;padding:4px 11px;
+       font-size:.74rem;cursor:pointer;color:var(--grau);font-family:inherit;}
+  .tab.active{background:var(--blau);color:#fff;font-weight:600;}
+  .chart-outer{position:relative;}
+  .scroll-wrap{overflow-x:auto;overflow-y:hidden;width:100%;
+               -webkit-overflow-scrolling:touch;
+               scrollbar-width:thin;scrollbar-color:#d1d5db transparent;}
+  .scroll-wrap::-webkit-scrollbar{height:4px;}
+  .scroll-wrap::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
+  .chart-svg{display:block;height:120px;}
+  .yaxis{position:absolute;top:0;right:0;height:120px;width:36px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 45%);}
+  .yaxis .t{position:absolute;right:3px;transform:translateY(-50%);font-size:9px;color:#9ca3af;font-variant-numeric:tabular-nums;}
+  .chartlegend{position:absolute;top:3px;left:4px;pointer-events:none;display:flex;gap:9px;font-size:9px;color:#6b7280;background:rgba(255,255,255,.72);padding:1px 5px;border-radius:5px;}
+  .chartlegend i{display:inline-block;width:13px;height:0;vertical-align:middle;margin-right:3px;}
+  .chartlegend .max{border-top:2px solid #c0392b;}
+  .chartlegend .avg{border-top:2px dashed #9ca3af;}
+  .now-btn{position:absolute;right:44px;top:50%;transform:translateY(-50%);
+           background:#fff;border:1px solid #d1d5db;border-radius:20px;
+           padding:4px 10px;font-size:.7rem;color:#374151;cursor:pointer;
+           box-shadow:0 2px 8px rgba(0,0,0,.1);white-space:nowrap;
+           opacity:0;pointer-events:none;transition:opacity .2s;}
+  .now-btn.vis{opacity:1;pointer-events:auto;}
+  /* stats */
+  .stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .stat{flex:1;min-width:110px;background:var(--hell);border-radius:10px;padding:9px 11px;}
+  .stat b{font-size:1.15rem;display:block;line-height:1.2;font-variant-numeric:tabular-nums;}
+  .stat span{font-size:.7rem;color:var(--grau);line-height:1.3;}
+  .stat.warm b{color:var(--orange);}.stat.cool b{color:var(--blau);}
+  .stat.rec b{color:var(--rot);}.stat.mean b{color:#1f2937;}
+  /* record bar */
+  .bar{position:relative;height:11px;border-radius:6px;margin:14px 0 3px;
+       background:linear-gradient(90deg,#1d4e89 0%,#4a90c2 23%,#cfd8dc 46%,#f0b07a 72%,#c0392b 100%);}
+  .bar .cur{position:absolute;top:-4px;width:4px;height:19px;border-radius:2px;background:#0a3d62;transition:left .5s;}
+  .bar .tick{position:absolute;top:-3px;width:2px;height:17px;border-radius:1px;opacity:.85;}
+  .bar .tick.hot{background:var(--rot);}.bar .tick.cold{background:#1d4e89;}
+  .bar .lbl{position:absolute;top:-18px;font-size:.58rem;transform:translateX(-50%);white-space:nowrap;font-weight:700;}
+  .bar .lbl.hot{color:var(--rot);}.bar .lbl.cold{color:#1d4e89;}
+  .scale{display:flex;justify-content:space-between;font-size:.64rem;color:#9ca3af;}
+  /* tropen */
+  .extra{margin-top:10px;font-size:.82rem;color:var(--grau);}
+  .extra .big{font-size:1rem;font-weight:700;color:#1f2937;}
+  .tropen{display:inline-block;background:#fdecea;color:var(--rot);font-weight:600;
+          font-size:.76rem;padding:3px 9px;border-radius:20px;}
+  .badge-rec{display:inline-block;background:#fdecea;color:var(--rot);font-weight:700;
+             font-size:.66rem;padding:2px 8px;border-radius:20px;margin-bottom:3px;}
+  .note{font-size:.68rem;color:var(--grau);margin-top:14px;line-height:1.45;}
+  .err{color:#b45309;font-size:.8rem;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
+       border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:7px 10px;
+       font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .tip b{display:block;font-size:.92rem;margin-bottom:2px;}
+  .section-title{font-size:1rem;margin:0 0 8px;font-weight:700;color:#1f2937;}
+  .card + .card{margin-top:14px;}
+  #stripes,#precip{width:100%;display:block;}
+  .stripes-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#d1d5db transparent;}
+  .stripes-scroll::-webkit-scrollbar{height:4px;}
+  .stripes-scroll::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent" id="accent"></div>
+  <div class="head">
+    <span class="kicker">Vicosoprano · Temperatur jetzt</span>
+    <span class="live"><span class="dot" id="dot"></span><span id="livelbl">live</span></span>
+  </div>
+  <div class="now"><b id="cur">–</b><span class="u">°C</span></div>
+  <div class="stamp" id="stamp">lade aktuelle Messung …</div>
+
+  <div class="tabs">
+    <button class="tab" data-days="1">24 h</button>
+    <button class="tab active" data-days="3">3 Tage</button>
+    <button class="tab" data-days="7">7 Tage</button>
+    <button class="tab" data-days="14">14 Tage</button>
+  </div>
+  <div class="chart-outer">
+    <div class="scroll-wrap" id="scroller">
+      <svg class="chart-svg" id="curve" role="img" aria-label="Temperaturverlauf"></svg>
+    </div>
+    <div class="yaxis" id="yaxis"></div>
+    <div class="chartlegend"><span><i class="max"></i>Tagesrekord</span><span><i class="avg"></i>Durchschnitt</span></div>
+    <button class="now-btn" id="nowbtn">Jetzt →</button>
+  </div>
+
+  <div class="stats" id="ctx"></div>
+  <div class="extra" id="extra"></div>
+
+  <div class="bar" id="bar">
+    <div class="tick cold" id="tick-cold"></div><div class="lbl cold" id="lbl-cold"></div>
+    <div class="tick hot" id="tick-hot"></div><div class="lbl hot" id="lbl-hot"></div>
+    <div class="cur" id="curmark"></div>
+  </div>
+  <div class="scale"><span>−20 °C</span><span>Allzeit-Rekorde</span><span>+40 °C</span></div>
+
+  <p class="note" id="note">
+    Quelle: MeteoSchweiz (Open Government Data, CC BY), automatische Station Vicosoprano (1089&nbsp;m).
+    Aktuelle Werte provisorisch und unkorrigiert.
+    Zeiten in Schweizer Zeit. Gestrichelt = Tagesdurchschnitt 1991–2020.
+    <span id="note-normal"></span> Rote Linie = Tagesrekord (höchster je an diesem Datum gemessener Wert, vor 2026). Rekorde und Kennzahlen: eigene Auswertung. Aktualisiert sich automatisch.
+  </p>
+</div>
+
+
+<div class="tip" id="tip"></div>
+<script>
+const STATION='vio';
+const BASE='https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/'+STATION+'/';
+const NOW_URL=BASE+'ogd-smn_'+STATION+'_t_now.csv';
+const HREC_URL=BASE+'ogd-smn_'+STATION+'_h_recent.csv';
+const DREC_URL=BASE+'ogd-smn_'+STATION+'_d_recent.csv';
+const REC_HOT={t:33.5,d:'27. Juni 2019'};
+const REC_COLD={t:-15.5,d:'6. März 1971'};
+const SUMMER_NORMAL=4;
+const BAR_MIN=-20, BAR_MAX=40;
+const YEAR=new Date().getFullYear();
+const NORMAL={"01-01":0.9,"01-02":0.8,"01-03":0.7,"01-04":0.7,"01-05":0.6,"01-06":0.6,"01-07":0.5,"01-08":0.4,"01-09":0.2,"01-10":0.1,"01-11":-0.1,"01-12":-0.4,"01-13":-0.6,"01-14":-0.7,"01-15":-0.8,"01-16":-0.9,"01-17":-1.0,"01-18":-1.1,"01-19":-1.1,"01-20":-1.1,"01-21":-1.1,"01-22":-1.0,"01-23":-0.9,"01-24":-0.8,"01-25":-0.6,"01-26":-0.4,"01-27":-0.1,"01-28":0.1,"01-29":0.2,"01-30":0.3,"01-31":0.3,"02-01":0.3,"02-02":0.2,"02-03":0.2,"02-04":0.1,"02-05":0.1,"02-06":0.0,"02-07":0.1,"02-08":0.2,"02-09":0.2,"02-10":0.3,"02-11":0.3,"02-12":0.4,"02-13":0.5,"02-14":0.7,"02-15":0.7,"02-16":0.9,"02-17":1.1,"02-18":1.2,"02-19":1.2,"02-20":1.2,"02-21":1.4,"02-22":1.5,"02-23":1.5,"02-24":1.5,"02-25":1.5,"02-26":1.5,"02-27":1.5,"02-28":1.4,"02-29":1.4,"03-01":1.4,"03-02":1.6,"03-03":1.7,"03-04":2.0,"03-05":2.1,"03-06":2.4,"03-07":2.6,"03-08":2.6,"03-09":2.8,"03-10":3.0,"03-11":3.1,"03-12":3.4,"03-13":3.6,"03-14":3.8,"03-15":4.0,"03-16":4.1,"03-17":4.1,"03-18":4.0,"03-19":3.9,"03-20":4.0,"03-21":4.1,"03-22":4.3,"03-23":4.4,"03-24":4.6,"03-25":4.7,"03-26":4.8,"03-27":4.8,"03-28":4.9,"03-29":5.0,"03-30":5.2,"03-31":5.5,"04-01":5.8,"04-02":6.1,"04-03":6.4,"04-04":6.8,"04-05":7.0,"04-06":7.1,"04-07":7.4,"04-08":7.5,"04-09":7.8,"04-10":8.0,"04-11":8.2,"04-12":8.4,"04-13":8.5,"04-14":8.6,"04-15":8.8,"04-16":9.0,"04-17":9.1,"04-18":9.2,"04-19":9.2,"04-20":9.1,"04-21":9.0,"04-22":8.9,"04-23":8.9,"04-24":8.8,"04-25":8.8,"04-26":8.8,"04-27":8.9,"04-28":9.0,"04-29":9.0,"04-30":9.0,"05-01":9.1,"05-02":9.1,"05-03":9.3,"05-04":9.4,"05-05":9.6,"05-06":9.8,"05-07":9.9,"05-08":10.0,"05-09":10.2,"05-10":10.3,"05-11":10.5,"05-12":10.5,"05-13":10.5,"05-14":10.6,"05-15":10.7,"05-16":10.8,"05-17":10.8,"05-18":10.9,"05-19":11.1,"05-20":11.3,"05-21":11.5,"05-22":11.6,"05-23":11.8,"05-24":11.9,"05-25":12.1,"05-26":12.3,"05-27":12.6,"05-28":12.9,"05-29":13.1,"05-30":13.3,"05-31":13.4,"06-01":13.6,"06-02":13.7,"06-03":13.9,"06-04":14.1,"06-05":14.2,"06-06":14.5,"06-07":14.7,"06-08":14.9,"06-09":15.0,"06-10":15.1,"06-11":15.1,"06-12":15.2,"06-13":15.4,"06-14":15.6,"06-15":15.7,"06-16":15.9,"06-17":16.1,"06-18":16.1,"06-19":16.2,"06-20":16.3,"06-21":16.4,"06-22":16.4,"06-23":16.5,"06-24":16.6,"06-25":16.7,"06-26":16.9,"06-27":16.9,"06-28":17.1,"06-29":17.2,"06-30":17.4,"07-01":17.4,"07-02":17.5,"07-03":17.5,"07-04":17.5,"07-05":17.5,"07-06":17.6,"07-07":17.6,"07-08":17.5,"07-09":17.6,"07-10":17.6,"07-11":17.7,"07-12":17.8,"07-13":17.8,"07-14":17.8,"07-15":17.8,"07-16":17.9,"07-17":17.8,"07-18":18.0,"07-19":18.0,"07-20":18.1,"07-21":18.2,"07-22":18.2,"07-23":18.4,"07-24":18.5,"07-25":18.6,"07-26":18.5,"07-27":18.5,"07-28":18.5,"07-29":18.6,"07-30":18.6,"07-31":18.5,"08-01":18.5,"08-02":18.3,"08-03":18.3,"08-04":18.2,"08-05":18.1,"08-06":18.1,"08-07":17.9,"08-08":17.7,"08-09":17.5,"08-10":17.4,"08-11":17.2,"08-12":17.0,"08-13":16.8,"08-14":16.7,"08-15":16.6,"08-16":16.5,"08-17":16.4,"08-18":16.3,"08-19":16.2,"08-20":16.2,"08-21":16.2,"08-22":16.2,"08-23":16.2,"08-24":16.2,"08-25":16.1,"08-26":15.9,"08-27":15.8,"08-28":15.7,"08-29":15.6,"08-30":15.4,"08-31":15.3,"09-01":15.2,"09-02":15.1,"09-03":14.9,"09-04":14.7,"09-05":14.6,"09-06":14.4,"09-07":14.3,"09-08":14.1,"09-09":14.0,"09-10":14.0,"09-11":13.9,"09-12":13.8,"09-13":13.7,"09-14":13.6,"09-15":13.4,"09-16":13.3,"09-17":13.1,"09-18":12.9,"09-19":12.7,"09-20":12.6,"09-21":12.4,"09-22":12.2,"09-23":12.0,"09-24":11.7,"09-25":11.5,"09-26":11.4,"09-27":11.1,"09-28":10.8,"09-29":10.6,"09-30":10.4,"10-01":10.3,"10-02":10.2,"10-03":10.1,"10-04":9.9,"10-05":9.6,"10-06":9.4,"10-07":9.2,"10-08":9.0,"10-09":9.0,"10-10":8.9,"10-11":8.8,"10-12":8.7,"10-13":8.7,"10-14":8.6,"10-15":8.5,"10-16":8.4,"10-17":8.5,"10-18":8.5,"10-19":8.6,"10-20":8.7,"10-21":8.7,"10-22":8.7,"10-23":8.8,"10-24":8.6,"10-25":8.4,"10-26":8.3,"10-27":8.2,"10-28":8.1,"10-29":7.9,"10-30":7.8,"10-31":7.7,"11-01":7.4,"11-02":7.1,"11-03":6.9,"11-04":6.6,"11-05":6.5,"11-06":6.2,"11-07":5.8,"11-08":5.6,"11-09":5.5,"11-10":5.3,"11-11":5.1,"11-12":4.9,"11-13":4.7,"11-14":4.4,"11-15":4.0,"11-16":3.8,"11-17":3.6,"11-18":3.4,"11-19":3.2,"11-20":3.0,"11-21":2.8,"11-22":2.6,"11-23":2.5,"11-24":2.4,"11-25":2.3,"11-26":2.2,"11-27":2.1,"11-28":2.1,"11-29":2.1,"11-30":2.1,"12-01":2.1,"12-02":2.1,"12-03":2.0,"12-04":1.8,"12-05":1.7,"12-06":1.6,"12-07":1.5,"12-08":1.5,"12-09":1.3,"12-10":1.2,"12-11":1.2,"12-12":1.1,"12-13":1.0,"12-14":1.0,"12-15":1.1,"12-16":1.3,"12-17":1.3,"12-18":1.4,"12-19":1.5,"12-20":1.6,"12-21":1.7,"12-22":1.8,"12-23":1.7,"12-24":1.7,"12-25":1.6,"12-26":1.6,"12-27":1.6,"12-28":1.6,"12-29":1.5,"12-30":1.3,"12-31":1.1};
+const REKORD={"02-07":6.4,"02-08":11.5,"02-09":8.8,"02-10":12.0,"02-11":11.2,"02-12":13.3,"02-13":8.6,"02-14":13.6,"02-15":14.8,"02-16":11.9,"02-17":14.9,"02-18":12.1,"02-19":14.2,"02-20":16.5,"02-21":12.6,"02-22":10.5,"02-23":17.1,"02-24":18.3,"02-25":11.8,"02-26":14.0,"02-27":16.7,"02-28":16.4,"03-01":10.0,"03-02":10.7,"03-03":12.2,"03-04":11.5,"03-05":11.5,"03-06":10.4,"03-07":11.2,"03-08":12.4,"03-09":13.7,"03-10":13.2,"03-11":17.0,"03-12":13.4,"03-13":12.6,"03-14":14.1,"03-15":16.3,"03-16":17.5,"03-17":17.6,"03-18":15.3,"03-19":16.1,"03-20":15.6,"03-21":15.1,"03-22":15.8,"03-23":17.8,"03-24":18.0,"03-25":14.4,"03-26":14.7,"03-27":15.2,"03-28":15.1,"03-29":18.7,"03-30":19.3,"03-31":18.7,"04-01":19.3,"04-02":18.0,"04-03":17.6,"04-04":15.9,"04-05":18.2,"04-06":18.7,"04-07":20.9,"04-08":20.8,"04-09":18.4,"04-10":18.9,"04-11":20.4,"04-12":21.5,"04-13":22.2,"04-14":22.1,"04-15":19.0,"04-16":17.8,"04-17":19.6,"04-18":20.8,"04-19":20.1,"04-20":21.7,"04-21":22.3,"04-22":21.1,"04-23":20.5,"04-24":20.6,"04-25":20.3,"04-26":18.1,"04-27":16.0,"04-28":17.9,"04-29":18.7,"04-30":20.1,"05-01":21.3,"05-02":21.4,"05-03":18.4,"05-04":17.9,"05-05":18.2,"05-06":22.2,"05-07":19.0,"05-08":20.0,"05-09":19.3,"05-10":19.8,"05-11":20.9,"05-12":21.7,"05-13":21.7,"05-14":22.5,"05-15":21.4,"05-16":21.3,"05-17":23.2,"05-18":23.4,"05-19":21.0,"05-20":22.5,"05-21":25.6,"05-22":22.8,"05-23":23.1,"05-24":21.7,"05-25":23.0,"05-26":22.6,"05-27":23.4,"05-28":22.9,"05-29":23.2,"05-30":23.8,"05-31":23.1,"06-01":21.9,"06-02":23.7,"06-03":24.8,"06-04":24.4,"06-05":24.9,"06-06":25.4,"06-07":24.4,"06-08":26.0,"06-09":26.0,"06-10":25.2,"06-11":26.1,"06-12":26.7,"06-13":26.3,"06-14":25.9,"06-15":25.7,"06-16":26.6,"06-17":26.3,"06-18":25.8,"06-19":25.6,"06-20":25.7,"06-21":25.8,"06-22":26.5,"06-23":26.8,"06-24":27.0,"06-25":26.8,"06-26":27.6,"06-27":33.5,"06-28":30.6,"06-29":27.2,"06-30":26.7,"07-01":25.4,"07-02":26.7,"07-03":26.7,"07-04":27.4,"07-05":26.8,"07-06":28.1,"07-07":27.6,"07-08":27.5,"07-09":26.9,"07-10":26.9,"07-11":27.4,"07-12":25.6,"07-13":25.4,"07-14":26.5,"07-15":29.0,"07-16":27.4,"07-17":27.0,"07-18":27.4,"07-19":28.0,"07-20":28.3,"07-21":29.3,"07-22":30.0,"07-23":27.5,"07-24":28.0,"07-25":28.6,"07-26":27.3,"07-27":27.7,"07-28":27.3,"07-29":27.0,"07-30":28.3,"07-31":28.7,"08-01":29.2,"08-02":27.9,"08-03":27.3,"08-04":27.8,"08-05":28.3,"08-06":27.9,"08-07":28.5,"08-08":26.3,"08-09":26.6,"08-10":30.6,"08-11":27.5,"08-12":27.7,"08-13":28.0,"08-14":26.9,"08-15":27.5,"08-16":26.4,"08-17":27.2,"08-18":25.2,"08-19":26.8,"08-20":27.5,"08-21":27.6,"08-22":28.6,"08-23":31.3,"08-24":28.8,"08-25":27.7,"08-26":25.8,"08-27":25.4,"08-28":24.4,"08-29":25.8,"08-30":26.0,"08-31":25.1,"09-01":24.5,"09-02":22.6,"09-03":25.5,"09-04":23.1,"09-05":22.3,"09-06":23.0,"09-07":22.3,"09-08":22.4,"09-09":22.7,"09-10":23.1,"09-11":23.4,"09-12":22.9,"09-13":23.0,"09-14":22.2,"09-15":21.9,"09-16":22.5,"09-17":23.4,"09-18":21.0,"09-19":23.5,"09-20":22.3,"09-21":21.1,"09-22":21.3,"09-23":22.1,"09-24":19.7,"09-25":18.5,"09-26":21.7,"09-27":20.1,"09-28":20.8,"09-29":19.7,"09-30":21.8,"10-01":20.0,"10-02":20.8,"10-03":20.0,"10-04":19.4,"10-05":18.5,"10-06":17.6,"10-07":24.5,"10-08":24.5,"10-09":25.3,"10-10":24.6,"10-11":19.4,"10-12":18.4,"10-13":17.4,"10-14":18.9,"10-15":19.6,"10-16":20.2,"10-17":20.5,"10-18":18.0,"10-19":19.6,"10-20":16.7,"10-21":18.0,"10-22":16.5,"10-23":18.0,"10-24":19.8,"10-25":22.3,"10-26":17.5,"10-27":17.8,"10-28":17.8,"10-29":20.6,"10-30":18.3,"10-31":17.2,"11-01":14.3,"11-02":15.1,"11-03":11.4,"11-04":13.0,"11-05":13.3,"11-06":14.8,"11-07":15.4,"11-08":15.7,"11-09":21.5,"11-10":21.0,"11-11":14.9,"11-12":16.0,"11-13":13.3,"11-14":14.3,"11-15":16.6,"11-16":15.8,"11-17":10.8,"11-18":15.4,"11-19":13.8,"11-20":12.7,"11-21":11.4,"11-22":7.7,"11-23":12.9,"11-24":12.5,"11-25":11.5,"11-26":8.6,"11-27":10.5,"11-28":8.8,"11-29":10.0,"11-30":11.7,"12-01":12.6,"12-02":11.1,"12-03":8.7,"12-04":11.7,"12-05":9.5,"12-06":8.6,"12-07":8.1,"12-08":12.9,"12-09":15.1,"12-10":10.6,"12-11":13.1,"12-12":7.5,"12-13":10.8,"12-14":11.6,"12-15":11.4,"12-16":13.3,"12-17":11.7,"12-18":12.4,"12-19":10.8,"12-20":9.7,"12-21":10.3,"12-22":9.6,"12-23":11.1,"12-24":13.2,"12-25":12.8,"12-26":14.5,"12-27":8.7,"12-28":13.0,"12-29":10.1,"12-30":14.1,"12-31":16.5,"01-01":15.9,"01-02":13.6,"01-03":11.4,"01-04":8.5,"01-05":12.6,"01-06":9.3,"01-07":7.3,"01-08":7.2,"01-09":9.9,"01-10":15.1,"01-11":6.7,"01-12":7.9,"01-13":6.2,"01-14":13.3,"01-15":8.8,"01-16":9.6,"01-17":5.3,"01-18":5.8,"01-19":4.5,"01-20":4.6,"01-21":5.3,"01-22":6.6,"01-23":8.3,"01-24":13.4,"01-25":12.7,"01-26":12.7,"01-27":12.7,"01-28":10.0,"01-29":11.3,"01-30":10.1,"01-31":12.6,"02-01":14.7,"02-02":11.9,"02-03":15.9,"02-04":15.3,"02-05":16.1,"02-06":7.8,"02-29":7.9};   // Tagesrekord je Kalendertag (Tagesmax), Jahre vor 2026
+const REKORD_YEAR={"02-07":2020,"02-08":2022,"02-09":2022,"02-10":2015,"02-11":2023,"02-12":2023,"02-13":2024,"02-14":2019,"02-15":2019,"02-16":2017,"02-17":2022,"02-18":2024,"02-19":2023,"02-20":2023,"02-21":2019,"02-22":2020,"02-23":2020,"02-24":2020,"02-25":2023,"02-26":2019,"02-27":2019,"02-28":2019,"03-01":2021,"03-02":2019,"03-03":2013,"03-04":2023,"03-05":2025,"03-06":2025,"03-07":2014,"03-08":2014,"03-09":2017,"03-10":2015,"03-11":2020,"03-12":2023,"03-13":2014,"03-14":2017,"03-15":2017,"03-16":2019,"03-17":2017,"03-18":2017,"03-19":2017,"03-20":2017,"03-21":2024,"03-22":2024,"03-23":2019,"03-24":2019,"03-25":2022,"03-26":2022,"03-27":2022,"03-28":2022,"03-29":2021,"03-30":2021,"03-31":2021,"04-01":2021,"04-02":2021,"04-03":2017,"04-04":2025,"04-05":2025,"04-06":2024,"04-07":2024,"04-08":2024,"04-09":2020,"04-10":2017,"04-11":2025,"04-12":2024,"04-13":2024,"04-14":2024,"04-15":2015,"04-16":2013,"04-17":2013,"04-18":2013,"04-19":2018,"04-20":2018,"04-21":2018,"04-22":2018,"04-23":2018,"04-24":2018,"04-25":2018,"04-26":2018,"04-27":2022,"04-28":2018,"04-29":2023,"04-30":2025,"05-01":2025,"05-02":2025,"05-03":2025,"05-04":2023,"05-05":2023,"05-06":2018,"05-07":2015,"05-08":2018,"05-09":2020,"05-10":2015,"05-11":2022,"05-12":2022,"05-13":2015,"05-14":2015,"05-15":2022,"05-16":2022,"05-17":2022,"05-18":2020,"05-19":2020,"05-20":2022,"05-21":2022,"05-22":2022,"05-23":2017,"05-24":2017,"05-25":2018,"05-26":2018,"05-27":2022,"05-28":2017,"05-29":2017,"05-30":2017,"05-31":2017,"06-01":2025,"06-02":2019,"06-03":2019,"06-04":2015,"06-05":2015,"06-06":2015,"06-07":2015,"06-08":2014,"06-09":2014,"06-10":2014,"06-11":2025,"06-12":2014,"06-13":2014,"06-14":2025,"06-15":2025,"06-16":2022,"06-17":2022,"06-18":2013,"06-19":2022,"06-20":2022,"06-21":2017,"06-22":2017,"06-23":2017,"06-24":2017,"06-25":2025,"06-26":2019,"06-27":2019,"06-28":2019,"06-29":2025,"06-30":2025,"07-01":2025,"07-02":2019,"07-03":2015,"07-04":2025,"07-05":2015,"07-06":2015,"07-07":2015,"07-08":2017,"07-09":2016,"07-10":2023,"07-11":2023,"07-12":2022,"07-13":2015,"07-14":2015,"07-15":2022,"07-16":2022,"07-17":2022,"07-18":2015,"07-19":2015,"07-20":2022,"07-21":2022,"07-22":2022,"07-23":2015,"07-24":2019,"07-25":2022,"07-26":2022,"07-27":2013,"07-28":2024,"07-29":2020,"07-30":2020,"07-31":2020,"08-01":2020,"08-02":2017,"08-03":2013,"08-04":2017,"08-05":2022,"08-06":2013,"08-07":2015,"08-08":2015,"08-09":2025,"08-10":2025,"08-11":2024,"08-12":2024,"08-13":2025,"08-14":2025,"08-15":2025,"08-16":2024,"08-17":2025,"08-18":2023,"08-19":2023,"08-20":2023,"08-21":2023,"08-22":2023,"08-23":2023,"08-24":2023,"08-25":2023,"08-26":2022,"08-27":2017,"08-28":2017,"08-29":2024,"08-30":2024,"08-31":2024,"09-01":2024,"09-02":2016,"09-03":2023,"09-04":2013,"09-05":2013,"09-06":2022,"09-07":2023,"09-08":2023,"09-09":2023,"09-10":2023,"09-11":2023,"09-12":2018,"09-13":2020,"09-14":2020,"09-15":2019,"09-16":2019,"09-17":2020,"09-18":2020,"09-19":2025,"09-20":2025,"09-21":2018,"09-22":2018,"09-23":2018,"09-24":2013,"09-25":2015,"09-26":2013,"09-27":2014,"09-28":2018,"09-29":2023,"09-30":2019,"10-01":2014,"10-02":2023,"10-03":2023,"10-04":2023,"10-05":2023,"10-06":2023,"10-07":2023,"10-08":2023,"10-09":2023,"10-10":2023,"10-11":2023,"10-12":2023,"10-13":2023,"10-14":2017,"10-15":2017,"10-16":2017,"10-17":2014,"10-18":2022,"10-19":2022,"10-20":2014,"10-21":2018,"10-22":2019,"10-23":2018,"10-24":2018,"10-25":2018,"10-26":2017,"10-27":2019,"10-28":2022,"10-29":2016,"10-30":2020,"10-31":2020,"11-01":2024,"11-02":2024,"11-03":2017,"11-04":2018,"11-05":2015,"11-06":2015,"11-07":2015,"11-08":2015,"11-09":2015,"11-10":2015,"11-11":2015,"11-12":2022,"11-13":2013,"11-14":2015,"11-15":2015,"11-16":2015,"11-17":2020,"11-18":2015,"11-19":2021,"11-20":2023,"11-21":2017,"11-22":2016,"11-23":2023,"11-24":2014,"11-25":2014,"11-26":2019,"11-27":2016,"11-28":2024,"11-29":2014,"11-30":2015,"12-01":2015,"12-02":2016,"12-03":2015,"12-04":2013,"12-05":2018,"12-06":2018,"12-07":2019,"12-08":2025,"12-09":2016,"12-10":2016,"12-11":2016,"12-12":2021,"12-13":2021,"12-14":2021,"12-15":2021,"12-16":2024,"12-17":2021,"12-18":2023,"12-19":2021,"12-20":2023,"12-21":2023,"12-22":2016,"12-23":2023,"12-24":2023,"12-25":2016,"12-26":2016,"12-27":2025,"12-28":2025,"12-29":2021,"12-30":2021,"12-31":2021,"01-01":2022,"01-02":2015,"01-03":2022,"01-04":2015,"01-05":2023,"01-06":2015,"01-07":2020,"01-08":2019,"01-09":2015,"01-10":2015,"01-11":2015,"01-12":2014,"01-13":2019,"01-14":2022,"01-15":2022,"01-16":2022,"01-17":2022,"01-18":2025,"01-19":2018,"01-20":2022,"01-21":2014,"01-22":2020,"01-23":2022,"01-24":2024,"01-25":2016,"01-26":2024,"01-27":2022,"01-28":2018,"01-29":2018,"01-30":2018,"01-31":2024,"02-01":2016,"02-02":2020,"02-03":2020,"02-04":2024,"02-05":2024,"02-06":2024,"02-29":2024};
+
+
+
+/* ---- helpers ---- */
+const ZRH={timeZone:'Europe/Zurich'};
+const localDay=dt=>dt.toLocaleDateString('en-CA',ZRH);
+const localMMDD=dt=>localDay(dt).slice(5);
+const hhmm=dt=>dt.toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit',...ZRH});
+const shortDate=dt=>dt.toLocaleDateString('de-CH',{day:'numeric',month:'short',timeZone:'Europe/Zurich'});
+const deDay=dt=>dt.toLocaleDateString('de-CH',{day:'numeric',month:'long',...ZRH});
+const fullDate=(mmdd,year)=>{const[mo,da]=mmdd.split('-').map(Number);return new Date(year,mo-1,da).toLocaleDateString('de-CH',{day:'numeric',month:'long',year:'numeric'});};
+function parseMeteoDate(str){if(!str)return null;const m=String(str).trim().match(/^(\d{2})\.(\d{2})\.(\d{4})(?: (\d{2}):(\d{2}))?$/);if(m){const[,d,mo,y,h='00',mi='00']=m;const dt=new Date(Date.UTC(+y,+mo-1,+d,+h,+mi));if(!isNaN(dt))return dt;}return null;}
+const num=v=>(v===''||v==null)?null:parseFloat(String(v).replace(',','.'));
+
+const TSTOPS=[[-15,[29,78,137]],[0,[74,144,194]],[10,[150,170,180]],[18,[238,155,90]],[26,[232,112,58]],[34,[192,57,43]]];
+function tempColor(v){if(v==null)return'#9ca3af';if(v<=TSTOPS[0][0])return`rgb(${TSTOPS[0][1]})`;const n=TSTOPS.length;if(v>=TSTOPS[n-1][0])return`rgb(${TSTOPS[n-1][1]})`;for(let i=0;i<n-1;i++){const[a,ca]=TSTOPS[i],[b,cb]=TSTOPS[i+1];if(v>=a&&v<=b){const f=(v-a)/(b-a);return`rgb(${[0,1,2].map(k=>Math.round(ca[k]+(cb[k]-ca[k])*f)).join(',')})`;}}return'#888';}
+
+/* ---- caches ---- */
+const HCACHE={data:null,t:0},DCACHE={data:null,t:0};
+async function csvFetch(url){const r=await fetch(url+'?_='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return(await r.text()).split(/\r?\n/).filter(l=>l.trim()).map(l=>l.split(';'));}
+async function csvCached(url,store,maxMs){if(store.data&&Date.now()-store.t<maxMs)return store.data;const d=await csvFetch(url);store.data=d;store.t=Date.now();return d;}
+
+/* ---- state ---- */
+let ALL_PTS=[];
+let DAYS=3;
+let CHART={};
+const $=id=>document.getElementById(id);
+const scroller=$('scroller');
+const nowBtn=$('nowbtn');
+
+/* ---- bar ---- */
+const barPct=t=>Math.max(0,Math.min(100,(t-BAR_MIN)/(BAR_MAX-BAR_MIN)*100));
+function placeBar(cur){
+  $('curmark').style.left=`calc(${barPct(cur)}% - 2px)`;
+  $('tick-hot').style.left=`calc(${barPct(REC_HOT.t)}% - 1px)`;$('lbl-hot').style.left=barPct(REC_HOT.t)+'%';$('lbl-hot').textContent=REC_HOT.t.toFixed(1)+'°';
+  $('tick-cold').style.left=`calc(${barPct(REC_COLD.t)}% - 1px)`;$('lbl-cold').style.left=barPct(REC_COLD.t)+'%';$('lbl-cold').textContent=REC_COLD.t.toFixed(0)+'°';
+}
+
+/* ---- chart ---- */
+const SVG_H=120,ML=0,MR=40,MT=12,MB=26;
+const niceStep=r=>r<=12?2:r<=30?5:10;
+function drawYAxis(vmin,vmax){const yax=$('yaxis'),step=niceStep(vmax-vmin);const Y=v=>SVG_H-MB-(v-vmin)/(vmax-vmin)*(SVG_H-MT-MB);let h='';for(let v=Math.ceil(vmin/step)*step;v<=vmax;v+=step){h+=`<span class="t" style="top:${Y(v).toFixed(1)}px">${v}°</span>`;}yax.innerHTML=h;}
+function smoothPath(p){if(p.length<2)return p.length?`M${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`:'';let d=`M${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;for(let i=0;i<p.length-1;i++){const a=p[i-1]||p[i],b=p[i],c=p[i+1],e=p[i+2]||p[i+1];const c1x=b.x+(c.x-a.x)/6,c1y=b.y+(c.y-a.y)/6,c2x=c.x-(e.x-b.x)/6,c2y=c.y-(e.y-b.y)/6;d+=` C${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${c.x.toFixed(1)} ${c.y.toFixed(1)}`;}return d;}
+function drawChart(pts){
+  const svg=$('curve');
+  if(pts.length<2){svg.innerHTML='<text x="20" y="55" fill="#9ca3af" font-size="13">Keine Daten</text>';return;}
+  const dayKeys=[...new Set(pts.map(p=>localDay(new Date(p.ms))))];
+  const normVals=dayKeys.map(k=>NORMAL[k.slice(5)]).filter(v=>v!=null);
+  const recVals=dayKeys.map(k=>REKORD[k.slice(5)]).filter(v=>v!=null);
+  let vmin=Math.min(...pts.map(p=>p.v),...normVals)-1, vmax=Math.max(...pts.map(p=>p.v),...normVals,...recVals)+1;
+  if(vmax-vmin<6){const mid=(vmax+vmin)/2;vmin=mid-3;vmax=mid+3;}
+  const startMs=pts[0].ms,endMs=pts[pts.length-1].ms,totalH=(endMs-startMs)/3600000||1;
+  const cw=scroller.getBoundingClientRect().width||scroller.offsetWidth||600;
+  const pxH=Math.max(cw/totalH,6.25);
+  const W=Math.max(Math.ceil(totalH*pxH),Math.floor(cw));
+  svg.style.width=W+'px';
+  svg.setAttribute('viewBox',`0 0 ${W} ${SVG_H}`);
+  const X=ms=>ML+(ms-startMs)/(endMs-startMs)*(W-ML-MR);
+  const Y=v=>SVG_H-MB-(v-vmin)/(vmax-vmin)*(SVG_H-MT-MB);
+  const last=pts[pts.length-1],cc=tempColor(last.v);
+  // gradient stops
+  let gstops='';pts.forEach(p=>{const pct=((p.ms-startMs)/(endMs-startMs)*100).toFixed(1);gstops+=`<stop offset="${pct}%" stop-color="${tempColor(p.v)}"/>`;});
+  let s=`<defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">${gstops}</linearGradient><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cc}" stop-opacity=".16"/><stop offset="1" stop-color="${cc}" stop-opacity="0"/></linearGradient><clipPath id="cl"><rect x="${ML}" y="${MT}" width="${W-ML-MR}" height="${SVG_H-MT-MB}"/></clipPath></defs>`;
+  // horizontale Gitterlinien (auf Y-Achsen-Ticks)
+  const gs=niceStep(vmax-vmin);
+  for(let v=Math.ceil(vmin/gs)*gs;v<=vmax;v+=gs){s+=`<line x1="${ML}" y1="${Y(v).toFixed(1)}" x2="${(W-MR).toFixed(1)}" y2="${Y(v).toFixed(1)}" stroke="#f1f3f5"/>`;}
+  // Tageswechsel + Normal- und Rekord-Linie (je Kalendertag)
+  dayKeys.forEach((k,di)=>{
+    const dayPts=pts.filter(p=>localDay(new Date(p.ms))===k);
+    if(!dayPts.length)return;
+    if(di>0){const x=X(dayPts[0].ms);s+=`<line x1="${x.toFixed(1)}" y1="${MT}" x2="${x.toFixed(1)}" y2="${SVG_H-MB}" stroke="#e8eaed"/>`;}
+    const mid=dayPts[Math.floor(dayPts.length/2)].ms;
+    const dt=new Date(mid);
+    s+=`<text x="${X(mid).toFixed(1)}" y="${SVG_H-3}" text-anchor="middle" font-size="9" fill="#b0b7c0">${shortDate(dt)}</text>`;
+  });
+  // Normal- und Rekord-Linie als geglättete Kurven durch die Tageswerte (Knoten = Tagesmitte)
+  const rnodes=dayKeys.map(k=>{const dp=pts.filter(p=>localDay(new Date(p.ms))===k);return {k,x:X(dp[Math.floor(dp.length/2)].ms)};});
+  function envelope(tbl,stroke,dash){
+    let nn=rnodes.map(nd=>{const v=tbl[nd.k.slice(5)];return v==null?null:{x:nd.x,y:Y(v)};}).filter(Boolean);
+    if(!nn.length)return;
+    nn=[{x:ML,y:nn[0].y},...nn,{x:W-MR,y:nn[nn.length-1].y}];
+    s+=`<path d="${smoothPath(nn)}" fill="none" stroke="${stroke}" stroke-width="1.3"${dash?' stroke-dasharray="4 3"':''} opacity=".9" clip-path="url(#cl)"/>`;
+  }
+  envelope(NORMAL,'#9ca3af',true);
+  envelope(REKORD,'#c0392b',false);
+  // 6h ticks
+  for(let t=Math.ceil(startMs/3600000)*3600000;t<=endMs;t+=3600000){
+    const dt=new Date(t),hh=+dt.toLocaleString('en-GB',{hour:'2-digit',hour12:false,timeZone:'Europe/Zurich'});
+    if(hh%6!==0)continue;
+    const x=X(t);
+    s+=`<line x1="${x.toFixed(1)}" y1="${SVG_H-MB}" x2="${x.toFixed(1)}" y2="${SVG_H-MB+3}" stroke="#d1d5db"/>`;
+    if(hh!==0)s+=`<text x="${x.toFixed(1)}" y="${SVG_H-15}" text-anchor="middle" font-size="8.5" fill="#c4c9d0">${hh}h</text>`;
+  }
+  // area + line
+  let d='';pts.forEach((p,i)=>{d+=(i?'L':'M')+X(p.ms).toFixed(1)+' '+Y(p.v).toFixed(1);});
+  s+=`<path d="${d}L${X(endMs).toFixed(1)} ${SVG_H-MB}L${X(startMs).toFixed(1)} ${SVG_H-MB}Z" fill="url(#ag)" clip-path="url(#cl)"/>`;
+  s+=`<path d="${d}" fill="none" stroke="url(#lg)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" clip-path="url(#cl)"/>`;
+  // pulsing now dot
+  s+=`<circle cx="${X(last.ms).toFixed(1)}" cy="${Y(last.v).toFixed(1)}" r="4.5" fill="${cc}"/>`;
+  s+=`<circle cx="${X(last.ms).toFixed(1)}" cy="${Y(last.v).toFixed(1)}" r="4.5" fill="${cc}" opacity=".35"><animate attributeName="r" values="4.5;9;4.5" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".35;0;.35" dur="2s" repeatCount="indefinite"/></circle>`;
+  s+=`<line id="hl" y1="${MT}" y2="${SVG_H-MB}" stroke="#64748b" stroke-width="1" stroke-dasharray="3 2" opacity="0"/>`;
+  s+=`<circle id="hp" r="4.5" fill="#fff" stroke="#0a3d62" stroke-width="2" opacity="0"/>`;
+  svg.innerHTML=s;
+  CHART={pts,X,Y,W,vmin,vmax};
+  drawYAxis(vmin,vmax);
+}
+
+
+/* ---- range ---- */
+function setRange(days){
+  DAYS=days;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',+t.dataset.days===days));
+  const cutoff=Date.now()-days*24*3600000;
+  drawChart(ALL_PTS.filter(p=>p.ms>=cutoff));
+  requestAnimationFrame(()=>{scroller.scrollLeft=scroller.scrollWidth;});
+}
+
+/* ---- jetzt btn ---- */
+scroller.addEventListener('scroll',()=>{
+  const atEnd=scroller.scrollLeft+scroller.clientWidth>=scroller.scrollWidth-10;
+  nowBtn.classList.toggle('vis',!atEnd);
+});
+nowBtn.addEventListener('click',()=>scroller.scrollTo({left:scroller.scrollWidth,behavior:'smooth'}));
+
+/* ---- tooltip ---- */
+const tip=$('tip');
+const svgEl=$('curve');
+function hover(ev){
+  if(!CHART.pts||!CHART.pts.length)return;
+  const rect=svgEl.getBoundingClientRect();
+  const cx=ev.touches?ev.touches[0].clientX:ev.clientX;
+  const svgX=(cx-rect.left)/rect.width*CHART.W;
+  let best=CHART.pts[0],bd=1e12;
+  CHART.pts.forEach(p=>{const d=Math.abs(CHART.X(p.ms)-svgX);if(d<bd){bd=d;best=p;}});
+  const dt=new Date(best.ms),nv=NORMAL[localMMDD(dt)],rv=REKORD[localMMDD(dt)],diff=nv!=null?best.v-nv:null;
+  tip.innerHTML=`<b>${shortDate(dt)}, ${hhmm(dt)}</b>${best.v.toFixed(1)} °C${diff!=null?' · '+(diff>=0?'+':'')+diff.toFixed(1)+' vs. Normal':''}${rv!=null?'<br>Tagesrekord: '+rv.toFixed(1)+' °C':''}`;
+  tip.style.opacity=1;
+  let lx=cx+14;if(lx+200>window.innerWidth)lx=cx-204;
+  let ty=(ev.touches?ev.touches[0].clientY:ev.clientY)-44;
+  tip.style.left=Math.max(4,lx)+'px';tip.style.top=Math.max(4,ty)+'px';
+  const hl=document.getElementById('hl'),hp=document.getElementById('hp');
+  if(hl){hl.setAttribute('x1',CHART.X(best.ms).toFixed(1));hl.setAttribute('x2',CHART.X(best.ms).toFixed(1));hl.setAttribute('opacity','0.7');}
+  if(hp){hp.setAttribute('cx',CHART.X(best.ms).toFixed(1));hp.setAttribute('cy',CHART.Y(best.v).toFixed(1));hp.setAttribute('opacity','1');}
+}
+svgEl.addEventListener('pointermove',hover);
+svgEl.addEventListener('pointerdown',hover);
+svgEl.addEventListener('pointerleave',()=>{tip.style.opacity=0;['hl','hp'].forEach(id=>{const el=document.getElementById(id);if(el)el.setAttribute('opacity','0');});});
+
+/* ---- tabs ---- */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>setRange(+t.dataset.days)));
+
+/* ---- load ---- */
+async function load(){
+  if(!navigator.onLine)return fail('offline');
+  try{
+    const [hRows,nowRows]=await Promise.all([
+      csvCached(HREC_URL,HCACHE,20*60000),
+      csvFetch(NOW_URL)
+    ]);
+    const iHt=hRows[0].indexOf('reference_timestamp'),iHv=hRows[0].indexOf('tre200h0');
+    const iNt=nowRows[0].indexOf('reference_timestamp'),iNv=nowRows[0].indexOf('tre200s0');
+    const map=new Map();
+    for(let i=1;i<hRows.length;i++){const dt=parseMeteoDate(hRows[i][iHt]);const v=num(hRows[i][iHv]);if(dt&&v!=null)map.set(dt.getTime(),v);}
+    let cur=null,curDt=null;
+    for(let i=1;i<nowRows.length;i++){const dt=parseMeteoDate(nowRows[i][iNt]);const v=num(nowRows[i][iNv]);if(dt&&v!=null){map.set(dt.getTime(),v);cur=v;curDt=dt;}}
+    if(cur==null)throw new Error('keine Werte');
+    ALL_PTS=[...map.entries()].map(([ms,v])=>({ms,v})).sort((a,b)=>a.ms-b.ms);
+
+    const cc=tempColor(cur);
+    $('cur').textContent=cur.toFixed(1);$('cur').style.color=cc;$('accent').style.background=cc;
+    const age=Math.round((Date.now()-curDt.getTime())/60000);
+    $('stamp').textContent=`Stand: ${hhmm(curDt)} Uhr · vor ${age} Min`;
+    placeBar(cur);
+    $('dot').classList.remove('off');$('livelbl').textContent='live';
+
+    // stats
+    const last24=ALL_PTS.filter(p=>p.ms>=Date.now()-24*3600000);
+    const ctx=$('ctx');ctx.innerHTML='';
+    const extra=$('extra');extra.innerHTML='';
+    if(last24.length){
+      const mean24=last24.reduce((a,p)=>a+p.v,0)/last24.length;
+      const mx=Math.max(...last24.map(p=>p.v));
+      const mn=Math.min(...last24.map(p=>p.v));
+      const normToday=NORMAL[localMMDD(new Date())];
+      const recToday=REKORD[localMMDD(new Date())];
+      const today=deDay(new Date());
+      // 1: Mittel der letzten 24h (absolut)
+      const t0=document.createElement('div');t0.className='stat mean';
+      t0.innerHTML=`<b>${mean24.toFixed(1)} °C</b><span>Mittel der letzten 24h</span>`;ctx.appendChild(t0);
+      // 2: 24h-Mittel-Normwert 1991-2020 (absolut, Farbe je nach Vergleich zu Kachel 1)
+      if(normToday!=null){
+        const warm=mean24>=normToday;
+        const t1=document.createElement('div');t1.className='stat '+(warm?'warm':'cool');
+        t1.innerHTML=`<b>${normToday} °C</b><span>24-Stunden-Mittel aller ${today} von 1991–2020</span>`;ctx.appendChild(t1);
+        $('note-normal').textContent=`Vergleich: Mittel der letzten 24h vs. üblicher ${today} (1991–2020: ${normToday} °C).`;
+      }
+      // 3: Maximum der letzten 24h (absolut)
+      const t2=document.createElement('div');t2.className='stat mean';
+      t2.innerHTML=`<b>${mx.toFixed(1)} °C</b><span>Maximum der letzten 24h</span>`;ctx.appendChild(t2);
+      // 4: historischer Tagesrekord für diesen Kalendertag (Wert + Datum inkl. Jahr)
+      // Badge, wenn das heutige Maximum den Kalendertag-Rekord bereits übertrifft
+      const recYear=REKORD_YEAR[localMMDD(new Date())];
+      if(recToday!=null && recYear!=null){
+        const t3=document.createElement('div');t3.className='stat rec';
+        if(mx>recToday){
+          t3.innerHTML=`<span class="badge-rec">Neuer Tagesrekord heute</span><b>${mx.toFixed(1)} °C</b><span>bisher ${recToday} °C (${fullDate(localMMDD(new Date()),recYear)})</span>`;
+        }else{
+          t3.innerHTML=`<b>${recToday} °C</b><span>Tagesrekord<br>${fullDate(localMMDD(new Date()),recYear)}</span>`;
+        }
+        ctx.appendChild(t3);
+      }
+      // tropennacht
+      if(mn>=20){const sp=document.createElement('span');sp.className='tropen';sp.textContent='Tropennacht – Minimum nicht unter 20 °C';extra.appendChild(sp);}
+    }
+    // summer days
+    try{
+      const d=await csvCached(DREC_URL,DCACHE,30*60000);
+      const iMax=d[0].indexOf('tre200dx'),iDay=d[0].indexOf('reference_timestamp');
+      if(iMax>=0&&iDay>=0){
+        let sd=0;for(let k=1;k<d.length;k++){const dt=parseMeteoDate(d[k][iDay]);const mx=num(d[k][iMax]);if(dt&&dt.getUTCFullYear()===YEAR&&mx!=null&&mx>=25)sd++;}
+        if(sd>0){
+          if(extra.firstChild)extra.appendChild(document.createElement('br'));
+          const big=document.createElement('span');big.className='big';big.textContent=sd;extra.appendChild(big);
+          const lab=document.createTextNode(` Sommertage ${YEAR} bisher${SUMMER_NORMAL?' · Normal: '+SUMMER_NORMAL+'/Jahr':''}`);extra.appendChild(lab);
+        }
+      }
+
+    }catch(e){}
+
+    setRange(DAYS);
+  }catch(e){fail(e.message);}
+}
+function fail(msg){
+  $('dot').classList.add('off');$('livelbl').textContent='offline';
+  $('cur').textContent='–';$('cur').style.color='var(--grau)';
+  $('stamp').innerHTML=`<span class="err">${msg==='offline'?'Keine Verbindung.':'Daten momentan nicht verfügbar.'}</span>`;
+}
+document.addEventListener('visibilitychange',()=>document.hidden?null:load());
+window.addEventListener('online',load);
+let timer=setInterval(load,3*60*1000);
+load();
+
+window.addEventListener('resize',()=>{  });
+</script>
+</body>
+</html>
