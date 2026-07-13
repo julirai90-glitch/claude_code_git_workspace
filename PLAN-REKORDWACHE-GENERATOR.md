@@ -168,6 +168,30 @@ Julian wollte nur die Aufwandsabschätzung, keine Umsetzung. Für später festge
 - Empfehlung bei Fortsetzung: erst 1 Pilot-Kanton ausserhalb GR/GL (NORMAL/REKORD-Skript bauen +
   verifizieren), bevor alle 158 drankommen.
 
+---
+
+## Phase 5 — Alle 26 Bündner Stationen ✅ erledigt (13.07.2026)
+
+Der "Pilot" aus Phase 4 wurde gleich für ganz Graubünden gemacht (26 Stationen total, nicht
+national). `build_new_gr_stations.py` löst das in Phase 4 identifizierte Kernproblem: baut
+NORMAL/REKORD/REC_HOT/REC_COLD/SUMMER_NORMAL/BAR_MIN/BAR_MAX aus Rohdaten und validiert die
+Methodik zuerst gegen Chur (bekannte, deployte Werte), bevor irgendeine neue Station berechnet
+wird — 366/366 Treffer bei NORMAL, 354/366 bei REKORD (Rest vermutlich MeteoSchweiz-
+Datenkorrekturen seit ursprünglicher Berechnung), exakte Treffer bei REC_HOT/COLD/SUMMER_NORMAL/
+BAR_MIN/MAX. 13 neue Stationen ergänzt: Passo del Bernina, Buffalora, Crap Masegn, Corvatsch,
+Naluns, Martegnas, San Bernardino, Sils Maria, Santa Maria, Valbella, Vicosoprano, Vals,
+Weissfluhjoch.
+
+Dabei gefunden: echter Datenfehler bei Crap Masegn/Naluns (einzelne `tre200dx`-Ausreisser wie
+51.8 °C am 2. Januar 2000, neben plausiblem Tagesmittel -0.4 °C — physikalisch unmöglich,
+Sensor-/Übertragungsfehler in den "unkorrigierten" MeteoSchweiz-Rohdaten). Plausibilitätsfilter
+eingebaut (verwirft `tre200dx` bei |t|>40 °C oder Tag/Nacht-Spanne >40 °C).
+
+Stripes nur bei voller 30-Jahres-Referenzperiode (Julians Entscheid: keine verkürzten Reihen
+mehr) — 5 von 13 qualifizieren. Niederschlag unabhängig davon berechnet — 7 von 13, davon 2 ganz
+ohne Stripes (Buffalora, Vals). Generator/Hub/`klima-kindheit.html` brauchten wie erwartet
+keine Codeänderung.
+
 ## Bekannte offene Schwachstellen (aus Review, nicht Teil von Phase 1/2)
 - OSM-Tiles in Hubs → für suedostschweiz.ch-Einbettung auf Swisstopo-Tiles (geo.admin.ch) wechseln.
 - Offizielle MeteoSchweiz-Normwerte vs. eigene 1991–2020-Berechnung: vor Artikel-Publikation
