@@ -143,7 +143,12 @@ Backend. Skaliert automatisch auf mehr Stationen (siehe Phase 4).
   aus den bereits berechneten Tageswerten via n8n-Webhook (`Geburtstagswetter-Text`, Workflow-ID
   `hGWlO4Lf4cqxfBOV`, aktiv) + GPT-4.1-mini. Streng gegroundet (nur gelieferte Zahlen, fehlende
   Werte werden weggelassen statt erfunden), klar als «KI-generiert» gekennzeichnet, Fire-and-forget
-  (blockiert restliche Seite nicht, blendet sich bei Fehler selbst aus).
+  (blockiert restliche Seite nicht, blendet sich bei Fehler selbst aus). Nachgebessert (13.07.2026):
+  keine Ausrufezeichen mehr, bildhaftere Sprache erlaubt (Beaufort-Windstärken, Niederschlags-
+  intensität als WMO-Standardkategorien, Umschreibungen wie «Thermometer kletterte auf» statt reiner
+  Zahlen-Wiedergabe) – aber explizites Verbot von «Himmel/Wolken/grau/bedeckt» etc., nachdem ein
+  Testlauf trotz Grounding-Regel «der Himmel zeigte sich ohne Sonnenschein» formulierte (nicht
+  gemessener Fakt). Mit 3 Testläufen nach der Korrektur verifiziert: keine Verstösse mehr.
 
 ---
 
