@@ -139,6 +139,11 @@ Backend. Skaliert automatisch auf mehr Stationen (siehe Phase 4).
 
 - **E «Eistage verschwinden»**: NBCN `ths00xy0` (Eistage) ab 1959, Machart wie Stripes. Noch nicht
   begonnen.
+- **KI-generierter Wetterbericht** (13.07.2026): neue Karte auf `klima-kindheit.html`, 5-Satz-Text
+  aus den bereits berechneten Tageswerten via n8n-Webhook (`Geburtstagswetter-Text`, Workflow-ID
+  `hGWlO4Lf4cqxfBOV`, aktiv) + GPT-4.1-mini. Streng gegroundet (nur gelieferte Zahlen, fehlende
+  Werte werden weggelassen statt erfunden), klar als «KI-generiert» gekennzeichnet, Fire-and-forget
+  (blockiert restliche Seite nicht, blendet sich bei Fehler selbst aus).
 
 ---
 
