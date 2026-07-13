@@ -107,6 +107,13 @@
     <div id="summer-body"></div>
     <p class="note">Sommertag = Tagesmaximum ≥ 25 °C. Quelle: MeteoSchweiz Open Data (automatisches Netz), eigene Auswertung. Werte für dein Geburtsjahr und das laufende Jahr sind nicht direkt vergleichbar, wenn dein Geburtsjahr nicht vollständig abgedeckt ist (Station noch nicht in Betrieb o.ä.) – wird dann angezeigt.</p>
   </div>
+
+  <div class="card" id="card-recent" style="display:none">
+    <div class="head"><span class="kicker" id="recent-kicker"></span></div>
+    <h2 class="section-title" id="recent-title"></h2>
+    <div class="chart"><svg id="recentTemp" role="img" aria-label="Temperaturverlauf der letzten Tage"></svg></div>
+    <p class="note">Orange: Tagesmittel-Temperatur der letzten Tage. Graue gestrichelte Linie: langjähriges Mittel (1991–2020) für denselben Kalendertag.</p>
+  </div>
 </div>
 <div class="tip" id="tip"></div>
 
@@ -118,6 +125,7 @@ const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','Augus
 
 let STATIONS = null; // code -> station_constants entry
 let LAST_RESULT = null; // fuer den Teilen-Button
+let RECENT_META = null; // fuer den Hover auf dem Temperaturverlauf-Chart
 const $ = id => document.getElementById(id);
 const tip = $('tip');
 
@@ -257,6 +265,90 @@ function stripeHover(ev){
 $('stripes').addEventListener('pointermove', stripeHover);
 $('stripes').addEventListener('pointerleave', ()=>{tip.style.opacity=0;});
 
+/* ---- Aktuelle Temperatur: Tagesmittel der letzten Tage vs. Normal ---- */
+const RECENT_DAYS = 30;
+function renderRecentTemp(st, allRows, iDate, iMean){
+  const card = $('card-recent');
+  const pts = [];
+  for(let k=1;k<allRows.length;k++){
+    const dt = parseMeteoDate(allRows[k][iDate]);
+    const v = num(allRows[k][iMean]);
+    if(dt && v!=null) pts.push({dt, v});
+  }
+  pts.sort((a,b)=>a.dt-b.dt);
+  const recentPts = pts.slice(-RECENT_DAYS);
+  if(recentPts.length < 5){ card.style.display = 'none'; RECENT_META = null; return; }
+
+  const normPts = recentPts.map(p=>{
+    const mmdd = String(p.dt.getUTCMonth()+1).padStart(2,'0') + '-' + String(p.dt.getUTCDate()).padStart(2,'0');
+    const n = st.normal[mmdd];
+    return n==null ? null : n;
+  });
+
+  const svg = $('recentTemp');
+  const availW = svg.parentElement.getBoundingClientRect().width || 600;
+  const H = 150, padL = 6, padR = 6, padT = 12, padB = 24;
+  const plotW = availW - padL - padR, plotH = H - padT - padB;
+  const allVals = recentPts.map(p=>p.v).concat(normPts.filter(v=>v!=null));
+  const vMin = Math.min(...allVals), vMax = Math.max(...allVals);
+  const pad = Math.max(1, (vMax-vMin)*0.15);
+  const yMin = vMin-pad, yMax = vMax+pad;
+  const x = i => padL + (recentPts.length===1 ? 0 : i/(recentPts.length-1)*plotW);
+  const y = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
+
+  let s = '';
+  let normPath = '';
+  normPts.forEach((v,i)=>{
+    if(v==null) return;
+    normPath += (normPath ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1) + ' ';
+  });
+  if(normPath) s += `<path d="${normPath}" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+
+  let tPath = '';
+  recentPts.forEach((p,i)=>{
+    tPath += (tPath ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.v).toFixed(1) + ' ';
+  });
+  s += `<path d="${tPath}" fill="none" stroke="#EE7733" stroke-width="2.2"/>`;
+  recentPts.forEach((p,i)=>{
+    s += `<circle cx="${x(i).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="2.4" fill="#EE7733"/>`;
+  });
+
+  [0, Math.floor((recentPts.length-1)/2), recentPts.length-1].forEach(i=>{
+    const p = recentPts[i];
+    const lbl = `${p.dt.getUTCDate()}.${p.dt.getUTCMonth()+1}.`;
+    s += `<text x="${x(i).toFixed(1)}" y="${H-6}" font-size="10" fill="#6b7280" text-anchor="middle">${lbl}</text>`;
+  });
+
+  svg.setAttribute('viewBox', `0 0 ${availW} ${H}`);
+  svg.style.width = '100%';
+  svg.style.height = H + 'px';
+  svg.innerHTML = s;
+  RECENT_META = { pts: recentPts, normPts, x };
+  card.style.display = '';
+  $('recent-kicker').textContent = st.name + ' · letzte ' + recentPts.length + ' Tage';
+  $('recent-title').textContent = 'Aktuelle Temperatur in ' + st.name;
+}
+function recentTempHover(ev){
+  if(!RECENT_META) return;
+  const svg = $('recentTemp');
+  const rect = svg.getBoundingClientRect();
+  const cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left;
+  const { pts, normPts, x } = RECENT_META;
+  let bestI = 0, bestD = Infinity;
+  pts.forEach((p,i)=>{ const d = Math.abs(x(i)-cx); if(d<bestD){ bestD=d; bestI=i; } });
+  const p = pts[bestI], norm = normPts[bestI];
+  const dateLbl = `${p.dt.getUTCDate()}.${p.dt.getUTCMonth()+1}.${p.dt.getUTCFullYear()}`;
+  const normTxt = norm!=null ? ` (Normal: ${norm} °C)` : '';
+  tip.innerHTML = `<b>${dateLbl}</b>${p.v.toFixed(1)} °C${normTxt}`;
+  tip.style.opacity = 1;
+  const clientX = ev.touches ? ev.touches[0].clientX : ev.clientX;
+  let lx = clientX+14; if(lx+200>window.innerWidth) lx = clientX-204;
+  let ty = (ev.touches?ev.touches[0].clientY:ev.clientY)-44;
+  tip.style.left = Math.max(4,lx)+'px'; tip.style.top = Math.max(4,ty)+'px';
+}
+$('recentTemp').addEventListener('pointermove', recentTempHover);
+$('recentTemp').addEventListener('pointerleave', ()=>{tip.style.opacity=0;});
+
 /* ---- Sommertage in einem Kalenderjahr aus SMN-Tagesdaten zaehlen ---- */
 function countSummerDays(rows, iDate, iMax, year){
   let n = 0, total = 0;
@@ -395,6 +487,9 @@ async function runCompute(){
     }
     sHtml += '</div>';
     summerBody.innerHTML = sHtml;
+
+    // 4) Aktuelle Temperatur: Tagesmittel der letzten Tage vs. Normal (stationsbezogen, unabhaengig vom Geburtstag)
+    renderRecentTemp(st, allRows, iDate, iMean);
 
     $('result').style.display = 'block';
     LAST_RESULT = { name: st.name, by, bm, bd, mean, sunMin };
