@@ -73,6 +73,7 @@ def dashboard_ctx(code: str, st: dict) -> dict:
         "BAR_MIN_DISPLAY": fmt_scale(st["bar_min"]),
         "BAR_MAX_DISPLAY": fmt_scale(st["bar_max"]),
         "NORMAL_JSON": compact_json(st["normal"]),
+        "NORMAL_MAX_JSON": compact_json(st["normal_max"]),
         "REKORD_JSON": compact_json(st["rekord"]),
         "REKORD_YEAR_JSON": compact_json(st["rekord_year"]),
     }

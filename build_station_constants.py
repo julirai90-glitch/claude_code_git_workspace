@@ -57,6 +57,7 @@ RE_REC_COLD = re.compile(r"const REC_COLD=\{t:(-?[\d.]+),d:'([^']+)'\}")
 RE_SUMMER_NORMAL = re.compile(r"const SUMMER_NORMAL=(\d+);")
 RE_BAR = re.compile(r"const BAR_MIN=(-?\d+),\s*BAR_MAX=(-?\d+);")
 RE_NORMAL = re.compile(r"const NORMAL=(\{.*?\});")
+RE_NORMAL_MAX = re.compile(r"const NORMAL_MAX=(\{.*?\});")
 RE_REKORD = re.compile(r"const REKORD=(\{.*?\});")
 RE_REKORD_YEAR = re.compile(r"const REKORD_YEAR=(\{.*?\});")
 # Stripes: present on all 15 dashboards. Precip: present on all except Schiers
@@ -106,6 +107,7 @@ def extract_station(code: str, filename: str) -> dict:
         "summer_normal": RE_SUMMER_NORMAL.search(html),
         "bar": RE_BAR.search(html),
         "normal": RE_NORMAL.search(html),
+        "normal_max": RE_NORMAL_MAX.search(html),
         "rekord": RE_REKORD.search(html),
         "rekord_year": RE_REKORD_YEAR.search(html),
     }
@@ -120,6 +122,7 @@ def extract_station(code: str, filename: str) -> dict:
         "bar_min": int(required["bar"].group(1)),
         "bar_max": int(required["bar"].group(2)),
         "normal": json.loads(required["normal"].group(1)),
+        "normal_max": json.loads(required["normal_max"].group(1)),
         "rekord": json.loads(required["rekord"].group(1)),
         "rekord_year": json.loads(required["rekord_year"].group(1)),
     }
@@ -150,7 +153,7 @@ def extract_station(code: str, filename: str) -> dict:
 
 def check_consistency(code: str, data: dict) -> list[str]:
     errors = []
-    for key in ("normal", "rekord", "rekord_year"):
+    for key in ("normal", "normal_max", "rekord", "rekord_year"):
         n = len(data[key])
         if n != 366:
             errors.append(f"[{code}] {key} hat {n} Keys statt 366")
