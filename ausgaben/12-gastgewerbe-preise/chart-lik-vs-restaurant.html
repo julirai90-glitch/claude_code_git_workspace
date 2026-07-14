@@ -46,7 +46,7 @@ const series = key => dates.map((d,i)=>({date:d, v:DATA[key][i]}));
 const lik = series('lik'), mahlzeiten = series('mahlzeiten'), getraenke = series('getraenke');
 
 const fmt = v => v.toFixed(1);
-const W = 640, H = 300, m = {t:20,r:16,b:32,l:42};
+const W = 640, H = 300, m = {t:20,r:56,b:32,l:42};
 const w = W-m.l-m.r, h = H-m.t-m.b;
 const svg = d3.select('#chart').attr('viewBox',`0 0 ${W} ${H}`);
 const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
