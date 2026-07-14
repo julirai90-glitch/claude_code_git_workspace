@@ -26,12 +26,24 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
 .tt-row { display: flex; justify-content: space-between; gap: 14px; }
 .tt-row .k { color: #666; }
 .tt-row .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* SVG text is sized in viewBox user-units, so it shrinks along with the whole
+   chart on narrow (mobile) embeds — compensate by bumping the in-SVG font
+   sizes at narrow container widths so real rendered text stays legible. */
+@media (max-width: 500px) {
+  .axis text { font-size: 20px; }
+  .end-label { font-size: 16px; }
+}
+@media (max-width: 380px) {
+  .axis text { font-size: 24px; }
+  .end-label { font-size: 18px; }
+}
 </style>
 </head>
 <body>
 <div class="chart-title">Restaurant-Preise vs. allgemeine Teuerung seit 1989</div>
 <div class="chart-sub">Preisindex, Januar 1989 = 100. Landesindex der Konsumentenpreise (Gesamt) im Vergleich zu Mahlzeiten und Getränken in Restaurants &amp; Cafés.</div>
-<svg id="chart" viewBox="0 0 640 300" preserveAspectRatio="xMidYMid meet"></svg>
+<svg id="chart" viewBox="0 0 640 300" width="640" height="300" preserveAspectRatio="xMidYMid meet"></svg>
 <div class="legend" id="legend"></div>
 <div class="chart-source">Quelle: Bundesamt für Statistik, Landesindex der Konsumentenpreise (LIK), Stand Juni 2026; Grafik: Südostschweiz/REU</div>
 <div id="tt" class="tooltip"></div>
@@ -46,7 +58,7 @@ const series = key => dates.map((d,i)=>({date:d, v:DATA[key][i]}));
 const lik = series('lik'), mahlzeiten = series('mahlzeiten'), getraenke = series('getraenke');
 
 const fmt = v => v.toFixed(1);
-const W = 640, H = 300, m = {t:20,r:56,b:32,l:42};
+const W = 640, H = 300, m = {t:20,r:78,b:32,l:42};
 const w = W-m.l-m.r, h = H-m.t-m.b;
 const svg = d3.select('#chart').attr('viewBox',`0 0 ${W} ${H}`);
 const g = svg.append('g').attr('transform',`translate(${m.l},${m.t})`);
