@@ -85,6 +85,16 @@
   body.maponly #map{height:500px!important;border-radius:0;border-left:none;border-right:none;border-top:none}
   body.maponly .wrap{padding:4px 0 0}
   @media(max-width:560px){body.maponly #map{display:block!important}}
+  /* Stations-Embed: nur die zwei Chart-Cards der gewaehlten Station, kein h1/Karte/Liste/Filter.
+     .bexp haengt als Sibling der (versteckten) .brow-Zeilen in #board -> gezielt Geschwister
+     ausblenden statt #board pauschal, sonst verschwindet der Chart mit. */
+  body.stationonly h1,body.stationonly .sub,body.stationonly .legend,body.stationonly #map,
+  body.stationonly #map-embed-wrap,body.stationonly #seedbox,body.stationonly #foot,
+  body.stationonly .bbar,body.stationonly .bfilter,body.stationonly .bgroup,body.stationonly .brow,
+  body.stationonly .sembed-wrap{display:none!important}
+  body.stationonly .wrap{padding:4px 2px 6px}
+  body.stationonly #board{margin-top:0}
+  body.stationonly .bexp{border-bottom:0;background:transparent;padding:0;animation:none}
   .bembed-btn{display:inline-flex;align-items:center;gap:.35em;font-size:.75rem;color:var(--muted);background:#f2f4f7;border:1px solid var(--line);border-radius:6px;padding:.28em .65em;cursor:pointer;margin-top:.7em;transition:background .1s}
   .bembed-btn:hover{background:#e6e9ed;color:var(--ink)}
   .bembed-panel{background:#f8f9fa;border:1px solid var(--line);border-radius:6px;padding:9px 11px;margin-top:.4em}
@@ -133,6 +143,7 @@ const C = {frei:"#009988", zaeh:"#EE7733", stau:"#CC3311", keine_daten:"#c4c4c4"
 const KT = {"CH:0035":"SG","CH:0053":"GL","CH:0216":"SZ","CH:0245":"SG","CH:0308":"SZ","CH:0314":"SG","CH:0318":"SG","CH:0394":"GL","CH:0588":"SG","CH:0603":"SG","CH:0829":"GL","CH:0830":"GL"};
 const VIEW = new URLSearchParams(location.search).get('view');
 if(VIEW==='map') document.body.classList.add('maponly');
+if(VIEW==='station') document.body.classList.add('stationonly');
 const tip=d3.select("#tip");
 let LATEST, BASE, sel=null, metric="flow", boardSort="load", filterKt="alle", filterRoute="alle";
 let leafletMap=null; const leafletMarkers={};
@@ -149,7 +160,7 @@ Promise.all([
   LATEST=sanitize(latest); BASE=base;
   updateStand(latest);
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
-  drawMap();
+  if(VIEW!=='station') drawMap();
   renderBoard();
   // Default-Auswahl: URL-Parameter ?station= oder höchstes Gesamtaufkommen
   const urlStation=new URLSearchParams(location.search).get('station');
@@ -190,7 +201,7 @@ function updateStand(latest){
 function refreshLatest(){
   d3.json(apiUrl("latest")).then(latest=>{
     if(!latest||!latest.sites)return;
-    LATEST=sanitize(latest); updateStand(latest); drawMap(); renderBoard();
+    LATEST=sanitize(latest); updateStand(latest); if(VIEW!=='station') drawMap(); renderBoard();
     if(sel) d3.selectAll(".site").classed("sel",function(){return this.getAttribute("data-id")===sel;});
   }).catch(()=>{});
 }
@@ -463,7 +474,11 @@ function renderExpand(container, s){
   const prov=!s.dirs.positive.verified;
   const embedId='emb-'+s.id.replace(/[^a-z0-9]/gi,'_');
   const pageUrl=location.origin+location.pathname;
-  const iframeCode='<iframe src="'+pageUrl+'?station='+encodeURIComponent(s.id)+'" width="100%" height="620" frameborder="0" style="border:none;max-width:100%" allowtransparency="true" scrolling="no"></iframe>';
+  // view=station isoliert die Chart-Cards dieser Station (kein h1/Karte/Liste/Filter, s. body.stationonly-CSS).
+  // Feste Hoehe grosszuegig gewaehlt (Mobile stapelt die zwei Charts untereinander) - iframe-resizer
+  // Content-Script ist bereits geladen und passt die Hoehe automatisch an, FALLS die WordPress-Seite
+  // das passende Parent-Script eingebunden hat; falls nicht, ist 640 der sichere Fallback.
+  const iframeCode='<iframe src="'+pageUrl+'?view=station&station='+encodeURIComponent(s.id)+'" width="100%" height="700" frameborder="0" style="border:none;max-width:100%" allowtransparency="true" scrolling="no"></iframe>';
   container.html(
     '<div class="dhead"><span class="dtitle">'+s.place+' · Tagesverlauf <span style="color:#6b7280;font-weight:400;font-size:.85em">'+s.road+'</span></span>'
     +'<span style="display:flex;align-items:center;gap:.4em;flex-wrap:wrap">'
@@ -481,8 +496,9 @@ function renderExpand(container, s){
       .catch(()=>{archivDate=null; renderBoard();});
   });
   ["positive","negative"].forEach(dir=>chartCard(s,dir,prov));
-  // Embed-Code-Panel
-  const embedWrap=container.append("div").style("margin-top",".6em");
+  // Embed-Code-Panel (Klasse sembed-wrap: im eigenen Stations-Embed per CSS ausgeblendet -
+  // sonst wuerde der "Embed einbetten"-Button rekursiv im eingebetteten iframe auftauchen)
+  const embedWrap=container.append("div").attr("class","sembed-wrap").style("margin-top",".6em");
   const embedBtn=embedWrap.append("button").attr("class","bembed-btn").attr("id",embedId+"-btn")
     .html("&#x3C;/&#x3E; Embed-Code für WordPress");
   const embedPanel=embedWrap.append("div").attr("class","bembed-panel").style("display","none");
