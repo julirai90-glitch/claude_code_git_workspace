@@ -42,3 +42,13 @@ Julian Reich – Redaktionsleiter Terra Grischuna (70%, Somedia AG) und KI-Offic
   - Vor jedem Push: `git fetch origin gh-pages` + Diff-Check.
 - Lose `PLAN-*.md` im Root vermeiden – erledigte Handoff-Dokumente nach Abschluss löschen
   oder in `handoffs/` archivieren, nicht liegen lassen.
+- **Neue Projekte/Datenstories von Anfang an in einem eigenen Unterordner anlegen**
+  (z. B. `klima/`, `zweitwohnungen/`), nicht flach im Root. Grund: GitHub Pages liefert
+  jede Datei exakt unter ihrem Repo-Pfad aus, ohne Redirects – der Pfad einer Datei *ist*
+  ihre Live-URL, sobald sie einmal extern verlinkt/eingebettet ist (Datawrapper, CMS-Embed,
+  geteilter Link). **Bereits gepushte Root-Dateien (`live-*.html`, `zwg_embed_*.html` etc.)
+  nicht nachträglich in Unterordner verschieben** – das würde bei jedem `git mv` + Push die
+  Live-URL ändern und externe Einbettungen unbemerkt kaputt machen (Aufwand/Risiko dazu
+  bewertet 17.07.2026, siehe Chatverlauf `PLAN-REPO-ORDNUNG.md`-Session). Alte, bereits
+  publizierte Dateien bleiben also dauerhaft im Root liegen – das ist kein Aufräum-Fehler,
+  sondern eine bewusste Pfad-Stabilitäts-Entscheidung.
