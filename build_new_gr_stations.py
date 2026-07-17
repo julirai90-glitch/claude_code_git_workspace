@@ -95,13 +95,18 @@ def de_date(dd: int, mm: int, yyyy: int) -> str:
 def plausible_tmax(mx, mn) -> bool:
     """Guards against isolated sensor/transmission glitches in the raw 'unkorrigiert'
     SMN feed (found while building this: Crap Masegn 02.01.2000 tre200dx=51.8 with a
-    daily mean of -0.4 and min of -8.1 - physically impossible). 40 C is a generous
-    ceiling even for the lowest of these stations (CH heat record is 41.5 C at 324m;
-    all 13 new stations are 1089-3294m) and a 40 C day/night range is far beyond any
-    real diurnal swing."""
+    daily mean of -0.4 and min of -8.1 - physically impossible), caught below by the
+    diurnal-swing check regardless of the absolute ceiling. The absolute ceiling was
+    raised from 40 to 45 C (2026-07-17, CH-wide rollout to all 158 SwissMetNet
+    stations): the all-time CH heat record is 41.5 C (Grono GR, 11.08.2003, per
+    MeteoSchweiz "Rekorde und Extreme"; 40.5 C under today's relocated station), so a
+    40 C ceiling could reject a genuine extreme-heat day at low-elevation stations
+    (Basel/Wallis/Genf) - exactly the days most likely to matter. 45 C keeps a safety
+    margin above the known record while still rejecting implausible readings; a 40 C
+    day/night range is far beyond any real diurnal swing."""
     if mx is None:
         return False
-    if abs(mx) > 40:
+    if abs(mx) > 45:
         return False
     if mn is not None and (mx - mn) > 40:
         return False
@@ -132,6 +137,11 @@ def compute_station(code: str) -> dict:
             rec_hot = {"t": mx, "d": f"{d:02d}.{m:02d}.{y}"}
         if mn is not None and mn < rec_cold["t"]:
             rec_cold = {"t": mn, "d": f"{d:02d}.{m:02d}.{y}"}
+    if rec_hot["d"] is None or rec_cold["d"] is None:
+        raise ValueError(
+            f"[{code}] keine gueltigen tre200dx/tre200dn-Werte gefunden - vermutlich eine "
+            f"Wind-/Niederschlags-Station ohne Temperatursensor, nicht fuer dieses Tool nutzbar."
+        )
     def fmt_ddmmyyyy_to_de(s):
         d, m, y = s.split(".")
         return de_date(int(d), int(m), int(y))

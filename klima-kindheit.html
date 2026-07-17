@@ -119,7 +119,12 @@
 <div class="tip" id="tip"></div>
 
 <script>
-const CONSTANTS_URL = 'station_constants.json';
+const CONSTANTS_URL = 'station_constants_ch.json';
+const CANTON_NAMES = {AG:'Aargau',AI:'Appenzell Innerrhoden',AR:'Appenzell Ausserrhoden',BE:'Bern',
+  BL:'Basel-Landschaft',BS:'Basel-Stadt',FR:'Freiburg',GE:'Genf',GL:'Glarus',GR:'Graubünden',
+  JU:'Jura',LU:'Luzern',NE:'Neuenburg',NW:'Nidwalden',OW:'Obwalden',SG:'St. Gallen',SH:'Schaffhausen',
+  SO:'Solothurn',SZ:'Schwyz',TG:'Thurgau',TI:'Tessin',UR:'Uri',VD:'Waadt',VS:'Wallis',ZG:'Zug',
+  ZH:'Zürich',FL:'Liechtenstein (kein Kanton, Teil des Messnetzes)'};
 const SMN_BASE = 'https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/';
 const AI_TEXT_URL = 'https://n8n.julianreich.ch/webhook/geburtstagswetter-text';
 const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
@@ -174,8 +179,18 @@ async function fetchAiText(payload){
 async function init(){
   STATIONS = await (await fetch(CONSTANTS_URL)).json();
   const sel = $('station');
-  const codes = Object.keys(STATIONS).sort((a,b)=>STATIONS[a].name.localeCompare(STATIONS[b].name,'de'));
-  sel.innerHTML = codes.map(c=>`<option value="${c}">${STATIONS[c].name} (${STATIONS[c].canton})</option>`).join('');
+  const byCanton = {};
+  Object.keys(STATIONS).forEach(c=>{
+    const canton = STATIONS[c].canton;
+    (byCanton[canton] = byCanton[canton] || []).push(c);
+  });
+  const cantons = Object.keys(byCanton).sort((a,b)=>
+    (CANTON_NAMES[a]||a).localeCompare(CANTON_NAMES[b]||b,'de'));
+  sel.innerHTML = cantons.map(canton=>{
+    const codes = byCanton[canton].sort((a,b)=>STATIONS[a].name.localeCompare(STATIONS[b].name,'de'));
+    const opts = codes.map(c=>`<option value="${c}">${STATIONS[c].name}</option>`).join('');
+    return `<optgroup label="${CANTON_NAMES[canton]||canton}">${opts}</optgroup>`;
+  }).join('');
 
   // Geteilten Link erkennen: ?station=chu&bdate=1982-07-10 vorausfuellen und direkt anzeigen
   const params = new URLSearchParams(location.search);
