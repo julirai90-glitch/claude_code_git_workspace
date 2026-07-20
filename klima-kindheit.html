@@ -51,6 +51,16 @@
   .ai-badge{display:inline-block;background:#f3f4f6;color:#6b7280;font-size:.66rem;font-weight:700;
        text-transform:uppercase;letter-spacing:.03em;padding:2px 7px;border-radius:5px;margin-bottom:6px;}
   .ai-text{font-size:.92rem;line-height:1.6;color:#1f2937;margin:0 0 8px;}
+  .tabs{display:flex;gap:6px;margin-bottom:8px;}
+  .tab{background:var(--hell);border:none;border-radius:8px;padding:4px 11px;
+       font-size:.74rem;cursor:pointer;color:var(--grau);font-family:inherit;}
+  .tab.active{background:var(--blau);color:#fff;font-weight:600;}
+  .heatmap-headerrow{display:flex;margin-left:34px;margin-bottom:2px;}
+  .heatmap-headerrow span{width:44px;text-align:center;font-size:9px;color:#9ca3af;}
+  .heatmap-scroll{overflow:hidden;}
+  #heatmap{width:auto;display:block;}
+  .heatmap-toggle{display:none;background:none;border:none;color:var(--blau);font-size:.74rem;
+                  font-weight:600;cursor:pointer;padding:6px 0 2px;font-family:inherit;}
 </style>
 </head>
 <body>
@@ -102,6 +112,13 @@
     <p class="note" id="trend-note"></p>
   </div>
 
+  <div class="card" id="card-bday-stripes" style="display:none">
+    <div class="head"><span class="kicker" id="bday-stripes-kicker"></span></div>
+    <h2 class="section-title" id="bday-stripes-title"></h2>
+    <div class="chart"><div class="stripes-scroll"><svg id="bdayStripes" role="img" aria-label="Temperatur an deinem Geburtsdatum, ein Balken pro Jahr"></svg></div></div>
+    <p class="note" id="bday-stripes-note"></p>
+  </div>
+
   <div class="card" id="card-summer">
     <div class="head"><span class="kicker" id="summer-kicker"></span></div>
     <h2 class="section-title">Sommertage: damals vs. heute</h2>
@@ -114,6 +131,19 @@
     <h2 class="section-title" id="recent-title"></h2>
     <div class="chart"><svg id="recentTemp" role="img" aria-label="Temperaturverlauf der letzten Tage"></svg></div>
     <p class="note">Orange: Tagesmittel-Temperatur der letzten Tage. Graue gestrichelte Linie: langjähriges Mittel (1991–2020) für denselben Kalendertag.</p>
+  </div>
+
+  <div class="card" id="card-heatmap" style="display:none">
+    <div class="head"><span class="kicker" id="heatmap-kicker"></span></div>
+    <h2 class="section-title">Wie weicht das Jahr bisher vom Mittel ab?</h2>
+    <div class="tabs" id="heatmapTabs">
+      <button class="tab active" data-mode="mean" type="button">Tagesmittel</button>
+      <button class="tab" data-mode="max" type="button">Tagesmaximum</button>
+    </div>
+    <div class="heatmap-headerrow" id="heatmapHeader"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+    <div class="heatmap-scroll" id="heatmapScroll"><svg id="heatmap" role="img" aria-label="Kalender-Heatmap Temperaturabweichung vom Mittel"></svg></div>
+    <button class="heatmap-toggle" id="heatmapToggle" type="button">Ganzes Jahr zeigen</button>
+    <p class="note" id="note-heatmap"></p>
   </div>
 </div>
 <div class="tip" id="tip"></div>
@@ -132,6 +162,7 @@ const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','Augus
 let STATIONS = null; // code -> station_constants entry
 let LAST_RESULT = null; // fuer den Teilen-Button
 let RECENT_META = null; // fuer den Hover auf dem Temperaturverlauf-Chart
+let CUR_ST = null; // aktuell angezeigte Station, fuer Tab-Handler ausserhalb von runCompute()
 const $ = id => document.getElementById(id);
 const tip = $('tip');
 
@@ -219,13 +250,17 @@ function updateHint(){
   $('stationHint').textContent = `${st.name} (${st.height} m)${stripesNote}.`;
 }
 
-/* ---- Stripes-Farbskala (identisch zu den Live-Dashboards) ---- */
+/* ---- diverging Blau-Rot-Farbskala (identisch zu den Live-Dashboards), genutzt von
+   Klimastreifen, Geburtstags-Streifen und Heatmap ---- */
 const SSTOPS=[[5,48,97],[33,102,172],[67,147,195],[146,197,222],[209,229,240],[253,219,199],[244,165,130],[214,96,77],[178,24,43],[103,0,31]];
-function stripeColor(t,tref,maxAbs){
-  let f=Math.max(0,Math.min(1,((t-tref)/maxAbs+1)/2));
+function divergeColor(f){
+  f=Math.max(0,Math.min(1,f));
   const seg=f*(SSTOPS.length-1), i=Math.min(SSTOPS.length-2,Math.floor(seg)), fr=seg-i, A=SSTOPS[i], B=SSTOPS[i+1];
   const c=k=>Math.round(A[k]+(B[k]-A[k])*fr);
   return `rgb(${c(0)},${c(1)},${c(2)})`;
+}
+function stripeColor(t,tref,maxAbs){
+  return divergeColor(((t-tref)/maxAbs+1)/2);
 }
 
 let STRIPE_META = null;
@@ -280,6 +315,153 @@ function stripeHover(ev){
 }
 $('stripes').addEventListener('pointermove', stripeHover);
 $('stripes').addEventListener('pointerleave', ()=>{tip.style.opacity=0;});
+
+/* ---- Geburtstags-Streifen: Temperatur am exakten Geburtsdatum, ein Balken pro Jahr
+   seit der Geburt. Geglaettet ueber ein +/-3-Tage-Fenster (Wettertag-Rauschen bei
+   einem einzelnen Kalendertag ist hoch) und gegen den langjaehrigen Normwert (1991-
+   2020) fuer genau dieses Datum eingefaerbt - gleiche Farbskala wie die Klimastreifen
+   oben, aber pro Jahr nur ein Datum statt des Jahresmittels. ---- */
+const BDAY_WINDOW_DAYS = 3;
+function ymdKey(dt){ return dt.getUTCFullYear()+'-'+String(dt.getUTCMonth()+1).padStart(2,'0')+'-'+String(dt.getUTCDate()).padStart(2,'0'); }
+function computeBdayStripeRows(by, bm, bd, meanByDate){
+  const yNow = new Date().getFullYear();
+  const rows = [];
+  for(let y=by; y<=yNow; y++){
+    let sum=0, cnt=0;
+    for(let off=-BDAY_WINDOW_DAYS; off<=BDAY_WINDOW_DAYS; off++){
+      const dt = new Date(Date.UTC(y, bm-1, bd));
+      dt.setUTCDate(dt.getUTCDate()+off);
+      const v = meanByDate.get(ymdKey(dt));
+      if(v!=null){ sum+=v; cnt++; }
+    }
+    if(cnt>0) rows.push({y, t: sum/cnt});
+  }
+  return rows;
+}
+let BDAY_STRIPE_META = null;
+function renderBdayStripes(rows, norm){
+  const svg = $('bdayStripes');
+  const availW = svg.parentElement.getBoundingClientRect().width || 600;
+  const H = 150, axisH = 24, plotH = H - axisH;
+  const y0 = rows[0].y, y1 = rows[rows.length-1].y, ySpan = y1-y0+1;
+  const bw = Math.max(STRIPE_MIN_BW, availW/ySpan), W = bw*ySpan;
+  const maxAbs = Math.max(...rows.map(r=>Math.abs(r.t-norm))) || 1;
+  let s = '';
+  rows.forEach(r=>{
+    const x = (r.y-y0)*bw, diff = r.t-norm;
+    s += `<rect x="${x.toFixed(2)}" y="0" width="${(bw+0.6).toFixed(2)}" height="${plotH}" fill="${divergeColor((diff/maxAbs+1)/2)}"><title>${r.y}: ${r.t.toFixed(1)} °C (${diff>=0?'+':''}${diff.toFixed(1)} °C)</title></rect>`;
+  });
+  const tickStep = ySpan > 40 ? 10 : 5;
+  rows.filter(r=>r.y%tickStep===0).forEach(r=>{
+    const x = (r.y-y0+0.5)*bw;
+    s += `<line x1="${x.toFixed(1)}" y1="${plotH}" x2="${x.toFixed(1)}" y2="${plotH+4}" stroke="#9ca3af"/><text x="${x.toFixed(1)}" y="${plotH+16}" text-anchor="middle" font-size="11" fill="#6b7280">${r.y}</text>`;
+  });
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.style.width = W + 'px'; svg.style.height = H + 'px';
+  svg.innerHTML = s;
+  BDAY_STRIPE_META = {rows, bw, y0, norm};
+}
+function bdayStripeHover(ev){
+  if(!BDAY_STRIPE_META) return;
+  const svg = $('bdayStripes');
+  const rect = svg.getBoundingClientRect();
+  const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+  const rel = (cx-rect.left)/rect.width*rect.width;
+  const targetYear = BDAY_STRIPE_META.y0 + Math.floor(rel/BDAY_STRIPE_META.bw);
+  const r = BDAY_STRIPE_META.rows.find(x=>x.y===targetYear);
+  if(!r){ tip.style.opacity=0; return; }
+  const diff = r.t - BDAY_STRIPE_META.norm;
+  tip.innerHTML = `<b>${r.y}</b>${r.t.toFixed(1)} °C · ${diff>=0?'+':''}${diff.toFixed(1)} °C vs. Mittel`;
+  tip.style.opacity = 1;
+  let lx = cx+14; if(lx+200>window.innerWidth) lx = cx-204;
+  let ty = (ev.touches?ev.touches[0].clientY:ev.clientY)-44;
+  tip.style.left = Math.max(4,lx)+'px'; tip.style.top = Math.max(4,ty)+'px';
+}
+$('bdayStripes').addEventListener('pointermove', bdayStripeHover);
+$('bdayStripes').addEventListener('pointerleave', ()=>{tip.style.opacity=0;});
+
+/* ---- Kalender-Heatmap laufendes Jahr (identische Logik wie auf den Live-Dashboards
+   der einzelnen Stationen, hier fuer die im Formular gewaehlte Station) ---- */
+const HM_MONTHS=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const HM_CS=36,HM_GAP=8,HM_PITCH=HM_CS+HM_GAP,HM_ML=34,HM_COLLAPSED_WEEKS=8;
+let HEATMAP_DAYS=[],HEATMAP_MODE='mean',HEATMAP_META=null,HEATMAP_EXPANDED=false;
+function mmddOfUTC(dt){ return String(dt.getUTCMonth()+1).padStart(2,'0')+'-'+String(dt.getUTCDate()).padStart(2,'0'); }
+function shortDateUTC(dt){ return `${dt.getUTCDate()}.${dt.getUTCMonth()+1}.`; }
+function renderHeatmap(st){
+  const svg=$('heatmap'); if(!svg||!HEATMAP_DAYS.length) return;
+  const table = HEATMAP_MODE==='mean' ? st.normal : st.normal_max;
+  const yearNow = new Date().getFullYear();
+  const jan1 = new Date(Date.UTC(yearNow,0,1));
+  const startWeekday = jan1.getUTCDay()===0?6:jan1.getUTCDay()-1; // Mo=0..So=6
+  const cells = HEATMAP_DAYS.map(d=>{
+    const doy=Math.round((d.date-jan1)/86400000);
+    const idx=doy+startWeekday, row=Math.floor(idx/7), col=idx%7;
+    const val = HEATMAP_MODE==='mean' ? d.mean : d.max;
+    const norm = table ? table[mmddOfUTC(d.date)] : null;
+    const diff = (val!=null && norm!=null) ? val-norm : null;
+    return {row,col,date:d.date,val,diff};
+  });
+  const maxAbs = Math.max(0.1, ...cells.filter(c=>c.diff!=null).map(c=>Math.abs(c.diff)));
+  const numRows = Math.max(...cells.map(c=>c.row))+1;
+  const H=numRows*HM_PITCH-HM_GAP, W=HM_ML+7*HM_PITCH-HM_GAP;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.style.width=W+'px'; svg.style.height=H+'px';
+  let s=''; const seenMonth=new Set();
+  cells.forEach(c=>{
+    const x=HM_ML+c.col*HM_PITCH, y=c.row*HM_PITCH;
+    const fill = c.diff==null ? '#e5e7eb' : divergeColor((c.diff/maxAbs+1)/2);
+    s += `<rect x="${x}" y="${y}" width="${HM_CS}" height="${HM_CS}" rx="3" fill="${fill}"/>`;
+    const mo=c.date.getUTCMonth();
+    if(c.date.getUTCDate()<=7 && !seenMonth.has(mo)){ seenMonth.add(mo); s+=`<text x="2" y="${y+HM_CS-3}" font-size="9" fill="#6b7280">${HM_MONTHS[mo]}</text>`; }
+  });
+  s += `<rect id="hm-mark" x="0" y="0" width="${HM_CS}" height="${HM_CS}" rx="3" fill="none" stroke="#111" stroke-width="1.5" opacity="0" pointer-events="none"/>`;
+  svg.innerHTML = s;
+  HEATMAP_META = {cells, maxAbs, W, H};
+  applyHeatmapCollapse();
+  const last = cells[cells.length-1];
+  const lastNote = last && last.diff!=null ? ` Letzter Wert: ${shortDateUTC(last.date)}, ${last.val.toFixed(1)} °C (${last.diff>=0?'+':''}${last.diff.toFixed(1)} °C vs. Mittel).` : '';
+  $('note-heatmap').innerHTML = `Jedes Kästchen ein Tag im laufenden Jahr, gefärbt nach Abweichung vom ${HEATMAP_MODE==='mean'?'Tagesmittel':'Tagesmaximum'} 1991–2020 für diesen Kalendertag. Graue Kästchen: kein Wert verfügbar.${lastNote} Quelle: MeteoSchweiz Open Data, eigene Auswertung.`;
+}
+function applyHeatmapCollapse(){
+  const sc=$('heatmapScroll'), btn=$('heatmapToggle');
+  if(!sc||!HEATMAP_META) return;
+  const collapsedH = HM_COLLAPSED_WEEKS*HM_PITCH-HM_GAP;
+  const fitsCollapsed = HEATMAP_META.H<=collapsedH;
+  if(HEATMAP_EXPANDED||fitsCollapsed){
+    sc.style.maxHeight='none'; sc.style.overflow='visible';
+  } else {
+    sc.style.maxHeight=collapsedH+'px'; sc.style.overflow='hidden';
+    sc.scrollTop=HEATMAP_META.H-collapsedH; // bottom-anchoren: juengste Wochen sichtbar
+  }
+  if(btn){
+    btn.style.display=fitsCollapsed?'none':'block';
+    btn.textContent=HEATMAP_EXPANDED?'Weniger zeigen':'Ganzes Jahr zeigen';
+  }
+}
+function heatmapHover(ev){
+  if(!HEATMAP_META) return;
+  const svg=$('heatmap'); const rect=svg.getBoundingClientRect();
+  const cx=ev.touches?ev.touches[0].clientX:ev.clientX, cy=ev.touches?ev.touches[0].clientY:ev.clientY;
+  const svgX=(cx-rect.left)/rect.width*HEATMAP_META.W, svgY=(cy-rect.top)/rect.height*HEATMAP_META.H;
+  const col=Math.floor((svgX-HM_ML)/HM_PITCH), row=Math.floor(svgY/HM_PITCH);
+  const c=HEATMAP_META.cells.find(x=>x.row===row&&x.col===col);
+  const mk=$('hm-mark');
+  if(!c){ tip.style.opacity=0; if(mk) mk.setAttribute('opacity','0'); return; }
+  tip.innerHTML = `<b>${shortDateUTC(c.date)}</b>${c.val!=null?c.val.toFixed(1)+' °C':'kein Wert'}${c.diff!=null?' · '+(c.diff>=0?'+':'')+c.diff.toFixed(1)+' °C vs. Mittel':''}`;
+  tip.style.opacity=1;
+  let lx=cx+14; if(lx+200>window.innerWidth) lx=cx-204;
+  let ty=cy-44;
+  tip.style.left=Math.max(4,lx)+'px'; tip.style.top=Math.max(4,ty)+'px';
+  if(mk){ mk.setAttribute('x',HM_ML+c.col*HM_PITCH); mk.setAttribute('y',c.row*HM_PITCH); mk.setAttribute('opacity','0.9'); }
+}
+$('heatmap').addEventListener('pointermove', heatmapHover);
+$('heatmap').addEventListener('pointerdown', heatmapHover);
+$('heatmap').addEventListener('pointerleave', ()=>{tip.style.opacity=0; const mk=$('hm-mark'); if(mk)mk.setAttribute('opacity','0');});
+document.querySelectorAll('#heatmapTabs .tab').forEach(t=>t.addEventListener('click', ()=>{
+  HEATMAP_MODE=t.dataset.mode;
+  document.querySelectorAll('#heatmapTabs .tab').forEach(x=>x.classList.toggle('active',x===t));
+  if(CUR_ST) renderHeatmap(CUR_ST);
+}));
+$('heatmapToggle').addEventListener('click', ()=>{ HEATMAP_EXPANDED=!HEATMAP_EXPANDED; applyHeatmapCollapse(); });
 
 /* ---- Aktuelle Temperatur: Tagesmittel der letzten Tage vs. Normal ---- */
 const RECENT_DAYS = 30;
@@ -392,6 +574,8 @@ async function runCompute(){
     const [by, bm, bd] = bdateVal.split('-').map(Number);
     const code = $('station').value;
     const st = STATIONS[code];
+    CUR_ST = st;
+    const yearNow = new Date().getFullYear();
     let mean = null, sunMin = null; // fuer den Teilen-Text nach aussen sichtbar
     const mmdd = String(bm).padStart(2,'0') + '-' + String(bd).padStart(2,'0');
     const birthDateCSV = String(bd).padStart(2,'0') + '.' + String(bm).padStart(2,'0') + '.' + by + ' 00:00';
@@ -412,6 +596,12 @@ async function runCompute(){
     const iHumid = header.indexOf('ure200d0');
     const iSnow = header.indexOf('htoautd0');
     const allRows = hist.concat(recent.slice(1));
+    const meanByDate = new Map();
+    for(let k=1;k<allRows.length;k++){
+      const dt = parseMeteoDate(allRows[k][iDate]);
+      const v = num(allRows[k][iMean]);
+      if(dt && v!=null) meanByDate.set(ymdKey(dt), v);
+    }
 
     // 1) Wetter am Geburtstag
     const birthRow = allRows.find(r => (r[iDate]||'').trim() === birthDateCSV);
@@ -489,15 +679,30 @@ async function runCompute(){
       trendCard.style.display = 'none';
     }
 
+    // 2b) Geburtstags-Streifen: Temperatur genau an diesem Kalendertag, ein Balken pro
+    // Jahr seit der Geburt (nur wenn ein Normwert fuer diesen Tag vorliegt)
+    const bdayStripesCard = $('card-bday-stripes');
+    const bdayNorm = st.normal[mmdd];
+    const bdayRows = bdayNorm!=null ? computeBdayStripeRows(by, bm, bd, meanByDate) : [];
+    if(bdayNorm!=null && bdayRows.length){
+      bdayStripesCard.style.display = '';
+      const dateLabel = bd + '. ' + MONTHS_DE[bm-1];
+      $('bday-stripes-kicker').textContent = st.name + ' · ' + dateLabel + ' seit ' + by;
+      $('bday-stripes-title').textContent = 'So hat sich der ' + dateLabel + ' in ' + st.name + ' seit deiner Geburt entwickelt';
+      renderBdayStripes(bdayRows, bdayNorm);
+      $('bday-stripes-note').innerHTML = `Jeder Balken: Tagesmittel-Temperatur am ${dateLabel} des jeweiligen Jahres, geglättet über ein 7-Tage-Fenster (±3 Tage um das Datum) zur Reduktion von Wettertag-Rauschen. Referenzwert (0-Linie): ${bdayNorm} °C, der langjährige Mittelwert für diesen Kalendertag (1991–2020). Fehlende Balken: keine Messung in diesem Fenster verfügbar (z. B. Station damals noch nicht in Betrieb). Ein einzelnes Datum ist wetterbedingt stark verrauscht – die Balkenfolge zeigt Einzelwerte, keinen belastbaren Trend. Quelle: MeteoSchweiz Open Data, eigene Auswertung.`;
+    } else {
+      bdayStripesCard.style.display = 'none';
+    }
+
     // 3) Sommertage damals vs. heute
-    const nowYear = new Date().getFullYear();
     const birthSummer = countSummerDays(allRows, iDate, iMax, by);
-    const nowSummer = countSummerDays(allRows, iDate, iMax, nowYear);
+    const nowSummer = countSummerDays(allRows, iDate, iMax, yearNow);
     const summerBody = $('summer-body');
     $('summer-kicker').textContent = st.name;
     let sHtml = '<div class="big-stat">';
     sHtml += `<div class="stat cool"><b>${birthSummer.count}</b><span>Sommertage in ${by}${birthSummer.daysWithData<340?' (unvollständiges Jahr, '+birthSummer.daysWithData+' Tage mit Daten)':''}</span></div>`;
-    sHtml += `<div class="stat warm"><b>${nowSummer.count}</b><span>Sommertage ${nowYear} (${nowSummer.daysWithData} Tage bisher)</span></div>`;
+    sHtml += `<div class="stat warm"><b>${nowSummer.count}</b><span>Sommertage ${yearNow} (${nowSummer.daysWithData} Tage bisher)</span></div>`;
     if(st.summer_normal){
       sHtml += `<div class="stat"><b>${st.summer_normal}</b><span>Normal 1991–2020 (ganzes Jahr)</span></div>`;
     }
@@ -506,6 +711,27 @@ async function runCompute(){
 
     // 4) Aktuelle Temperatur: Tagesmittel der letzten Tage vs. Normal (stationsbezogen, unabhaengig vom Geburtstag)
     renderRecentTemp(st, allRows, iDate, iMean);
+
+    // 5) Kalender-Heatmap laufendes Jahr (stationsbezogen, unabhaengig vom Geburtstag)
+    const heatmapCard = $('card-heatmap');
+    const heatmapDays = [];
+    for(let k=1;k<allRows.length;k++){
+      const dt = parseMeteoDate(allRows[k][iDate]);
+      if(!dt || dt.getUTCFullYear()!==yearNow) continue;
+      heatmapDays.push({date:dt, mean:num(allRows[k][iMean]), max:num(allRows[k][iMax])});
+    }
+    heatmapDays.sort((a,b)=>a.date-b.date);
+    HEATMAP_DAYS = heatmapDays;
+    if(heatmapDays.length){
+      heatmapCard.style.display = '';
+      $('heatmap-kicker').textContent = st.name + ' · laufendes Jahr';
+      HEATMAP_MODE = 'mean';
+      HEATMAP_EXPANDED = false;
+      document.querySelectorAll('#heatmapTabs .tab').forEach(t=>t.classList.toggle('active', t.dataset.mode==='mean'));
+      renderHeatmap(st);
+    } else {
+      heatmapCard.style.display = 'none';
+    }
 
     $('result').style.display = 'block';
     LAST_RESULT = { name: st.name, by, bm, bd, mean, sunMin };
