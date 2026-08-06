@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geschichte der Atomkraft – 1895 bis 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --bg2:       #161b22;
+      --line:      #30363d;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --c-sci:     #388bfd;   /* Wissenschaft – Blau     */
+      --c-mil:     #f85149;   /* Militär – Rot           */
+      --c-nrg:     #3fb950;   /* Zivile Energie – Grün   */
+      --c-acc:     #d29922;   /* Unfall – Amber          */
+      --c-now:     #bc8cff;   /* Gegenwart – Lila        */
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      padding: 3.5rem 1rem 2rem;
+      background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #388bfd, #bc8cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p {
+      margin-top: .6rem;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .6rem 1.4rem;
+      padding: 1.2rem 1rem;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+    .legend span { display: flex; align-items: center; gap: .4rem; }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Timeline container ── */
+    .timeline {
+      position: relative;
+      max-width: 900px;
+      margin: 2rem auto 4rem;
+      padding: 0 1rem;
+    }
+
+    /* vertical centre line */
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, transparent, var(--line) 5%, var(--line) 95%, transparent);
+      transform: translateX(-50%);
+    }
+
+    /* ── Each entry ── */
+    .entry {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: calc(50% + 2rem);
+      position: relative;
+      margin-bottom: 2.8rem;
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .entry.right {
+      justify-content: flex-start;
+      padding-right: 0;
+      padding-left: calc(50% + 2rem);
+      transform: translateX(30px);
+    }
+    .entry.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* dot on the line */
+    .entry::after {
+      content: attr(data-icon);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 2.4rem; height: 2.4rem;
+      border-radius: 50%;
+      background: var(--bg2);
+      border: 2px solid var(--accent, var(--line));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      z-index: 1;
+      box-shadow: 0 0 0 4px var(--bg);
+    }
+
+    /* card */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent, var(--line));
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      max-width: 340px;
+      cursor: default;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .entry.right .card {
+      border-left: 1px solid var(--line);
+      border-right: 4px solid var(--accent, var(--line));
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+    .card .year {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent, var(--muted));
+      margin-bottom: .2rem;
+    }
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .35rem;
+      color: var(--text);
+    }
+    .card p {
+      font-size: .85rem;
+      color: var(--muted);
+    }
+
+    /* ── Category colour helpers ── */
+    .sci  { --accent: var(--c-sci); }
+    .mil  { --accent: var(--c-mil); }
+    .nrg  { --accent: var(--c-nrg); }
+    .acc  { --accent: var(--c-acc); }
+    .now  { --accent: var(--c-now); }
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      .timeline::before { left: 1.2rem; }
+
+      .entry,
+      .entry.right {
+        justify-content: flex-start;
+        padding: 0 0 0 3.4rem;
+      }
+      .entry::after {
+        left: 1.2rem;
+        top: 1.2rem;
+        transform: translate(-50%, 0);
+      }
+      .card { max-width: 100%; }
+      .entry.right .card {
+        border-left: 4px solid var(--accent, var(--line));
+        border-right: 1px solid var(--line);
+      }
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem 3rem;
+      font-size: .78rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚛ Geschichte der Atomkraft</h1>
+  <p>Von der Entdeckung der Radioaktivität bis zur nuklearen Renaissance &mdash; 1895–2026</p>
+</header>
+
+<div class="legend">
+  <span><span class="dot" style="background:var(--c-sci)"></span>Wissenschaft</span>
+  <span><span class="dot" style="background:var(--c-mil)"></span>Militär</span>
+  <span><span class="dot" style="background:var(--c-nrg)"></span>Zivile Energie</span>
+  <span><span class="dot" style="background:var(--c-acc)"></span>Unfall / Krise</span>
+  <span><span class="dot" style="background:var(--c-now)"></span>Gegenwart &amp; Zukunft</span>
+</div>
+
+<div class="timeline" id="timeline">
+
+  <div class="entry sci" data-icon="🔬">
+    <div class="card">
+      <div class="year">1895</div>
+      <h3>Röntgen entdeckt X-Strahlen</h3>
+      <p>Wilhelm Conrad Röntgen beobachtet unsichtbare Strahlung, die Materie durchdringt — der erste Schritt ins Atomzeitalter.</p>
+    </div>
+  </div>
+
+  <div class="entry right sci" data-icon="☢️">
+    <div class="card">
+      <div class="year">1896</div>
+      <h3>Becquerel: Radioaktivität</h3>
+      <p>Henri Becquerel entdeckt zufällig, dass Uransalze ohne externe Energiezufuhr Strahlung emittieren — Geburt der Kernphysik.</p>
+    </div>
+  </div>
+
+  <div class="entry sci" data-icon="⚗️">
+    <div class="card">
+      <div class="year">1898</div>
+      <h3>Marie &amp; Pierre Curie</h3>
+      <p>Das Ehepaar Curie isoliert Polonium und Radium. Marie Curie prägt den Begriff „Radioaktivität".</p>
+    </div>
+  </div>
+
+  <div class="entry right sci" data-icon="💡">
+    <div class="card">
+      <div class="year">1905</div>
+      <h3>E = mc²</h3>
+      <p>Albert Einstein publiziert die Spezielle Relativitätstheorie. Die Massenenergie-Äquivalenz legt die theoretische Basis für Kernenergie.</p>
+    </div>
+  </div>
+
+  <div class="entry sci" data-icon="⚡">
+    <div class="card">
+      <div class="year">1938</div>
+      <h3>Kernspaltung entdeckt</h3>
+      <p>Otto Hahn, Fritz Straßmann und Lise Meitner beweisen in Berlin die Spaltung von Urankernen — mit ungeheuerlichen Energiefreisetzungen.</p>
+    </div>
+  </div>
+
+  <div class="entry right mil" data-icon="⚛️">
+    <div class="card">
+      <div class="year">1942</div>
+      <h3>Chicago Pile-1</h3>
+      <p>Enrico Fermi zündet in Chicago die erste kontrollierte Kernkettenreaktion. Der Beweis: Kernkraft ist beherrschbar.</p>
+    </div>
+  </div>
+
+  <div class="entry mil" data-icon="💣">
+    <div class="card">
+      <div class="year">1945</div>
+      <h3>Trinity · Hiroshima · Nagasaki</h3>
+      <p>Der erste Atomtest (16. Juli) und die Bombenabwürfe auf Japan beenden den Zweiten Weltkrieg — und läuten das Zeitalter nuklearer Abschreckung ein.</p>
+    </div>
+  </div>
+
+  <div class="entry right nrg" data-icon="💡">
+    <div class="card">
+      <div class="year">1951</div>
+      <h3>Erste Stromerzeugung aus Kernkraft</h3>
+      <p>Der Experimental Breeder Reactor I (EBR-1) in Idaho erzeugt am 20. Dezember genug Strom für vier Glühlampen — historisch, aber symbolisch gewaltig.</p>
+    </div>
+  </div>
+
+  <div class="entry nrg" data-icon="🏭">
+    <div class="card">
+      <div class="year">1954</div>
+      <h3>KKW Obninsk (UdSSR)</h3>
+      <p>Das erste kommerzielle Kernkraftwerk der Welt geht in Obninsk ans Netz — Leistung: 5 MW. Die Ära der zivilen Kernenergie beginnt.</p>
+    </div>
+  </div>
+
+  <div class="entry right nrg" data-icon="🌐">
+    <div class="card">
+      <div class="year">1957</div>
+      <h3>IAEO gegründet · Shippingport</h3>
+      <p>Die Internationale Atomenergiebehörde nimmt ihre Arbeit auf. Gleichzeitig geht Shippingport (Pennsylvania) als erstes US-Kraftwerk ans Netz.</p>
+    </div>
+  </div>
+
+  <div class="entry nrg" data-icon="📈">
+    <div class="card">
+      <div class="year">1960er</div>
+      <h3>Weltweiter Reaktorboom</h3>
+      <p>Westinghouse und General Electric liefern Druckwasser- und Siedewasserreaktoren am Fließband. Über 100 neue Blöcke weltweit in Planung.</p>
+    </div>
+  </div>
+
+  <div class="entry right acc" data-icon="⚠️">
+    <div class="card">
+      <div class="year">1979</div>
+      <h3>Three Mile Island</h3>
+      <p>Teilschmelze in Pennsylvania, USA. Kein direkter Todesfall, aber das öffentliche Vertrauen in Kernkraft bricht ein. Viele Neubauprojekte werden gestoppt.</p>
+    </div>
+  </div>
+
+  <div class="entry acc" data-icon="🔥">
+    <div class="card">
+      <div class="year">1986</div>
+      <h3>Tschernobyl</h3>
+      <p>Reaktor 4 explodiert. Die schlimmste Nuklearkatastrophe der Geschichte verstrahlt weite Teile Europas, evakuiert 350.000 Menschen und vergiftet die Kernkraft-Debatte für Jahrzehnte.</p>
+    </div>
+  </div>
+
+  <div class="entry right nrg" data-icon="📊">
+    <div class="card">
+      <div class="year">1994</div>
+      <h3>Historischer Höchststand</h3>
+      <p>Kernkraft deckt 17 % des weltweiten Stroms — der bis heute nicht wieder erreichte Spitzenwert. 437 Reaktoren sind in Betrieb.</p>
+    </div>
+  </div>
+
+  <div class="entry acc" data-icon="🌊">
+    <div class="card">
+      <div class="year">2011</div>
+      <h3>Fukushima Daiichi</h3>
+      <p>Ein Tsunami legt die Kühlung von drei Reaktoren in Japan lahm. Dreifache Kernschmelze. Deutschland beschleunigt daraufhin den Ausstieg — Abschaltung aller AKW bis 2023.</p>
+    </div>
+  </div>
+
+  <div class="entry right acc" data-icon="🚨">
+    <div class="card">
+      <div class="year">2022</div>
+      <h3>Saporischschja unter russischer Kontrolle</h3>
+      <p>Russische Truppen besetzen Europas größtes KKW. Wiederholte Alarmzustände und Stromausfälle werfen neue Fragen zur nuklearen Sicherheit in Kriegsgebieten auf.</p>
+    </div>
+  </div>
+
+  <div class="entry now" data-icon="🔬">
+    <div class="card">
+      <div class="year">2024</div>
+      <h3>SMR-Renaissance</h3>
+      <p>Kleine modulare Reaktoren (NuScale, Rolls-Royce, Kairos Power) erhalten erste Betriebsgenehmigungen. Technologiefirmen wie Microsoft und Google investieren in Nuklearstrom für KI-Rechenzentren.</p>
+    </div>
+  </div>
+
+  <div class="entry right now" data-icon="⚛️">
+    <div class="card">
+      <div class="year">2026</div>
+      <h3>Heute: Nuklearer Neustart</h3>
+      <p>Weltweit ~410 Reaktoren in Betrieb, ~60 im Bau. Nach Jahrzehnten des Rückgangs erlebt Kernkraft eine Renaissance — getrieben von Klimazielen und dem explodierenden Energiebedarf der KI.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Quellen: IAEA PRIS, World Nuclear Association, Statista &mdash; Stand März 2026<br>
+  Erstellt mit reinem HTML &amp; CSS, ohne externe Bibliotheken.
+</footer>
+
+<script>
+  // Scroll-in animation via IntersectionObserver
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.entry').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 40}ms`;
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
