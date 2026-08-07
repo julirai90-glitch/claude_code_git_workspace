@@ -98,6 +98,16 @@
   .foot{color:var(--muted);font-size:.72rem;margin-top:16px;border-top:1px solid var(--line);padding-top:8px}
   .seedwarn{background:#fff7ed;border:1px solid #fde4c8;color:#9a5b1a;font-size:.74rem;
             padding:5px 8px;border-radius:6px;margin:.4em 0}
+  /* Stau-Banner: nur sichtbar/auffaellig, wenn wirklich etwas gemeldet ist (kein Dauer-Alarm) */
+  #stauband{margin:.2em 0 .8em}
+  .stauband.warn{background:#fdf1f0;border:1px solid #f5cfc9;border-radius:8px;padding:8px 10px;font-size:.85rem}
+  .stauband.ok{color:var(--muted);font-size:.8rem;padding:2px 2px}
+  .sbhead{font-weight:700;color:var(--ink);margin-bottom:.3em}
+  .sbrow{display:flex;align-items:center;gap:.4em;padding:.15em 0;cursor:pointer}
+  .sbrow:hover{text-decoration:underline}
+  .sbrow .dot{width:9px;height:9px;flex:0 0 auto}
+  .sbdir{color:var(--muted);font-size:.9em}
+  .sbmore{color:var(--muted);font-size:.78rem;margin-top:.3em}
   .err{color:var(--stau);font-size:.85rem;padding:10px}
 </style>
 </head>
@@ -116,6 +126,7 @@
     <span><i class="dot" style="background:var(--stau)"></i>stockend/Stau</span>
     <span><i class="dot" style="background:var(--nodata)"></i>keine Daten</span>
   </div>
+  <div id="stauband"></div>
   <div id="map"></div>
   <div id="seedbox"></div>
   <div id="board"></div>
@@ -157,6 +168,7 @@ Promise.all([
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
   drawMap();
   renderBoard();
+  renderStauBanner();
   d3.select("#foot").html(
     '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr an den automatischen Zählstellen des Bundes '
     +'auf den Nationalstrassen in Graubünden – Abruf jede Minute. Der <b>Balken</b> zeigt die Verkehrsmenge '
@@ -179,7 +191,7 @@ function updateStand(latest){
 function refreshLatest(){
   d3.json(apiUrl("latest")).then(latest=>{
     if(!latest||!latest.sites)return;
-    LATEST=sanitize(latest); applyRelativeStatus(LATEST); updateStand(latest); drawMap(); renderBoard();
+    LATEST=sanitize(latest); applyRelativeStatus(LATEST); updateStand(latest); drawMap(); renderBoard(); renderStauBanner();
   }).catch(()=>{});
 }
 
@@ -414,10 +426,14 @@ function renderBoard(){
       +'<div class="tdirs">'+dirRow(s,'positive')+dirRow(s,'negative')+'</div>'
       +(dctot!=null?'<div class="tfoot" title="Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung">heute bisher ca. <b>'+dctot.toLocaleString('de-CH')+'</b> Fahrzeuge</div>':'')
       +'</div>';};
-  const haupt =rows.filter(s=>corridorClass(s)==="haupt");
-  const pass  =rows.filter(s=>corridorClass(s)==="pass");
-  const a3    =rows.filter(s=>corridorClass(s)==="a3");
-  const andere=rows.filter(s=>corridorClass(s)==="andere");
+  // Kritisch (stau/zaeh) korridor-uebergreifend an die Spitze ziehen, statt in den
+  // Korridor-Gruppen zu verstecken (siehe Stau-Banner oben, gleiches Prinzip).
+  const kritisch=rows.filter(s=>{const w=worst(s);return w==='stau'||w==='zaeh';});
+  const kritischIds=new Set(kritisch.map(s=>s.id));
+  const haupt =rows.filter(s=>corridorClass(s)==="haupt" && !kritischIds.has(s.id));
+  const pass  =rows.filter(s=>corridorClass(s)==="pass" && !kritischIds.has(s.id));
+  const a3    =rows.filter(s=>corridorClass(s)==="a3" && !kritischIds.has(s.id));
+  const andere=rows.filter(s=>corridorClass(s)==="andere" && !kritischIds.has(s.id));
   // Detail-Panel direkt nach der angeklickten Kachel einfuegen (full-width im Raster)
   const tilesHtml=arr=>arr.map(s=>tile(s)+(s.id===sel?'<div class="tdetail" data-for="'+s.id+'"></div>':'')).join('');
   const section=(title,arr)=>arr.length?('<div class="bgroup">'+title+' <span>('+arr.length+')</span></div><div class="tgrid">'+tilesHtml(arr)+'</div>'):'';
@@ -428,6 +444,7 @@ function renderBoard(){
     +'<span class="toggle">'+kbtn('alle','Alle')+kbtn('GR','GR')+kbtn('SG','SG')+kbtn('GL','GL')+kbtn('SZ','SZ')+'</span>'
     +'<span class="bflabel" style="margin-left:.4em">Strecke:</span>'
     +'<span class="toggle">'+rbtn('alle','Alle')+rbtn('A13','A13')+rbtn('A3','A3')+rbtn('pass','Pässe')+rbtn('andere','Weitere')+'</span></div>'
+    +section('&#9888; Aktuell auffällig <small>alle Korridore</small>',kritisch)
     +section('Hauptachsen <small>A13/A28 · Graubünden</small>',haupt)
     +section('Pässe &amp; Nebenstrassen <small>Graubünden</small>',pass)
     +section('A3-Korridor <small>Richtung Zürich</small>',a3)
@@ -625,6 +642,36 @@ function chartCard(s,dir,prov){
     card.append("p").attr("class","bnote").html('Vergleichslinie folgt, sobald genug Tage erfasst sind');
   }
 }
+// Stau-Banner (07.08.2026): fasst alle aktuell stau/zaeh-Richtungen ganz oben zusammen,
+// damit man nicht erst durch alle Kacheln scrollen muss. Zeigt bei Normalzustand nur
+// eine ruhige Ein-Zeiler-Meldung statt eines Dauer-Alarms.
+const STAUBAND_MAX=8;
+function renderStauBanner(){
+  if(!LATEST||!LATEST.sites) return;
+  const items=[];
+  for(const s of LATEST.sites){
+    for(const dir of ['positive','negative']){
+      const d=s.dirs[dir];
+      if(d.status==='stau'||d.status==='zaeh') items.push({s,dir,d});
+    }
+  }
+  const rank={stau:0,zaeh:1};
+  items.sort((a,b)=>rank[a.d.status]-rank[b.d.status]);
+  const box=d3.select('#stauband');
+  if(!items.length){
+    box.html('<div class="stauband ok">&#10003; Kein Stau gemeldet</div>');
+    return;
+  }
+  const shown=items.slice(0,STAUBAND_MAX), rest=items.length-shown.length;
+  const row=it=>'<div class="sbrow" data-id="'+it.s.id+'"><i class="dot" style="background:'+C[it.d.status]+'"></i>'
+    +'<span>'+it.s.place+' <span class="sbdir">· '+it.d.label+'</span></span></div>';
+  box.html('<div class="stauband warn"><div class="sbhead">&#9888; Aktuell '+items.length+' Stelle'+(items.length===1?'':'n')+' betroffen</div>'
+    +shown.map(row).join('')
+    +(rest>0?'<div class="sbmore">+'+rest+' weitere unten in der Liste</div>':'')
+    +'</div>');
+  box.selectAll('.sbrow').on('click',function(){select(this.getAttribute('data-id'), true);});
+}
+
 function hideTip(){tip.style("opacity",0);}
 
 // today.json separat laden
