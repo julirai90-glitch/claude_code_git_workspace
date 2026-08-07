@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Juli/erste Augustwoche 2026 Chur – Tagesmittel vs. Normal</title>
+<style>
+  :root{--orange:#EE7733;--blau:#0068A4;--grau:#6b7280;--hell:#eef2f5;--rot:#c0392b;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:696px;margin:0 auto;border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px 16px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--orange);}
+  .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.68rem;margin-bottom:2px;}
+  .main-title{font-size:1.12rem;font-weight:800;margin:2px 0;}
+  .subtitle{font-size:.78rem;color:var(--grau);margin:0 0 12px;}
+  .kpis{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .kpi{flex:1;min-width:120px;background:var(--hell);border-radius:9px;padding:8px 11px;}
+  .kpi b{display:block;font-size:1.15rem;line-height:1.15;font-variant-numeric:tabular-nums;}
+  .kpi span{font-size:.7rem;color:var(--grau);}
+  .kpi.peak b{color:var(--rot);}.kpi.mean b{color:var(--blau);}
+  svg{width:100%;display:block;touch-action:none;cursor:crosshair;overflow:visible;}
+  .legend{display:flex;gap:14px;font-size:.74rem;color:var(--grau);margin-top:8px;flex-wrap:wrap;}
+  .legend span{display:flex;align-items:center;gap:5px;}
+  .leg-bar{width:14px;height:10px;border-radius:2px;display:inline-block;}
+  .leg-line{width:20px;border-top:2px dashed #9ca3af;display:inline-block;}
+  .note{font-size:.66rem;color:var(--grau);margin-top:12px;line-height:1.45;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:6px 10px;font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .tip b{display:block;font-size:.9rem;margin-bottom:2px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent"></div>
+  <div class="kicker">Chur · 1. Juli – 6. August 2026</div>
+  <div class="main-title">Tagesdurchschnitt: Juli/erste Augustwoche 2026 vs. Normal</div>
+  <div class="subtitle">Balken = Tagesmittel · gestrichelte Linie = Durchschnitt 1991–2020 (geglättet)</div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <svg id="svg" role="img" aria-label="Tagesmitteltemperatur Juli/erste Augustwoche 2026 Chur im Vergleich zum Normalwert"></svg>
+  <div class="legend">
+    <span><span class="leg-bar" style="background:#EE7733"></span> Sommertag (Max ≥ 25 °C)</span>
+    <span><span class="leg-bar" style="background:#a0b4c8"></span> kein Sommertag</span>
+    <span><span class="leg-line"></span> Normal 1991–2020</span>
+  </div>
+  <p class="note" id="note"></p>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+"use strict";
+// === Verifizierte Daten (MeteoSchweiz SMN Chur, Stand 06.08.2026, provisorisch) ===
+// Tagesmittel (tre200d0), Tagesmaximum (tre200dx) – exakt gegen data.geo.admin.ch geprüft.
+// Index 1-31 = 1.-31. Juli, Index 32-37 = 1.-6. August.
+const LABEL={1:"1.7.",2:"2.7.",3:"3.7.",4:"4.7.",5:"5.7.",6:"6.7.",7:"7.7.",8:"8.7.",9:"9.7.",10:"10.7.",11:"11.7.",12:"12.7.",13:"13.7.",14:"14.7.",15:"15.7.",16:"16.7.",17:"17.7.",18:"18.7.",19:"19.7.",20:"20.7.",21:"21.7.",22:"22.7.",23:"23.7.",24:"24.7.",25:"25.7.",26:"26.7.",27:"27.7.",28:"28.7.",29:"29.7.",30:"30.7.",31:"31.7.",32:"1.8.",33:"2.8.",34:"3.8.",35:"4.8.",36:"5.8.",37:"6.8."};
+const MEAN={1:17.2,2:20.4,3:20.8,4:21.2,5:22.4,6:22.8,7:23.4,8:22.6,9:23.4,10:25.7,11:26.2,12:24.6,13:25.2,14:24.3,15:21.2,16:23.1,17:23.3,18:19.8,19:18.4,20:19.7,21:18.7,22:19.7,23:19.8,24:20.9,25:23.5,26:18.7,27:21.6,28:23.4,29:27.1,30:28.0,31:24.6,32:23.0,33:25.4,34:29.2,35:28.9,36:25.9,37:23.7};
+const MAX ={1:19.8,2:27.9,3:26.2,4:28.2,5:29.4,6:28.8,7:31.5,8:29.7,9:30.8,10:33.2,11:33.6,12:32.2,13:33.6,14:33.0,15:24.9,16:31.9,17:30.4,18:25.8,19:23.0,20:25.2,21:24.9,22:26.8,23:26.4,24:28.7,25:32.6,26:22.1,27:27.3,28:30.8,29:35.8,30:37.3,31:35.1,32:28.5,33:33.0,34:36.5,35:37.7,36:33.5,37:28.4};
+const NORM={1:19.3,2:19.4,3:19.5,4:19.4,5:19.2,6:19.0,7:18.8,8:18.5,9:18.4,10:18.4,11:18.5,12:18.6,13:18.6,14:18.9,15:19.0,16:19.2,17:19.4,18:19.7,19:19.8,20:20.0,21:20.0,22:19.8,23:19.6,24:19.6,25:19.7,26:19.7,27:19.9,28:20.0,29:20.0,30:19.9,31:20.0,32:20.0,33:19.9,34:19.9,35:19.9,36:19.8,37:19.9};
+const RECDAY=35; // 4.8.2026 = neuer Allzeit-Hitzerekord Chur
+const RECVAL=37.7, RECOLD=37.6, RECOLDDATE="11.7.2023";
+const STAND="6. August 2026";
+
+const days=Object.keys(MEAN).map(Number).sort((a,b)=>a-b);
+const $=id=>document.getElementById(id);
+
+const meanVals=days.map(d=>MEAN[d]);
+const monMean=meanVals.reduce((a,b)=>a+b,0)/meanVals.length;
+let peakDay=days[0]; days.forEach(d=>{ if(MAX[d]>MAX[peakDay]) peakDay=d; });
+const sommer=days.filter(d=>MAX[d]>=25).length;
+const hitze =days.filter(d=>MAX[d]>=30).length;
+const normMean=days.reduce((a,d)=>a+NORM[d],0)/days.length;
+$('kpis').innerHTML=
+  `<div class="kpi mean"><b>${monMean.toFixed(1)} °C</b><span>Tagesmittel-Schnitt (Normal: ${normMean.toFixed(1)} °C)</span></div>`+
+  `<div class="kpi peak"><b>${RECVAL.toFixed(1)} °C</b><span>Neuer Allzeit-Hitzerekord (${LABEL[RECDAY]}, bisher ${RECOLD.toFixed(1)} °C/${RECOLDDATE})</span></div>`+
+  `<div class="kpi"><b>${sommer}</b><span>Sommertage (Max ≥ 25 °C)</span></div>`+
+  `<div class="kpi"><b>${hitze}</b><span>Hitzetage (Max ≥ 30 °C)</span></div>`;
+$('note').innerHTML=`Quelle: MeteoSchweiz (Open Government Data, CC BY), automatische Station Chur (SMN, 556&nbsp;m). <b>Werte ab Ende Juli/Anfang August provisorisch und unkorrigiert</b>, Stand ${STAND}. Kennzahlen: eigene Auswertung. Normal = geglätteter Tagesdurchschnitt 1991–2020 (5-Tage-Fenster). Sommertag = Tagesmaximum ≥ 25 °C. Allzeitrekord bezieht sich auf die Chur-Messreihe seit 1887.`;
+
+const svg=$('svg');
+function render(){
+  const W=Math.round(svg.getBoundingClientRect().width)||660;
+  const small=W<460, H=small?200:220, m={l:34,r:8,t:12,b:32};
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`); svg.style.height=H+'px';
+  const slotW=(W-m.l-m.r)/days.length, bw=slotW*0.72;
+  const X=d=>m.l+(d-0.5)*slotW;
+  const allV=[...meanVals,...days.map(d=>NORM[d])];
+  const ymin=Math.floor(Math.min(...allV)/2)*2-1, ymax=Math.ceil(Math.max(...allV)/2)*2+1;
+  const Y=v=>H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);
+  let s='';
+  for(let v=Math.ceil(ymin/2)*2;v<=ymax;v+=2){
+    s+=`<line x1="${m.l}" y1="${Y(v).toFixed(1)}" x2="${W-m.r}" y2="${Y(v).toFixed(1)}" stroke="#f0f0f0"/>`;
+    s+=`<text x="${m.l-5}" y="${(Y(v)+3.5).toFixed(1)}" text-anchor="end" font-size="10" fill="#9ca3af">${v}°</text>`;
+  }
+  days.forEach(d=>{
+    const x=X(d), v=MEAN[d], isSommer=MAX[d]>=25, isPeak=d===peakDay, isRec=d===RECDAY;
+    s+=`<rect x="${(x-bw/2).toFixed(1)}" y="${Y(v).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-m.b-Y(v)).toFixed(1)}" fill="${isSommer?'#EE7733':'#a0b4c8'}" opacity="0.9"${isRec?' stroke="#c0392b" stroke-width="2"':(isPeak?' stroke="#c0392b" stroke-width="1.4"':'')}/>`;
+  });
+  // Monatsgrenze Juli/August
+  const xb=(X(31)+X(32))/2;
+  s+=`<line x1="${xb.toFixed(1)}" y1="${m.t}" x2="${xb.toFixed(1)}" y2="${H-m.b}" stroke="#d1d5db" stroke-width="1" stroke-dasharray="2 2"/>`;
+  let p=''; days.forEach(d=>{ p+=(p?'L':'M')+X(d).toFixed(1)+' '+Y(NORM[d]).toFixed(1); });
+  s+=`<path d="${p}" fill="none" stroke="#6b7280" stroke-width="1.8" stroke-dasharray="5 3"/>`;
+  s+=`<text x="${X(RECDAY).toFixed(1)}" y="${(Y(MEAN[RECDAY])-6).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c0392b">↑${MAX[RECDAY].toFixed(1)}° Rekord</text>`;
+  days.forEach(d=>{ if(d===1||d===32||d%5===0){
+    s+=`<line x1="${X(d).toFixed(1)}" y1="${H-m.b}" x2="${X(d).toFixed(1)}" y2="${(H-m.b+3).toFixed(1)}" stroke="#e5e7eb"/>`;
+    s+=`<text x="${X(d).toFixed(1)}" y="${H-16}" text-anchor="middle" font-size="10" fill="#9ca3af">${LABEL[d]}</text>`;
+  }});
+  s+=`<text x="${(X(15)).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9.5" fill="#9ca3af">Juli 2026</text>`;
+  s+=`<text x="${(X(34)).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9.5" fill="#9ca3af">Aug.</text>`;
+  svg.innerHTML=s;
+  META={m,slotW,X,W};
+}
+let META=null, raf;
+window.addEventListener('resize',()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(render); });
+render();
+
+const tip=$('tip');
+svg.addEventListener('pointermove',ev=>{
+  if(!META)return;
+  const r=svg.getBoundingClientRect(), xi=(ev.clientX-r.left)/r.width*META.W;
+  let best=days[0],bd=1e9; days.forEach(d=>{ const dist=Math.abs(META.X(d)-xi); if(dist<bd){bd=dist;best=d;} });
+  const v=MEAN[best], n=NORM[best], mx=MAX[best], diff=v-n;
+  const sTag=mx>=25?'<span style="color:#EE7733;font-weight:700">Sommertag</span>':'kein Sommertag';
+  const recTag=best===RECDAY?'<br><span style="color:#c0392b;font-weight:700">Neuer Allzeit-Hitzerekord Chur</span>':'';
+  tip.innerHTML=`<b>${LABEL[best]}2026</b>Tagesmittel: ${v.toFixed(1)} °C (${diff>=0?'+':'−'}${Math.abs(diff).toFixed(1)} vs. Normal)<br>Höchstwert: ${mx.toFixed(1)} °C · ${sTag}${recTag}`;
+  tip.style.opacity=1;
+  let lx=ev.clientX+12; if(lx+240>window.innerWidth)lx=ev.clientX-244;
+  let ty=ev.clientY-46; if(ty<4)ty=ev.clientY+16;
+  tip.style.left=Math.max(4,lx)+'px'; tip.style.top=ty+'px';
+});
+svg.addEventListener('pointerleave',()=>tip.style.opacity=0);
+</script>
+</body>
+</html>
