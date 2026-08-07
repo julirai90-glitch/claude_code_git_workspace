@@ -152,6 +152,7 @@ Promise.all([
   d3.json(apiUrl("baseline")).catch(()=>null)
 ]).then(([latest,base])=>{
   LATEST=sanitize(latest); BASE=base;
+  applyRelativeStatus(LATEST);
   updateStand(latest);
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
   drawMap();
@@ -161,7 +162,9 @@ Promise.all([
     +'auf den Nationalstrassen in Graubünden – Abruf jede Minute. Der <b>Balken</b> zeigt die Verkehrsmenge '
     +'(aktuelle Fahrzeuge/h im Verhältnis zum heutigen Höchstwert dieser Stelle, bzw. zum ortsüblichen Wert, '
     +'sobald genug Vergleichstage erfasst sind – als <i>provisorisch</i> gekennzeichnet). Der <b>Ampelpunkt</b> '
-    +'zeigt den Verkehrsfluss (Tempo) und beruht vorerst auf festen Schwellen. Richtungen sind teils nur '
+    +'zeigt den Verkehrsfluss (Tempo) im Vergleich zum ortsüblichen Wert für Wochentag/Uhrzeit (feste Schwelle '
+    +'nur solange zu wenige Vergleichstage vorliegen; wochenlange Verlangsamungen wie Dauerbaustellen erkennt '
+    +'das nicht zuverlässig). Richtungen sind teils nur '
     +'geometrisch hergeleitet (<i>provisorisch</i> markiert). Defekt wirkende Messungen werden ausgeblendet. '
     +'Kantonale Strassen sind nicht erfasst.<br>'
     +'Datenquelle: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData»); Standorte/Namen amtlich '
@@ -176,7 +179,7 @@ function updateStand(latest){
 function refreshLatest(){
   d3.json(apiUrl("latest")).then(latest=>{
     if(!latest||!latest.sites)return;
-    LATEST=sanitize(latest); updateStand(latest); drawMap(); renderBoard();
+    LATEST=sanitize(latest); applyRelativeStatus(LATEST); updateStand(latest); drawMap(); renderBoard();
   }).catch(()=>{});
 }
 
@@ -231,6 +234,29 @@ function sanitize(latest){
     if(n.flow===0 && (p.flow||0)>=SUSPECT_PEER) kill(n);
   }
   return latest;
+}
+
+// Phase 1 (07.08.2026): Ampel relativ zum ortsueblichen Tempo (Baseline) statt fixer Schwelle.
+// Faellt auf den vom Server gelieferten Fixwert zurueck, solange zu wenige Vergleichstage vorliegen.
+// Bekannte Grenze: erkennt keine ueber Wochen anhaltende Verlangsamung (z.B. Dauerbaustelle),
+// weil eine solche selbst Teil des rollierenden Vergleichswerts wird (Fall Chur Nord, Aug 2026).
+const REL_MIN_DAYS=4, REL_STAU=0.6, REL_ZAEH=0.85;
+function applyRelativeStatus(latest){
+  if(!latest||!latest.sites||!BASE||!BASE.data) return;
+  const cat=dayType(), n=(BASE.n&&BASE.n[cat])||0;
+  if(n<REL_MIN_DAYS) return;
+  const idx=Math.min(95,Math.max(0,Math.floor(swissParts(new Date()).h*4)));
+  for(const s of latest.sites){
+    for(const dir of ['positive','negative']){
+      const d=s.dirs[dir];
+      if(d.speed==null||d.status==='keine_daten') continue;
+      const cbl=BASE.data[s.id+'|'+dir]&&BASE.data[s.id+'|'+dir][cat];
+      const med=cbl&&cbl.speed_med&&cbl.speed_med[idx];
+      if(med==null||med<=0) continue;
+      d.relRatio=d.speed/med;
+      d.status=d.relRatio<REL_STAU?'stau':d.relRatio<REL_ZAEH?'zaeh':'frei';
+    }
+  }
 }
 
 // ---- Kennzahlen (identisch zur Listen-Ansicht) ----
@@ -511,7 +537,14 @@ function chartCard(s,dir,prov){
     if(metric==="flow"){ const lh=lastHourCount(k0); hasVal=lh!=null;
       headline='letzte Stunde: <b>'+(hasVal?'ca. '+lh.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'; }
     else { const rs=recentSpeed(k0); hasVal=rs!=null;
-      headline='Tempo: <b>'+(hasVal?'ca. '+rs+' km/h':'–')+'</b> <span style="font-weight:400;color:var(--muted)">(Ø 15 Min)</span>'; }
+      let pctTxt='';
+      if(hasVal){
+        const cat0=dayType(), cbl0=BASE&&BASE.data&&BASE.data[k0]&&BASE.data[k0][cat0];
+        const idx0=Math.min(95,Math.max(0,Math.floor(swissParts(new Date()).h*4)));
+        const med0=cbl0&&cbl0.speed_med&&cbl0.speed_med[idx0];
+        if(med0) pctTxt=' · <span style="color:var(--muted)">'+Math.round(rs/med0*100)+'% vom üblichen Tempo</span>';
+      }
+      headline='Tempo: <b>'+(hasVal?'ca. '+rs+' km/h':'–')+'</b> <span style="font-weight:400;color:var(--muted)">(Ø 15 Min)</span>'+pctTxt; }
     let tword="";
     if(hasVal){
       const tr=trend(k0, metric);
