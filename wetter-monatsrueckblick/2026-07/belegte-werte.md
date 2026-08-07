@@ -28,6 +28,15 @@ Abrufdatum: 2026-08-07. Quelle grundsätzlich: MeteoSchweiz Open Data (`data.geo
 - Sekundärquellen-Wert "Davos 27.4°C am 4.8." (watson.ch/nau.ch) weicht von eigener CSV-Berechnung (28.2°C bzw. teils 37.7°C-Kontext für Chur) ab — im Artikel bewusst nicht verwendet, nur CSV-Werte zitiert.
 - nau.ch-Angabe "14 Hitzetage in Folge Ende Juni, Reihe seit 1961" — betrifft Juni nicht den Berichtszeitraum, Reihenangabe widersprüchlich zu offiziellen Metadaten (1887) — nicht in den Artikel übernommen.
 
+**Nachtrag 2026-08-07 (Rückfrage: wann Qualitätsprüfung), selbst gegen Roh-HTML verifiziert:**
+
+| Wert | Quelle | Verifiziert |
+|---|---|---|
+| Temperaturdaten: rollierende Prüfung, manuell kontrollierte Fassung "normally published 5 days after the measurement" | [opendatadocs.meteoswiss.ch/general/faq](https://opendatadocs.meteoswiss.ch/general/faq) | ✅ wörtlich per curl aus Roh-HTML extrahiert |
+| Niederschlag (Tages-/Monatssummen): Ausnahme, geprüft erst "around the end of the upcoming month" | dieselbe Quelle | ✅ wörtlich extrahiert |
+
+Konsequenz für diesen Artikel: Bei Datenstand 7.8.2026 waren Temperaturwerte bis ca. 2.8. bereits manuell geprüft, die Werte 3.–6.8. (inkl. Chur-Rekord 4.8.) noch nicht (fertig geprüft ca. ab 9.8.). Alle genannten Julli-Niederschlagssummen (Davos/Sils/Samedan/S. Bernardino) sind bis Ende August 2026 provisorisch. Artikeltext und Fussnoten entsprechend präzisiert (vorher stand dort nur unspezifisch "Qualitätsprüfung folgt nachträglich").
+
 **Nachtrag 2026-08-07 (nach Vergleich mit watson.ch-Artikel), selbst gegen Roh-CSV verifiziert:**
 
 | Wert | Quelle/Berechnung | Verifiziert |
