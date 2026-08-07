@@ -40,6 +40,11 @@ Format: `Datum der Meldung | Station | Kennzahl | Wert | Vergleich/Rekord | Geme
 | 2026-08-07 | S. Bernardino | Sonnigster Juli seit Messbeginn | 223.4 h (137% Norm) | **neuer Rekord**, Reihe seit ~1970 | selbiger Artikel |
 | 2026-08-07 | Davos/Sils/Samedan/S. Bernardino | Juli-Trockenheit | 37–44% des Normal-Niederschlags 1991–2020 | 6.–8. trockenster Juli seit Messbeginn je Station | selbiger Artikel |
 | 2026-08-07 | Scuol | Periodenmaximum | 34.8 °C (31.7.2026) | unter eigenem Allzeitrekord (35.1°C, 27.6.2026) geblieben, kein neuer Rekord | selbiger Artikel |
+| 2026-08-07 | Grono | Periodenmaximum | 36.4 °C (5./6.8.2026) | unter eigenem Allzeitrekord (41.5°C, 11.8.2003) geblieben, kein neuer Rekord | selbiger Artikel, Nachtrag nach watson.ch-Vergleich |
+| 2026-08-07 | Chur | Tropennächte Juli | 0 | Rang: erst 2015 (4) und vereinzelt andere Jahre (≤2) über 0 seit 1887 | selbiger Artikel, Nachtrag |
+| 2026-08-07 | Chur | Tropennächte 1.–6.8. | 3 (3.8., 4.8., 6.8.2026) | mehr als jeder gesamte Julimonat der Reihe ausser 2015 | selbiger Artikel, Nachtrag |
+
+**Baseline-Rekord ergänzt:** Grono (Misox, 324m, tiefstgelegene Bündner Station): Allzeit-Hitzerekord 41.5°C (11.8.2003) — der höchste je in Graubünden gemessene Wert, höher als der Chur-Rekord vom 4.8.2026.
 
 **Korrektur zum Juni-2026-Eintrag oben:** Die dort genannte "Andeer Juni-Höchststand 32.7°C egalisiert 27.6.2026" ist ein Juni-Kalendertag-Rekord, nicht der Stations-Allzeitrekord (dieser lag vor Juli 2026 bei 33.6°C, 11.8.2024, jetzt gebrochen s.o.) — zur Klarheit hier präzisiert.
 

@@ -28,6 +28,18 @@ Abrufdatum: 2026-08-07. Quelle grundsätzlich: MeteoSchweiz Open Data (`data.geo
 - Sekundärquellen-Wert "Davos 27.4°C am 4.8." (watson.ch/nau.ch) weicht von eigener CSV-Berechnung (28.2°C bzw. teils 37.7°C-Kontext für Chur) ab — im Artikel bewusst nicht verwendet, nur CSV-Werte zitiert.
 - nau.ch-Angabe "14 Hitzetage in Folge Ende Juni, Reihe seit 1961" — betrifft Juni nicht den Berichtszeitraum, Reihenangabe widersprüchlich zu offiziellen Metadaten (1887) — nicht in den Artikel übernommen.
 
+**Nachtrag 2026-08-07 (nach Vergleich mit watson.ch-Artikel), selbst gegen Roh-CSV verifiziert:**
+
+| Wert | Quelle/Berechnung | Verifiziert |
+|---|---|---|
+| Grono Allzeit-Hitzerekord 41.5 °C (11.8.2003), weiterhin unangetastet | `ogd-smn_gro_d_historical.csv`, `tre200dx`, komplette Reihe sortiert (Top-Wert) | ✅ Rohwert direkt gelesen |
+| Grono Periodenmaximum 2026 = 36.4 °C (5./6.8.2026) | `ogd-smn_gro_d_recent.csv`, `tre200dx` Juli–6.8. | ✅ Rohwert direkt gelesen |
+| Chur: 0 Tropennächte im Juli 2026 (Tagestiefstwert nie ≥20°C) | `ogd-smn_chu_d_recent.csv`, `tre200dn` alle 31 Julitage geprüft (Max der Minima: 19.6°C am 14.7./29.7.) | ✅ eigene Auszählung aus Tagesdaten |
+| Chur: 3 Tropennächte 1.–6.8.2026 (3.8.: 22.8°C, 4.8.: 20.5°C, 6.8.: 20.4°C) | dieselbe Quelle | ✅ eigene Auszählung |
+| Chur Juli-Tropennächte-Ranking seit 1887: 2015 mit 4 der Höchstwert, alle anderen Jahre ≤2 | `ogd-smn_chu_m.csv`, Spalte `tnd20nm0` (offizielle MeteoSchweiz-Monatszählung), Monat=07 über 69 Jahre mit Datenwert gefiltert und sortiert; Konsistenzcheck: Juli-2026-Zeile zeigt 0, deckt sich mit eigener Tageszählung | ✅ offizielle Spalte + eigener Cross-Check |
+
+Anlass: watson.ch-Artikel (860679950) verglichen, nannte Grono/2003 korrekt als bisherigen Bündner Allzeitrekord und Tropennächte als Metrik — beides in ursprünglichem Entwurf gefehlt, jetzt ergänzt.
+
 **Scope-Korrektur (2026-08-07, nach erstem Entwurf):** `hub-graubuenden.html` zeigt inzwischen 26 SMN-Stationen im Kanton, nicht 12 wie in der Skill-Referenzdatei vermerkt (diese ist veraltet, Stand Juli 2026). Die Tagesrekord-Auswertung (Teil B) deckt weiterhin nur die 12 am längsten laufenden Stationen ab (chu, scu, dav, ilz, srs, rob, sam, aro, biv, and, lat, dis) — für die 14 neueren Stationen (u.a. Corvatsch, Weissfluhjoch, Crap Masegn, Grono, Buffalora, Naluns, Martegnas, Bernina, Santa Maria, Valbella, Vicosoprano, Vals, plus SMN-Varianten von San Bernardino/Sils Maria) wurde keine Rekord-Auswertung durchgeführt — im Artikeltext entsprechend klargestellt, nicht stillschweigend mitgemeint.
 
 **Referenzperioden im Artikel:** 1961–1990 für die Stripes-Grafik (Anomalie-Baseline, wie beim Juni-Artikel), 1991–2020 ("Normalperiode") für Tagesbalken-Grafik und Niederschlags-/Sonnenschein-Vergleiche. Beide Perioden bewusst nicht vermischt.

@@ -28,6 +28,14 @@ Scuol kam mit 34.8 °C am 31. Juli nahe an seinen erst im Juni 2026 aufgestellte
 
 Eine Gegenbewegung gab es bei den Nachttemperaturen: In Ilanz und Bergün/Latsch wurden in der dritten Juliwoche (20.–25.7.) mehrere neue *Kälterekorde* bei den Tagestiefstwerten registriert – ein Hinweis auf ausgeprägte nächtliche Abkühlung mitten im ansonsten heissen Monat, vermutlich durch klare, trockene Strahlungsnächte.
 
+## Grono hält weiterhin den höheren Bündner Rekord
+
+So spektakulär der neue Chur-Rekord ist: Die höchste je in Graubünden gemessene Temperatur steht weiterhin bei **41.5 °C**, aufgestellt am 11. August 2003 in Grono im Misox (324 m ü. M., die tiefstgelegene der 26 Bündner Messstationen). Im Auswertungszeitraum 2026 kam Grono nicht in die Nähe dieses Werts: Der höchste Tageswert lag bei 36.4 °C (5. und 6. August) – fünf Grad unter dem 23-jährigen Rekord.
+
+## Heisse Tage, kalte Julinächte – bis der August Tropennächte brachte
+
+Ein Kontrast, der in den Hitzewellen-Schlagzeilen leicht untergeht: Trotz der Rekordtage blieb Chur während des gesamten Juli ohne eine einzige Tropennacht (Tagestiefstwert ≥ 20 °C) – in keiner der 31 Julinächte blieb es nachts so warm. Erst in der ersten Augustwoche kippte das: Am 3., 4. und 6. August sank das Thermometer nachts nicht mehr unter 20 Grad (Tiefstwerte 22.8 °C, 20.5 °C und 20.4 °C) – drei Tropennächte in sechs Tagen, mehr als in jedem bisherigen Julimonat der Chur-Messreihe seit 1887 ausser 2015 (4 Tropennächte im ganzen Monat).
+
 ## National Rekord-Juli, in Graubünden nur Mittelfeld
 
 Was diesen Juli einordnet: Laut Klimabulletin von MeteoSchweiz lag die landesweite Julitemperatur 2026 3.2 Grad über der Referenzperiode 1991–2020 – "kurz vor Monatsende" Rang 1 seit Messbeginn 1864. Doch derselbe Bericht hält fest: Die *kleinsten* positiven Abweichungen registrierte MeteoSchweiz ausgerechnet in "Nord- und Mittelbünden, Wallis, Alpensüdseite und Engadin", namentlich an den Stationen Davos und Samedan.
