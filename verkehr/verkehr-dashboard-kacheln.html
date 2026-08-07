@@ -253,6 +253,11 @@ function sanitize(latest){
 // Bekannte Grenze: erkennt keine ueber Wochen anhaltende Verlangsamung (z.B. Dauerbaustelle),
 // weil eine solche selbst Teil des rollierenden Vergleichswerts wird (Fall Chur Nord, Aug 2026).
 const REL_MIN_DAYS=4, REL_STAU=0.6, REL_ZAEH=0.85;
+// Bei sehr wenig Verkehr (z.B. Pass mit nur einzelnen Fahrzeugen/15 Min) ist der
+// Tempo-Schnitt statistisch nicht belastbar: ein einzelnes langsames Fahrzeug kann den
+// Schnitt kippen, ohne dass das ein echter Stau ist. Unterhalb der Flow-Schwelle bleibt
+// es daher bei "frei" - ausser das Tempo ist auch absolut sehr tief (moegliches Ereignis).
+const REL_FLOW_FLOOR=100, REL_ABS_FLOOR=20;
 function applyRelativeStatus(latest){
   if(!latest||!latest.sites||!BASE||!BASE.data) return;
   const cat=dayType(), n=(BASE.n&&BASE.n[cat])||0;
@@ -265,6 +270,7 @@ function applyRelativeStatus(latest){
       const cbl=BASE.data[s.id+'|'+dir]&&BASE.data[s.id+'|'+dir][cat];
       const med=cbl&&cbl.speed_med&&cbl.speed_med[idx];
       if(med==null||med<=0) continue;
+      if((d.flow||0)<REL_FLOW_FLOOR && d.speed>=REL_ABS_FLOOR){ d.status='frei'; continue; }
       d.relRatio=d.speed/med;
       d.status=d.relRatio<REL_STAU?'stau':d.relRatio<REL_ZAEH?'zaeh':'frei';
     }
