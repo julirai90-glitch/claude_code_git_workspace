@@ -248,7 +248,7 @@ Promise.all([
   // Im Embed steht in #foot bereits die kurze Quellenzeile aus renderEmbedView()
   if(!EMBED_VIEW) d3.select("#foot").html(
     '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr an den automatischen Zählstellen des Bundes '
-    +'auf den Nationalstrassen in Graubünden – Abruf jede Minute.<br>'
+    +'auf den Nationalstrassen in Graubünden – Abruf alle fünf Minuten.<br>'
     +'<b>Wie der Stau erkannt wird:</b> Die Verkehrs<i>menge</i> allein genügt nicht – im Stau sinkt sie, weil '
     +'weniger Fahrzeuge durchkommen. Wenig Verkehr und Stau sehen in der Zählung darum gleich aus. '
     +'Ausschlaggebend ist deshalb das gemessene <b>Tempo</b>, und zwar doppelt verglichen: mit dem '
@@ -279,7 +279,7 @@ Promise.all([
 
 function updateStand(latest){
   const t=new Date(latest.generated);
-  d3.select("#stand").html('Stand: <b>'+t.toLocaleString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</b> Uhr · aktualisiert jede Minute');
+  d3.select("#stand").html('Stand: <b>'+t.toLocaleString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</b> Uhr · aktualisiert alle fünf Minuten');
 }
 function refreshLatest(){
   d3.json(apiUrl("latest")).then(latest=>{
