@@ -305,7 +305,16 @@ function drawMap(){
 
 // Plausibilitaets-Filter (identisch zur Listen-Ansicht)
 const SUSPECT_PEER=200;
-const DROP_SITES=["CH:0169","CH:0098"];
+// CH:0320 "Chur Nord" vorerst raus (10.08.2026): In der Messstellen-Registrierung
+// waren unter derselben Nummer auch zwei Zuercher Kantonszaehler eingehaengt
+// (ZH.CH:0320, rund 99 km entfernt bei Zuerich-Nord). Deren Werte flossen in den
+// Standort ein und dominierten ihn zeitweise vollstaendig – daher das jahrelang
+// unerklaerliche Tempo von rund 50 km/h auf einem A13a-Abschnitt. Die Spuren sind
+// in der Registrierung entfernt; die rollierenden Vergleichswerte der letzten
+// 42 Tage stammen aber noch aus Zuerich, weshalb die Kachel bis dahin eine
+// falsche Referenzkurve zeigen wuerde. Wieder aufnehmen, sobald die Baseline
+// sauber ist (Freifluss sollte dann bei ~115 km/h liegen, nicht bei 51).
+const DROP_SITES=["CH:0169","CH:0098","CH:0320"];
 function sanitize(latest){
   if(!latest||!latest.sites) return latest;
   latest.sites=latest.sites.filter(s=>!DROP_SITES.includes(s.id));
@@ -677,9 +686,8 @@ function tileHtml(s){const open=s.id===sel; const L=loadInfo(s); const lg=worst(
       ? '<div class="tlage '+lg+'"><span>⚠ '+lageWort(lg,worstDir?recentSpeed(s.id+'|'+worstDir):null)+'</span>'
         +(since?'<span class="lsince">'+since+'</span>':'')+'</div>'
       : '';
-    const staunote=(kritisch&&L.mode==='typ'&&L.pct!=null&&L.pct<95)
-      ? '<div class="tnote">Nur '+L.pct+'% der sonst üblichen Fahrzeuge – weil im Stau weniger durchkommen, nicht weil wenig los ist.</div>'
-      : '';
+    // Kein Erklaersatz – die Lage-Zeile und das Tempo je Richtung sagen es bereits.
+    const staunote='';
     return '<div class="tile'+(open?' sel':'')+'" data-id="'+s.id+'">'
       +'<div class="thead"><span class="tdot" style="background:'+C[lg]+'" title="Verkehrslage (Tempo)"></span>'
       +'<span class="tplace">'+s.place+'<em>'+s.road+'</em></span></div>'

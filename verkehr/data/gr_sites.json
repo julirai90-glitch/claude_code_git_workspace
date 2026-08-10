@@ -522,20 +522,6 @@
     "lane": "lane1",
     "carriageway": "mainCarriageway",
     "tmc": 10337
-   },
-   {
-    "lane_id": "ZH.CH:0320.01",
-    "dir": "positive",
-    "lane": "lane1",
-    "carriageway": "mainCarriageway",
-    "tmc": 23724
-   },
-   {
-    "lane_id": "ZH.CH:0320.02",
-    "dir": "negative",
-    "lane": "lane1",
-    "carriageway": "mainCarriageway",
-    "tmc": 23723
    }
   ]
  },
@@ -560,20 +546,6 @@
     "lane": "lane1",
     "carriageway": "mainCarriageway",
     "tmc": 27440
-   },
-   {
-    "lane_id": "ZH.CH:0322.01",
-    "dir": null,
-    "lane": "lane1",
-    "carriageway": "mainCarriageway",
-    "tmc": null
-   },
-   {
-    "lane_id": "ZH.CH:0322.02",
-    "dir": null,
-    "lane": "lane1",
-    "carriageway": "mainCarriageway",
-    "tmc": null
    }
   ]
  },
@@ -622,20 +594,6 @@
     "lane": "lane1",
     "carriageway": "mainCarriageway",
     "tmc": 12944
-   },
-   {
-    "lane_id": "ZH.CH:0392.01",
-    "dir": null,
-    "lane": "lane1",
-    "carriageway": "mainCarriageway",
-    "tmc": null
-   },
-   {
-    "lane_id": "ZH.CH:0392.02",
-    "dir": null,
-    "lane": "lane1",
-    "carriageway": "mainCarriageway",
-    "tmc": null
    }
   ]
  },
@@ -914,20 +872,6 @@
     "lane": "lane1",
     "carriageway": "mainCarriageway",
     "tmc": 36472
-   },
-   {
-    "lane_id": "ZH.CH:0708.01",
-    "dir": "positive",
-    "lane": "lane1",
-    "carriageway": "mainCarriageway",
-    "tmc": 23683
-   },
-   {
-    "lane_id": "ZH.CH:0708.02",
-    "dir": "negative",
-    "lane": "lane1",
-    "carriageway": "mainCarriageway",
-    "tmc": 23682
    }
   ]
  }

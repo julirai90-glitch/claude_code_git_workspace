@@ -234,7 +234,10 @@ function refreshLatest(){
 const SUSPECT_PEER=200;
 // Dauerhaft datenlose Zaehlstellen ausblenden (Sensor liefert nichts):
 // CH:0169 Flueela/Tschuggen N, CH:0098 Castasegna.
-const DROP_SITES=["CH:0169","CH:0098"];
+// CH:0320 "Chur Nord" vorerst raus (10.08.2026) – siehe Kommentar in
+// verkehr-dashboard-kacheln.html: Zuercher Kantonszaehler waren unter derselben
+// Nummer in den Standort eingehaengt, die Vergleichswerte sind noch belastet.
+const DROP_SITES=["CH:0169","CH:0098","CH:0320"];
 function sanitize(latest){
   if(!latest||!latest.sites) return latest;
   latest.sites=latest.sites.filter(s=>!DROP_SITES.includes(s.id));

@@ -47,7 +47,11 @@ mst = open(MST, encoding="utf-8").read()
 sites = {}
 for rec in re.findall(r"<dx223:measurementSiteRecord\b.*?</dx223:measurementSiteRecord>", mst, flags=re.S):
     sid = re.search(r'id="([^"]+)"', rec).group(1)          # e.g. CH:0320.03
-    mnum = re.match(r"[A-Z.]*:0*(\d+)\.", sid + ".")
+    # Nur nationale ASTRA-Spuren ("CH:0320.03"). Kantonale Zaehler tragen einen
+    # Kantonspraefix ("ZH.CH:0320.01") bei identischer Nummer - das frühere
+    # "[A-Z.]*" hat die mitgenommen und Zuercher Messwerte unter GR-Standorte
+    # gemischt (Chur Nord lieferte daraufhin fast nur noch Zuercher Tempi).
+    mnum = re.match(r"CH:0*(\d+)\.", sid + ".")
     if not mnum:
         continue
     num = int(mnum.group(1))
