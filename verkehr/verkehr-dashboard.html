@@ -169,7 +169,7 @@ Promise.all([
   d3.json(apiUrl("baseline")).catch(()=>null)
 ]).then(([latest,base])=>{
   LATEST=sanitize(latest); BASE=base;
-  applyRelativeStatus(LATEST);
+  applyLage(LATEST);
   updateStand(latest);
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
   if(VIEW!=='station') drawMap();
@@ -197,11 +197,18 @@ Promise.all([
   d3.select("#foot").html(
     '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr (Fahrzeuge/Stunde, Ø-Tempo) an den '
     +'automatischen Zählstellen des Bundes auf den Nationalstrassen in Graubünden – Abruf alle 5 Min. '
-    +'Die Ampel vergleicht das aktuelle Tempo mit dem ortsüblichen Wert für Wochentag und Uhrzeit '
-    +'(Median der letzten Wochen) – nicht mit einer festen Grenze. Solange zu wenige Vergleichstage '
-    +'vorliegen, gilt übergangsweise eine feste Schwelle. <b>Grenze der Methode:</b> Wochenlange '
-    +'Verlangsamungen (z.B. Dauerbaustellen) erkennt sie nicht zuverlässig, weil sich der Vergleichswert '
-    +'selbst mitverschiebt. Richtungen sind teils nur geometrisch hergeleitet (<i>provisorisch</i> markiert). '
+    +'<b>Wie der Stau erkannt wird:</b> Die Verkehrs<i>menge</i> allein genügt nicht – im Stau sinkt sie, weil '
+    +'weniger Fahrzeuge durchkommen; wenig Verkehr und Stau sehen in der Zählung darum gleich aus. '
+    +'Ausschlaggebend ist deshalb das gemessene <b>Tempo</b>, doppelt verglichen: mit dem <b>Freifluss-Tempo</b> '
+    +'dieser Stelle (was hier ohne Behinderung gefahren wird – rechnerisch das 85. Perzentil der Vergleichswerte; '
+    +'ergibt 116–120 km/h auf offener A13, 77–84 km/h in Tunnel- und Talstrecken, 51 km/h an der Rampe Chur Nord) '
+    +'und mit dem <b>üblichen Tempo für diesen Wochentag und diese Viertelstunde</b>. Erst wenn beides deutlich '
+    +'unterschritten wird, meldet die Ampel «zähfliessend» (unter 80 % bzw. 90 %) oder – zusätzlich unter 60 km/h – '
+    +'«stockender Verkehr», unter 25 km/h «Stau». Über die letzten 42 Tage und alle Zählstellen trifft das auf '
+    +'0,5 % (Stau/stockend) bzw. 1,6 % (zäh) der Viertelstunden zu. <b>Grenzen:</b> Die Auswertung kennt nur die '
+    +'Zählstellen, nicht die Strecke dazwischen – die Stau<i>länge</i> lässt sich daraus nicht ableiten. Wochenlange '
+    +'Verlangsamungen (z.B. Dauerbaustellen) erkennt sie nicht zuverlässig, weil sich die Vergleichswerte '
+    +'selbst mitverschieben. Richtungen sind teils nur geometrisch hergeleitet (<i>provisorisch</i> markiert). '
     +'Defekt wirkende Messungen (eine Richtung 0, während die andere klar fährt) werden ausgeblendet. '
     +'Kantonale Strassen sind nicht erfasst.<br>'
     +'Datenquelle: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData»); Standorte/Namen amtlich '
@@ -216,7 +223,7 @@ function updateStand(latest){
 function refreshLatest(){
   d3.json(apiUrl("latest")).then(latest=>{
     if(!latest||!latest.sites)return;
-    LATEST=sanitize(latest); applyRelativeStatus(LATEST); updateStand(latest); if(VIEW!=='station') drawMap(); renderBoard(); renderStauBanner();
+    LATEST=sanitize(latest); applyLage(LATEST); updateStand(latest); if(VIEW!=='station') drawMap(); renderBoard(); renderStauBanner();
     if(sel) d3.selectAll(".site").classed("sel",function(){return this.getAttribute("data-id")===sel;});
   }).catch(()=>{});
 }
@@ -240,33 +247,125 @@ function sanitize(latest){
   return latest;
 }
 
-// Phase 1 (07.08.2026): Ampel relativ zum ortsueblichen Tempo (Baseline) statt fixer Schwelle.
-// Faellt auf den vom Server gelieferten Fixwert zurueck, solange zu wenige Vergleichstage vorliegen.
-// Bekannte Grenze: erkennt keine ueber Wochen anhaltende Verlangsamung (z.B. Dauerbaustelle),
-// weil eine solche selbst Teil des rollierenden Vergleichswerts wird (Fall Chur Nord, Aug 2026).
-const REL_MIN_DAYS=4, REL_STAU=0.6, REL_ZAEH=0.85;
-// Bei sehr wenig Verkehr (z.B. Pass mit nur einzelnen Fahrzeugen/15 Min) ist der
-// Tempo-Schnitt statistisch nicht belastbar: ein einzelnes langsames Fahrzeug kann den
-// Schnitt kippen, ohne dass das ein echter Stau ist. Unterhalb der Flow-Schwelle bleibt
-// es daher bei "frei" - ausser das Tempo ist auch absolut sehr tief (moegliches Ereignis).
-const REL_FLOW_FLOOR=100, REL_ABS_FLOOR=20;
-function applyRelativeStatus(latest){
+// ---- Stau-Erkennung (Phase 2, 10.08.2026) ----------------------------------
+// Warum ueberhaupt: In der Kolonne bricht die Verkehrs*menge* ein, weil weniger
+// Fahrzeuge durchkommen. Die Ampel meldete deshalb am Stau-Sonntag 09.08.2026
+// auf der A13 Nord "unter normal" – als waere wenig los. Die Menge allein ist
+// mehrdeutig (wenig Verkehr und Stau sehen gleich aus), erst zusammen mit dem
+// Tempo wird sie eindeutig. Darum zwei Tempo-Referenzen pro Richtung:
+//   vFree = Tempo / Freifluss-Tempo dieser Stelle
+//           (85. Perzentil aller Baseline-Mediane = was hier ohne Behinderung
+//            gefahren wird; ergibt 116–120 km/h auf offener A13, 77–84 km/h in
+//            den Tunnel-/Talstrecken, 51 km/h an der Rampe Chur Nord – deckt
+//            sich mit den signalisierten Hoechstgeschwindigkeiten)
+//   vRel  = Tempo / uebliches Tempo fuer diesen Wochentag + diese Viertelstunde
+// Erst wenn BEIDE tief sind, gilt es als Stau. Die UND-Verknuepfung unterdrueckt
+// Fehlalarme auf Pass- und Nebenstrassen, die ohnehin dauernd langsam sind
+// (Bernina/Baracone im 42-Tage-Test: 33.6% -> 6.0% auffaellige Viertelstunden),
+// erkennt aber die echten Ereignisse weiterhin (Maienfeld Ri. Nord 09.08.:
+// 150 Min Stau, Niederurnen A3 135 Min, San Bernardino 60 Min).
+// Trefferquote ueber alle 42 Tage und Standorte: 0.55% Stau, 1.58% zaeh.
+// Bekannte Grenze: eine ueber Wochen anhaltende Verlangsamung (Dauerbaustelle)
+// wandert in beide Referenzen und wird dadurch mit der Zeit zum "Normalfall".
+const FF_PCTL=0.85;
+const STAU_FREE=0.60, STAU_REL=0.75, ZAEH_FREE=0.80, ZAEH_REL=0.90;
+const STAU_MINFLOW=120;   // Fz/h – darunter ist das Tempo-Mittel zu duenn besetzt
+// Absolute Schranke fuer das Wort "Stau": 69 km/h koennen relativ zur 120er-Strecke
+// stark unterdurchschnittlich sein, sind aber kein Stau, sondern dichter Verkehr.
+// Kostet fast nichts an Trefferquote (0.55% -> 0.52% im 42-Tage-Test).
+const STAU_MAXSPEED=60, STAU_STEHEND=25;
+const REL_MIN_DAYS=4;
+let FREEFLOW=null;
+
+// Freifluss-Tempo je Richtung einmalig aus der Baseline ableiten.
+function buildFreeflow(){
+  FREEFLOW={};
+  if(!BASE||!BASE.data) return;
+  for(const key in BASE.data){
+    const vals=[];
+    for(const cat of ['modo','fr','sa','so']){
+      const b=BASE.data[key][cat];
+      if(b&&b.speed_med) for(const v of b.speed_med) if(v) vals.push(v);
+    }
+    if(vals.length<20) continue;
+    vals.sort((a,b)=>a-b);
+    FREEFLOW[key]=vals[Math.floor(vals.length*FF_PCTL)];
+  }
+}
+
+function slotIdx(d){return Math.min(95,Math.max(0,Math.floor(swissParts(d||new Date()).h*4)));}
+
+// Kernklassifikation – gibt null zurueck, wenn die Lage nicht beurteilbar ist.
+function classify(key,cat,idx,flow,speed){
+  const ff=FREEFLOW&&FREEFLOW[key];
+  const b=BASE&&BASE.data&&BASE.data[key]&&BASE.data[key][cat];
+  if(speed==null||!ff||!b) return null;
+  const fm=b.flow_med&&b.flow_med[idx], sm=b.speed_med&&b.speed_med[idx];
+  if(flow==null||(flow<STAU_MINFLOW&&(fm||0)<STAU_MINFLOW)) return null;
+  const vFree=speed/ff, vRel=sm?speed/sm:1;
+  const st=(vFree<STAU_FREE&&vRel<STAU_REL&&speed<=STAU_MAXSPEED)?'stau'
+          :(vFree<ZAEH_FREE&&vRel<ZAEH_REL)?'zaeh':'frei';
+  return {status:st, vFree, vRel, ff, speed};
+}
+// Wortwahl nach dem absoluten Tempo – "Stau" nur bei Schritttempo.
+function lageWort(st,speed){
+  if(st!=='stau') return 'Zähfliessend';
+  return (speed!=null&&speed<STAU_STEHEND)?'Stau – Schritttempo':'Stockender Verkehr';
+}
+
+function applyLage(latest){
   if(!latest||!latest.sites||!BASE||!BASE.data) return;
+  if(!FREEFLOW) buildFreeflow();
   const cat=dayType(), n=(BASE.n&&BASE.n[cat])||0;
-  if(n<REL_MIN_DAYS) return;
-  const idx=Math.min(95,Math.max(0,Math.floor(swissParts(new Date()).h*4)));
+  if(n<REL_MIN_DAYS) return;   // zu wenige Vergleichstage -> Server-Fixwert behalten
+  const idx=slotIdx();
   for(const s of latest.sites){
     for(const dir of ['positive','negative']){
-      const d=s.dirs[dir];
-      if(d.speed==null||d.status==='keine_daten') continue;
-      const cbl=BASE.data[s.id+'|'+dir]&&BASE.data[s.id+'|'+dir][cat];
-      const med=cbl&&cbl.speed_med&&cbl.speed_med[idx];
-      if(med==null||med<=0) continue;
-      if((d.flow||0)<REL_FLOW_FLOOR && d.speed>=REL_ABS_FLOOR){ d.status='frei'; continue; }
-      d.relRatio=d.speed/med;
-      d.status=d.relRatio<REL_STAU?'stau':d.relRatio<REL_ZAEH?'zaeh':'frei';
+      const d=s.dirs[dir], key=s.id+'|'+dir;
+      d.vFree=null; d.vRel=null; d.since=null;
+      if(d.status==='keine_daten') continue;
+      // Geglaettete Werte (letzte ~15 Min) bevorzugen, sonst der Momentanwert
+      const sp=recentSpeed(key), fl=flow15(key);
+      const c=classify(key,cat,idx, fl!=null?fl:d.flow, sp!=null?sp:d.speed);
+      if(!c){
+        // Nicht beurteilbar (zu wenig Verkehr fuer ein belastbares Tempo-Mittel).
+        // Dann lieber gar keine Meldung als die alte Fixschwelle des Servers, die
+        // ruhige Passstrassen dauernd als "zäh" markiert hat.
+        if(d.status==='stau'||d.status==='zaeh') d.status='frei';
+        continue;
+      }
+      d.status=c.status; d.vFree=c.vFree; d.vRel=c.vRel; d.freeflow=c.ff;
+      if(c.status!=='frei') d.since=lageSince(key,cat);
     }
   }
+}
+
+// Wie lange dauert die aktuelle Stoerung schon an? Laeuft die 5-Minuten-Reihe
+// von heute rueckwaerts und toleriert bis zu zwei unauffaellige Messpunkte
+// (10 Min), damit ein einzelner Ausreisser den Stau nicht kuenstlich zerteilt.
+function lageSince(key,cat){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser||ser.length<3) return null;
+  let gap=0, start=null;
+  for(let i=ser.length-1;i>=0;i--){
+    const p=ser[i];
+    const hm=String(p.t).split(':');
+    const idx=Math.min(95,Math.floor(((+hm[0])*60+(+hm[1]))/15));
+    const c=classify(key,cat,idx,p.flow,p.speed);
+    if(c&&c.status!=='frei'){ start=p.t; gap=0; }
+    else if(c){ if(++gap>2) break; }
+    else break;
+  }
+  return start;
+}
+function sinceText(t){
+  if(!t) return '';
+  const hm=String(t).split(':');
+  const nowMin=Math.round(swissParts(new Date()).h*60);
+  let mins=nowMin-((+hm[0])*60+(+hm[1]));
+  if(mins<0||mins>18*60) return '';
+  if(mins<10) return '';
+  return mins<90?('seit '+Math.round(mins/5)*5+' Min'):('seit '+t+' Uhr');
 }
 
 // Kurzfrist-Tendenz je Richtung: aktueller Wert vs. Schnitt der letzten ~30 Min.
@@ -344,16 +443,30 @@ function renderStauBanner(){
     }
   }
   const rank={stau:0,zaeh:1};
-  items.sort((a,b)=>rank[a.d.status]-rank[b.d.status]);
+  // Innerhalb einer Stufe das langsamste zuerst – das ist die härteste Meldung.
+  items.sort((a,b)=>(rank[a.d.status]-rank[b.d.status])||((a.d.vFree??9)-(b.d.vFree??9)));
   const box=d3.select('#stauband');
   if(!items.length){
-    box.html('<div class="stauband ok">&#10003; Kein Stau gemeldet</div>');
+    box.html('<div class="stauband ok">&#10003; Auf den erfassten Strecken fliesst der Verkehr normal</div>');
     return;
   }
+  const nStau=items.filter(it=>it.d.status==='stau').length;
   const shown=items.slice(0,STAUBAND_MAX), rest=items.length-shown.length;
-  const row=it=>'<div class="sbrow" data-id="'+it.s.id+'"><i class="dot" style="background:'+C[it.d.status]+'"></i>'
-    +'<span>'+it.s.place+' <span class="sbdir">· '+it.d.label+'</span></span></div>';
-  box.html('<div class="stauband warn"><div class="sbhead">&#9888; Aktuell '+items.length+' Stelle'+(items.length===1?'':'n')+' betroffen</div>'
+  const row=it=>{
+    const sp=recentSpeed(it.s.id+'|'+it.dir);
+    const det=[];
+    if(sp!=null) det.push(Math.round(sp)+' km/h');
+    if(it.d.freeflow!=null) det.push('statt '+Math.round(it.d.freeflow)+' km/h');
+    const since=sinceText(it.d.since);
+    if(since) det.push(since);
+    return '<div class="sbrow" data-id="'+it.s.id+'"><i class="dot" style="background:'+C[it.d.status]+'"></i>'
+      +'<span><b>'+it.s.place+'</b> <span class="sbdir">'+it.d.label+'</span>'
+      +(det.length?' <span class="sbdir">· '+det.join(' · ')+'</span>':'')+'</span></div>';};
+  const head=nStau
+    ? '&#9888; Stau oder stockender Verkehr an '+nStau+' Stelle'+(nStau===1?'':'n')
+      +(items.length>nStau?', zähfliessend an '+(items.length-nStau):'')
+    : 'Zähfliessender Verkehr an '+items.length+' Stelle'+(items.length===1?'':'n');
+  box.html('<div class="stauband warn"><div class="sbhead">'+head+'</div>'
     +shown.map(row).join('')
     +(rest>0?'<div class="sbmore">+'+rest+' weitere unten in der Liste</div>':'')
     +'</div>');
@@ -502,7 +615,10 @@ function renderBoard(){
     const ar=a>0?'<span class="trend" title="steigend ggü. den letzten ~30 Min">▲</span>'
              :a<0?'<span class="trend" title="fallend ggü. den letzten ~30 Min">▼</span>':'';
     const v=x.flow==null?'–':((flow15(s.id+'|'+dir) ?? x.flow));
-    return '<span class="chip" title="Fahrzeuge/h, Ø letzte 15 Min"><i style="background:'+C[x.status]+'"></i>'+v+ar+'</span>';};
+    // Bei Stau/zäh das Tempo dazu – ohne das wirkt die eingebrochene Menge wie "wenig los"
+    const sp=(x.status==='stau'||x.status==='zaeh')?recentSpeed(s.id+'|'+dir):null;
+    const spTxt=sp==null?'':' · '+Math.round(sp)+' km/h';
+    return '<span class="chip" title="Fahrzeuge/h, Ø letzte 15 Min"><i style="background:'+C[x.status]+'"></i>'+v+ar+spTxt+'</span>';};
   const sbtn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
   const kbtn=(v,l)=>'<button data-fkt="'+v+'" class="'+(filterKt===v?'on':'')+'">'+l+'</button>';
   const rbtn=(v,l)=>'<button data-frt="'+v+'" class="'+(filterRoute===v?'on':'')+'">'+l+'</button>';
@@ -515,7 +631,11 @@ function renderBoard(){
       +(open?'<div class="bexp" data-for="'+s.id+'"></div>':'');};
   // Kritisch (stau/zaeh) korridor-uebergreifend an die Spitze ziehen, statt in den
   // Korridor-Gruppen zu verstecken (siehe Stau-Banner oben, gleiches Prinzip).
-  const kritisch=rows.filter(s=>{const w=worst(s);return w==='stau'||w==='zaeh';});
+  // Nicht nach Verkehrsmenge sortieren – im Stau ist die klein. Schwerster Fall zuerst.
+  const srank={stau:0,zaeh:1};
+  const slowest=s=>Math.min(...['positive','negative'].map(d=>s.dirs[d].vFree??9));
+  const kritisch=rows.filter(s=>{const w=worst(s);return w==='stau'||w==='zaeh';})
+    .sort((a,b)=>(srank[worst(a)]-srank[worst(b)])||(slowest(a)-slowest(b)));
   const kritischIds=new Set(kritisch.map(s=>s.id));
   const haupt =rows.filter(s=>corridorClass(s)==="haupt" && !kritischIds.has(s.id));
   const pass  =rows.filter(s=>corridorClass(s)==="pass" && !kritischIds.has(s.id));
@@ -771,7 +891,10 @@ function chartCard(s,dir,prov){
 function toH(hhmm){const[a,b]=hhmm.split(":");return +a+ +b/60;}
 
 // today.json separat laden (optional)
-function loadToday(){d3.json(apiUrl("today")).then(t=>{window.__today=t;if(LATEST)renderBoard();}).catch(()=>{});}
+// Erst mit today.json liegen die geglaetteten 15-Min-Werte vor, auf denen die
+// Stau-Erkennung rechnet – deshalb hier neu bewerten und Karte/Banner mitziehen.
+function loadToday(){d3.json(apiUrl("today")).then(t=>{window.__today=t;
+  if(LATEST){applyLage(LATEST); if(VIEW!=='station') drawMap(); renderBoard(); renderStauBanner();}}).catch(()=>{});}
 loadToday();
 setInterval(loadToday, 300000);   // today alle 5 Min neu -> Tendenz-Pfeile bleiben aktuell
 </script>
