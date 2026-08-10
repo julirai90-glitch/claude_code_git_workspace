@@ -65,6 +65,23 @@
   .sbdir{color:var(--muted);font-size:.9em}
   .sbmore{color:var(--muted);font-size:.78rem;margin-top:.3em}
   .err{color:var(--stau);font-size:.85rem;padding:10px}
+  /* ---- Amtliche Meldungen (ASTRA) – gemeldet, nicht gemessen ---- */
+  #meldungen{margin:.2em 0 .8em}
+  .mbox{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fbfcfd}
+  .mhead{font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:.15em;
+         display:flex;align-items:baseline;gap:.4em;flex-wrap:wrap}
+  .mhead small{font-weight:400;color:var(--muted);font-size:.86em}
+  .mitem{display:flex;gap:.5em;padding:.35em 0;border-top:1px solid var(--line);font-size:.82rem}
+  .mitem:first-of-type{border-top:0}
+  .mtag{flex:0 0 auto;font-size:.66rem;font-weight:700;border-radius:4px;padding:.15em .4em;
+        text-transform:uppercase;letter-spacing:.02em;height:fit-content;margin-top:.15em}
+  .mtag.sperrung{background:#fdf1f0;color:var(--stau)}
+  .mtag.stau{background:#fff5ec;color:#b4560f}
+  .mtag.stoerung{background:#eef2f6;color:var(--muted)}
+  .mtxt{min-width:0}
+  .mort{color:var(--ink);font-weight:600}
+  .mdet{color:var(--muted);font-size:.92em}
+  .mnone{color:var(--muted);font-size:.8rem;padding:2px 2px}
   /* abstrakte Stau-Liste (v.a. Mobile) */
   #board{margin-top:12px}
   .bbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4em;margin:.2em 2px .4em}
@@ -128,6 +145,7 @@
     <span>Punktgrösse = Fahrzeuge/h</span>
   </div>
   <div id="stauband"></div>
+  <div id="meldungen"></div>
   <div id="map"></div>
   <div id="map-embed-wrap"></div>
   <div id="seedbox"></div>
@@ -475,6 +493,50 @@ function renderStauBanner(){
     +'</div>');
   box.selectAll('.sbrow').on('click',function(){select(this.getAttribute('data-id'), true);});
 }
+
+// ---- Amtliche Verkehrsmeldungen (ASTRA) ------------------------------------
+// Zweite, unabhaengige Quelle neben unseren Zaehlstellen: hier *gemeldet*
+// (Polizei/Verkehrsmanagement) statt gemessen - dafuer mit Ursache und Laenge,
+// die aus Zaehldaten grundsaetzlich nicht ableitbar sind.
+const MELD_API = "https://n8n.julianreich.ch/webhook/verkehr-meldungen";
+const MELD_LBL = {sperrung:"Sperrung", stau:"Stau", stoerung:"Störung"};
+let MELD=null;
+function loadMeldungen(){
+  d3.json(MELD_API).then(m=>{MELD=m; renderMeldungen();}).catch(()=>{});
+}
+function meldSeit(iso){
+  const t=Date.parse(iso);
+  if(!t) return '';
+  const mins=Math.round((Date.now()-t)/60000);
+  if(mins<0||mins>36*60) return '';
+  if(mins<90) return 'seit '+Math.max(5,Math.round(mins/5)*5)+' Min';
+  return 'seit '+new Date(t).toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr';
+}
+function renderMeldungen(){
+  const box=d3.select('#meldungen');
+  if(!MELD||!MELD.meldungen){ box.html(''); return; }
+  const items=MELD.meldungen;
+  if(!items.length){
+    box.html('<div class="mnone">Keine amtlichen Störungsmeldungen für die Region</div>');
+    return;
+  }
+  const row=m=>{
+    const det=[];
+    if(m.ursache) det.push(m.ursache);
+    if(m.laenge_km) det.push(m.laenge_km.toLocaleString('de-CH')+' km');
+    const s=meldSeit(m.seit); if(s) det.push(s);
+    return '<div class="mitem"><span class="mtag '+m.art+'">'+(MELD_LBL[m.art]||m.art)+'</span>'
+      +'<span class="mtxt"><span class="mort">'+m.ort+'</span><br>'
+      +'<span class="mdet">'+m.sachlage+(det.length?' · '+det.join(' · '):'')+'</span></span></div>';
+  };
+  box.html('<div class="mbox"><div class="mhead">Amtliche Meldungen '
+    +'<small>ASTRA – gemeldet, nicht gemessen</small></div>'
+    +items.slice(0,10).map(row).join('')
+    +(items.length>10?'<div class="sbmore">+'+(items.length-10)+' weitere</div>':'')
+    +'</div>');
+}
+loadMeldungen();
+setInterval(loadMeldungen, 300000);
 
 function hideTip(){tip.style("opacity",0);}
 

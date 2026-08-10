@@ -108,8 +108,10 @@
   body.embed .bgroup,body.embed .tembed{display:none}
   body.embed .tile{cursor:default}
   body.embed .foot{font-size:.68rem;margin-top:8px}
-  body.embed-stau #board{display:none}
-  body.embed-tile #stauband,body.embed-chart #stauband{display:none}
+  body.embed-stau #board,body.embed-stau #meldungen{display:none}
+  body.embed-tile #stauband,body.embed-chart #stauband,
+  body.embed-tile #meldungen,body.embed-chart #meldungen{display:none}
+  body.embed-meldungen #board,body.embed-meldungen #stauband{display:none}
   .bfilter{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .5em;margin:.1em 2px .5em}
   .bflabel{font-size:.72rem;color:var(--muted);flex:0 0 auto}
 
@@ -148,6 +150,24 @@
   .sbdir{color:var(--muted);font-size:.9em}
   .sbmore{color:var(--muted);font-size:.78rem;margin-top:.3em}
   .err{color:var(--stau);font-size:.85rem;padding:10px}
+
+  /* ---- Amtliche Meldungen (ASTRA) – gemeldet, nicht gemessen ---- */
+  #meldungen{margin:.2em 0 .8em}
+  .mbox{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fbfcfd}
+  .mhead{font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:.15em;
+         display:flex;align-items:baseline;gap:.4em;flex-wrap:wrap}
+  .mhead small{font-weight:400;color:var(--muted);font-size:.86em}
+  .mitem{display:flex;gap:.5em;padding:.35em 0;border-top:1px solid var(--line);font-size:.82rem}
+  .mitem:first-of-type{border-top:0}
+  .mtag{flex:0 0 auto;font-size:.66rem;font-weight:700;border-radius:4px;padding:.15em .4em;
+        text-transform:uppercase;letter-spacing:.02em;height:fit-content;margin-top:.15em}
+  .mtag.sperrung{background:#fdf1f0;color:var(--stau)}
+  .mtag.stau{background:#fff5ec;color:#b4560f}
+  .mtag.stoerung{background:#eef2f6;color:var(--muted)}
+  .mtxt{min-width:0}
+  .mort{color:var(--ink);font-weight:600}
+  .mdet{color:var(--muted);font-size:.92em}
+  .mnone{color:var(--muted);font-size:.8rem;padding:2px 2px}
 </style>
 </head>
 <body>
@@ -166,6 +186,7 @@
     <span><i class="bartag" style="background:var(--stau)"></i>viel Verkehr</span>
   </div>
   <div id="stauband"></div>
+  <div id="meldungen"></div>
   <div id="map"></div>
   <div id="seedbox"></div>
   <div id="board"></div>
@@ -185,9 +206,10 @@ const apiUrl = f => DATA_API + "?f=" + f;
 //   ?view=tile&site=CH:0611    eine Kachel
 //   ?view=chart&site=CH:0611   nur der Tagesverlauf beider Richtungen
 //   ?view=stau                 nur der Staumelder (standortunabhaengig)
+//   ?view=meldungen            nur die amtlichen ASTRA-Meldungen
 const PUBLIC_URL = "https://julirai90-glitch.github.io/claude_code_git_workspace/verkehr/verkehr-dashboard-kacheln.html";
 const Q = new URLSearchParams(location.search);
-const EMBED_VIEW = ["tile","chart","stau"].includes(Q.get("view")) ? Q.get("view") : null;
+const EMBED_VIEW = ["tile","chart","stau","meldungen"].includes(Q.get("view")) ? Q.get("view") : null;
 const EMBED_SITE = Q.get("site");
 if(EMBED_VIEW) document.body.classList.add("embed","embed-"+EMBED_VIEW);
 function embedBase(){
@@ -243,7 +265,14 @@ Promise.all([
     +'die Menge (im Verhältnis zum ortsüblichen Wert, bzw. zum heutigen Höchstwert, solange zu wenige Vergleichstage '
     +'vorliegen). Richtungen sind teils nur geometrisch hergeleitet (<i>provisorisch</i> markiert). Defekt wirkende '
     +'Messungen werden ausgeblendet. Kantonale Strassen sind nicht erfasst.<br>'
-    +'Datenquelle: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData»); Standorte/Namen amtlich '
+    +'<b>Amtliche Meldungen:</b> Der Kasten unter dem Staumelder stammt aus einer zweiten, unabhängigen '
+    +'Quelle – den Verkehrsmeldungen des ASTRA. Die sind <i>gemeldet</i> (durch Polizei und '
+    +'Verkehrsmanagement), nicht gemessen, und nennen dafür Ursache und Länge, was sich aus Zähldaten '
+    +'grundsätzlich nicht ableiten lässt. Angezeigt werden nur akute Lagen der letzten 24 Stunden '
+    +'(Stau, Sperrung, Unfall, Pannenfahrzeug) auf Strecken mit Zählstellen; Dauerbaustellen ohne '
+    +'Stauwirkung sind ausgefiltert.<br>'
+    +'Datenquellen: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData» für die Messwerte, '
+    +'«pullTrafficMessages» für die Meldungen); Standorte/Namen amtlich '
     +'(Tiefbauamt Graubünden). Grafik: Julian Reich.');
   setInterval(refreshLatest, 60000);
 }).catch(e=>{d3.select("#board").html('<div class="err">Daten konnten nicht geladen werden: '+e+'</div>');});
@@ -573,12 +602,13 @@ function corridorClass(s){
 // Hausformat der Datenstory-Serie (siehe EMBEDS.md): responsives iframe plus
 // iframe-resizer, dazu eine Mindesthoehe als Fallback, falls das Script im CMS
 // nicht laedt.
-const EMBED_H={tile:260,chart:340,stau:180};
-const EMBED_LBL={tile:"Kachel",chart:"Tagesverlauf",stau:"Staumelder (alle Stellen)"};
+const EMBED_H={tile:260,chart:340,stau:180,meldungen:200};
+const EMBED_LBL={tile:"Kachel",chart:"Tagesverlauf",stau:"Staumelder (gemessen)",meldungen:"Amtliche Meldungen"};
 function embedCode(view,site,place){
   const id="verkehr-"+view+(site?"-"+site.replace(/[^A-Za-z0-9]/g,""):"");
   const url=embedBase()+"?view="+view+(site?"&site="+encodeURIComponent(site):"");
   const title=view==="stau"?"Aktuelle Stau-Meldungen Südostschweiz"
+    :view==="meldungen"?"Amtliche Verkehrsmeldungen Südostschweiz (ASTRA)"
     :(place||"")+" – "+(view==="tile"?"Verkehrslage live":"Verkehr im Tagesverlauf");
   return '<iframe id="'+id+'"\n  src="'+url+'"\n  title="'+title+'"\n'
     +'  loading="lazy" scrolling="no"\n'
@@ -596,10 +626,10 @@ function renderEmbedBox(siteId){
   box.hidden=false;
   box.innerHTML='<textarea readonly spellcheck="false"></textarea>'
     +'<div class="emrow">'
-    +['tile','chart','stau'].map(v=>'<button data-emv="'+v+'" class="'+(v===view?'on':'')+'">'+EMBED_LBL[v]+'</button>').join('')
+    +['tile','chart','stau','meldungen'].map(v=>'<button data-emv="'+v+'" class="'+(v===view?'on':'')+'">'+EMBED_LBL[v]+'</button>').join('')
     +'<button data-emcopy="1">Kopieren</button><span class="ok" hidden>kopiert</span></div>';
   const ta=box.querySelector('textarea');
-  ta.value=embedCode(view,view==='stau'?null:siteId,s&&s.place);
+  ta.value=embedCode(view,(view==='stau'||view==='meldungen')?null:siteId,s&&s.place);
   box.querySelectorAll('[data-emv]').forEach(b=>b.addEventListener('click',ev=>{
     ev.stopPropagation(); embedOpen[siteId]=b.getAttribute('data-emv'); renderEmbedBox(siteId);
   }));
@@ -621,6 +651,12 @@ function renderEmbedView(){
     d3.select("#board").html("");
     d3.select("#foot").html('Verkehrslage an den Zählstellen des Bundes (ASTRA) in der Südostschweiz, '
       +'Abgleich von Tempo und Verkehrsmenge · '+link+' · Grafik: Julian Reich');
+    return;
+  }
+  if(EMBED_VIEW==="meldungen"){
+    d3.select("#board").html("");
+    d3.select("#foot").html('Amtliche Verkehrsmeldungen für die Südostschweiz, Quelle ASTRA '
+      +'(opentransportdata.swiss, DATEX II) · '+link+' · Grafik: Julian Reich');
     return;
   }
   if(!s){ d3.select("#board").html('<div class="err">Unbekannte Zählstelle: '+(EMBED_SITE||'–')+'</div>'); return; }
@@ -975,6 +1011,53 @@ function renderStauBanner(){
     +'</div>');
   if(!EMBED_VIEW) box.selectAll('.sbrow').on('click',function(){select(this.getAttribute('data-id'), true);});
 }
+
+// ---- Amtliche Verkehrsmeldungen (ASTRA) ------------------------------------
+// Zweite, unabhaengige Quelle neben unseren Zaehlstellen. Wichtig fuer die
+// Einordnung: Die Kacheln oben sind *gemessen* (Tempo an einem Punkt), diese
+// Meldungen sind *gemeldet* (Polizei/Verkehrsmanagement) – dafuer nennen sie
+// Ursache und Laenge, was aus Zaehldaten grundsaetzlich nicht ableitbar ist.
+// Am 10.08.2026 deckten sich beide: Unfall im Kerenzerberg-Tunnel um 07:15,
+// zur selben Viertelstunde brach das Tempo an der Zaehlstelle Weesen ein.
+const MELD_API = "https://n8n.julianreich.ch/webhook/verkehr-meldungen";
+const MELD_LBL = {sperrung:"Sperrung", stau:"Stau", stoerung:"Störung"};
+let MELD=null;
+function loadMeldungen(){
+  d3.json(MELD_API).then(m=>{MELD=m; renderMeldungen();}).catch(()=>{});
+}
+function seitText(iso){
+  const t=Date.parse(iso);
+  if(!t) return '';
+  const mins=Math.round((Date.now()-t)/60000);
+  if(mins<0||mins>36*60) return '';
+  if(mins<90) return 'seit '+Math.max(5,Math.round(mins/5)*5)+' Min';
+  return 'seit '+new Date(t).toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr';
+}
+function renderMeldungen(){
+  const box=d3.select('#meldungen');
+  if(!MELD||!MELD.meldungen){ box.html(''); return; }
+  const items=MELD.meldungen;
+  if(!items.length){
+    box.html('<div class="mnone">Keine amtlichen Störungsmeldungen für die Region</div>');
+    return;
+  }
+  const row=m=>{
+    const det=[];
+    if(m.ursache) det.push(m.ursache);
+    if(m.laenge_km) det.push(m.laenge_km.toLocaleString('de-CH')+' km');
+    const s=seitText(m.seit); if(s) det.push(s);
+    return '<div class="mitem"><span class="mtag '+m.art+'">'+(MELD_LBL[m.art]||m.art)+'</span>'
+      +'<span class="mtxt"><span class="mort">'+m.ort+'</span><br>'
+      +'<span class="mdet">'+m.sachlage+(det.length?' · '+det.join(' · '):'')+'</span></span></div>';
+  };
+  box.html('<div class="mbox"><div class="mhead">Amtliche Meldungen '
+    +'<small>ASTRA – gemeldet, nicht gemessen</small></div>'
+    +items.slice(0,10).map(row).join('')
+    +(items.length>10?'<div class="sbmore">+'+(items.length-10)+' weitere</div>':'')
+    +'</div>');
+}
+loadMeldungen();
+setInterval(loadMeldungen, 300000);
 
 function hideTip(){tip.style("opacity",0);}
 
