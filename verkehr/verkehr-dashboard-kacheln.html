@@ -7,6 +7,8 @@
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Gegenstueck zum iframe-resizer im einbettenden CMS: meldet die Hoehe nach aussen -->
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 <style>
   :root{
     --blau:#0068A4; --orange:#EE7733;
@@ -64,13 +66,50 @@
   .tbar i{display:block;height:100%;border-radius:5px;transition:width .4s,background .3s;min-width:2px}
   .tlabel{display:flex;justify-content:space-between;align-items:baseline;font-size:.73rem;color:var(--muted)}
   .tlabel b{font-size:.83rem;color:var(--ink)}
-  .tdirs{display:flex;flex-direction:column;gap:2px;font-size:.79rem;border-top:1px solid var(--line);padding-top:6px}
-  .tdirs .d{display:flex;justify-content:space-between;gap:.5em}
-  .tdirs .d .dl{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .tdirs .d .dv{flex:0 0 auto;font-variant-numeric:tabular-nums}
-  .tdirs .d .dv b{font-weight:600}
+  .tdirs{display:flex;flex-direction:column;gap:5px;font-size:.79rem;border-top:1px solid var(--line);padding-top:6px}
+  .tdirs .d{display:flex;flex-direction:column;gap:1px}
+  .tdirs .d .dl{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+                display:flex;align-items:center;gap:.32em}
+  .tdirs .d .dv{font-variant-numeric:tabular-nums;font-size:.82rem}
+  .tdirs .d .dv b{font-weight:600;color:var(--ink)}
+  .tdirs .d .dv .sep{color:#c9ced6;margin:0 .18em}
+  .ddot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+  .dwarn{font-weight:600}
   .trend{font-size:.62rem;color:var(--muted);margin-left:.12em;line-height:1}
   .tfoot{font-size:.7rem;color:var(--muted);border-top:1px solid var(--line);padding-top:5px}
+
+  /* ---- Lage-Zeile: bei Stau/zäh die Aussage der Kachel, sonst unauffällig ---- */
+  .tlage{display:flex;align-items:center;gap:.4em;font-size:.82rem;font-weight:700;
+         border-radius:7px;padding:5px 8px;line-height:1.25}
+  .tlage.stau{background:#fdf1f0;color:var(--stau)}
+  .tlage.zaeh{background:#fff5ec;color:#b4560f}
+  .tlage .lsince{font-weight:400;color:var(--muted);font-size:.9em}
+  /* Erklärt, warum die Menge im Stau *sinkt* – das war die irreführende Stelle */
+  .tnote{font-size:.7rem;color:var(--muted);line-height:1.3}
+
+  /* ---- Embed-Ausklapp je Kachel ---- */
+  .tembed{margin-top:1px}
+  .embtn{background:none;border:0;padding:0;font-size:.7rem;color:var(--blau);cursor:pointer}
+  .embtn:hover{text-decoration:underline}
+  .embox{margin-top:5px}
+  .embox textarea{width:100%;height:62px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+                  font-size:.62rem;line-height:1.35;border:1px solid var(--line);border-radius:6px;
+                  padding:5px 6px;color:var(--ink);background:#fbfcfd;resize:vertical}
+  .emrow{display:flex;gap:.4em;align-items:center;margin-top:3px;flex-wrap:wrap}
+  .emrow button{font-size:.68rem;border:1px solid var(--line);background:#fff;border-radius:5px;
+                padding:.2em .5em;cursor:pointer;color:var(--ink)}
+  .emrow button.on{background:var(--blau);color:#fff;border-color:var(--blau)}
+  .emrow .ok{font-size:.68rem;color:var(--frei);font-weight:600}
+
+  /* ---- Embed-Modus (?view=…): nur der angeforderte Baustein ---- */
+  body.embed .wrap{padding:0 2px 4px;max-width:100%}
+  body.embed h1,body.embed .sub,body.embed .stand,body.embed .legend,
+  body.embed #map,body.embed #seedbox,body.embed .bbar,body.embed .bfilter,
+  body.embed .bgroup,body.embed .tembed{display:none}
+  body.embed .tile{cursor:default}
+  body.embed .foot{font-size:.68rem;margin-top:8px}
+  body.embed-stau #board{display:none}
+  body.embed-tile #stauband,body.embed-chart #stauband{display:none}
   .bfilter{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .5em;margin:.1em 2px .5em}
   .bflabel{font-size:.72rem;color:var(--muted);flex:0 0 auto}
 
@@ -114,17 +153,17 @@
 <body>
 <div class="wrap">
   <h1>Verkehr in der Südostschweiz – live</h1>
-  <p class="sub">Kachel-Ansicht: <b>Verkehrsmenge</b> (Balken) und <b>Verkehrsfluss</b> (Ampelpunkt) je Zählstelle auf den <b>Nationalstrassen des Bundes</b> (v.a. A13). <b>Kantonsstrassen sind nicht enthalten.</b> Tippen für den Tagesverlauf.</p>
+  <p class="sub">Kachel-Ansicht je Zählstelle auf den <b>Nationalstrassen des Bundes</b> (v.a. A13). Die <b>Verkehrslage</b> (Punkt) entsteht aus dem Tempo, die <b>Verkehrsmenge</b> (Balken) aus den gezählten Fahrzeugen – im Stau sinkt die Menge, weil weniger durchkommen. <b>Kantonsstrassen sind nicht enthalten.</b> Tippen für den Tagesverlauf.</p>
   <p class="stand" id="stand">lädt …</p>
   <div class="legend">
-    <span><i class="bartag" style="background:var(--frei)"></i>wenig Verkehr</span>
-    <span><i class="bartag" style="background:var(--orange)"></i>rege</span>
-    <span><i class="bartag" style="background:var(--stau)"></i>Hochbetrieb</span>
-    <span style="margin-left:.4em">·</span>
     <span><i class="dot" style="background:var(--frei)"></i>fliesst</span>
-    <span><i class="dot" style="background:var(--zaeh)"></i>zäh</span>
+    <span><i class="dot" style="background:var(--zaeh)"></i>zähfliessend</span>
     <span><i class="dot" style="background:var(--stau)"></i>stockend/Stau</span>
     <span><i class="dot" style="background:var(--nodata)"></i>keine Daten</span>
+    <span style="margin-left:.4em">· Balken =</span>
+    <span><i class="bartag" style="background:var(--frei)"></i>wenig</span>
+    <span><i class="bartag" style="background:var(--orange)"></i>normal</span>
+    <span><i class="bartag" style="background:var(--stau)"></i>viel Verkehr</span>
   </div>
   <div id="stauband"></div>
   <div id="map"></div>
@@ -139,6 +178,21 @@
 const DATA_API = "https://n8n.julianreich.ch/webhook/verkehr-data";
 const ASSET_BASE = "data";
 const apiUrl = f => DATA_API + "?f=" + f;
+
+// ---- Embed-Modus ----------------------------------------------------------
+// Dieselbe Seite liefert per URL-Parameter auch einzelne Bausteine aus, damit
+// eine Kachel oder eine Kurve fuer sich allein eingebettet werden kann:
+//   ?view=tile&site=CH:0611    eine Kachel
+//   ?view=chart&site=CH:0611   nur der Tagesverlauf beider Richtungen
+//   ?view=stau                 nur der Staumelder (standortunabhaengig)
+const PUBLIC_URL = "https://julirai90-glitch.github.io/claude_code_git_workspace/verkehr/verkehr-dashboard-kacheln.html";
+const Q = new URLSearchParams(location.search);
+const EMBED_VIEW = ["tile","chart","stau"].includes(Q.get("view")) ? Q.get("view") : null;
+const EMBED_SITE = Q.get("site");
+if(EMBED_VIEW) document.body.classList.add("embed","embed-"+EMBED_VIEW);
+function embedBase(){
+  return /github\.io/.test(location.host) ? location.href.split(/[?#]/)[0] : PUBLIC_URL;
+}
 const TZ = "Europe/Zurich";
 function swissParts(d){
   const p=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',minute:'2-digit',weekday:'short',hour12:false}).formatToParts(d);
@@ -163,22 +217,32 @@ Promise.all([
   d3.json(apiUrl("baseline")).catch(()=>null)
 ]).then(([latest,base])=>{
   LATEST=sanitize(latest); BASE=base;
-  applyRelativeStatus(LATEST);
+  applyLage(LATEST);
   updateStand(latest);
   if(base && base.seed) d3.select("#seedbox").html('<div class="seedwarn">⚠ Vergleichslinie ist noch eine <b>Platzhalter-Kurve</b> (synthetisch). Sie wird durch echte Messwerte ersetzt, sobald genügend Tage geloggt sind.</div>');
   drawMap();
   renderBoard();
   renderStauBanner();
-  d3.select("#foot").html(
+  // Im Embed steht in #foot bereits die kurze Quellenzeile aus renderEmbedView()
+  if(!EMBED_VIEW) d3.select("#foot").html(
     '<b>Was zeigt diese Seite?</b> Den live gemessenen Verkehr an den automatischen Zählstellen des Bundes '
-    +'auf den Nationalstrassen in Graubünden – Abruf jede Minute. Der <b>Balken</b> zeigt die Verkehrsmenge '
-    +'(aktuelle Fahrzeuge/h im Verhältnis zum heutigen Höchstwert dieser Stelle, bzw. zum ortsüblichen Wert, '
-    +'sobald genug Vergleichstage erfasst sind – als <i>provisorisch</i> gekennzeichnet). Der <b>Ampelpunkt</b> '
-    +'zeigt den Verkehrsfluss (Tempo) im Vergleich zum ortsüblichen Wert für Wochentag/Uhrzeit (feste Schwelle '
-    +'nur solange zu wenige Vergleichstage vorliegen; wochenlange Verlangsamungen wie Dauerbaustellen erkennt '
-    +'das nicht zuverlässig). Richtungen sind teils nur '
-    +'geometrisch hergeleitet (<i>provisorisch</i> markiert). Defekt wirkende Messungen werden ausgeblendet. '
-    +'Kantonale Strassen sind nicht erfasst.<br>'
+    +'auf den Nationalstrassen in Graubünden – Abruf jede Minute.<br>'
+    +'<b>Wie der Stau erkannt wird:</b> Die Verkehrs<i>menge</i> allein genügt nicht – im Stau sinkt sie, weil '
+    +'weniger Fahrzeuge durchkommen. Wenig Verkehr und Stau sehen in der Zählung darum gleich aus. '
+    +'Ausschlaggebend ist deshalb das gemessene <b>Tempo</b>, und zwar doppelt verglichen: mit dem '
+    +'<b>Freifluss-Tempo</b> dieser Stelle (was hier ohne Behinderung gefahren wird – rechnerisch das '
+    +'85. Perzentil der Vergleichswerte; es ergibt 116–120 km/h auf offener A13, 77–84 km/h in den Tunnel- und '
+    +'Talstrecken und 51 km/h an der Rampe Chur Nord, deckt sich also mit den signalisierten Höchstgeschwindigkeiten) '
+    +'und mit dem <b>üblichen Tempo für diesen Wochentag und diese Viertelstunde</b>. Erst wenn beides deutlich '
+    +'unterschritten wird, meldet die Kachel «zähfliessend» (unter 80 % bzw. 90 %) oder – zusätzlich unter 60 km/h – '
+    +'«stockender Verkehr», unter 25 km/h «Stau». Über die letzten 42 Tage und alle Zählstellen trifft das auf '
+    +'0,5 % (Stau/stockend) bzw. 1,6 % (zäh) der Viertelstunden zu.<br>'
+    +'<b>Grenzen:</b> Die Auswertung kennt nur die Zählstellen selbst, nicht die Strecke dazwischen – die '
+    +'Stau<i>länge</i> lässt sich daraus nicht ableiten. Eine über Wochen anhaltende Verlangsamung (Dauerbaustelle) '
+    +'wandert mit der Zeit in beide Vergleichswerte und wird dann als normal gelesen. Der <b>Balken</b> zeigt weiterhin '
+    +'die Menge (im Verhältnis zum ortsüblichen Wert, bzw. zum heutigen Höchstwert, solange zu wenige Vergleichstage '
+    +'vorliegen). Richtungen sind teils nur geometrisch hergeleitet (<i>provisorisch</i> markiert). Defekt wirkende '
+    +'Messungen werden ausgeblendet. Kantonale Strassen sind nicht erfasst.<br>'
     +'Datenquelle: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData»); Standorte/Namen amtlich '
     +'(Tiefbauamt Graubünden). Grafik: Julian Reich.');
   setInterval(refreshLatest, 60000);
@@ -191,11 +255,12 @@ function updateStand(latest){
 function refreshLatest(){
   d3.json(apiUrl("latest")).then(latest=>{
     if(!latest||!latest.sites)return;
-    LATEST=sanitize(latest); applyRelativeStatus(LATEST); updateStand(latest); drawMap(); renderBoard(); renderStauBanner();
+    LATEST=sanitize(latest); applyLage(LATEST); updateStand(latest); drawMap(); renderBoard(); renderStauBanner();
   }).catch(()=>{});
 }
 
 function drawMap(){
+  if(EMBED_VIEW) return;   // Karte ist im Embed ausgeblendet – gar nicht erst aufbauen
   const pts=LATEST.sites.filter(s=>s.lat&&s.lon);
   const rScale=d3.scaleSqrt().domain([0,d3.max(pts,tot)||1]).range([5,18]);
   if(!leafletMap){
@@ -211,11 +276,16 @@ function drawMap(){
     ]);
   }
   pts.forEach(s=>{
-    const color=C[worst(s)], r=rScale(tot(s));
+    const lg=worst(s), color=C[lg];
+    // Punktgroesse = Verkehrsmenge. Im Stau bricht die ein, der Punkt wuerde also
+    // ausgerechnet dort schrumpfen, wo es interessant ist -> Mindestgroesse.
+    const kritisch=(lg==='stau'||lg==='zaeh');
+    const r=kritisch?Math.max(9,rScale(tot(s))):rScale(tot(s));
     const isSel=s.id===sel;
     const style={radius:r,fillColor:color,color:isSel?'#1d2430':'#ffffff',weight:isSel?2.5:1.5,fillOpacity:1,opacity:1};
     if(leafletMarkers[s.id]){
       leafletMarkers[s.id].setStyle(style); leafletMarkers[s.id].setRadius(r);
+      if(kritisch) leafletMarkers[s.id].bringToFront();
     } else {
       const marker=L.circleMarker([s.lat,s.lon],style).addTo(leafletMap);
       const fl=v=>v==null?'–':v+' Fz/h', sp=v=>v==null?'–':v+' km/h';
@@ -248,33 +318,125 @@ function sanitize(latest){
   return latest;
 }
 
-// Phase 1 (07.08.2026): Ampel relativ zum ortsueblichen Tempo (Baseline) statt fixer Schwelle.
-// Faellt auf den vom Server gelieferten Fixwert zurueck, solange zu wenige Vergleichstage vorliegen.
-// Bekannte Grenze: erkennt keine ueber Wochen anhaltende Verlangsamung (z.B. Dauerbaustelle),
-// weil eine solche selbst Teil des rollierenden Vergleichswerts wird (Fall Chur Nord, Aug 2026).
-const REL_MIN_DAYS=4, REL_STAU=0.6, REL_ZAEH=0.85;
-// Bei sehr wenig Verkehr (z.B. Pass mit nur einzelnen Fahrzeugen/15 Min) ist der
-// Tempo-Schnitt statistisch nicht belastbar: ein einzelnes langsames Fahrzeug kann den
-// Schnitt kippen, ohne dass das ein echter Stau ist. Unterhalb der Flow-Schwelle bleibt
-// es daher bei "frei" - ausser das Tempo ist auch absolut sehr tief (moegliches Ereignis).
-const REL_FLOW_FLOOR=100, REL_ABS_FLOOR=20;
-function applyRelativeStatus(latest){
+// ---- Stau-Erkennung (Phase 2, 10.08.2026) ----------------------------------
+// Warum ueberhaupt: In der Kolonne bricht die Verkehrs*menge* ein, weil weniger
+// Fahrzeuge durchkommen. Die Kachel meldete deshalb am Stau-Sonntag 09.08.2026
+// auf der A13 Nord "unter normal" – als waere wenig los. Die Menge allein ist
+// mehrdeutig (wenig Verkehr und Stau sehen gleich aus), erst zusammen mit dem
+// Tempo wird sie eindeutig. Darum zwei Tempo-Referenzen pro Richtung:
+//   vFree = Tempo / Freifluss-Tempo dieser Stelle
+//           (85. Perzentil aller Baseline-Mediane = was hier ohne Behinderung
+//            gefahren wird; ergibt 116–120 km/h auf offener A13, 77–84 km/h in
+//            den Tunnel-/Talstrecken, 51 km/h an der Rampe Chur Nord – deckt
+//            sich mit den signalisierten Hoechstgeschwindigkeiten)
+//   vRel  = Tempo / uebliches Tempo fuer diesen Wochentag + diese Viertelstunde
+// Erst wenn BEIDE tief sind, gilt es als Stau. Die UND-Verknuepfung unterdrueckt
+// Fehlalarme auf Pass- und Nebenstrassen, die ohnehin dauernd langsam sind
+// (Bernina/Baracone im 42-Tage-Test: 33.6% -> 6.0% auffaellige Viertelstunden),
+// erkennt aber die echten Ereignisse weiterhin (Maienfeld Ri. Nord 09.08.:
+// 150 Min Stau, Niederurnen A3 135 Min, San Bernardino 60 Min).
+// Trefferquote ueber alle 42 Tage und Standorte: 0.55% Stau, 1.58% zaeh.
+// Bekannte Grenze: eine ueber Wochen anhaltende Verlangsamung (Dauerbaustelle)
+// wandert in beide Referenzen und wird dadurch mit der Zeit zum "Normalfall".
+const FF_PCTL=0.85;
+const STAU_FREE=0.60, STAU_REL=0.75, ZAEH_FREE=0.80, ZAEH_REL=0.90;
+const STAU_MINFLOW=120;   // Fz/h – darunter ist das Tempo-Mittel zu duenn besetzt
+// Absolute Schranke fuer das Wort "Stau": 69 km/h koennen relativ zur 120er-Strecke
+// stark unterdurchschnittlich sein, sind aber kein Stau, sondern dichter Verkehr.
+// Kostet fast nichts an Trefferquote (0.55% -> 0.52% im 42-Tage-Test).
+const STAU_MAXSPEED=60, STAU_STEHEND=25;
+const REL_MIN_DAYS=4;
+let FREEFLOW=null;
+
+// Freifluss-Tempo je Richtung einmalig aus der Baseline ableiten.
+function buildFreeflow(){
+  FREEFLOW={};
+  if(!BASE||!BASE.data) return;
+  for(const key in BASE.data){
+    const vals=[];
+    for(const cat of ['modo','fr','sa','so']){
+      const b=BASE.data[key][cat];
+      if(b&&b.speed_med) for(const v of b.speed_med) if(v) vals.push(v);
+    }
+    if(vals.length<20) continue;
+    vals.sort((a,b)=>a-b);
+    FREEFLOW[key]=vals[Math.floor(vals.length*FF_PCTL)];
+  }
+}
+
+function slotIdx(d){return Math.min(95,Math.max(0,Math.floor(swissParts(d||new Date()).h*4)));}
+
+// Kernklassifikation – gibt null zurueck, wenn die Lage nicht beurteilbar ist.
+function classify(key,cat,idx,flow,speed){
+  const ff=FREEFLOW&&FREEFLOW[key];
+  const b=BASE&&BASE.data&&BASE.data[key]&&BASE.data[key][cat];
+  if(speed==null||!ff||!b) return null;
+  const fm=b.flow_med&&b.flow_med[idx], sm=b.speed_med&&b.speed_med[idx];
+  if(flow==null||(flow<STAU_MINFLOW&&(fm||0)<STAU_MINFLOW)) return null;
+  const vFree=speed/ff, vRel=sm?speed/sm:1;
+  const st=(vFree<STAU_FREE&&vRel<STAU_REL&&speed<=STAU_MAXSPEED)?'stau'
+          :(vFree<ZAEH_FREE&&vRel<ZAEH_REL)?'zaeh':'frei';
+  return {status:st, vFree, vRel, ff, speed};
+}
+// Wortwahl nach dem absoluten Tempo – "Stau" nur bei Schritttempo.
+function lageWort(st,speed){
+  if(st!=='stau') return 'Zähfliessend';
+  return (speed!=null&&speed<STAU_STEHEND)?'Stau – Schritttempo':'Stockender Verkehr';
+}
+
+function applyLage(latest){
   if(!latest||!latest.sites||!BASE||!BASE.data) return;
+  if(!FREEFLOW) buildFreeflow();
   const cat=dayType(), n=(BASE.n&&BASE.n[cat])||0;
-  if(n<REL_MIN_DAYS) return;
-  const idx=Math.min(95,Math.max(0,Math.floor(swissParts(new Date()).h*4)));
+  if(n<REL_MIN_DAYS) return;   // zu wenige Vergleichstage -> Server-Fixwert behalten
+  const idx=slotIdx();
   for(const s of latest.sites){
     for(const dir of ['positive','negative']){
-      const d=s.dirs[dir];
-      if(d.speed==null||d.status==='keine_daten') continue;
-      const cbl=BASE.data[s.id+'|'+dir]&&BASE.data[s.id+'|'+dir][cat];
-      const med=cbl&&cbl.speed_med&&cbl.speed_med[idx];
-      if(med==null||med<=0) continue;
-      if((d.flow||0)<REL_FLOW_FLOOR && d.speed>=REL_ABS_FLOOR){ d.status='frei'; continue; }
-      d.relRatio=d.speed/med;
-      d.status=d.relRatio<REL_STAU?'stau':d.relRatio<REL_ZAEH?'zaeh':'frei';
+      const d=s.dirs[dir], key=s.id+'|'+dir;
+      d.vFree=null; d.vRel=null; d.since=null;
+      if(d.status==='keine_daten') continue;
+      // Geglaettete Werte (letzte ~15 Min) bevorzugen, sonst der Momentanwert
+      const sp=recentSpeed(key), fl=flow15(key);
+      const c=classify(key,cat,idx, fl!=null?fl:d.flow, sp!=null?sp:d.speed);
+      if(!c){
+        // Nicht beurteilbar (zu wenig Verkehr fuer ein belastbares Tempo-Mittel).
+        // Dann lieber gar keine Meldung als die alte Fixschwelle des Servers, die
+        // ruhige Passstrassen dauernd als "zäh" markiert hat.
+        if(d.status==='stau'||d.status==='zaeh') d.status='frei';
+        continue;
+      }
+      d.status=c.status; d.vFree=c.vFree; d.vRel=c.vRel; d.freeflow=c.ff;
+      if(c.status!=='frei') d.since=lageSince(key,cat);
     }
   }
+}
+
+// Wie lange dauert die aktuelle Stoerung schon an? Laeuft die 5-Minuten-Reihe
+// von heute rueckwaerts und toleriert bis zu zwei unauffaellige Messpunkte
+// (10 Min), damit ein einzelner Ausreisser den Stau nicht kuenstlich zerteilt.
+function lageSince(key,cat){
+  const ser=window.__today&&window.__today.series&&window.__today.series[key];
+  if(!ser||ser.length<3) return null;
+  let gap=0, start=null;
+  for(let i=ser.length-1;i>=0;i--){
+    const p=ser[i];
+    const hm=String(p.t).split(':');
+    const idx=Math.min(95,Math.floor(((+hm[0])*60+(+hm[1]))/15));
+    const c=classify(key,cat,idx,p.flow,p.speed);
+    if(c&&c.status!=='frei'){ start=p.t; gap=0; }
+    else if(c){ if(++gap>2) break; }
+    else break;
+  }
+  return start;
+}
+function sinceText(t){
+  if(!t) return '';
+  const hm=String(t).split(':');
+  const nowMin=Math.round(swissParts(new Date()).h*60);
+  let mins=nowMin-((+hm[0])*60+(+hm[1]));
+  if(mins<0||mins>18*60) return '';
+  if(mins<10) return '';
+  return mins<90?('seit '+Math.round(mins/5)*5+' Min'):('seit '+t+' Uhr');
 }
 
 // ---- Kennzahlen (identisch zur Listen-Ansicht) ----
@@ -398,7 +560,74 @@ function corridorClass(s){
   return /^A13|^A28/.test(s.road)?"haupt":"pass";
 }
 
+// ---- Embed-Code je Kachel -------------------------------------------------
+// Hausformat der Datenstory-Serie (siehe EMBEDS.md): responsives iframe plus
+// iframe-resizer, dazu eine Mindesthoehe als Fallback, falls das Script im CMS
+// nicht laedt.
+const EMBED_H={tile:260,chart:340,stau:180};
+const EMBED_LBL={tile:"Kachel",chart:"Tagesverlauf",stau:"Staumelder (alle Stellen)"};
+function embedCode(view,site,place){
+  const id="verkehr-"+view+(site?"-"+site.replace(/[^A-Za-z0-9]/g,""):"");
+  const url=embedBase()+"?view="+view+(site?"&site="+encodeURIComponent(site):"");
+  const title=view==="stau"?"Aktuelle Stau-Meldungen Südostschweiz"
+    :(place||"")+" – "+(view==="tile"?"Verkehrslage live":"Verkehr im Tagesverlauf");
+  return '<iframe id="'+id+'"\n  src="'+url+'"\n  title="'+title+'"\n'
+    +'  loading="lazy" scrolling="no"\n'
+    +'  style="width:0; min-width:100%; border:none; min-height:'+EMBED_H[view]+'px; display:block;"></iframe>\n'
+    +'<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"><\/script>\n'
+    +'<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: \'lowestElement\' }, \'#'+id+'\');<\/script>';
+}
+const embedOpen={};   // siteId -> zuletzt gewaehlte Variante, null = zu
+function renderEmbedBox(siteId){
+  const box=document.querySelector('[data-embox="'+siteId+'"]');
+  if(!box) return;
+  const view=embedOpen[siteId];
+  if(!view){ box.hidden=true; box.innerHTML=""; return; }
+  const s=LATEST.sites.find(x=>x.id===siteId);
+  box.hidden=false;
+  box.innerHTML='<textarea readonly spellcheck="false"></textarea>'
+    +'<div class="emrow">'
+    +['tile','chart','stau'].map(v=>'<button data-emv="'+v+'" class="'+(v===view?'on':'')+'">'+EMBED_LBL[v]+'</button>').join('')
+    +'<button data-emcopy="1">Kopieren</button><span class="ok" hidden>kopiert</span></div>';
+  const ta=box.querySelector('textarea');
+  ta.value=embedCode(view,view==='stau'?null:siteId,s&&s.place);
+  box.querySelectorAll('[data-emv]').forEach(b=>b.addEventListener('click',ev=>{
+    ev.stopPropagation(); embedOpen[siteId]=b.getAttribute('data-emv'); renderEmbedBox(siteId);
+  }));
+  box.querySelector('[data-emcopy]').addEventListener('click',ev=>{
+    ev.stopPropagation();
+    ta.select();
+    const done=()=>{const ok=box.querySelector('.ok');ok.hidden=false;setTimeout(()=>{ok.hidden=true;},1800);};
+    if(navigator.clipboard) navigator.clipboard.writeText(ta.value).then(done,()=>{document.execCommand('copy');done();});
+    else { document.execCommand('copy'); done(); }
+  });
+  box.addEventListener('click',ev=>ev.stopPropagation());
+}
+
+// Im Embed-Modus wird nur der angeforderte Baustein gerendert.
+function renderEmbedView(){
+  const s=EMBED_SITE?LATEST.sites.find(x=>x.id===EMBED_SITE):null;
+  const link='<a href="'+embedBase()+'" target="_blank" rel="noopener" style="color:var(--blau)">alle Zählstellen</a>';
+  if(EMBED_VIEW==="stau"){
+    d3.select("#board").html("");
+    d3.select("#foot").html('Verkehrslage an den Zählstellen des Bundes (ASTRA) in der Südostschweiz, '
+      +'Abgleich von Tempo und Verkehrsmenge · '+link+' · Grafik: Julian Reich');
+    return;
+  }
+  if(!s){ d3.select("#board").html('<div class="err">Unbekannte Zählstelle: '+(EMBED_SITE||'–')+'</div>'); return; }
+  if(EMBED_VIEW==="tile"){
+    d3.select("#board").html('<div class="tgrid" style="grid-template-columns:1fr">'+tileHtml(s)+'</div>');
+  } else {
+    d3.select("#board").html('<div class="tdetail" data-for="'+s.id+'" style="margin:0"></div>');
+    renderExpand(d3.select('.tdetail[data-for="'+s.id+'"]'), s);
+  }
+  d3.select("#foot").html('Zählstelle '+s.place+' ('+s.road+'), ASTRA · Stand '
+    +new Date(LATEST.generated).toLocaleString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+    +' Uhr · '+link+' · Grafik: Julian Reich');
+}
+
 function renderBoard(){
+  if(EMBED_VIEW){ renderEmbedView(); return; }
   const allRows=sortRows();
   const rows=allRows.filter(s=>{
     if(filterKt!=="alle"&&ktOf(s)!==filterKt) return false;
@@ -412,36 +641,75 @@ function renderBoard(){
   const sbtn=(id,lbl)=>'<button data-sort="'+id+'" class="'+(boardSort===id?'on':'')+'">'+lbl+'</button>';
   const kbtn=(v,l)=>'<button data-fkt="'+v+'" class="'+(filterKt===v?'on':'')+'">'+l+'</button>';
   const rbtn=(v,l)=>'<button data-frt="'+v+'" class="'+(filterRoute===v?'on':'')+'">'+l+'</button>';
-  const dirRow=(s,dir)=>{const x=s.dirs[dir];
+  return renderBoardBody(rows,sbtn,kbtn,rbtn);
+}
+
+function dirRowHtml(s,dir){const x=s.dirs[dir];
+    const key=s.id+'|'+dir;
     const arrow=dir==='positive'?'→':'←';
-    const a=x.flow==null?0:trend(s.id+'|'+dir);
+    const a=x.flow==null?0:trend(key);
     const ar=a>0?'<span class="trend" title="steigend">▲</span>':a<0?'<span class="trend" title="fallend">▼</span>':'';
-    const v=x.flow==null?'–':((flow15(s.id+'|'+dir) ?? x.flow));
-    return '<div class="d"><span class="dl">'+arrow+' '+x.label+'</span>'
-      +'<span class="dv"><b>'+v+'</b> Fz/h'+ar+'</span></div>';};
-  const tile=s=>{const open=s.id===sel; const L=loadInfo(s);
+    const v=x.flow==null?'–':((flow15(key) ?? x.flow));
+    // Tempo gehoert gleichwertig neben die Menge: erst beide zusammen sagen,
+    // ob wenig Verkehr herrscht oder ob der Verkehr steht.
+    const sp=recentSpeed(key);
+    const spTxt=sp==null?'':'<span class="sep">·</span><b>'+Math.round(sp)+'</b> km/h';
+    const st=x.status;
+    const pctSp=(st!=='frei'&&st!=='keine_daten'&&x.vFree!=null)
+      ? ' <span class="dwarn" style="color:'+C[st]+'">'+Math.round(x.vFree*100)+'% vom Normaltempo</span>' : '';
+    return '<div class="d">'
+      +'<div class="dl"><i class="ddot" style="background:'+C[st]+'"></i>'+arrow+' '+x.label+'</div>'
+      +'<div class="dv"><b>'+v+'</b> Fz/h'+ar+spTxt+pctSp+'</div></div>';}
+
+function tileHtml(s){const open=s.id===sel; const L=loadInfo(s); const lg=worst(s);
+    const kritisch=(lg==='stau'||lg==='zaeh');
     const w=Math.max(2,Math.min(100,Math.round(L.ratio*100)));
     const dcp=dayCount(s.id+'|positive'), dcn=dayCount(s.id+'|negative');
     const dctot=(dcp!=null||dcn!=null)?((dcp||0)+(dcn||0)):null;
     const pctTxt=L.pct==null?'':(L.mode==='typ'?L.pct+'% vom Üblichen':L.pct+'% des Tageshochs');
+    // Bei Stau ist die Menge kein Mass fuer "viel los" mehr – dann fuehrt die
+    // Lage-Zeile die Kachel an und die Menge wandert in eine erklaerende Zeile.
+    const worstDir=['positive','negative']
+      .filter(d=>s.dirs[d].status===lg)
+      .sort((a,b)=>(s.dirs[a].vFree??9)-(s.dirs[b].vFree??9))[0];
+    const since=worstDir?sinceText(s.dirs[worstDir].since):'';
+    const lageLine=kritisch
+      ? '<div class="tlage '+lg+'"><span>⚠ '+lageWort(lg,worstDir?recentSpeed(s.id+'|'+worstDir):null)+'</span>'
+        +(since?'<span class="lsince">'+since+'</span>':'')+'</div>'
+      : '';
+    const staunote=(kritisch&&L.mode==='typ'&&L.pct!=null&&L.pct<95)
+      ? '<div class="tnote">Nur '+L.pct+'% der sonst üblichen Fahrzeuge – weil im Stau weniger durchkommen, nicht weil wenig los ist.</div>'
+      : '';
     return '<div class="tile'+(open?' sel':'')+'" data-id="'+s.id+'">'
-      +'<div class="thead"><span class="tdot" style="background:'+C[worst(s)]+'" title="Verkehrsfluss (Tempo)"></span>'
+      +'<div class="thead"><span class="tdot" style="background:'+C[lg]+'" title="Verkehrslage (Tempo)"></span>'
       +'<span class="tplace">'+s.place+'<em>'+s.road+'</em></span></div>'
-      +'<div><div class="tbar"><i style="width:'+w+'%;background:'+LOADC[L.lvl]+'"></i></div>'
-      +'<div class="tlabel"><b style="color:'+LOADC[L.lvl]+'">'+L.word+'</b><span>'+pctTxt+'</span></div></div>'
-      +'<div class="tdirs">'+dirRow(s,'positive')+dirRow(s,'negative')+'</div>'
+      +lageLine
+      +'<div><div class="tbar"><i style="width:'+w+'%;background:'+(kritisch?C[lg]:LOADC[L.lvl])+'"></i></div>'
+      +'<div class="tlabel"><b style="color:'+(kritisch?C[lg]:LOADC[L.lvl])+'">'
+        +(kritisch?'Menge: '+L.word:L.word)+'</b><span>'+pctTxt+'</span></div></div>'
+      +staunote
+      +'<div class="tdirs">'+dirRowHtml(s,'positive')+dirRowHtml(s,'negative')+'</div>'
       +(dctot!=null?'<div class="tfoot" title="Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung">heute bisher ca. <b>'+dctot.toLocaleString('de-CH')+'</b> Fahrzeuge</div>':'')
-      +'</div>';};
+      +'<div class="tembed"><button class="embtn" data-embed="'+s.id+'">&#10697; Embed-Code</button>'
+      +'<div class="embox" data-embox="'+s.id+'" hidden></div></div>'
+      +'</div>';}
+
+function renderBoardBody(rows,sbtn,kbtn,rbtn){
   // Kritisch (stau/zaeh) korridor-uebergreifend an die Spitze ziehen, statt in den
   // Korridor-Gruppen zu verstecken (siehe Stau-Banner oben, gleiches Prinzip).
-  const kritisch=rows.filter(s=>{const w=worst(s);return w==='stau'||w==='zaeh';});
+  // Nicht nach Verkehrsmenge sortieren – im Stau ist die klein. Schwerster Fall
+  // zuerst: erst Stau vor zäh, dann die langsamste Richtung.
+  const srank={stau:0,zaeh:1};
+  const slowest=s=>Math.min(...['positive','negative'].map(d=>s.dirs[d].vFree??9));
+  const kritisch=rows.filter(s=>{const w=worst(s);return w==='stau'||w==='zaeh';})
+    .sort((a,b)=>(srank[worst(a)]-srank[worst(b)])||(slowest(a)-slowest(b)));
   const kritischIds=new Set(kritisch.map(s=>s.id));
   const haupt =rows.filter(s=>corridorClass(s)==="haupt" && !kritischIds.has(s.id));
   const pass  =rows.filter(s=>corridorClass(s)==="pass" && !kritischIds.has(s.id));
   const a3    =rows.filter(s=>corridorClass(s)==="a3" && !kritischIds.has(s.id));
   const andere=rows.filter(s=>corridorClass(s)==="andere" && !kritischIds.has(s.id));
   // Detail-Panel direkt nach der angeklickten Kachel einfuegen (full-width im Raster)
-  const tilesHtml=arr=>arr.map(s=>tile(s)+(s.id===sel?'<div class="tdetail" data-for="'+s.id+'"></div>':'')).join('');
+  const tilesHtml=arr=>arr.map(s=>tileHtml(s)+(s.id===sel?'<div class="tdetail" data-for="'+s.id+'"></div>':'')).join('');
   const section=(title,arr)=>arr.length?('<div class="bgroup">'+title+' <span>('+arr.length+')</span></div><div class="tgrid">'+tilesHtml(arr)+'</div>'):'';
   d3.select("#board").html(
     '<div class="bbar"><span class="bhead">Balken = Verkehrsmenge · Punkt = Fluss · tippen für Tagesverlauf</span>'
@@ -460,6 +728,14 @@ function renderBoard(){
   d3.selectAll("[data-fkt]").on("click",function(){filterKt=this.getAttribute("data-fkt");renderBoard();});
   d3.selectAll("[data-frt]").on("click",function(){filterRoute=this.getAttribute("data-frt");renderBoard();});
   d3.selectAll(".tile").on("click",function(){select(this.getAttribute("data-id"), true);});
+  // Embed-Button darf die Kachel nicht auf-/zuklappen
+  document.querySelectorAll("[data-embed]").forEach(b=>b.addEventListener("click",ev=>{
+    ev.stopPropagation();
+    const id=b.getAttribute("data-embed");
+    embedOpen[id]=embedOpen[id]?null:"tile";
+    renderEmbedBox(id);
+  }));
+  Object.keys(embedOpen).forEach(id=>{if(embedOpen[id]) renderEmbedBox(id);});
 
   if(sel){
     const s=LATEST.sites.find(x=>x.id===sel);
@@ -662,26 +938,43 @@ function renderStauBanner(){
     }
   }
   const rank={stau:0,zaeh:1};
-  items.sort((a,b)=>rank[a.d.status]-rank[b.d.status]);
+  // Innerhalb einer Stufe das langsamste zuerst – das ist die härteste Meldung.
+  items.sort((a,b)=>(rank[a.d.status]-rank[b.d.status])||((a.d.vFree??9)-(b.d.vFree??9)));
   const box=d3.select('#stauband');
   if(!items.length){
-    box.html('<div class="stauband ok">&#10003; Kein Stau gemeldet</div>');
+    box.html('<div class="stauband ok">&#10003; Auf den erfassten Strecken fliesst der Verkehr normal</div>');
     return;
   }
+  const nStau=items.filter(it=>it.d.status==='stau').length;
   const shown=items.slice(0,STAUBAND_MAX), rest=items.length-shown.length;
-  const row=it=>'<div class="sbrow" data-id="'+it.s.id+'"><i class="dot" style="background:'+C[it.d.status]+'"></i>'
-    +'<span>'+it.s.place+' <span class="sbdir">· '+it.d.label+'</span></span></div>';
-  box.html('<div class="stauband warn"><div class="sbhead">&#9888; Aktuell '+items.length+' Stelle'+(items.length===1?'':'n')+' betroffen</div>'
+  const row=it=>{
+    const sp=recentSpeed(it.s.id+'|'+it.dir);
+    const det=[];
+    if(sp!=null) det.push(Math.round(sp)+' km/h');
+    if(it.d.vFree!=null) det.push('statt '+Math.round(it.d.freeflow)+' km/h');
+    const since=sinceText(it.d.since);
+    if(since) det.push(since);
+    return '<div class="sbrow" data-id="'+it.s.id+'"><i class="dot" style="background:'+C[it.d.status]+'"></i>'
+      +'<span><b>'+it.s.place+'</b> <span class="sbdir">'+it.d.label+'</span>'
+      +(det.length?' <span class="sbdir">· '+det.join(' · ')+'</span>':'')+'</span></div>';};
+  const head=nStau
+    ? '&#9888; Stau oder stockender Verkehr an '+nStau+' Stelle'+(nStau===1?'':'n')
+      +(items.length>nStau?', zähfliessend an '+(items.length-nStau):'')
+    : 'Zähfliessender Verkehr an '+items.length+' Stelle'+(items.length===1?'':'n');
+  box.html('<div class="stauband warn"><div class="sbhead">'+head+'</div>'
     +shown.map(row).join('')
-    +(rest>0?'<div class="sbmore">+'+rest+' weitere unten in der Liste</div>':'')
+    +(rest>0?'<div class="sbmore">+'+rest+' weitere</div>':'')
     +'</div>');
-  box.selectAll('.sbrow').on('click',function(){select(this.getAttribute('data-id'), true);});
+  if(!EMBED_VIEW) box.selectAll('.sbrow').on('click',function(){select(this.getAttribute('data-id'), true);});
 }
 
 function hideTip(){tip.style("opacity",0);}
 
 // today.json separat laden
-function loadToday(){d3.json(apiUrl("today")).then(t=>{window.__today=t;if(LATEST)renderBoard();}).catch(()=>{});}
+// Erst mit today.json liegen die geglaetteten 15-Min-Werte vor, auf denen die
+// Stau-Erkennung rechnet – deshalb hier neu bewerten und Karte/Banner mitziehen.
+function loadToday(){d3.json(apiUrl("today")).then(t=>{window.__today=t;
+  if(LATEST){applyLage(LATEST); drawMap(); renderBoard(); renderStauBanner();}}).catch(()=>{});}
 loadToday();
 setInterval(loadToday, 300000);
 </script>
