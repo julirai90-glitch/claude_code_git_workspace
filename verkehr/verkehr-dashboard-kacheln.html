@@ -109,8 +109,10 @@
   body.embed .tile{cursor:default}
   body.embed .foot{font-size:.68rem;margin-top:8px}
   body.embed-stau #board,body.embed-stau #meldungen{display:none}
-  body.embed-tile #stauband,body.embed-chart #stauband,
-  body.embed-tile #meldungen,body.embed-chart #meldungen{display:none}
+  body.embed-tile #stauband,body.embed-chart #stauband,body.embed-voll #stauband,
+  body.embed-tile #meldungen,body.embed-chart #meldungen,body.embed-voll #meldungen{display:none}
+  /* Kombi-Embed: Kachel oben, Tagesverlauf direkt darunter statt als Aufklapp-Panel */
+  body.embed-voll .tdetail{display:block;margin-top:10px}
   body.embed-meldungen #board,body.embed-meldungen #stauband{display:none}
   .bfilter{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .5em;margin:.1em 2px .5em}
   .bflabel{font-size:.72rem;color:var(--muted);flex:0 0 auto}
@@ -204,13 +206,14 @@ const apiUrl = f => DATA_API + "?f=" + f;
 // ---- Embed-Modus ----------------------------------------------------------
 // Dieselbe Seite liefert per URL-Parameter auch einzelne Bausteine aus, damit
 // eine Kachel oder eine Kurve fuer sich allein eingebettet werden kann:
-//   ?view=tile&site=CH:0611    eine Kachel
+//   ?view=voll&site=CH:0611    Kachel plus Tagesverlauf – der Normalfall im Artikel
+//   ?view=tile&site=CH:0611    nur die Kachel (Momentaufnahme)
 //   ?view=chart&site=CH:0611   nur der Tagesverlauf beider Richtungen
 //   ?view=stau                 nur der Staumelder (standortunabhaengig)
 //   ?view=meldungen            nur die amtlichen ASTRA-Meldungen
 const PUBLIC_URL = "https://julirai90-glitch.github.io/claude_code_git_workspace/verkehr/verkehr-dashboard-kacheln.html";
 const Q = new URLSearchParams(location.search);
-const EMBED_VIEW = ["tile","chart","stau","meldungen"].includes(Q.get("view")) ? Q.get("view") : null;
+const EMBED_VIEW = ["voll","tile","chart","stau","meldungen"].includes(Q.get("view")) ? Q.get("view") : null;
 const EMBED_SITE = Q.get("site");
 if(EMBED_VIEW) document.body.classList.add("embed","embed-"+EMBED_VIEW);
 function embedBase(){
@@ -671,14 +674,16 @@ function corridorClass(s){
 // Hausformat der Datenstory-Serie (siehe EMBEDS.md): responsives iframe plus
 // iframe-resizer, dazu eine Mindesthoehe als Fallback, falls das Script im CMS
 // nicht laedt.
-const EMBED_H={tile:260,chart:340,stau:180,meldungen:200};
-const EMBED_LBL={tile:"Kachel",chart:"Tagesverlauf",stau:"Staumelder (gemessen)",meldungen:"Amtliche Meldungen"};
+const EMBED_H={voll:600,tile:260,chart:340,stau:180,meldungen:200};
+const EMBED_LBL={voll:"Kachel + Tagesverlauf",tile:"Nur Kachel",chart:"Nur Tagesverlauf",
+  stau:"Staumelder (gemessen)",meldungen:"Amtliche Meldungen"};
 function embedCode(view,site,place){
   const id="verkehr-"+view+(site?"-"+site.replace(/[^A-Za-z0-9]/g,""):"");
   const url=embedBase()+"?view="+view+(site?"&site="+encodeURIComponent(site):"");
   const title=view==="stau"?"Aktuelle Stau-Meldungen Südostschweiz"
     :view==="meldungen"?"Amtliche Verkehrsmeldungen Südostschweiz (ASTRA)"
-    :(place||"")+" – "+(view==="tile"?"Verkehrslage live":"Verkehr im Tagesverlauf");
+    :view==="chart"?(place||"")+" – Verkehr im Tagesverlauf"
+    :(place||"")+" – Verkehrslage live";
   return '<iframe id="'+id+'"\n  src="'+url+'"\n  title="'+title+'"\n'
     +'  loading="lazy" scrolling="no"\n'
     +'  style="width:0; min-width:100%; border:none; min-height:'+EMBED_H[view]+'px; display:block;"></iframe>\n'
@@ -695,7 +700,7 @@ function renderEmbedBox(siteId){
   box.hidden=false;
   box.innerHTML='<textarea readonly spellcheck="false"></textarea>'
     +'<div class="emrow">'
-    +['tile','chart','stau','meldungen'].map(v=>'<button data-emv="'+v+'" class="'+(v===view?'on':'')+'">'+EMBED_LBL[v]+'</button>').join('')
+    +['voll','tile','chart','stau','meldungen'].map(v=>'<button data-emv="'+v+'" class="'+(v===view?'on':'')+'">'+EMBED_LBL[v]+'</button>').join('')
     +'<button data-emcopy="1">Kopieren</button><span class="ok" hidden>kopiert</span></div>';
   const ta=box.querySelector('textarea');
   ta.value=embedCode(view,(view==='stau'||view==='meldungen')?null:siteId,s&&s.place);
@@ -729,7 +734,13 @@ function renderEmbedView(){
     return;
   }
   if(!s){ d3.select("#board").html('<div class="err">Unbekannte Zählstelle: '+(EMBED_SITE||'–')+'</div>'); return; }
-  if(EMBED_VIEW==="tile"){
+  if(EMBED_VIEW==="voll"){
+    // Momentaufnahme und Tagesverlauf gehoeren im Artikel zusammen: die Kachel sagt,
+    // wie es gerade ist, die Kurve, wie es dahin kam.
+    d3.select("#board").html('<div class="tgrid" style="grid-template-columns:1fr">'+tileHtml(s)+'</div>'
+      +'<div class="tdetail" data-for="'+s.id+'"></div>');
+    renderExpand(d3.select('.tdetail[data-for="'+s.id+'"]'), s);
+  } else if(EMBED_VIEW==="tile"){
     d3.select("#board").html('<div class="tgrid" style="grid-template-columns:1fr">'+tileHtml(s)+'</div>');
   } else {
     d3.select("#board").html('<div class="tdetail" data-for="'+s.id+'" style="margin:0"></div>');
@@ -846,7 +857,7 @@ function renderBoardBody(rows,sbtn,kbtn,rbtn){
   document.querySelectorAll("[data-embed]").forEach(b=>b.addEventListener("click",ev=>{
     ev.stopPropagation();
     const id=b.getAttribute("data-embed");
-    embedOpen[id]=embedOpen[id]?null:"tile";
+    embedOpen[id]=embedOpen[id]?null:"voll";
     renderEmbedBox(id);
   }));
   Object.keys(embedOpen).forEach(id=>{if(embedOpen[id]) renderEmbedBox(id);});
