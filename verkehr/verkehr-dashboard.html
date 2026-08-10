@@ -516,10 +516,6 @@ function renderMeldungen(){
   const box=d3.select('#meldungen');
   if(!MELD||!MELD.meldungen){ box.html(''); return; }
   const items=MELD.meldungen;
-  if(!items.length){
-    box.html('<div class="mnone">Keine amtlichen Störungsmeldungen für die Region</div>');
-    return;
-  }
   const row=m=>{
     const det=[];
     if(m.ursache) det.push(m.ursache);
@@ -529,10 +525,18 @@ function renderMeldungen(){
       +'<span class="mtxt"><span class="mort">'+m.ort+'</span><br>'
       +'<span class="mdet">'+m.sachlage+(det.length?' · '+det.join(' · '):'')+'</span></span></div>';
   };
+  // "letztes Update" ist der Zeitpunkt des letzten Abrufs, nicht der der Meldung –
+  // damit man sieht, ob der Kasten noch lebt, auch wenn gerade nichts gemeldet ist.
+  const upd=MELD.generated
+    ? new Date(MELD.generated).toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})
+    : null;
   box.html('<div class="mbox"><div class="mhead">Amtliche Meldungen '
-    +'<small>ASTRA – gemeldet, nicht gemessen</small></div>'
-    +items.slice(0,10).map(row).join('')
-    +(items.length>10?'<div class="sbmore">+'+(items.length-10)+' weitere</div>':'')
+    +'<small>Quelle: Bundesamt für Strassen (ASTRA)'
+    +(upd?' · letztes Update: '+upd+' Uhr':'')+'</small></div>'
+    +(items.length
+      ? items.slice(0,10).map(row).join('')
+        +(items.length>10?'<div class="sbmore">+'+(items.length-10)+' weitere</div>':'')
+      : '<div class="mnone">Zurzeit keine Störungsmeldungen für die Region</div>')
     +'</div>');
 }
 loadMeldungen();
