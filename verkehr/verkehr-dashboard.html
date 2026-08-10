@@ -426,24 +426,40 @@ function lastHourCount(key){
   if(!fl.length) return null;
   return Math.round(fl.reduce((a,p)=>a+p.flow,0)/12);
 }
-// geglaetteter Verkehr: Mittel der letzten ~15 Min (3 Slots) in Fz/h
-function flow15(key){
+// Nur Messwerte aus dem juengsten Zeitfenster. Vorher wurde erst nach "nicht null"
+// gefiltert und dann slice(-3) genommen – das sind die letzten drei *vorhandenen*
+// Werte, egal wie alt. Bei einer gesperrten Strecke waren das Werte von vor Stunden,
+// die als aktuell erschienen (Weesen am 10.08.2026 nach der Tunnelsperrung).
+const RECENT_SLOTS=4;   // 4 x 5 Min = 20 Minuten
+function recentPoints(key){
   const ser=window.__today&&window.__today.series&&window.__today.series[key];
-  if(!ser) return null;
-  const fl=ser.filter(p=>p.flow!=null).slice(-3);
+  return ser?ser.slice(-RECENT_SLOTS):null;
+}
+function flow15(key){
+  const w=recentPoints(key); if(!w) return null;
+  const fl=w.filter(p=>p.flow!=null);
   if(!fl.length) return null;
   return Math.round(fl.reduce((a,p)=>a+p.flow,0)/fl.length);
 }
-// geglaettetes aktuelles Tempo: Mittel der letzten ~15 Min (3 Slots)
 function recentSpeed(key){
-  const ser=window.__today&&window.__today.series&&window.__today.series[key];
-  if(!ser) return null;
-  const sp=ser.filter(p=>p.speed!=null).slice(-3);
+  const w=recentPoints(key); if(!w) return null;
+  const sp=w.filter(p=>p.speed!=null);
   if(!sp.length) return null;
   return Math.round(sp.reduce((a,p)=>a+p.speed,0)/sp.length*10)/10;
 }
-
-function tot(s){const f=d=>{const v=flow15(s.id+'|'+d);return v!=null?v:(s.dirs[d].flow||0);};return f('positive')+f('negative');}
+// Nur Richtungen zaehlen, die gerade auch messen – eine stillgelegte Fahrbahn ist
+// nicht dasselbe wie eine leere.
+function activeDirs(s){
+  return ['positive','negative'].filter(d=>{
+    if(s.dirs[d].status==='keine_daten') return false;
+    const v=flow15(s.id+'|'+d);
+    return (v!=null?v:s.dirs[d].flow)!=null;
+  });
+}
+function tot(s){
+  return activeDirs(s).reduce((a,d)=>{
+    const v=flow15(s.id+'|'+d); return a+(v!=null?v:(s.dirs[d].flow||0));},0);
+}
 function worst(s){
   const order={stau:3,zaeh:2,frei:1,keine_daten:0};
   const a=s.dirs.positive.status,b=s.dirs.negative.status;

@@ -507,21 +507,42 @@ function lastHourCount(key){
   if(!fl.length) return null;
   return Math.round(fl.reduce((a,p)=>a+p.flow,0)/12);
 }
-function flow15(key){
+// Nur Messwerte aus dem juengsten Zeitfenster. Vorher wurde erst nach "nicht null"
+// gefiltert und dann slice(-3) genommen – das sind die letzten drei *vorhandenen*
+// Werte, egal wie alt. Bei einer gesperrten Strecke waren das Werte von vor Stunden,
+// die als aktuell erschienen: Weesen zeigte am 10.08.2026 um 12 Uhr noch das Tempo
+// von vor der Tunnelsperrung, obwohl dort seit Stunden kein Auto mehr fuhr.
+const RECENT_SLOTS=4;   // 4 x 5 Min = 20 Minuten
+function recentPoints(key){
   const ser=window.__today&&window.__today.series&&window.__today.series[key];
-  if(!ser) return null;
-  const fl=ser.filter(p=>p.flow!=null).slice(-3);
+  return ser?ser.slice(-RECENT_SLOTS):null;
+}
+function flow15(key){
+  const w=recentPoints(key); if(!w) return null;
+  const fl=w.filter(p=>p.flow!=null);
   if(!fl.length) return null;
   return Math.round(fl.reduce((a,p)=>a+p.flow,0)/fl.length);
 }
 function recentSpeed(key){
-  const ser=window.__today&&window.__today.series&&window.__today.series[key];
-  if(!ser) return null;
-  const sp=ser.filter(p=>p.speed!=null).slice(-3);
+  const w=recentPoints(key); if(!w) return null;
+  const sp=w.filter(p=>p.speed!=null);
   if(!sp.length) return null;
   return Math.round(sp.reduce((a,p)=>a+p.speed,0)/sp.length*10)/10;
 }
-function tot(s){const f=d=>{const v=flow15(s.id+'|'+d);return v!=null?v:(s.dirs[d].flow||0);};return f('positive')+f('negative');}
+// Richtungen, die gerade tatsaechlich messen. Alles Weitere rechnet nur mit diesen –
+// sonst wird eine stillgelegte Fahrbahn als "0 Fahrzeuge" gegen einen Normalwert
+// fuer beide Richtungen gerechnet.
+function activeDirs(s){
+  return ['positive','negative'].filter(d=>{
+    if(s.dirs[d].status==='keine_daten') return false;
+    const v=flow15(s.id+'|'+d);
+    return (v!=null?v:s.dirs[d].flow)!=null;
+  });
+}
+function tot(s){
+  return activeDirs(s).reduce((a,d)=>{
+    const v=flow15(s.id+'|'+d); return a+(v!=null?v:(s.dirs[d].flow||0));},0);
+}
 function worst(s){
   const order={stau:3,zaeh:2,frei:1,keine_daten:0};
   const a=s.dirs.positive.status,b=s.dirs.negative.status;
@@ -533,40 +554,51 @@ function dirSeries(key){return (window.__today&&window.__today.series&&window.__
 // hoechste Gesamt-Last (beide Richtungen) heute bisher -> ehrlicher Bezug ohne Baseline
 function peakTotalToday(s){
   const m={};
-  for(const p of dirSeries(s.id+'|positive')){if(p.flow!=null)m[p.t]=(m[p.t]||0)+p.flow;}
-  for(const p of dirSeries(s.id+'|negative')){if(p.flow!=null)m[p.t]=(m[p.t]||0)+p.flow;}
+  for(const d of activeDirs(s))
+    for(const p of dirSeries(s.id+'|'+d)){if(p.flow!=null)m[p.t]=(m[p.t]||0)+p.flow;}
   const v=Object.values(m);
   return v.length?Math.max.apply(null,v):null;
 }
-// typische Gesamt-Last zur aktuellen Tageszeit (nur wenn Baseline reif: >=4 Vergleichstage)
+// Typische Last zur aktuellen Tageszeit – aus genau denselben Richtungen, die jetzt
+// auch messen. Sonst vergleicht man eine halbe Strasse mit einer ganzen: Als am
+// 10.08.2026 der Kerenzerbergtunnel gesperrt war, lieferte die eine Roehre nichts
+// und die andere die doppelte Menge (Gegenverkehr) – die Summe traf zufaellig den
+// Normalwert und die Kachel meldete "Menge: normal", waehrend nichts normal war.
 function typicalTotalNow(s){
   const cat=dayType(); const n=(BASE&&BASE.n&&BASE.n[cat])||0;
   if(n<4) return null;
-  const idx=Math.min(95,Math.max(0,Math.floor(swissParts(new Date()).h*4)));
-  const get=k=>{const b=(BASE&&BASE.data&&BASE.data[s.id+'|'+k])?BASE.data[s.id+'|'+k][cat]:null;return b&&b.flow_med?b.flow_med[idx]:null;};
-  const p=get('positive'),q=get('negative');
-  if(p==null&&q==null) return null;
-  return (p||0)+(q||0);
+  const idx=slotIdx();
+  let sum=0, got=0;
+  for(const d of activeDirs(s)){
+    const b=(BASE&&BASE.data&&BASE.data[s.id+'|'+d])?BASE.data[s.id+'|'+d][cat]:null;
+    const v=b&&b.flow_med?b.flow_med[idx]:null;
+    if(v!=null){ sum+=v; got++; }
+  }
+  return got?sum:null;
 }
 function loadInfo(s){
   const cur=tot(s);
-  if(s.dirs.positive.status==='keine_daten' && s.dirs.negative.status==='keine_daten')
-    return {ratio:0,pct:null,mode:'na',word:'keine Daten',lvl:'na'};
+  const act=activeDirs(s);
+  // Misst nur eine Richtung, gilt die Mengenangabe auch nur fuer diese – das muss
+  // an der Kachel stehen, sonst liest man sie als Aussage ueber die ganze Strecke.
+  const nurEine=act.length===1?s.dirs[act[0]].label:null;
+  if(!act.length)
+    return {ratio:0,pct:null,mode:'na',word:'keine Daten',lvl:'na',nurEine:null};
   const typ=typicalTotalNow(s);
   if(typ&&typ>0){
     const r=cur/typ;
-    return {ratio:r, pct:Math.round(r*100), mode:'typ',
+    return {ratio:r, pct:Math.round(r*100), mode:'typ', nurEine,
       word:r<0.8?'unter normal':r<=1.2?'normal':'über normal',
       lvl:r<0.8?'low':r<=1.2?'mid':'high'};
   }
   const peak=peakTotalToday(s);
   if(peak&&peak>0){
     const r=cur/peak;
-    return {ratio:r, pct:Math.round(r*100), mode:'peak',
+    return {ratio:r, pct:Math.round(r*100), mode:'peak', nurEine,
       word:r<0.5?'ruhig':r<0.85?'rege':'Hochbetrieb',
       lvl:r<0.5?'low':r<0.85?'mid':'high'};
   }
-  return {ratio:0,pct:null,mode:'na',word:'–',lvl:'na'};
+  return {ratio:0,pct:null,mode:'na',word:'–',lvl:'na',nurEine};
 }
 
 function select(id, scroll){
@@ -711,7 +743,8 @@ function tileHtml(s){const open=s.id===sel; const L=loadInfo(s); const lg=worst(
     const w=Math.max(2,Math.min(100,Math.round(L.ratio*100)));
     const dcp=dayCount(s.id+'|positive'), dcn=dayCount(s.id+'|negative');
     const dctot=(dcp!=null||dcn!=null)?((dcp||0)+(dcn||0)):null;
-    const pctTxt=L.pct==null?'':(L.mode==='typ'?L.pct+'% vom Üblichen':L.pct+'% des Tageshochs');
+    const pctTxt=(L.pct==null?'':(L.mode==='typ'?L.pct+'% vom Üblichen':L.pct+'% des Tageshochs'))
+      +(L.nurEine?' <span title="Die Gegenrichtung liefert derzeit keine Messwerte">(nur '+L.nurEine+')</span>':'');
     // Bei Stau ist die Menge kein Mass fuer "viel los" mehr – dann fuehrt die
     // Lage-Zeile die Kachel an und die Menge wandert in eine erklaerende Zeile.
     const worstDir=['positive','negative']
