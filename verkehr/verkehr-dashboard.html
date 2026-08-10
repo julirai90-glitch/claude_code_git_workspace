@@ -536,6 +536,14 @@ function renderMeldungen(){
     const det=[];
     if(m.ursache) det.push(m.ursache);
     if(m.laenge_km) det.push(m.laenge_km.toLocaleString('de-CH')+' km');
+    // Voraussichtliches Ende, wenn der Feed eines nennt – bei einer Sperrung ist das
+    // die Angabe, nach der zuerst gefragt wird.
+    if(m.bis){
+      const b=new Date(m.bis);
+      const heute=new Date().toDateString()===b.toDateString();
+      det.push('vorauss. bis '+(heute?'':b.toLocaleDateString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit'})+' ')
+        +b.toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr');
+    }
     const s=meldSeit(m.seit); if(s) det.push(s);
     return '<div class="mitem"><span class="mtag '+m.art+'">'+(MELD_LBL[m.art]||m.art)+'</span>'
       +'<span class="mtxt"><span class="mort">'+m.ort+'</span><br>'
