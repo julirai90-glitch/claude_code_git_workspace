@@ -1081,8 +1081,14 @@ function renderMeldungen(){
     if(m.bis){
       const b=new Date(m.bis);
       const heute=new Date().toDateString()===b.toDateString();
+      // Der Stand gehoert zwingend dazu: Am 10.08.2026 stand im Feed noch "bis 19:00",
+      // als die Polizei laengst auf Dienstag 06:00 korrigiert hatte. Eine Vorausangabe
+      // ohne ihren Zeitstempel verleitet dazu, sie als aktuellen Stand zu publizieren.
+      const st=m.aktualisiert
+        ? ' (Stand '+new Date(m.aktualisiert).toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+')'
+        : '';
       det.push('vorauss. bis '+(heute?'':b.toLocaleDateString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit'})+' ')
-        +b.toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr');
+        +b.toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr'+st);
     }
     const s=seitText(m.seit); if(s) det.push(s);
     // Alles, was der Feed sonst noch mitliefert, auf eine zweite Zeile. Die
