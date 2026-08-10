@@ -4,12 +4,11 @@ Stand 10.08.2026. Noch nicht gebaut; Entscheid über den Kanal ist offen.
 
 ## Warum
 
-Die Erkennung funktioniert, das Problem ist die Zustellung. Am 10.08.2026 hätte das
-Dashboard den gesperrten Kerenzerbergtunnel um **07:25 Uhr** angezeigt (Weesen 34 km/h
-statt 100). Der erste Ticker-Eintrag erschien um **09:06 Uhr** und stützte sich auf
-TCS-Verkehrsinfo und Google Maps – **1 Stunde 41 Minuten später**, auf fremde Quellen,
-während das Signal in den eigenen Daten lag. Um 07:25 schaut niemand auf die Seite.
-Es fehlt der Push.
+Die Erkennung funktioniert, das Problem ist die Zustellung. Am 10.08.2026 zeigte das
+Dashboard den gesperrten Kerenzerbergtunnel um **07:25 Uhr** an (Weesen 34 km/h statt
+100) und grenzte den Ort allein aus den Messwerten ein. Nur schaut um Viertel nach
+sieben niemand auf eine Website. Ein Signal, das niemanden erreicht, ist keins –
+darum braucht es eine aktive Meldung.
 
 ## Rekonstruktion 10.08.2026 (aus `f=today`, 5-Minuten-Reihe)
 
@@ -21,7 +20,6 @@ Es fehlt der Push.
 | 07:25 | **Weesen Stau: 34 km/h** | Zählstelle CH:0053 |
 | 07:40 | Niederurnen Stau: 16 km/h (Rückstau wächst) | Zählstelle CH:0830 |
 | 08:05 | Reichenburg Stau: 41 km/h | Zählstelle CH:0314 |
-| 09:06 | erster Ticker-Eintrag | Redaktion |
 
 Ortung ohne Vorwissen: Um 07:25 stand Weesen bei 34 km/h, **Walenstadt gleichzeitig bei
 120 km/h**. Die Blockade lag damit zwischen diesen beiden Zählstellen – dort steht der

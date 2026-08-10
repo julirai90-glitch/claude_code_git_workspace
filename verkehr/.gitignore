@@ -4,3 +4,5 @@ data/today.json
 data/baseline.json
 # python build artefacts
 _research/__pycache__/
+# interne Auswertungen und Redaktionsunterlagen – gehoeren nicht ins oeffentliche Repo
+_privat/
