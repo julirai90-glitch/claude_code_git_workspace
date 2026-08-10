@@ -296,6 +296,10 @@ const STAU_MINFLOW=120;   // Fz/h – darunter ist das Tempo-Mittel zu duenn bes
 // Kostet fast nichts an Trefferquote (0.55% -> 0.52% im 42-Tage-Test).
 const STAU_MAXSPEED=60, STAU_STEHEND=25;
 const REL_MIN_DAYS=4;
+// Wie alt darf die juengste Messung einer Zaehlstelle hoechstens sein? Faellt eine
+// Stelle aus, soll sie als "keine Daten" erscheinen und nicht mit ihrem letzten Wert
+// weiterlaufen. 15 Min ist grosszuegig – ueblich sind ein bis drei Minuten.
+const MESSUNG_MAXALTER=15*60*1000;
 let FREEFLOW=null;
 
 // Freifluss-Tempo je Richtung einmalig aus der Baseline ableiten.
@@ -324,7 +328,16 @@ function classify(key,cat,idx,flow,speed){
   const fm=b.flow_med&&b.flow_med[idx], sm=b.speed_med&&b.speed_med[idx];
   if(flow==null||(flow<STAU_MINFLOW&&(fm||0)<STAU_MINFLOW)) return null;
   const vFree=speed/ff, vRel=sm?speed/sm:1;
-  const st=(vFree<STAU_FREE&&vRel<STAU_REL&&speed<=STAU_MAXSPEED)?'stau'
+  // Fuer die Stau-Stufe gegen das 75. Perzentil statt gegen den Median vergleichen.
+  // An chronisch verstopften Stellen steckt der Stau sonst schon im Vergleichswert:
+  // Rothenbrunnen/Isla Bella hat sonntags um 16 Uhr einen Median von 36 km/h bei
+  // einem Freifluss von 83 – "Stau" haette dort erst unter 27 km/h gegolten. Getestet
+  // ueber 42 Tage: Stau 0.52% -> 0.62%, zaeh 1.61% -> 1.57%, Passstrassen unveraendert
+  // (Bernina/Baracone bleibt exakt bei 5.95%). Die absolute Schranke von 60 km/h
+  // verhindert, dass die grosszuegigere Referenz fliessenden Verkehr als Stau meldet.
+  const sp75=b.speed_p75&&b.speed_p75[idx];
+  const vStau=sp75?speed/sp75:vRel;
+  const st=(vFree<STAU_FREE&&vStau<STAU_REL&&speed<=STAU_MAXSPEED)?'stau'
           :(vFree<ZAEH_FREE&&vRel<ZAEH_REL)?'zaeh':'frei';
   return {status:st, vFree, vRel, ff, speed};
 }
@@ -341,6 +354,18 @@ function applyLage(latest){
   if(n<REL_MIN_DAYS) return;   // zu wenige Vergleichstage -> Server-Fixwert behalten
   const idx=slotIdx();
   for(const s of latest.sites){
+    // Frische-Gate: Eine Zaehlstelle, die laenger nicht gemeldet hat, wird nicht
+    // bewertet – sonst steht eine alte Messung als aktuelle Lage auf der Seite.
+    // Normal liegen zwischen Messung und Abruf ein bis drei Minuten.
+    const alter=s.ts?(Date.now()-Date.parse(s.ts)):null;
+    s.veraltet=(alter!=null && alter>MESSUNG_MAXALTER);
+    if(s.veraltet){
+      for(const dir of ['positive','negative']){
+        const d=s.dirs[dir];
+        d.status='keine_daten'; d.vFree=null; d.vRel=null; d.since=null;
+      }
+      continue;
+    }
     for(const dir of ['positive','negative']){
       const d=s.dirs[dir], key=s.id+'|'+dir;
       d.vFree=null; d.vRel=null; d.since=null;
