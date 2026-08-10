@@ -167,6 +167,7 @@
   .mtxt{min-width:0}
   .mort{color:var(--ink);font-weight:600}
   .mdet{color:var(--muted);font-size:.92em}
+  .mextra{display:block;color:var(--muted);font-size:.86em;font-style:italic;margin-top:.1em}
   .mnone{color:var(--muted);font-size:.8rem;padding:2px 2px}
 </style>
 </head>
@@ -1073,7 +1074,8 @@ function renderMeldungen(){
   const row=m=>{
     const det=[];
     if(m.ursache) det.push(m.ursache);
-    if(m.laenge_km) det.push(m.laenge_km.toLocaleString('de-CH')+' km');
+    if(m.laenge_km) det.push(m.laenge_km.toLocaleString('de-CH')+' km lang');
+    if(m.zeitverlust_min) det.push('+'+m.zeitverlust_min+' Min Zeitverlust');
     // Voraussichtliches Ende, wenn der Feed eines nennt – bei einer Sperrung ist das
     // die Angabe, nach der zuerst gefragt wird.
     if(m.bis){
@@ -1083,9 +1085,18 @@ function renderMeldungen(){
         +b.toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr');
     }
     const s=seitText(m.seit); if(s) det.push(s);
+    // Alles, was der Feed sonst noch mitliefert, auf eine zweite Zeile. Die
+    // Verkehrsfuehrung erklaert oft, warum unsere Messung "zaeh" zeigt, obwohl es
+    // planmaessig laeuft - Gegenverkehr, Fahrbahnverengung.
+    const extra=[];
+    if(m.verkehrsfuehrung) extra.push(m.verkehrsfuehrung);
+    if(m.fahrbahnbreite_m) extra.push('Fahrbahn noch '+m.fahrbahnbreite_m.toLocaleString('de-CH')+' m breit');
+    if(m.zusatz) extra.push(m.zusatz);
+    if(m.empfehlung) extra.push(m.empfehlung);
     return '<div class="mitem"><span class="mtag '+m.art+'">'+(MELD_LBL[m.art]||m.art)+'</span>'
       +'<span class="mtxt"><span class="mort">'+m.ort+'</span><br>'
-      +'<span class="mdet">'+m.sachlage+(det.length?' · '+det.join(' · '):'')+'</span></span></div>';
+      +'<span class="mdet">'+m.sachlage+(det.length?' · '+det.join(' · '):'')+'</span>'
+      +(extra.length?'<span class="mextra">'+extra.join(' · ')+'</span>':'')+'</span></div>';
   };
   // "letztes Update" ist der Zeitpunkt des letzten Abrufs, nicht der der Meldung –
   // damit man sieht, ob der Kasten noch lebt, auch wenn gerade nichts gemeldet ist.
