@@ -279,17 +279,23 @@ function sanitize(latest){
 //            gefahren wird; ergibt 116–120 km/h auf offener A13, 77–84 km/h in
 //            den Tunnel-/Talstrecken, 51 km/h an der Rampe Chur Nord – deckt
 //            sich mit den signalisierten Hoechstgeschwindigkeiten)
-//   vRel  = Tempo / uebliches Tempo fuer diesen Wochentag + diese Viertelstunde
+//   vRef  = Tempo / 75. Perzentil fuer diesen Wochentag + diese Viertelstunde
+//           (bewusst nicht der Median: an chronisch verstopften Stellen steckt
+//            der Stau schon im Median und macht sich damit selbst unsichtbar.
+//            Isla Bella Ri. Chur hat samstags um 16 Uhr einen Median von 42 km/h
+//            bei 82 km/h Freifluss – gegen diesen Wert gemessen ist Stau nie
+//            auffaellig. Das 75. Perzentil beschreibt dagegen einen guten Tag.)
 // Erst wenn BEIDE tief sind, gilt es als Stau. Die UND-Verknuepfung unterdrueckt
 // Fehlalarme auf Pass- und Nebenstrassen, die ohnehin dauernd langsam sind
 // (Bernina/Baracone im 42-Tage-Test: 33.6% -> 6.0% auffaellige Viertelstunden),
 // erkennt aber die echten Ereignisse weiterhin (Maienfeld Ri. Nord 09.08.:
 // 150 Min Stau, Niederurnen A3 135 Min, San Bernardino 60 Min).
-// Trefferquote ueber alle 42 Tage und Standorte: 0.55% Stau, 1.58% zaeh.
+// Trefferquote ueber 42 Archivtage und 86 Richtungen: 0.69% Stau, 1.61% zaeh.
+// Details zur Umstellung der zaeh-Stufe aufs 75. Perzentil siehe Kachelansicht.
 // Bekannte Grenze: eine ueber Wochen anhaltende Verlangsamung (Dauerbaustelle)
 // wandert in beide Referenzen und wird dadurch mit der Zeit zum "Normalfall".
 const FF_PCTL=0.85;
-const STAU_FREE=0.60, STAU_REL=0.75, ZAEH_FREE=0.80, ZAEH_REL=0.90;
+const STAU_FREE=0.60, STAU_REL=0.75, ZAEH_FREE=0.80, ZAEH_REL=0.85;
 const STAU_MINFLOW=120;   // Fz/h – darunter ist das Tempo-Mittel zu duenn besetzt
 // Absolute Schranke fuer das Wort "Stau": 69 km/h koennen relativ zur 120er-Strecke
 // stark unterdurchschnittlich sein, sind aber kein Stau, sondern dichter Verkehr.
@@ -327,19 +333,15 @@ function classify(key,cat,idx,flow,speed){
   if(speed==null||!ff||!b) return null;
   const fm=b.flow_med&&b.flow_med[idx], sm=b.speed_med&&b.speed_med[idx];
   if(flow==null||(flow<STAU_MINFLOW&&(fm||0)<STAU_MINFLOW)) return null;
-  const vFree=speed/ff, vRel=sm?speed/sm:1;
-  // Fuer die Stau-Stufe gegen das 75. Perzentil statt gegen den Median vergleichen.
-  // An chronisch verstopften Stellen steckt der Stau sonst schon im Vergleichswert:
-  // Rothenbrunnen/Isla Bella hat sonntags um 16 Uhr einen Median von 36 km/h bei
-  // einem Freifluss von 83 – "Stau" haette dort erst unter 27 km/h gegolten. Getestet
-  // ueber 42 Tage: Stau 0.52% -> 0.62%, zaeh 1.61% -> 1.57%, Passstrassen unveraendert
-  // (Bernina/Baracone bleibt exakt bei 5.95%). Die absolute Schranke von 60 km/h
-  // verhindert, dass die grosszuegigere Referenz fliessenden Verkehr als Stau meldet.
+  const vFree=speed/ff;
+  // Beide Stufen gegen das 75. Perzentil. Faellt es aus, ersatzweise der Median.
   const sp75=b.speed_p75&&b.speed_p75[idx];
-  const vStau=sp75?speed/sp75:vRel;
-  const st=(vFree<STAU_FREE&&vStau<STAU_REL&&speed<=STAU_MAXSPEED)?'stau'
-          :(vFree<ZAEH_FREE&&vRel<ZAEH_REL)?'zaeh':'frei';
-  return {status:st, vFree, vRel, ff, speed};
+  const vRef=sp75?speed/sp75:(sm?speed/sm:1);
+  // Die absolute Schranke von 60 km/h verhindert, dass die gegenueber dem Median
+  // grosszuegigere Referenz fliessenden Verkehr als "Stau" meldet.
+  const st=(vFree<STAU_FREE&&vRef<STAU_REL&&speed<=STAU_MAXSPEED)?'stau'
+          :(vFree<ZAEH_FREE&&vRef<ZAEH_REL)?'zaeh':'frei';
+  return {status:st, vFree, vRel:vRef, ff, speed};
 }
 // Wortwahl nach dem absoluten Tempo – "Stau" nur bei Schritttempo.
 function lageWort(st,speed){
