@@ -472,9 +472,16 @@ function applyLage(latest){
     for(const dir of ['positive','negative']){
       const d=s.dirs[dir], key=s.id+'|'+dir;
       d.vFree=null; d.vRel=null; d.since=null;
-      if(d.status==='keine_daten') continue;
-      // Geglaettete Werte (letzte ~15 Min) bevorzugen, sonst der Momentanwert
+      // Geglaettete Werte (letzte ~20 Min) bevorzugen, sonst der Momentanwert
       const sp=recentSpeed(key), fl=flow15(key);
+      // Eine einzelne Richtung kann im laufenden Intervall ausfallen, waehrend die
+      // Zaehlstelle als Ganzes meldet – dann steht der Server-Status auf
+      // "keine_daten", obwohl die Reihe davor Stau zeigt (Isla Bella Ri. Chur,
+      // 15.08.2026: 20 Minuten zwischen 12 und 36 km/h, dann ein leerer Slot).
+      // Die geglaettete Reihe traegt die Lage weiter; erst wenn auch sie leer ist,
+      // bleibt es bei "keine Daten". Das Frische-Gate oben deckt den Fall ab, dass
+      // die ganze Zaehlstelle stumm ist.
+      if(d.status==='keine_daten' && sp==null) continue;
       const c=classify(key,cat,idx, fl!=null?fl:d.flow, sp!=null?sp:d.speed);
       if(!c){
         // Nicht beurteilbar (zu wenig Verkehr fuer ein belastbares Tempo-Mittel).
@@ -553,9 +560,21 @@ function lastHourCount(key){
 // die als aktuell erschienen: Weesen zeigte am 10.08.2026 um 12 Uhr noch das Tempo
 // von vor der Tunnelsperrung, obwohl dort seit Stunden kein Auto mehr fuhr.
 const RECENT_SLOTS=4;   // 4 x 5 Min = 20 Minuten
+// Nicht einfach die letzten vier Eintraege nehmen: die Reihen sind unterschiedlich
+// lang, weil eine stille Richtung nicht zuverlaessig einen Leer-Eintrag bekommt
+// (15.08.2026 gemessen: 178 bis 190 Punkte am selben Tag). slice(-4) wuerde dort
+// stundenalte Werte als "die letzten 20 Minuten" ausgeben. Deshalb ueber die
+// Uhrzeit der Punkte fenstern statt ueber ihre Position.
 function recentPoints(key){
   const ser=window.__today&&window.__today.series&&window.__today.series[key];
-  return ser?ser.slice(-RECENT_SLOTS):null;
+  if(!ser||!ser.length) return null;
+  const jetzt=swissParts(new Date()).h*60;
+  const ab=jetzt-RECENT_SLOTS*5;
+  const w=ser.filter(p=>{
+    const hm=String(p.t).split(':'); const m=(+hm[0])*60+(+hm[1]);
+    return m>=ab && m<=jetzt+5;   // +5: der laufende Slot darf knapp voraus sein
+  });
+  return w.length?w:null;
 }
 function flow15(key){
   const w=recentPoints(key); if(!w) return null;

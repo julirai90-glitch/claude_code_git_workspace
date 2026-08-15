@@ -369,9 +369,11 @@ function applyLage(latest){
     for(const dir of ['positive','negative']){
       const d=s.dirs[dir], key=s.id+'|'+dir;
       d.vFree=null; d.vRel=null; d.since=null;
-      if(d.status==='keine_daten') continue;
-      // Geglaettete Werte (letzte ~15 Min) bevorzugen, sonst der Momentanwert
+      // Geglaettete Werte (letzte ~20 Min) bevorzugen, sonst der Momentanwert
       const sp=recentSpeed(key), fl=flow15(key);
+      // Faellt nur eine Richtung im laufenden Intervall aus, waehrend die Zaehlstelle
+      // meldet, traegt die geglaettete Reihe die Lage weiter (siehe Kachelansicht).
+      if(d.status==='keine_daten' && sp==null) continue;
       const c=classify(key,cat,idx, fl!=null?fl:d.flow, sp!=null?sp:d.speed);
       if(!c){
         // Nicht beurteilbar (zu wenig Verkehr fuer ein belastbares Tempo-Mittel).
@@ -456,9 +458,19 @@ function lastHourCount(key){
 // Werte, egal wie alt. Bei einer gesperrten Strecke waren das Werte von vor Stunden,
 // die als aktuell erschienen (Weesen am 10.08.2026 nach der Tunnelsperrung).
 const RECENT_SLOTS=4;   // 4 x 5 Min = 20 Minuten
+// Ueber die Uhrzeit fenstern, nicht ueber die Position: die Reihen sind
+// unterschiedlich lang, eine stille Richtung bekommt nicht zuverlaessig einen
+// Leer-Eintrag. slice(-4) haette dort stundenalte Werte geliefert.
 function recentPoints(key){
   const ser=window.__today&&window.__today.series&&window.__today.series[key];
-  return ser?ser.slice(-RECENT_SLOTS):null;
+  if(!ser||!ser.length) return null;
+  const jetzt=swissParts(new Date()).h*60;
+  const ab=jetzt-RECENT_SLOTS*5;
+  const w=ser.filter(p=>{
+    const hm=String(p.t).split(':'); const m=(+hm[0])*60+(+hm[1]);
+    return m>=ab && m<=jetzt+5;
+  });
+  return w.length?w:null;
 }
 function flow15(key){
   const w=recentPoints(key); if(!w) return null;
