@@ -78,6 +78,7 @@
   .mtag.sperrung{background:#fdf1f0;color:var(--stau)}
   .mtag.stau{background:#fff5ec;color:#b4560f}
   .mtag.stoerung{background:#eef2f6;color:var(--muted)}
+  .mtag.geplant{background:#eef4fa;color:#4a6d8c}
   .mtxt{min-width:0}
   .mort{color:var(--ink);font-weight:600}
   .mdet{color:var(--muted);font-size:.92em}
@@ -567,17 +568,44 @@ function meldSeit(iso){
   if(mins<90) return 'seit '+Math.max(5,Math.round(mins/5)*5)+' Min';
   return 'seit '+new Date(t).toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr';
 }
+// Wann beginnt eine Sperrung? Bevorzugt das Feld aus dem Parser; fehlt es (weil der
+// n8n-Node noch den alten Stand hat), aus dem Wortlaut der Dauer. Dort steht der Beginn
+// als Datum unmittelbar VOR einem "bis" – "31.08.2026 22:00 bis 01.09.2026 05:00". Das
+// haeufigere "voraussichtlich bis 10.08.2026 19:00" enthaelt kein solches Datum und
+// wird dadurch korrekt nicht als Beginn gelesen.
+function beginnZeit(m){
+  let b = m.beginnt ? Date.parse(m.beginnt) : null;
+  if(!b && m.dauer){
+    const x = m.dauer.match(/(\d{2})\.(\d{2})\.(\d{4})[ ,]+(\d{2}):(\d{2})\s+bis\s/);
+    if(x){ const ms = Date.parse(x[3]+'-'+x[2]+'-'+x[1]+'T'+x[4]+':'+x[5]+':00+02:00'); if(ms) b = ms; }
+  }
+  if(!b || b <= Date.now()) return null;
+  // Laeuft gerade eine Periode, kommt ihr Ende vor dem naechsten Beginn – dann ist die
+  // Strecke jetzt gesperrt und nicht bloss angekuendigt.
+  const bis = m.bis ? Date.parse(m.bis) : null;
+  if(bis && b > bis) return null;
+  return b;
+}
 function renderMeldungen(){
   const box=d3.select('#meldungen');
   if(!MELD||!MELD.meldungen){ box.html(''); return; }
-  const items=MELD.meldungen;
+  // Was noch nicht begonnen hat, gehoert nicht an die Spitze der aktuellen Lage.
+  const kommt=m=>beginnZeit(m)!=null?1:0;
+  const items=MELD.meldungen.slice().sort((a,b)=>kommt(a)-kommt(b));
   const row=m=>{
+    const beginn=beginnZeit(m), geplant=beginn!=null;
     const det=[];
     if(m.ursache) det.push(m.ursache);
     if(m.laenge_km) det.push(m.laenge_km.toLocaleString('de-CH')+' km lang');
     if(m.zeitverlust_min) det.push('+'+m.zeitverlust_min+' Min Zeitverlust');
     // Voraussichtliches Ende, wenn der Feed eines nennt – bei einer Sperrung ist das
     // die Angabe, nach der zuerst gefragt wird.
+    // Bei einer angekuendigten Sperrung zuerst der Beginn, dann das Ende.
+    if(geplant){
+      const a=new Date(beginn);
+      det.push('ab '+a.toLocaleDateString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit'})+' '
+        +a.toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr');
+    }
     if(m.bis){
       const b=new Date(m.bis);
       const heute=new Date().toDateString()===b.toDateString();
@@ -590,16 +618,22 @@ function renderMeldungen(){
       det.push('vorauss. bis '+(heute?'':b.toLocaleDateString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit'})+' ')
         +b.toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr'+st);
     }
-    const s=meldSeit(m.seit); if(s) det.push(s);
+    // Angekuendigte Sperrungen tragen kein "seit" – sie haben noch gar nicht begonnen.
+    if(!geplant){ const s=meldSeit(m.seit); if(s) det.push(s); }
     // Alles, was der Feed sonst noch mitliefert, auf eine zweite Zeile. Die
     // Verkehrsfuehrung erklaert oft, warum unsere Messung "zaeh" zeigt, obwohl es
     // planmaessig laeuft - Gegenverkehr, Fahrbahnverengung.
     const extra=[];
+    // Der Wortlaut der Dauer nur dort, wo er mehr sagt als die Zeile darueber:
+    // bei angekuendigten Sperrungen ("nachts ...") und wenn der Feed gar kein
+    // strukturiertes Ende liefert. Sonst stuende zweimal dasselbe da.
+    if(m.dauer && (geplant || !m.bis)) extra.push(m.dauer);
     if(m.verkehrsfuehrung) extra.push(m.verkehrsfuehrung);
     if(m.fahrbahnbreite_m) extra.push('Fahrbahn noch '+m.fahrbahnbreite_m.toLocaleString('de-CH')+' m breit');
     if(m.zusatz) extra.push(m.zusatz);
     if(m.empfehlung) extra.push(m.empfehlung);
-    return '<div class="mitem"><span class="mtag '+m.art+'">'+(MELD_LBL[m.art]||m.art)+'</span>'
+    return '<div class="mitem"><span class="mtag '+(geplant?'geplant':m.art)+'">'
+      +(geplant?'Angekündigt':(MELD_LBL[m.art]||m.art))+'</span>'
       +'<span class="mtxt"><span class="mort">'+m.ort+'</span><br>'
       +'<span class="mdet">'+m.sachlage+(det.length?' · '+det.join(' · '):'')+'</span>'
       +(extra.length?'<span class="mextra">'+extra.join(' · ')+'</span>':'')+'</span></div>';

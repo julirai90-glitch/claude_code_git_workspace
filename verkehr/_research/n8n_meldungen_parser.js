@@ -148,6 +148,29 @@ for (const rec of recs) {
       if (ms && ms > NOW) bis = ms;
     }
   }
+  // Angekuendigt oder laufend? Eine Nachtbaustelle steht bis zu zwei Wochen im Voraus
+  // im Feed (Sufers-Andeer, erfasst am 18.08.2026 fuer die Nacht vom 31.08. auf den
+  // 01.09.). Als "seit gestern gesperrt" gelesen ist das schlicht falsch - die Strecke
+  // ist offen. Primaer die strukturierte Gueltigkeitsangabe, sonst der Klartext: dort
+  // steht der Beginn als Datum unmittelbar VOR einem "bis". Das haeufigere Muster
+  // "voraussichtlich bis 10.08.2026 19:00" hat kein solches Datum und wird dadurch
+  // korrekt nicht als Beginn gelesen.
+  let beginnt = null;
+  const starts = [...rec.matchAll(/<dx223:startOfPeriod[^>]*>([^<]+)</g)]
+    .map(x => Date.parse(x[1])).filter(ts => ts && ts > NOW).sort((a,b) => a-b);
+  if (starts.length) beginnt = starts[0];
+  if (!beginnt) {
+    const bm = (f.dauer || '').match(/(\d{2})\.(\d{2})\.(\d{4})[ ,]+(\d{2}):(\d{2})\s+bis\s/);
+    if (bm) {
+      const ms = Date.parse(`${bm[3]}-${bm[2]}-${bm[1]}T${bm[4]}:${bm[5]}:00+02:00`);
+      if (ms && ms > NOW) beginnt = ms;
+    }
+  }
+  // Laeuft gerade eine Periode, kommt ihr Ende vor dem naechsten Beginn. Nur wenn der
+  // Beginn zuerst kommt, stehen wir wirklich VOR der Sperrung. Das haelt eine mehrere
+  // Naechte dauernde Baustelle waehrend der laufenden Nacht als "aktuell" im Kasten.
+  if (bis && beginnt && beginnt > bis) beginnt = null;
+
   out.push({
     ort: ort,
     sachlage: (f.sachlage || '').slice(0,90),
@@ -161,6 +184,7 @@ for (const rec of recs) {
     fahrbahnbreite_m: f._breite_m,
     tmc: g('specificLocation'),
     seit: st ? new Date(st).toISOString() : null,
+    beginnt: beginnt ? new Date(beginnt).toISOString() : null,
     bis: bis ? new Date(bis).toISOString() : null,
     aktualisiert: new Date(vt).toISOString(),
     art: SPERRUNG.test(t) ? 'sperrung' : (STAU.test(t) ? 'stau' : 'stoerung'),
