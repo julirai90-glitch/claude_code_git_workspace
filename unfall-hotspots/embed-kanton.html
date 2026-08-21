@@ -743,7 +743,51 @@ svg.leaflet-image-layer.leaflet-interactive path {
   #legend { font-size:12px; }
   #legend div { display:flex; align-items:center; gap:6px; margin:2px 0; }
   @media (max-width: 640px) {
-    #panel { width: calc(100vw - 24px); }
+    /* stack instead of overlay — the panel must not cover the map */
+    html, body { overflow-x:hidden; }
+    /* 100vw includes the scrollbar and pushed content off-screen */
+    #app { height:auto; min-height:100%; width:100%; }
+    * { box-sizing:border-box; }
+    header { height:44px; min-height:44px; }
+    #map {
+      position:relative; top:0; left:0; right:0;
+      height:280px; width:100%;
+    }
+    #panel {
+      position:static; width:auto; max-height:none; overflow:visible;
+      margin:8px 10px 10px; padding:12px 13px; border-radius:8px;
+      box-shadow:none;
+    }
+    #panel .row { margin-bottom:10px; }
+    #panel h2 { font-size:11.5px; margin-bottom:5px; }
+
+    /* flex items refuse to shrink below their content unless min-width is reset —
+       that is what pushed the buttons and stat boxes past the screen edge */
+    #panel .viewToggle .btn, #panel .stat { min-width:0; }
+    #panel .btn { white-space:normal; padding:6px 8px; font-size:12.5px; }
+
+    /* categories in two columns instead of four rows */
+    #panel .catOption {
+      display:inline-flex; width:48%; font-size:12px; vertical-align:top;
+      gap:6px; padding:3px 0; min-width:0;
+    }
+    #panel .catOption input { flex:none; }
+
+    /* tighter stat boxes, drop the note under them */
+    #panel .stat { padding:6px 8px; }
+    #panel .stat .num { font-size:18px; }
+    #panel .stat .lbl { font-size:9.5px; }
+    #panel .statNote { display:none; }
+
+    /* legend on one line, drop its footnote */
+    #panel #legend { margin-bottom:0; }
+    #panel #legend > div { display:inline-block; margin-right:11px; font-size:11px; }
+    #panel #legend h2 { margin-bottom:3px; }
+    /* must outrank the rule above, which also matches this div */
+    #panel #legend > div.legendNote { display:none; }
+
+    .credit { display:none; }
+    header { padding-left:10px; padding-right:10px; }
   }
 </style>
 </head>
@@ -780,7 +824,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div class="stat"><div class="num" id="statClusters">-</div><div class="lbl">Hotspot-Cluster</div></div>
       <div class="stat"><div class="num" id="statAccidents">-</div><div class="lbl">Unf&auml;lle im Zeitraum</div></div>
     </div>
-    <div class="row" style="margin-top:-8px; font-size:11px; color:var(--muted);">Werte gelten f&uuml;r den ganzen Kanton Graub&uuml;nden, unabh&auml;ngig von der Kartenansicht.</div>
+    <div class="row statNote" style="margin-top:-8px; font-size:11px; color:var(--muted);">Werte gelten f&uuml;r den ganzen Kanton Graub&uuml;nden, unabh&auml;ngig von der Kartenansicht.</div>
 
     <div class="row">
       <button class="btn toggleBtn" id="toggleIndividual" type="button" aria-pressed="false">Einzelunf&auml;lle anzeigen</button>
@@ -791,7 +835,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div><span class="legendDot" style="background:var(--rot)"></span> Get&ouml;tete (Gewicht 2)</div>
       <div><span class="legendDot" style="background:var(--orange)"></span> Schwerverletzte (Gewicht 2)</div>
       <div><span class="legendDot" style="background:var(--gelb)"></span> Leichtverletzte (Gewicht 1)</div>
-      <div style="margin-top:6px; font-size:11px; color:var(--muted);">Cluster-Gr&ouml;sse &amp; Farbe &#8776; Hotspot-Score</div>
+      <div class="legendNote" style="margin-top:6px; font-size:11px; color:var(--muted);">Cluster-Gr&ouml;sse &amp; Farbe &#8776; Hotspot-Score</div>
     </div>
   </div>
 
