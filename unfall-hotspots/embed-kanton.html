@@ -927,6 +927,8 @@ function render() {
 }
 
 let showIndividual = false;
+let manualOverride = false;          // set once the reader uses the button
+const REVEAL_ZOOM = 12;              // from here on single accidents are legible
 
 function filteredAccidents(wKey, cat) {
   const [y1, y3] = wKey.split('-').map(Number);
@@ -949,9 +951,15 @@ function renderPoints(wKey, cat) {
   btn.classList.toggle('active', showIndividual);
   btn.setAttribute('aria-pressed', String(showIndividual));
 
-  if (!showIndividual) return;
+  if (!showIndividual) {
+    map.removeLayer(pointLayer);
+    return;
+  }
+  // only draw what is on screen; the full set is ~1400 markers
+  const view = map.getBounds().pad(0.2);
   list.forEach(a => {
     const [lat, lon, , sev] = a;
+    if (!view.contains([lat, lon])) return;
     L.circleMarker([lat, lon], {
       radius: 3, color: sevColor[sev], weight: 0, fillColor: sevColor[sev], fillOpacity: 0.75
     }).addTo(pointLayer);
@@ -963,7 +971,24 @@ document.getElementById('windowSlider').addEventListener('input', render);
 document.querySelectorAll('input[name="cat"]').forEach(el => el.addEventListener('change', render));
 document.getElementById('toggleIndividual').addEventListener('click', () => {
   showIndividual = !showIndividual;
+  manualOverride = true;      // the reader decided; stop switching automatically
   render();
+});
+
+/* Reveal single accidents on zoom-in, hide them again on zoom-out — unless the
+   reader has taken over via the button. Panning only redraws the viewport. */
+map.on('zoomend', () => {
+  if (manualOverride) { renderPoints(currentWindowKey(), currentCategory()); return; }
+  const should = map.getZoom() >= REVEAL_ZOOM;
+  if (should !== showIndividual) {
+    showIndividual = should;
+    render();
+  } else if (showIndividual) {
+    renderPoints(currentWindowKey(), currentCategory());
+  }
+});
+map.on('moveend', () => {
+  if (showIndividual) renderPoints(currentWindowKey(), currentCategory());
 });
 
 document.getElementById('viewChur').addEventListener('click', () => {
