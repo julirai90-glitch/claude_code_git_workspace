@@ -49,8 +49,21 @@ svg{display:block; max-width:100%; height:auto}
 <script>
 const D = {"cantons": [{"kt": "GR", "frontal": 575, "n": 4092, "pct": 14.1}, {"kt": "VS", "frontal": 298, "n": 4001, "pct": 7.4}, {"kt": "AR", "frontal": 56, "n": 964, "pct": 5.8}, {"kt": "JU", "frontal": 71, "n": 1287, "pct": 5.5}, {"kt": "SZ", "frontal": 150, "n": 2761, "pct": 5.4}, {"kt": "TI", "frontal": 322, "n": 6032, "pct": 5.3}, {"kt": "TG", "frontal": 249, "n": 4888, "pct": 5.1}, {"kt": "AG", "frontal": 423, "n": 8694, "pct": 4.9}, {"kt": "SG", "frontal": 385, "n": 7840, "pct": 4.9}, {"kt": "SO", "frontal": 227, "n": 4971, "pct": 4.6}, {"kt": "LU", "frontal": 336, "n": 7398, "pct": 4.5}, {"kt": "BE", "frontal": 969, "n": 21914, "pct": 4.4}, {"kt": "SH", "frontal": 50, "n": 1171, "pct": 4.3}, {"kt": "NE", "frontal": 123, "n": 2920, "pct": 4.2}, {"kt": "OW", "frontal": 24, "n": 622, "pct": 3.9}, {"kt": "GL", "frontal": 26, "n": 687, "pct": 3.8}, {"kt": "NW", "frontal": 25, "n": 731, "pct": 3.4}, {"kt": "ZG", "frontal": 64, "n": 1868, "pct": 3.4}, {"kt": "BL", "frontal": 95, "n": 3353, "pct": 2.8}, {"kt": "FR", "frontal": 147, "n": 5249, "pct": 2.8}, {"kt": "GE", "frontal": 277, "n": 9758, "pct": 2.8}, {"kt": "UR", "frontal": 27, "n": 1000, "pct": 2.7}, {"kt": "VD", "frontal": 302, "n": 12162, "pct": 2.5}, {"kt": "BS", "frontal": 19, "n": 1021, "pct": 1.9}, {"kt": "ZH", "frontal": 157, "n": 17065, "pct": 0.9}], "ch": 4.1};
 const tip = document.getElementById('tip');
-function showTip(e, html){ tip.innerHTML = html; tip.style.opacity='1';
-  tip.style.left = e.clientX+'px'; tip.style.top = (e.clientY-12)+'px'; }
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  /* keep the tooltip inside the viewport: it is centred on the pointer, so at
+     the edges half of it would otherwise be cut off */
+  const half = tip.offsetWidth / 2, vw = window.innerWidth;
+  const x = Math.max(half + 6, Math.min(vw - half - 6, e.clientX));
+  const y = Math.max(tip.offsetHeight + 8, e.clientY - 12);
+  tip.style.left = x + 'px';
+  tip.style.top = y + 'px';
+}
+/* tapping anywhere but a bar closes the tooltip — phones have no mouseleave */
+document.addEventListener('pointerdown', function(e){
+  if (!e.target.classList || !e.target.classList.contains('hit')) hideTip();
+}, true);
 function hideTip(){ tip.style.opacity='0'; }
 const NS='http://www.w3.org/2000/svg';
 function el(n,a){ const x=document.createElementNS(NS,n); for(const k in (a||{})) x.setAttribute(k,a[k]); return x; }
@@ -92,9 +105,11 @@ function draw(){
     const w = iw*r.pct/max;
     const p = el('path',{d:barPath(L,y,w,BAR,4),
       fill: gr?'var(--s2)':'var(--mut)', class:'hit'});
-    p.addEventListener('mousemove', function(e){
+    p.addEventListener('pointerdown', __tip_p);
+    p.addEventListener('mousemove', __tip_p);
+    function __tip_p(e){
       showTip(e,'<b>'+r.kt+'</b>: '+r.frontal+' von '+r.n+' Unf\u00e4llen<br><b>'+de(r.pct)+' %</b> Frontalkollisionen');
-    });
+    }
     p.addEventListener('mouseleave', hideTip);
     svg.appendChild(p);
     const vt = el('text',{x:L+w+6, y:y+BAR-2, class:'val'+(gr?' val-hi':'')});

@@ -58,8 +58,21 @@ const S = [{"m": 1, "all": 486, "moto": 16}, {"m": 2, "all": 432, "moto": 15}, {
 const MN = ['Jan','Feb','M\u00e4r','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const MONTHS_FULL = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const tip = document.getElementById('tip');
-function showTip(e,h){ tip.innerHTML=h; tip.style.opacity='1';
-  tip.style.left=e.clientX+'px'; tip.style.top=(e.clientY-12)+'px'; }
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  /* keep the tooltip inside the viewport: it is centred on the pointer, so at
+     the edges half of it would otherwise be cut off */
+  const half = tip.offsetWidth / 2, vw = window.innerWidth;
+  const x = Math.max(half + 6, Math.min(vw - half - 6, e.clientX));
+  const y = Math.max(tip.offsetHeight + 8, e.clientY - 12);
+  tip.style.left = x + 'px';
+  tip.style.top = y + 'px';
+}
+/* tapping anywhere but a bar closes the tooltip — phones have no mouseleave */
+document.addEventListener('pointerdown', function(e){
+  if (!e.target.classList || !e.target.classList.contains('hit')) hideTip();
+}, true);
 function hideTip(){ tip.style.opacity='0'; }
 const NS='http://www.w3.org/2000/svg';
 function el(n,a){ const x=document.createElementNS(NS,n); for(const k in (a||{})) x.setAttribute(k,a[k]); return x; }
@@ -107,7 +120,9 @@ function draw(){
     const t=el('text',{x:xAt(i)+bw/2, y:H-14, class:'tick','text-anchor':'middle'});
     t.textContent=MN[i]; svg.appendChild(t);
     const hit=el('rect',{x:xAt(i)-2, y:T, width:bw+4, height:ih, fill:'transparent', class:'hit'});
-    hit.addEventListener('mousemove', function(e){
+    hit.addEventListener('pointerdown', __tip_hit);
+    hit.addEventListener('mousemove', __tip_hit);
+    function __tip_hit(e){
       showTip(e,
         '<span class="t-m">'+MONTHS_FULL[i]+'</span>' +
         '<table class="t-tbl">' +
@@ -115,7 +130,7 @@ function draw(){
           '<tr><td><i style="background:var(--s1)"></i>übrige Unfälle</td><td>'+rest+'</td></tr>' +
           '<tr class="t-sum"><td>Total</td><td>'+d.all+'</td></tr>' +
         '</table>');
-    });
+    }
     hit.addEventListener('mouseleave', hideTip);
     svg.appendChild(hit);
   });
