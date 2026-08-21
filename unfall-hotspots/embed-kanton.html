@@ -742,6 +742,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .credit { position:absolute; bottom:6px; right:10px; z-index:900; font-size:10.5px; color:var(--muted); background:rgba(255,255,255,0.75); padding:2px 6px; border-radius:4px; }
   #legend { font-size:12px; }
   #legend div { display:flex; align-items:center; gap:6px; margin:2px 0; }
+  @media print {
+    /* browsers drop background colours when printing: the active button would be
+       white-on-white and the legend dots would vanish entirely */
+    .btn.active, .legendDot, .stat, #panel, .toggleBtn.active {
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+  }
   @media (max-width: 640px) {
     /* stack instead of overlay — the panel must not cover the map */
     html, body { overflow-x:hidden; }
