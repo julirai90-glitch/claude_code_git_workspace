@@ -202,9 +202,9 @@
   <p class="sub">Kachel-Ansicht je Zählstelle auf den <b>Nationalstrassen des Bundes</b> (v.a. A13). Die <b>Verkehrslage</b> (Punkt) entsteht aus dem Tempo, die <b>Verkehrsmenge</b> (Balken) aus den gezählten Fahrzeugen – im Stau sinkt die Menge, weil weniger durchkommen. <b>Gemessen wird nur auf Nationalstrassen</b> – für Kantonsstrassen und Pässe gibt es keine Zählwerte, dort stehen unten die Zustandsmeldungen des Kantons. Tippen für den Tagesverlauf.</p>
   <p class="stand" id="stand">lädt …</p>
   <div class="legend">
-    <span><i class="dot" style="background:var(--frei)"></i>fliesst</span>
-    <span><i class="dot" style="background:var(--zaeh)"></i>zähfliessend</span>
-    <span><i class="dot" style="background:var(--stau)"></i>stockend/Stau</span>
+    <span><i class="dot" style="background:var(--frei)"></i>wie üblich</span>
+    <span><i class="dot" style="background:var(--zaeh)"></i>langsamer</span>
+    <span><i class="dot" style="background:var(--stau)"></i>deutlich langsamer</span>
     <span><i class="dot" style="background:var(--nodata)"></i>keine Daten</span>
     <span style="margin-left:.4em">· Balken =</span>
     <span><i class="bartag" style="background:var(--frei)"></i>wenig</span>
@@ -284,11 +284,13 @@ Promise.all([
     +'85. Perzentil der Vergleichswerte; es ergibt 116–120 km/h auf offener A13, 77–84 km/h in den Tunnel- und '
     +'Talstrecken und 51 km/h an der Rampe Chur Nord, deckt sich also mit den signalisierten Höchstgeschwindigkeiten) '
     +'und mit dem <b>üblichen Tempo für diesen Wochentag und diese Viertelstunde</b>. Erst wenn beides deutlich '
-    +'unterschritten wird, meldet die Kachel «zähfliessend» (unter 80 % bzw. 90 %) oder – zusätzlich unter 60 km/h – '
-    +'«stockender Verkehr», unter 25 km/h «Stau». Für die Stau-Stufe dient dabei nicht der Mittelwert der '
-    +'Vergleichstage als Referenz, sondern deren oberes Viertel: An Stellen, die regelmässig verstopfen, steckt der '
-    +'Stau sonst schon im «üblichen» Wert und bliebe unerkannt. Über die letzten 42 Tage und alle Zählstellen trifft '
-    +'das auf 0,6 % (Stau/stockend) bzw. 1,6 % (zäh) der Viertelstunden zu.<br>'
+    +'unterschritten wird, meldet die Kachel «langsamer als üblich» (unter 80 % bzw. 90 %) oder – zusätzlich unter '
+    +'60 km/h – «deutlich langsamer als üblich», unter 25 km/h «Schritttempo». Für die stärkste Stufe dient dabei '
+    +'nicht der Mittelwert der Vergleichstage als Referenz, sondern deren oberes Viertel: An Stellen, die '
+    +'regelmässig verstopfen, steckt die Verlangsamung sonst schon im «üblichen» Wert und bliebe unerkannt. '
+    +'Angezeigt wird daneben der Median – was hier zu dieser Zeit tatsächlich üblich ist. Über die letzten 42 Tage '
+    +'und alle Zählstellen trifft das auf 0,6 % bzw. 1,6 % der Viertelstunden zu.<br>'
+    +'<b>Warum hier nie «Stau» steht:</b> Die Zählstellen messen Tempo und Menge; ob irgendwo tatsächlich eine Kolonne steht, sehen sie nicht. Sie sagen deshalb nur, was sie belegen können – dass gerade langsamer gefahren wird als sonst zu dieser Zeit. Wörter wie «Stau», «stockend» oder «gesperrt» stammen ausschliesslich aus den amtlichen Meldungen darunter: Die beobachten, wir messen. <br>'
     +'<b>Grenzen – bitte mitlesen:</b> Gemessen wird an einem <i>Querschnitt</i>, nicht auf einer Strecke. '
     +'Eine Angabe wie «45 Minuten Stau» heisst: So lange stand der Verkehr <i>an dieser Zählstelle</i>. Weder '
     +'die Länge des Staus noch die Wartezeit einer einzelnen Fahrerin lässt sich daraus ableiten, und was '
@@ -480,12 +482,24 @@ function classify(key,cat,idx,flow,speed){
   // grosszuegigere Referenz fliessenden Verkehr als "Stau" meldet.
   const st=(vFree<STAU_FREE&&vRef<STAU_REL&&speed<=STAU_MAXSPEED)?'stau'
           :(vFree<ZAEH_FREE&&vRef<ZAEH_REL)?'zaeh':'frei';
-  return {status:st, vFree, vRel:vRef, ff, speed};
+  // Fuer die Anzeige der MEDIAN dieses Slots, nicht das 75. Perzentil, gegen das
+  // klassifiziert wird. Beides ist Absicht: Das 75. Perzentil ist bewusst
+  // grosszuegig gewaehlt, damit chronisch verstopfte Stellen ueberhaupt auffallen
+  // koennen - als Satz gelesen ("sonst 53") wuerde es aber einen guten Tag zum
+  // Normalfall erklaeren. Was hier ueblich ist, ist der Median. Wer das je
+  // zusammenfuehrt, macht entweder die Erkennung stumpf oder die Anzeige unehrlich.
+  return {status:st, vFree, vRel:vRef, ff, speed, ref: sm||sp75||null};
 }
-// Wortwahl nach dem absoluten Tempo – "Stau" nur bei Schritttempo.
+// Wortwahl. Gemessen ist ein Vergleich, kein Zustand: Die Zaehlstellen wissen, dass
+// hier gerade langsamer gefahren wird als sonst um diese Zeit - ob eine Kolonne steht,
+// sehen sie nicht. Ein Wort wie "Stockender Verkehr" behauptet aber genau das und nimmt
+// dem Leser die Bewertung ab. Darum sagen sie es komparativ. "Stau" und "gesperrt"
+// bleiben den amtlichen Kaesten darunter vorbehalten (ASTRA, Tiefbauamt): Die
+// beobachten, wir messen - dieselbe Trennung, die das Dashboard ohnehin schon macht.
+// Einzige Ausnahme nach unten ist "Schritttempo" - das ist der gemessene Wert selbst.
 function lageWort(st,speed){
-  if(st!=='stau') return 'Zähfliessend';
-  return (speed!=null&&speed<STAU_STEHEND)?'Stau – Schritttempo':'Stockender Verkehr';
+  if(st!=='stau') return 'Langsamer als üblich';
+  return (speed!=null&&speed<STAU_STEHEND)?'Schritttempo':'Deutlich langsamer als üblich';
 }
 
 function applyLage(latest){
@@ -528,7 +542,7 @@ function applyLage(latest){
         if(d.status==='stau'||d.status==='zaeh') d.status='frei';
         continue;
       }
-      d.status=c.status; d.vFree=c.vFree; d.vRel=c.vRel; d.freeflow=c.ff;
+      d.status=c.status; d.vFree=c.vFree; d.vRel=c.vRel; d.freeflow=c.ff; d.ref=c.ref;
       if(c.status!=='frei') d.since=lageSince(key,cat);
     }
   }
@@ -1133,16 +1147,16 @@ function renderStauBanner(){
     const sp=recentSpeed(it.s.id+'|'+it.dir);
     const det=[];
     if(sp!=null) det.push(Math.round(sp)+' km/h');
-    if(it.d.vFree!=null) det.push('statt '+Math.round(it.d.freeflow)+' km/h');
+    if(it.d.ref!=null) det.push('sonst '+Math.round(it.d.ref));
     const since=sinceText(it.d.since);
     if(since) det.push(since);
     return '<div class="sbrow" data-id="'+it.s.id+'"><i class="dot" style="background:'+C[it.d.status]+'"></i>'
       +'<span><b>'+it.s.place+'</b> <span class="sbdir">'+it.d.label+'</span>'
       +(det.length?' <span class="sbdir">· '+det.join(' · ')+'</span>':'')+'</span></div>';};
   const head=nStau
-    ? '&#9888; Stau oder stockender Verkehr an '+nStau+' Stelle'+(nStau===1?'':'n')
-      +(items.length>nStau?', zähfliessend an '+(items.length-nStau):'')
-    : 'Zähfliessender Verkehr an '+items.length+' Stelle'+(items.length===1?'':'n');
+    ? '&#9888; Deutlich langsamer als üblich an '+nStau+' Stelle'+(nStau===1?'':'n')
+      +(items.length>nStau?', langsamer an '+(items.length-nStau):'')
+    : 'Langsamer als üblich an '+items.length+' Stelle'+(items.length===1?'':'n');
   box.html('<div class="stauband warn"><div class="sbhead">'+head+'</div>'
     +shown.map(row).join('')
     +(rest>0?'<div class="sbmore">+'+rest+' weitere</div>':'')
