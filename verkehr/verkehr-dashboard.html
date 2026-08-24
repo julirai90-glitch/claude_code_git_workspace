@@ -678,7 +678,6 @@ const TBA_API = "https://n8n.julianreich.ch/webhook/verkehr-strassen-gr";
 const TBA_LBL = {gesperrt:"Gesperrt", wintersperre:"Wintersperre", behinderung:"Behinderung",
                  schneeketten:"Schneeketten", schnee:"Schnee", hinweis:"Hinweis",
                  vereina:"Vereina", unbekannt:"Meldung"};
-const TBA_MAX = 8;              // der Rest auf Klick - im Sommer stehen ~16 Meldungen an
 let TBA = null, TBA_ALLE = false;
 // Die Texte kommen als Wortlaut des Amtes ins Dashboard, inklusive Sonderzeichen.
 // Anders als beim ASTRA-Kasten wird hier darum escaped, statt dem Feed zu vertrauen.
@@ -722,24 +721,32 @@ function renderTba(){
   const upd=TBA.generated
     ? new Date(TBA.generated).toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})
     : null;
-  // Der Autoverlad Vereina steht immer im Feed und wird gezielt nachgeschaut -
-  // auch wenn er "offen, keine Wartezeit" meldet und damit nach Schwere ganz
-  // unten landet. Darum bleibt er sichtbar, statt hinter der Klappe zu
-  // verschwinden. Eine Reihung der Vereina-Zustaende untereinander waere raten:
-  // welche Icon-Namen es fuer Wartezeiten gibt, laesst sich im Sommer nicht
-  // pruefen (belegt ist nur vereina_normal, _wartezeit_00 und _gesperrt).
-  const rest = items.slice(TBA_MAX);
-  const zeigen = TBA_ALLE ? items
-    : items.slice(0,TBA_MAX).concat(rest.filter(m => m.art === 'vereina'));
-  const versteckt = items.length - zeigen.length;
+  // Fix sichtbar ist, was die Fahrt jetzt einschraenkt: Sperrungen, Wintersperren,
+  // Behinderungen, Schnee und Kettenpflicht - dazu der Autoverlad Vereina, der
+  // gezielt nachgeschaut wird, auch wenn er "offen, keine Wartezeit" meldet.
+  // Hinter die Klappe kommen nur die reinen Hinweise: das sind fast durchwegs
+  // Bauarbeiten, die Wochen im Voraus angekuendigt werden. Stuenden sie oben,
+  // schoebe sich die Ankuendigung vor die tatsaechliche Sperrung.
+  // Bewusst ohne Stueckzahl-Deckel: Sind im Winter zwanzig Strassen gesperrt,
+  // ist genau das die Lage und keine Liste, die man erst aufklappen muss.
+  // Unklassifizierte Meldungen (art "unbekannt", falls das TBA ein neues Icon
+  // einfuehrt) bleiben oben - lieber einmal zu viel zeigen als etwas verstecken,
+  // das wir nicht einordnen konnten.
+  const fix = items.filter(m => m.art !== 'hinweis');
+  const versteckt = items.length - fix.length;
+  const zeigen = TBA_ALLE ? items : fix;
   box.html('<div class="mbox"><div class="mhead">Kantonsstrassen und Pässe '
     +'<small>Quelle: Tiefbauamt Graubünden (strassen.gr.ch)'
     +(upd?' · letztes Update: '+upd+' Uhr':'')+'</small></div>'
     +(items.length
-      ? zeigen.map(tbaRow).join('')
-        +((TBA_ALLE && items.length>TBA_MAX) || versteckt>0
+      ? (zeigen.length
+          ? zeigen.map(tbaRow).join('')
+          : '<div class="mnone">Zurzeit keine Sperrungen oder Behinderungen gemeldet</div>')
+        +(versteckt>0
           ? '<div class="sbmore klick" id="tba-more">'
-            +(TBA_ALLE?'weniger anzeigen':'+'+versteckt+' weitere anzeigen')+'</div>'
+            +(TBA_ALLE
+                ? 'Hinweise ausblenden'
+                : '+'+versteckt+(versteckt===1?' Hinweis':' Hinweise')+' anzeigen')+'</div>'
           : '')
       : '<div class="mnone">Zurzeit keine Meldungen des Kantons</div>')
     +'</div>');
