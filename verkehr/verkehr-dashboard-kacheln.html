@@ -172,12 +172,22 @@
   .mdet{color:var(--muted);font-size:.92em}
   .mextra{display:block;color:var(--muted);font-size:.86em;font-style:italic;margin-top:.1em}
   .mnone{color:var(--muted);font-size:.8rem;padding:2px 2px}
+
+  /* ---- Strassenzustand Kantonsstrassen (Tiefbauamt GR) ---- */
+  #strassen-gr{margin:.2em 0 .8em}
+  .mtag.gesperrt,.mtag.wintersperre{background:#fdf1f0;color:var(--stau)}
+  .mtag.behinderung{background:#fff5ec;color:#b4560f}
+  .mtag.schnee,.mtag.schneeketten{background:#eef4fa;color:#2b6ca3}
+  .mtag.hinweis,.mtag.unbekannt{background:#eef2f6;color:var(--muted)}
+  .mtag.vereina{background:#eef4fa;color:#4a6d8c}
+  .mhint{display:block;color:var(--muted);font-size:.9em;margin-top:.15em}
+  .sbmore.klick{cursor:pointer;text-decoration:underline}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Verkehr in der Südostschweiz – live</h1>
-  <p class="sub">Kachel-Ansicht je Zählstelle auf den <b>Nationalstrassen des Bundes</b> (v.a. A13). Die <b>Verkehrslage</b> (Punkt) entsteht aus dem Tempo, die <b>Verkehrsmenge</b> (Balken) aus den gezählten Fahrzeugen – im Stau sinkt die Menge, weil weniger durchkommen. <b>Kantonsstrassen sind nicht enthalten.</b> Tippen für den Tagesverlauf.</p>
+  <p class="sub">Kachel-Ansicht je Zählstelle auf den <b>Nationalstrassen des Bundes</b> (v.a. A13). Die <b>Verkehrslage</b> (Punkt) entsteht aus dem Tempo, die <b>Verkehrsmenge</b> (Balken) aus den gezählten Fahrzeugen – im Stau sinkt die Menge, weil weniger durchkommen. <b>Gemessen wird nur auf Nationalstrassen</b> – für Kantonsstrassen und Pässe gibt es keine Zählwerte, dort stehen unten die Zustandsmeldungen des Kantons. Tippen für den Tagesverlauf.</p>
   <p class="stand" id="stand">lädt …</p>
   <div class="legend">
     <span><i class="dot" style="background:var(--frei)"></i>fliesst</span>
@@ -191,6 +201,7 @@
   </div>
   <div id="stauband"></div>
   <div id="meldungen"></div>
+  <div id="strassen-gr"></div>
   <div id="map"></div>
   <div id="seedbox"></div>
   <div id="board"></div>
@@ -1236,6 +1247,89 @@ function renderMeldungen(){
 }
 loadMeldungen();
 setInterval(loadMeldungen, 300000);
+
+// ---- Strassenzustand Kantonsstrassen (Tiefbauamt Graubünden) --------------
+// Dritte Quelle neben Zaehlstellen und ASTRA. Noetig, weil die beiden anderen
+// nur Nationalstrassen kennen: Kantonsstrassen, Paesse und der Autoverlad
+// Vereina erscheinen ausschliesslich beim Kanton. Der Kasten zeigt Zustaende und
+// Ereignisse, keine Verkehrsmengen - das TBA misst nicht, es meldet.
+// Nutzung vom Tiefbauamt GR bewilligt (telefonisch, 24.08.2026); die
+// Nutzungsbedingungen des Amtes verlangen die Quellenangabe, sie steht darum
+// fest im Kopf des Kastens und darf nicht wegoptimiert werden.
+const TBA_API = "https://n8n.julianreich.ch/webhook/verkehr-strassen-gr";
+const TBA_LBL = {gesperrt:"Gesperrt", wintersperre:"Wintersperre", behinderung:"Behinderung",
+                 schneeketten:"Schneeketten", schnee:"Schnee", hinweis:"Hinweis",
+                 vereina:"Vereina", unbekannt:"Meldung"};
+const TBA_MAX = 8;              // der Rest auf Klick - im Sommer stehen ~16 Meldungen an
+let TBA = null, TBA_ALLE = false;
+// Die Texte kommen als Wortlaut des Amtes ins Dashboard, inklusive Sonderzeichen.
+// Anders als beim ASTRA-Kasten wird hier darum escaped, statt dem Feed zu vertrauen.
+function tbaEsc(s){
+  return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+function loadTba(){
+  d3.json(TBA_API).then(m=>{TBA=m; renderTba();}).catch(()=>{});
+}
+function tbaRow(m){
+  const det=[];
+  if(m.ursache) det.push(m.ursache);
+  if(m.naechste_info) det.push('nächste Information: '+m.naechste_info);
+  // Der Stand gehoert zwingend dazu: Meldungen des Kantons stehen teils monatelang
+  // unveraendert im Feed (Brienzerstrasse seit November 2024). Ohne Datum liest
+  // sich eine solche Dauersperrung wie eine Neuigkeit von heute.
+  if(m.stand){
+    const d=new Date(m.stand);
+    det.push('Stand '+d.toLocaleDateString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit',year:'2-digit'})
+      +' '+d.toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr');
+  }
+  // Der Hinweistext ist der Wortlaut des Amtes und oft die einzige Stelle, an der
+  // die Daten und Zeiten einer Sperrung stehen. Gekuerzt, aber nie umformuliert.
+  let hint='';
+  if(m.hinweis){
+    const t = m.hinweis.length>220 ? m.hinweis.slice(0,220).replace(/\s+\S*$/,'')+' …' : m.hinweis;
+    hint = tbaEsc(t) + (m.auto_uebersetzt ? ' <i>(vom Amt maschinell übersetzt)</i>' : '');
+  }
+  return '<div class="mitem"><span class="mtag '+tbaEsc(m.art)+'">'+tbaEsc(TBA_LBL[m.art]||m.art)+'</span>'
+    +'<span class="mtxt"><span class="mort">'+tbaEsc(m.strasse)+'</span><br>'
+    +'<span class="mdet">'+tbaEsc(m.zustand)+(det.length?' · '+tbaEsc(det.join(' · ')):'')+'</span>'
+    +(hint?'<span class="mhint">'+hint+'</span>':'')
+    +'</span></div>';
+}
+function renderTba(){
+  const box=d3.select('#strassen-gr');
+  if(!TBA||!TBA.meldungen){ box.html(''); return; }
+  const items=TBA.meldungen;
+  // "letztes Update" ist der Zeitpunkt des Abrufs, nicht der der Meldung - damit
+  // sichtbar bleibt, ob der Kasten noch lebt, auch wenn nichts Neues gemeldet ist.
+  const upd=TBA.generated
+    ? new Date(TBA.generated).toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})
+    : null;
+  // Der Autoverlad Vereina steht immer im Feed und wird gezielt nachgeschaut -
+  // auch wenn er "offen, keine Wartezeit" meldet und damit nach Schwere ganz
+  // unten landet. Darum bleibt er sichtbar, statt hinter der Klappe zu
+  // verschwinden. Eine Reihung der Vereina-Zustaende untereinander waere raten:
+  // welche Icon-Namen es fuer Wartezeiten gibt, laesst sich im Sommer nicht
+  // pruefen (belegt ist nur vereina_normal, _wartezeit_00 und _gesperrt).
+  const rest = items.slice(TBA_MAX);
+  const zeigen = TBA_ALLE ? items
+    : items.slice(0,TBA_MAX).concat(rest.filter(m => m.art === 'vereina'));
+  const versteckt = items.length - zeigen.length;
+  box.html('<div class="mbox"><div class="mhead">Kantonsstrassen und Pässe '
+    +'<small>Quelle: Tiefbauamt Graubünden (strassen.gr.ch)'
+    +(upd?' · letztes Update: '+upd+' Uhr':'')+'</small></div>'
+    +(items.length
+      ? zeigen.map(tbaRow).join('')
+        +((TBA_ALLE && items.length>TBA_MAX) || versteckt>0
+          ? '<div class="sbmore klick" id="tba-more">'
+            +(TBA_ALLE?'weniger anzeigen':'+'+versteckt+' weitere anzeigen')+'</div>'
+          : '')
+      : '<div class="mnone">Zurzeit keine Meldungen des Kantons</div>')
+    +'</div>');
+  const more=document.getElementById('tba-more');
+  if(more) more.onclick=()=>{TBA_ALLE=!TBA_ALLE; renderTba();};
+}
+loadTba();
+setInterval(loadTba, 300000);
 
 function hideTip(){tip.style("opacity",0);}
 
