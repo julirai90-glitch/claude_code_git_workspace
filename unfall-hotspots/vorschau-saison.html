@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vorschau: Saisonalität — Varianten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --surface:#fafbfc; --panel:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4; --s2:#ee7733; --mut:#c3ccd3;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--surface); color:var(--ink);
+  font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.55}
+.wrap{max-width:900px; margin:0 auto; padding:44px 24px 80px;
+  display:flex; flex-direction:column; gap:34px}
+h1{font-family:"Source Serif 4",Georgia,serif; font-weight:600; font-size:30px;
+  margin:0; line-height:1.2}
+.intro{color:var(--ink-2); margin:10px 0 0; max-width:62ch}
+figure{margin:0; background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+  padding:22px 22px 18px; display:flex; flex-direction:column; gap:16px}
+h2{font-family:"Source Serif 4",Georgia,serif; font-weight:600; font-size:21px;
+  margin:0; line-height:1.3}
+.sub{color:var(--ink-2); font-size:15px; margin:6px 0 0; max-width:64ch}
+.tagline{font-family:ui-monospace,monospace; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3)}
+.legend{display:flex; gap:18px; flex-wrap:wrap; align-items:center}
+.lg{display:inline-flex; align-items:center; gap:7px; font-size:13.5px; color:var(--ink-2)}
+.sw{width:13px; height:13px; border-radius:2px; flex:none}
+.sw.band{opacity:.28}
+.chart{width:100%; overflow-x:auto}
+svg{display:block; max-width:100%; height:auto}
+.tick{font-size:12px; fill:var(--ink-3)}
+.grid{stroke:var(--rule-soft); stroke-width:1}
+.axis{stroke:var(--rule); stroke-width:1}
+.note{font-size:13.5px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+  padding-top:12px; margin:0}
+.verdict{background:#fff; border:1px solid var(--rule); border-left:3px solid var(--s2);
+  border-radius:3px; padding:16px 18px; font-size:15px}
+.verdict h3{margin:0 0 8px; font-size:16px}
+.verdict p{margin:0 0 8px}
+.verdict p:last-child{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="tagline">Vorschau &middot; nicht publiziert</div>
+    <h1>Saisonalität: drei Darstellungsvarianten</h1>
+    <p class="intro">Dieselben Daten, drei Zugänge. Frage: Wie zeigt man am besten, dass die
+    Motorräder den Sommerberg verursachen — und wie stark die einzelnen Jahre streuen?
+    Alle Zahlen sind Unfälle mit Personenschaden, Kanton Graubünden, 2011–2025.</p>
+  </header>
+
+  <figure>
+    <div>
+      <h2>A — Summiert, gestapelt <span style="color:var(--ink-3);font-weight:400">(die aktuelle Fassung)</span></h2>
+      <p class="sub">Alle 15 Jahre zusammengezählt. Motorradunfälle liegen als obere Schicht auf einer
+      vergleichsweise stabilen Basis.</p>
+    </div>
+    <div class="legend">
+      <span class="lg"><span class="sw" style="background:var(--s2)"></span>mit Motorradbeteiligung</span>
+      <span class="lg"><span class="sw" style="background:var(--s1)"></span>übrige Unfälle</span>
+    </div>
+    <div class="chart"><svg id="a"></svg></div>
+    <p class="note">Klar und ohne Bedienaufwand. Zeigt aber nicht, wie verlässlich das Muster ist —
+    ein Leser sieht nicht, ob der August in jedem Jahr heraussticht oder nur im Mittel.</p>
+  </figure>
+
+  <figure>
+    <div>
+      <h2>B — Streubänder</h2>
+      <p class="sub">Das Band umfasst die Spannweite der 15 Einzeljahre, die Linie ist der Median.
+      Zwei Bänder: alle Unfälle und der Motorradanteil daran.</p>
+    </div>
+    <div class="legend">
+      <span class="lg"><span class="sw band" style="background:var(--s1)"></span>Spannweite alle Unfälle</span>
+      <span class="lg"><span class="sw" style="background:var(--s1)"></span>Median alle Unfälle</span>
+      <span class="lg"><span class="sw band" style="background:var(--s2)"></span>Spannweite Motorrad</span>
+      <span class="lg"><span class="sw" style="background:var(--s2)"></span>Median Motorrad</span>
+    </div>
+    <div class="chart"><svg id="b"></svg></div>
+    <p class="note">Zeigt Muster und Unsicherheit gleichzeitig. Man sieht: Das orange Band ist im
+    Winter praktisch flach am Boden und wächst im Sommer auf — und selbst das schwächste Sommerjahr
+    liegt über dem stärksten Winterjahr. Anspruchsvoller zu lesen als A.</p>
+  </figure>
+
+  <figure>
+    <div>
+      <h2>C — Alle Jahre einzeln</h2>
+      <p class="sub">Jede dünne Linie ein Jahr, die dicke Linie der Median. Oben alle Unfälle,
+      unten nur die Motorradunfälle.</p>
+    </div>
+    <div class="chart"><svg id="c"></svg></div>
+    <p class="note">Ehrlichste Darstellung der Streuung, aber unruhig. Taugt eher für die interne
+    Diskussion als für den Artikel.</p>
+  </figure>
+
+  <div class="verdict">
+    <h3>Einschätzung</h3>
+    <p><strong>Für den Artikel: A oder B.</strong> A ist sofort lesbar und transportiert die
+    Kernaussage ohne Umweg. B liefert zusätzlich die Information, wie verlässlich das Muster ist —
+    und entkräftet damit den Einwand, man habe hier bloss 15 Jahre zusammengeschüttet.</p>
+    <p><strong>Gegen einen Jahres-Regler:</strong> Bei rund 480 Unfällen pro Jahr auf zwölf Monate
+    bleiben etwa 40 pro Monat, bei den Motorrädern im Winter null bis drei. 2024 hatte im Februar
+    45 Unfälle und im Januar 17 — genau umgekehrt zum Durchschnitt. Wer durch die Jahre reglert,
+    sieht überwiegend Zufall.</p>
+  </div>
+</div>
+
+<script>
+const SD={"years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "alle": {"band": [{"m": 1, "min": 17, "max": 45, "q1": 27, "q3": 38, "med": 32, "mean": 32.4}, {"m": 2, "min": 17, "max": 45, "q1": 23, "q3": 33, "med": 29, "mean": 28.8}, {"m": 3, "min": 19, "max": 41, "q1": 24, "q3": 33, "med": 25, "mean": 28.1}, {"m": 4, "min": 21, "max": 38, "q1": 26, "q3": 29, "med": 28, "mean": 28.1}, {"m": 5, "min": 23, "max": 47, "q1": 37, "q3": 42, "med": 39, "mean": 38.5}, {"m": 6, "min": 37, "max": 69, "q1": 46, "q3": 63, "med": 51, "mean": 52.8}, {"m": 7, "min": 44, "max": 73, "q1": 52, "q3": 63, "med": 58, "mean": 57.9}, {"m": 8, "min": 46, "max": 88, "q1": 58, "q3": 69, "med": 61, "mean": 62.7}, {"m": 9, "min": 35, "max": 61, "q1": 43, "q3": 59, "med": 50, "mean": 50.1}, {"m": 10, "min": 21, "max": 52, "q1": 31, "q3": 45, "med": 38, "mean": 37.2}, {"m": 11, "min": 23, "max": 40, "q1": 25, "q3": 35, "med": 33, "mean": 31.1}, {"m": 12, "min": 20, "max": 45, "q1": 28, "q3": 36, "med": 29, "mean": 31.4}], "jahre": [[37, 33, 25, 37, 47, 63, 63, 46, 53, 42, 35, 45], [45, 29, 24, 26, 41, 46, 59, 88, 37, 44, 25, 36], [26, 35, 36, 29, 36, 48, 70, 63, 56, 34, 37, 28], [34, 39, 24, 38, 39, 46, 52, 81, 61, 52, 28, 32], [28, 23, 28, 29, 37, 57, 59, 61, 47, 45, 40, 29], [42, 26, 30, 21, 44, 40, 71, 66, 46, 38, 39, 29], [38, 27, 38, 29, 42, 69, 73, 58, 43, 31, 24, 37], [40, 29, 27, 27, 23, 47, 56, 48, 59, 41, 23, 25], [27, 29, 41, 31, 37, 53, 48, 69, 60, 29, 34, 33], [27, 28, 19, 21, 30, 37, 54, 60, 50, 22, 26, 32], [32, 17, 23, 21, 37, 65, 44, 52, 60, 47, 35, 29], [29, 29, 24, 28, 41, 56, 58, 59, 42, 35, 25, 27], [31, 22, 25, 27, 42, 51, 54, 59, 53, 45, 29, 40], [17, 45, 24, 29, 39, 47, 60, 69, 35, 32, 34, 29], [33, 21, 33, 28, 42, 67, 47, 62, 50, 21, 33, 20]]}, "moto": {"band": [{"m": 1, "min": 0, "max": 3, "q1": 0, "q3": 2, "med": 1, "mean": 1.1}, {"m": 2, "min": 0, "max": 3, "q1": 0, "q3": 1, "med": 1, "mean": 1}, {"m": 3, "min": 1, "max": 8, "q1": 2, "q3": 5, "med": 3, "mean": 3.7}, {"m": 4, "min": 0, "max": 8, "q1": 3, "q3": 6, "med": 4, "mean": 4.1}, {"m": 5, "min": 6, "max": 16, "q1": 9, "q3": 14, "med": 12, "mean": 11.3}, {"m": 6, "min": 11, "max": 31, "q1": 16, "q3": 27, "med": 19, "mean": 20.7}, {"m": 7, "min": 10, "max": 31, "q1": 19, "q3": 25, "med": 22, "mean": 22}, {"m": 8, "min": 16, "max": 34, "q1": 21, "q3": 28, "med": 26, "mean": 24.8}, {"m": 9, "min": 11, "max": 28, "q1": 16, "q3": 22, "med": 20, "mean": 19.1}, {"m": 10, "min": 1, "max": 14, "q1": 4, "q3": 10, "med": 9, "mean": 7.9}, {"m": 11, "min": 0, "max": 5, "q1": 1, "q3": 4, "med": 2, "mean": 2.5}, {"m": 12, "min": 0, "max": 3, "q1": 0, "q3": 2, "med": 1, "mean": 0.9}], "jahre": [[2, 1, 4, 7, 12, 28, 24, 21, 21, 9, 2, 2], [2, 1, 2, 4, 14, 20, 22, 34, 11, 4, 1, 0], [0, 1, 3, 3, 13, 19, 22, 28, 28, 8, 0, 0], [1, 3, 4, 8, 9, 11, 19, 32, 18, 14, 3, 1], [1, 0, 2, 4, 6, 31, 25, 17, 16, 10, 3, 2], [3, 1, 2, 0, 9, 14, 31, 34, 19, 10, 4, 1], [3, 1, 6, 5, 12, 29, 29, 22, 12, 9, 1, 0], [1, 1, 2, 0, 9, 22, 19, 22, 23, 9, 5, 0], [0, 0, 4, 5, 10, 25, 21, 27, 22, 4, 4, 2], [0, 0, 3, 4, 8, 14, 21, 26, 20, 2, 2, 3], [1, 2, 6, 2, 12, 17, 10, 16, 21, 10, 5, 1], [0, 0, 5, 3, 15, 27, 30, 17, 16, 14, 3, 0], [0, 1, 3, 4, 15, 16, 15, 23, 24, 10, 1, 1], [1, 3, 1, 6, 10, 19, 24, 26, 14, 4, 2, 1], [1, 0, 8, 6, 16, 19, 18, 27, 21, 1, 2, 0]]}};
+
+const MN=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const NS='http://www.w3.org/2000/svg';
+function el(n,a){const x=document.createElementNS(NS,n);for(const k in(a||{}))x.setAttribute(k,a[k]);return x;}
+function W(){const c=document.querySelector('.chart');return Math.max(320,Math.min(856,c.clientWidth||820));}
+
+function axes(svg,L,T,iw,ih,max,step){
+  for(let v=0;v<=max;v+=step){
+    const y=T+ih-ih*v/max;
+    svg.appendChild(el('line',{x1:L,y1:y,x2:L+iw,y2:y,class:v===0?'axis':'grid'}));
+    const t=el('text',{x:L-8,y:y+4,class:'tick','text-anchor':'end'});t.textContent=v;svg.appendChild(t);
+  }
+}
+function months(svg,L,iw,yBase){
+  for(let i=0;i<12;i++){
+    const x=L+iw*(i+0.5)/12;
+    const t=el('text',{x:x,y:yBase,class:'tick','text-anchor':'middle'});
+    t.textContent=MN[i];svg.appendChild(t);
+  }
+}
+
+/* ---------- A: stacked bars, summed ---------- */
+function drawA(){
+  const w=W(),L=46,R=12,T=14,B=32,H=290,iw=w-L-R,ih=H-T-B,max=1000;
+  const svg=document.getElementById('a');
+  svg.setAttribute('viewBox','0 0 '+w+' '+H);svg.setAttribute('width',w);svg.setAttribute('height',H);
+  svg.textContent='';
+  axes(svg,L,T,iw,ih,max,250);
+  const bw=Math.min(34,iw/12-8);
+  for(let i=0;i<12;i++){
+    let all=0,mo=0;
+    SD.alle.jahre.forEach(r=>all+=r[i]); SD.moto.jahre.forEach(r=>mo+=r[i]);
+    const x=L+iw*(i+0.5)/12-bw/2, rest=all-mo;
+    const yA=T+ih-ih*all/max, yR=T+ih-ih*rest/max;
+    svg.appendChild(el('rect',{x:x,y:yR,width:bw,height:ih*rest/max,fill:'var(--s1)',rx:3}));
+    svg.appendChild(el('rect',{x:x,y:yA,width:bw,height:ih*mo/max,fill:'var(--s2)',rx:3}));
+    svg.appendChild(el('rect',{x:x,y:yR-2,width:bw,height:2,fill:'var(--panel)'}));
+  }
+  months(svg,L,iw,H-12);
+}
+
+/* ---------- B: spread bands + median ---------- */
+function drawB(){
+  const w=W(),L=42,R=12,T=14,B=32,H=300,iw=w-L-R,ih=H-T-B,max=90;
+  const svg=document.getElementById('b');
+  svg.setAttribute('viewBox','0 0 '+w+' '+H);svg.setAttribute('width',w);svg.setAttribute('height',H);
+  svg.textContent='';
+  axes(svg,L,T,iw,ih,max,30);
+  const xAt=i=>L+iw*(i+0.5)/12, yAt=v=>T+ih-ih*v/max;
+
+  function band(series,color){
+    let d='M'+xAt(0)+','+yAt(series[0].max);
+    for(let i=1;i<12;i++) d+='L'+xAt(i)+','+yAt(series[i].max);
+    for(let i=11;i>=0;i--) d+='L'+xAt(i)+','+yAt(series[i].min);
+    d+='Z';
+    svg.appendChild(el('path',{d:d,fill:color,opacity:.24}));
+  }
+  function median(series,color){
+    let d='M'+xAt(0)+','+yAt(series[0].med);
+    for(let i=1;i<12;i++) d+='L'+xAt(i)+','+yAt(series[i].med);
+    svg.appendChild(el('path',{d:d,fill:'none',stroke:color,'stroke-width':2.4,
+      'stroke-linejoin':'round','stroke-linecap':'round'}));
+    for(let i=0;i<12;i++)
+      svg.appendChild(el('circle',{cx:xAt(i),cy:yAt(series[i].med),r:3.2,fill:color,
+        stroke:'var(--panel)','stroke-width':1.6}));
+  }
+  band(SD.alle.band,'#0068a4'); band(SD.moto.band,'#ee7733');
+  median(SD.alle.band,'#0068a4'); median(SD.moto.band,'#ee7733');
+  months(svg,L,iw,H-12);
+}
+
+/* ---------- C: every year as a thin line, two panels ---------- */
+function drawC(){
+  const w=W(),L=42,R=12,GAPY=30,H=380,PH=(H-GAPY)/2;
+  const svg=document.getElementById('c');
+  svg.setAttribute('viewBox','0 0 '+w+' '+H);svg.setAttribute('width',w);svg.setAttribute('height',H);
+  svg.textContent='';
+  const iw=w-L-R;
+
+  function panel(oy,rows,band,max,step,color,label){
+    const T=oy+16,ih=PH-16-26;
+    axes(svg,L,T,iw,ih,max,step);
+    const xAt=i=>L+iw*(i+0.5)/12, yAt=v=>T+ih-ih*v/max;
+    rows.forEach(function(r){
+      let d='M'+xAt(0)+','+yAt(r[0]);
+      for(let i=1;i<12;i++) d+='L'+xAt(i)+','+yAt(r[i]);
+      svg.appendChild(el('path',{d:d,fill:'none',stroke:color,'stroke-width':1,opacity:.22}));
+    });
+    let d='M'+xAt(0)+','+yAt(band[0].med);
+    for(let i=1;i<12;i++) d+='L'+xAt(i)+','+yAt(band[i].med);
+    svg.appendChild(el('path',{d:d,fill:'none',stroke:color,'stroke-width':2.6,
+      'stroke-linejoin':'round'}));
+    const t=el('text',{x:L,y:oy+8,class:'tick'});
+    t.setAttribute('style','font-weight:600;fill:var(--ink)');
+    t.textContent=label; svg.appendChild(t);
+    months(svg,L,iw,T+ih+16);
+  }
+  panel(4,SD.alle.jahre,SD.alle.band,100,25,'#0068a4','Alle Unfälle');
+  panel(4+PH+GAPY-14,SD.moto.jahre,SD.moto.band,40,10,'#ee7733','Nur Motorradunfälle');
+}
+
+function render(){drawA();drawB();drawC();}
+render();
+let rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(render,150);});
+</script>
+</body>
+</html>
