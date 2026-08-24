@@ -96,7 +96,12 @@
   .mregion{color:#9aa4b0;font-size:.85em}
   .mfull summary{cursor:pointer;list-style:none}
   .mfull summary::-webkit-details-marker{display:none}
+  /* Aufgeklappt steht der Anriss sonst nochmals ueber dem Volltext - die ersten
+     Saetze doppelt. Im offenen Zustand bleibt nur der Umschalter stehen. */
+  .mfull[open] .mkurz{display:none}
   .mmore{color:#4a6d8c;text-decoration:underline;white-space:nowrap}
+  .mmore::after{content:'ganzer Wortlaut'}
+  .mfull[open] .mmore::after{content:'weniger anzeigen'}
   .mvoll{margin-top:.25em}
   .mwarn{background:#fff5ec;color:#b4560f;border-radius:5px;padding:.4em .55em;
          font-size:.78rem;line-height:1.35;margin:.3em 0}
@@ -726,8 +731,9 @@ function tbaRow(m){
     const verm = m.auto_uebersetzt ? ' <i>(vom Amt maschinell übersetzt)</i>' : '';
     if(m.hinweis.length>220){
       const kurz = m.hinweis.slice(0,220).replace(/\s+\S*$/,'');
-      hint = '<details class="mhint mfull"><summary>'+tbaEsc(kurz)
-        +' … <span class="mmore">ganzer Wortlaut</span></summary>'
+      hint = '<details class="mhint mfull"><summary>'
+        +'<span class="mkurz">'+tbaEsc(kurz)+' … </span>'
+        +'<span class="mmore"></span></summary>'
         +'<div class="mvoll">'+tbaEsc(m.hinweis)+verm+'</div></details>';
     } else {
       hint = '<div class="mhint">'+tbaEsc(m.hinweis)+verm+'</div>';
