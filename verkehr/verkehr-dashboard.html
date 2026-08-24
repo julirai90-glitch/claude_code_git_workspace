@@ -93,6 +93,13 @@
   .mtag.vereina{background:#eef4fa;color:#4a6d8c}
   .mhint{display:block;color:var(--muted);font-size:.9em;margin-top:.15em}
   .sbmore.klick{cursor:pointer;text-decoration:underline}
+  .mregion{color:#9aa4b0;font-size:.85em}
+  .mfull summary{cursor:pointer;list-style:none}
+  .mfull summary::-webkit-details-marker{display:none}
+  .mmore{color:#4a6d8c;text-decoration:underline;white-space:nowrap}
+  .mvoll{margin-top:.25em}
+  .mwarn{background:#fff5ec;color:#b4560f;border-radius:5px;padding:.4em .55em;
+         font-size:.78rem;line-height:1.35;margin:.3em 0}
   /* abstrakte Stau-Liste (v.a. Mobile) */
   #board{margin-top:12px}
   .bbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.4em;margin:.2em 2px .4em}
@@ -678,14 +685,25 @@ const TBA_API = "https://n8n.julianreich.ch/webhook/verkehr-strassen-gr";
 const TBA_LBL = {gesperrt:"Gesperrt", wintersperre:"Wintersperre", behinderung:"Behinderung",
                  schneeketten:"Schneeketten", schnee:"Schnee", hinweis:"Hinweis",
                  vereina:"Vereina", unbekannt:"Meldung"};
-let TBA = null, TBA_ALLE = false;
+let TBA = null, TBA_ALLE = false, TBA_FEHLER = false;
 // Die Texte kommen als Wortlaut des Amtes ins Dashboard, inklusive Sonderzeichen.
 // Anders als beim ASTRA-Kasten wird hier darum escaped, statt dem Feed zu vertrauen.
 function tbaEsc(s){
   return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 function loadTba(){
-  d3.json(TBA_API).then(m=>{TBA=m; renderTba();}).catch(()=>{});
+  // Ein Fehler darf hier nicht stumm verschluckt werden: Ein Dashboard, das nach einem
+  // Ausfall einfach den letzten Stand weiterzeigt, behauptet eine Aktualitaet, die es
+  // nicht hat.
+  d3.json(TBA_API).then(m=>{TBA=m; TBA_FEHLER=false; renderTba();})
+                  .catch(()=>{TBA_FEHLER=true; renderTba();});
+}
+// Gemeinsamer Kopf fuer alle Ausgabewege. Die Quellenangabe ist Nutzungsbedingung des
+// Amtes und darf in keinem Zustand fehlen, auch nicht im Fehlerfall.
+function tbaKopf(upd){
+  return '<div class="mbox"><div class="mhead">Kantonsstrassen und Pässe '
+    +'<small>Quelle: Tiefbauamt Graubünden (strassen.gr.ch)'
+    +(upd?' · letztes Update: '+upd+' Uhr':'')+'</small></div>';
 }
 function tbaRow(m){
   const det=[];
@@ -699,23 +717,54 @@ function tbaRow(m){
     det.push('Stand '+d.toLocaleDateString('de-CH',{timeZone:TZ,day:'2-digit',month:'2-digit',year:'2-digit'})
       +' '+d.toLocaleTimeString('de-CH',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})+' Uhr');
   }
-  // Der Hinweistext ist der Wortlaut des Amtes und oft die einzige Stelle, an der
-  // die Daten und Zeiten einer Sperrung stehen. Gekuerzt, aber nie umformuliert.
+  // Der Hinweistext ist der Wortlaut des Amtes. Bei einer Sperrung stehen die genauen
+  // Daten und Zeiten oft erst am Ende dieses Textes - hart abzuschneiden hiesse, genau
+  // sie zu verschlucken. Lange Texte deshalb angerissen und auf Klick vollstaendig,
+  // nie umformuliert und nie endgueltig gekuerzt.
   let hint='';
   if(m.hinweis){
-    const t = m.hinweis.length>220 ? m.hinweis.slice(0,220).replace(/\s+\S*$/,'')+' …' : m.hinweis;
-    hint = tbaEsc(t) + (m.auto_uebersetzt ? ' <i>(vom Amt maschinell übersetzt)</i>' : '');
+    const verm = m.auto_uebersetzt ? ' <i>(vom Amt maschinell übersetzt)</i>' : '';
+    if(m.hinweis.length>220){
+      const kurz = m.hinweis.slice(0,220).replace(/\s+\S*$/,'');
+      hint = '<details class="mhint mfull"><summary>'+tbaEsc(kurz)
+        +' … <span class="mmore">ganzer Wortlaut</span></summary>'
+        +'<div class="mvoll">'+tbaEsc(m.hinweis)+verm+'</div></details>';
+    } else {
+      hint = '<div class="mhint">'+tbaEsc(m.hinweis)+verm+'</div>';
+    }
   }
+  // Die Region ist fuer die raeumliche Einordnung entscheidend - "Albulastrasse" allein
+  // sagt einem Ortsunkundigen nichts. Der Parser sammelt sie beim Zusammenfassen der
+  // regionalen Doubletten, hier werden sie endlich ausgegeben.
+  const reg = (m.regionen && m.regionen.length)
+    ? ' <span class="mregion">'+tbaEsc(m.regionen.join(' · '))+'</span>' : '';
   return '<div class="mitem"><span class="mtag '+tbaEsc(m.art)+'">'+tbaEsc(TBA_LBL[m.art]||m.art)+'</span>'
-    +'<span class="mtxt"><span class="mort">'+tbaEsc(m.strasse)+'</span><br>'
-    +'<span class="mdet">'+tbaEsc(m.zustand)+(det.length?' · '+tbaEsc(det.join(' · ')):'')+'</span>'
-    +(hint?'<span class="mhint">'+hint+'</span>':'')
-    +'</span></div>';
+    +'<div class="mtxt"><span class="mort">'+tbaEsc(m.strasse)+'</span>'+reg
+    +'<div class="mdet">'+tbaEsc(m.zustand)+(det.length?' · '+tbaEsc(det.join(' · ')):'')+'</div>'
+    +hint
+    +'</div></div>';
 }
 function renderTba(){
   const box=d3.select('#strassen-gr');
-  if(!TBA||!TBA.meldungen){ box.html(''); return; }
+  if(!TBA||!TBA.meldungen){
+    // Schlaegt schon der erste Abruf fehl, ist ein leerer Fleck die schlechteste
+    // Auskunft - der Leser haelt ihn fuer "keine Meldungen".
+    box.html(TBA_FEHLER ? tbaKopf(null)
+      +'<div class="mwarn">Meldungen des Kantons zurzeit nicht abrufbar.</div></div>' : '');
+    return;
+  }
   const items=TBA.meldungen;
+  // Drei Arten, wie diese Anzeige unbemerkt falsch werden koennte - alle drei werden
+  // benannt statt kaschiert. Die Stoerung meldet der Parser selbst, wenn die Quelle
+  // zwar Eintraege liefert, er aber keinen davon mehr versteht.
+  const altMin = TBA.generated ? Math.round((Date.now()-Date.parse(TBA.generated))/60000) : null;
+  const warn = TBA.stoerung
+      ? 'Die Meldungen des Kantons lassen sich zurzeit nicht auswerten – angezeigt ist der letzte gültige Stand.'
+    : TBA_FEHLER
+      ? 'Neue Daten zurzeit nicht abrufbar – angezeigt ist der letzte bekannte Stand.'
+    : (altMin!=null && altMin>20)
+      ? 'Letzter erfolgreicher Abruf vor '+altMin+' Minuten – der Stand kann veraltet sein.'
+    : null;
   // "letztes Update" ist der Zeitpunkt des Abrufs, nicht der der Meldung - damit
   // sichtbar bleibt, ob der Kasten noch lebt, auch wenn nichts Neues gemeldet ist.
   const upd=TBA.generated
@@ -735,9 +784,8 @@ function renderTba(){
   const fix = items.filter(m => m.art !== 'hinweis');
   const versteckt = items.length - fix.length;
   const zeigen = TBA_ALLE ? items : fix;
-  box.html('<div class="mbox"><div class="mhead">Kantonsstrassen und Pässe '
-    +'<small>Quelle: Tiefbauamt Graubünden (strassen.gr.ch)'
-    +(upd?' · letztes Update: '+upd+' Uhr':'')+'</small></div>'
+  box.html(tbaKopf(upd)
+    +(warn?'<div class="mwarn">'+warn+'</div>':'')
     +(items.length
       ? (zeigen.length
           ? zeigen.map(tbaRow).join('')

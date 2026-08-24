@@ -39,7 +39,10 @@ const ART = {
   info: 'hinweis',
   vereina_normal: 'vereina',
   vereina_wartezeit_00: 'vereina',
-  vereina_gesperrt: 'vereina'
+  // Ein gesperrter Autoverlad ist eine Sperrung und gehoert nach oben, nicht mit
+  // neutralem Tag ans Ende. Anders als bei den Wartezeit-Icons ist hier nichts zu
+  // raten: der Dateiname sagt es, und die Datei ist belegt (HTTP 200, 24.08.2026).
+  vereina_gesperrt: 'gesperrt'
 };
 // Was zuoberst steht. Eine Sperrung aendert die Reiseplanung, ein Hinweis nicht.
 const RANK = { gesperrt: 0, wintersperre: 1, behinderung: 2, schneeketten: 3,
@@ -162,5 +165,32 @@ const payload = {
   meldungen: out
 };
 const sd = $getWorkflowStaticData('global');
+
+// Ausfallschutz. Liefert die Quelle Eintraege, erzeugt der Parser daraus aber keine
+// einzige Meldung, ist das ein Defekt hier drin - typischerweise umbenannte CSS-Klassen
+// beim Amt - und keine leere Lage. Wuerde der leere Stand einfach ueberschrieben,
+// zeigte das Dashboard "Zurzeit keine Meldungen" mit frischem Zeitstempel: optisch nicht
+// unterscheidbar von "alle Strassen frei". Fuer ein Verkehrsdashboard ist das die
+// schlimmste Fehlerart - es sagt dann nicht "ich weiss es nicht", sondern "es ist nichts
+// los". Deshalb den letzten gueltigen Stand behalten, inklusive seines alten
+// generated-Zeitstempels, und die Stoerung mitliefern.
+if (out.length === 0 && liste.length > 0) {
+  const stoerung = {
+    seit: new Date().toISOString().replace(/\.\d+Z$/, 'Z'),
+    roh_eintraege: liste.length,
+    grund: 'Parser hat aus ' + liste.length + ' Eintraegen keine Meldung erkannt'
+  };
+  let alt = null;
+  try { alt = JSON.parse(sd.strassen || 'null'); } catch (e) { alt = null; }
+  if (alt && alt.meldungen && alt.meldungen.length) {
+    alt.stoerung = stoerung;                    // generated bleibt bewusst der alte
+    sd.strassen = JSON.stringify(alt);
+  } else {
+    payload.stoerung = stoerung;                // noch kein gueltiger Stand vorhanden
+    sd.strassen = JSON.stringify(payload);
+  }
+  return [{ json: { ok: false, count: 0, geprueft: liste.length, stoerung: stoerung.grund } }];
+}
+
 sd.strassen = JSON.stringify(payload);
 return [{ json: { ok: true, count: out.length, geprueft: liste.length } }];
