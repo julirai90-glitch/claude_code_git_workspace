@@ -20,31 +20,34 @@ body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
 .wrap{padding:12px 16px 16px}
 .chart{width:100%}
 svg{display:block; max-width:100%; height:auto}
-.tick{font-size:11.5px; fill:var(--ink-3)}
-.ptitle{font-size:13.5px; fill:var(--ink); font-weight:600}
-.pval{font-size:12.5px; font-variant-numeric:tabular-nums; font-weight:700}
+.tick{font-size:12px; fill:var(--ink-3)}
+.zero{stroke:var(--ink-3); stroke-width:1.4}
 .grid{stroke:var(--rule-soft); stroke-width:1}
-.axis{stroke:var(--rule); stroke-width:1}
+.lab{font-size:13px; font-weight:600}
+.labv{font-size:13px; font-weight:700; font-variant-numeric:tabular-nums}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
      padding-top:10px; margin:14px 0 0}
 .tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
   transform:translate(-50%,-100%); background:#fff; color:var(--ink);
   border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
-  padding:8px 11px; font-size:13px; line-height:1.4; white-space:nowrap; transition:opacity .09s}
-.tip b{font-variant-numeric:tabular-nums}
-.tip .t-h{font-weight:700; display:block; margin-bottom:2px}
+  padding:9px 12px; font-size:13px; line-height:1.45; white-space:nowrap; transition:opacity .09s}
+.tip table{border-collapse:collapse; font-size:12.5px}
+.tip td{padding:1px 0}
+.tip td:last-child{text-align:right; padding-left:16px; font-variant-numeric:tabular-nums; font-weight:600}
+.tip i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px}
+.tip .t-h{font-weight:700; display:block; margin-bottom:4px}
 .hit{cursor:crosshair}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="chart"><svg id="c" role="img" aria-label="Vier Liniendiagramme: Entwicklung der Unfallzahlen 2011 bis 2025"></svg></div>
+  <div class="chart"><svg id="c" role="img" aria-label="Liniendiagramm: prozentuale Veränderung der Unfallzahlen gegenüber 2011"></svg></div>
   <p class="src">Quelle: Bundesamt f&uuml;r Strassen ASTRA, Strassenverkehrsunfallorte. Grafik: S&uuml;dostschweiz</p>
 </div>
 <div class="tip" id="tip" role="status" aria-live="polite"></div>
 <script>
-const D = {"years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "panels": [{"t": "Alle Unfälle", "sub": "mit Personenschaden", "dir": "down", "y": [526, 500, 498, 526, 483, 492, 509, 445, 491, 406, 462, 453, 478, 460, 457], "slope": -4.89, "p": 0.0059, "fit": [513.3, 508.4, 503.5, 498.6, 493.7, 488.8, 484.0, 479.1, 474.2, 469.3, 464.4, 459.5, 454.6, 449.8, 444.9]}, {"t": "Unfälle mit Getöteten", "sub": "", "dir": "down", "y": [17, 17, 12, 15, 15, 14, 19, 13, 12, 11, 13, 12, 16, 8, 5], "slope": -0.53, "p": 0.0072, "fit": [17.0, 16.5, 15.9, 15.4, 14.9, 14.3, 13.8, 13.3, 12.7, 12.2, 11.7, 11.1, 10.6, 10.1, 9.5]}, {"t": "Unfälle mit Schwerverletzten", "sub": "", "dir": "up", "y": [73, 67, 68, 70, 80, 78, 73, 84, 88, 60, 77, 86, 74, 90, 86], "slope": 1.05, "p": 0.0399, "fit": [69.6, 70.7, 71.7, 72.7, 73.8, 74.8, 75.9, 76.9, 78.0, 79.0, 80.1, 81.1, 82.2, 83.2, 84.3]}, {"t": "Unfälle mit Velobeteiligung", "sub": "", "dir": "up", "y": [72, 58, 65, 76, 64, 64, 69, 73, 86, 102, 100, 86, 85, 82, 105], "slope": 2.56, "p": 0.0007, "fit": [61.2, 63.8, 66.3, 68.9, 71.5, 74.0, 76.6, 79.1, 81.7, 84.2, 86.8, 89.4, 91.9, 94.5, 97.0]}]};
+const D = {"years": [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "panels": [{"t": "Alle Unfälle", "sub": "mit Personenschaden", "dir": "down", "y": [526, 500, 498, 526, 483, 492, 509, 445, 491, 406, 462, 453, 478, 460, 457], "slope": -4.89, "p": 0.0059, "fit": [513.3, 508.4, 503.5, 498.6, 493.7, 488.8, 484.0, 479.1, 474.2, 469.3, 464.4, 459.5, 454.6, 449.8, 444.9], "rel": [0.0, -4.9, -5.3, 0.0, -8.2, -6.5, -3.2, -15.4, -6.7, -22.8, -12.2, -13.9, -9.1, -12.5, -13.1]}, {"t": "Unfälle mit Getöteten", "sub": "", "dir": "down", "y": [17, 17, 12, 15, 15, 14, 19, 13, 12, 11, 13, 12, 16, 8, 5], "slope": -0.53, "p": 0.0072, "fit": [17.0, 16.5, 15.9, 15.4, 14.9, 14.3, 13.8, 13.3, 12.7, 12.2, 11.7, 11.1, 10.6, 10.1, 9.5], "rel": [0.0, 0.0, -29.4, -11.8, -11.8, -17.6, 11.8, -23.5, -29.4, -35.3, -23.5, -29.4, -5.9, -52.9, -70.6]}, {"t": "Unfälle mit Schwerverletzten", "sub": "", "dir": "up", "y": [73, 67, 68, 70, 80, 78, 73, 84, 88, 60, 77, 86, 74, 90, 86], "slope": 1.05, "p": 0.0399, "fit": [69.6, 70.7, 71.7, 72.7, 73.8, 74.8, 75.9, 76.9, 78.0, 79.0, 80.1, 81.1, 82.2, 83.2, 84.3], "rel": [0.0, -8.2, -6.8, -4.1, 9.6, 6.8, 0.0, 15.1, 20.5, -17.8, 5.5, 17.8, 1.4, 23.3, 17.8]}, {"t": "Unfälle mit Velobeteiligung", "sub": "", "dir": "up", "y": [72, 58, 65, 76, 64, 64, 69, 73, 86, 102, 100, 86, 85, 82, 105], "slope": 2.56, "p": 0.0007, "fit": [61.2, 63.8, 66.3, 68.9, 71.5, 74.0, 76.6, 79.1, 81.7, 84.2, 86.8, 89.4, 91.9, 94.5, 97.0], "rel": [0.0, -19.4, -9.7, 5.6, -11.1, -11.1, -4.2, 1.4, 19.4, 41.7, 38.9, 19.4, 18.1, 13.9, 45.8]}]};
 
 const tip=document.getElementById('tip');
 function showTip(e,html){
@@ -62,76 +65,100 @@ document.addEventListener('pointerdown',function(ev){
 const NS='http://www.w3.org/2000/svg';
 function el(n,a){const x=document.createElementNS(NS,n);for(const k in(a||{}))x.setAttribute(k,a[k]);return x;}
 
+/* Colour carries the direction, not the identity: everything falling is blue,
+   everything rising orange. Within a pair the dash pattern separates the two
+   lines, so the eye reads "two directions" before it reads four series. */
+const STYLE={
+  'Alle Unfälle':                {c:'var(--down)', dash:'',      short:'Alle Unfälle'},
+  'Unfälle mit Getöteten':       {c:'var(--down)', dash:'5 3',   short:'mit Getöteten'},
+  'Unfälle mit Schwerverletzten':{c:'var(--up)',   dash:'5 3',   short:'mit Schwerverletzten'},
+  'Unfälle mit Velobeteiligung': {c:'var(--up)',   dash:'',      short:'mit Velo'}
+};
+
 function draw(){
-  const W=document.querySelector('.chart').clientWidth||660;
-  const COLS = W<520 ? 1 : 2;
-  const PW=W/COLS, PH= W<520 ? 150 : 168;
-  const rows=Math.ceil(D.panels.length/COLS);
-  const H=rows*PH;
+  const W=document.querySelector('.chart').clientWidth||680;
+  const narrow=W<520;
+  /* room on the right for the direct labels — no legend box needed */
+  const L=narrow?42:46, R=narrow?12:150, T=16, B=30;
+  const H=narrow?300:330;
+  const iw=W-L-R, ih=H-T-B;
+  const lo=-80, hi=60;
+  const xAt=i=>L+iw*i/(D.years.length-1);
+  const yAt=v=>T+ih-ih*(v-lo)/(hi-lo);
   const svg=document.getElementById('c');
   svg.setAttribute('viewBox','0 0 '+W+' '+H);
   svg.setAttribute('width',W); svg.setAttribute('height',H);
   svg.textContent='';
 
-  D.panels.forEach(function(p,pi){
-    const ox=(pi%COLS)*PW, oy=Math.floor(pi/COLS)*PH;
-    const L=ox+44, R=16, T=oy+34, B=26;
-    const iw=PW-44-R, ih=PH-34-B;
-    const col = p.dir==='up' ? 'var(--up)' : 'var(--down)';
-    /* each panel keeps its own scale — the four series differ by a factor of 30,
-       a shared axis would flatten the fatalities into the baseline */
-    const max = Math.ceil(Math.max.apply(null,p.y)*1.15/10)*10;
-    const xAt=i=>L+iw*i/(D.years.length-1);
-    const yAt=v=>T+ih-ih*v/max;
+  for(let v=lo;v<=hi;v+=20){
+    const zero=v===0;
+    svg.appendChild(el('line',{x1:L,y1:yAt(v),x2:L+iw,y2:yAt(v),class:zero?'zero':'grid'}));
+    const t=el('text',{x:L-8,y:yAt(v)+4,class:'tick','text-anchor':'end'});
+    t.textContent=(v>0?'+':'')+v+'%'; svg.appendChild(t);
+  }
 
-    const ti=el('text',{x:ox+4,y:oy+15,class:'ptitle'});
-    ti.textContent=p.t; svg.appendChild(ti);
+  D.years.forEach(function(y,i){
+    if(i%(narrow?7:2)!==0 && i!==D.years.length-1) return;
+    const t=el('text',{x:xAt(i),y:T+ih+18,class:'tick','text-anchor':
+      i===0?'start':(i===D.years.length-1?'end':'middle')});
+    t.textContent=narrow?("'"+String(y).slice(2)):y; svg.appendChild(t);
+  });
 
-    svg.appendChild(el('line',{x1:L,y1:T+ih,x2:L+iw,y2:T+ih,class:'axis'}));
-    [0,max/2,max].forEach(function(v){
-      if(v>0) svg.appendChild(el('line',{x1:L,y1:yAt(v),x2:L+iw,y2:yAt(v),class:'grid'}));
-      const t=el('text',{x:L-7,y:yAt(v)+4,class:'tick','text-anchor':'end'});
-      t.textContent=Math.round(v); svg.appendChild(t);
-    });
-
-    /* the yearly values, thin */
-    let d='M'+xAt(0)+','+yAt(p.y[0]);
-    for(let i=1;i<p.y.length;i++) d+='L'+xAt(i)+','+yAt(p.y[i]);
-    svg.appendChild(el('path',{d:d,fill:'none',stroke:col,'stroke-width':1.3,opacity:.42,
-      'stroke-linejoin':'round'}));
-
-    /* the fitted trend, thick — this is the statement */
-    svg.appendChild(el('line',{x1:xAt(0),y1:yAt(p.fit[0]),
-      x2:xAt(p.fit.length-1),y2:yAt(p.fit[p.fit.length-1]),
-      stroke:col,'stroke-width':2.6,'stroke-linecap':'round'}));
-
-    /* endpoints labelled: start and finish carry the story */
-    [[0,p.y[0],'start'],[p.y.length-1,p.y[p.y.length-1],'end']].forEach(function(e){
-      const i=e[0],v=e[1];
-      svg.appendChild(el('circle',{cx:xAt(i),cy:yAt(v),r:3.6,fill:col,
-        stroke:'var(--surface)','stroke-width':1.6}));
-      const t=el('text',{x:e[2]==='start'?xAt(i)+7:xAt(i)-7,y:yAt(v)-9,
-        class:'pval','text-anchor':e[2]==='start'?'start':'end'});
-      t.setAttribute('fill',col); t.textContent=v; svg.appendChild(t);
-    });
-
-    [0,D.years.length-1].forEach(function(i){
-      const t=el('text',{x:xAt(i),y:T+ih+16,class:'tick',
-        'text-anchor':i===0?'start':'end'});
-      t.textContent=D.years[i]; svg.appendChild(t);
-    });
-
-    for(let i=0;i<p.y.length;i++){
-      const hit=el('rect',{x:xAt(i)-iw/(2*(p.y.length-1)),y:T,
-        width:iw/(p.y.length-1),height:ih,fill:'transparent',class:'hit'});
-      hit.addEventListener('pointerdown',__t); hit.addEventListener('mousemove',__t);
-      function __t(e){
-        showTip(e,'<span class="t-h">'+D.years[i]+'</span>'+p.t+': <b>'+p.y[i]+'</b>');
-      }
-      hit.addEventListener('mouseleave',hideTip);
-      svg.appendChild(hit);
+  D.panels.forEach(function(p){
+    const s=STYLE[p.t];
+    let d='M'+xAt(0)+','+yAt(p.rel[0]);
+    for(let i=1;i<p.rel.length;i++) d+='L'+xAt(i)+','+yAt(p.rel[i]);
+    svg.appendChild(el('path',{d:d,fill:'none',stroke:s.c,'stroke-width':2.2,
+      'stroke-dasharray':s.dash,'stroke-linejoin':'round','stroke-linecap':'round'}));
+    const last=p.rel[p.rel.length-1];
+    svg.appendChild(el('circle',{cx:xAt(p.rel.length-1),cy:yAt(last),r:4,fill:s.c,
+      stroke:'var(--surface)','stroke-width':1.8}));
+    if(!narrow){
+      const t1=el('text',{x:L+iw+12,y:yAt(last)-1,class:'labv'});
+      t1.setAttribute('fill',s.c); t1.textContent=(last>0?'+':'')+Math.round(last)+'%';
+      svg.appendChild(t1);
+      const t2=el('text',{x:L+iw+12,y:yAt(last)+14,class:'lab'});
+      t2.setAttribute('fill','var(--ink-2)'); t2.textContent=s.short;
+      svg.appendChild(t2);
     }
   });
+
+  /* on narrow screens the labels do not fit beside the lines — list them below */
+  if(narrow){
+    let x=L, y=T+ih+34;
+    D.panels.forEach(function(p){
+      const s=STYLE[p.t];
+      svg.appendChild(el('line',{x1:x,y1:y-4,x2:x+16,y2:y-4,stroke:s.c,'stroke-width':2.2,
+        'stroke-dasharray':s.dash}));
+      const t=el('text',{x:x+21,y:y,class:'tick'});
+      t.setAttribute('fill','var(--ink-2)');
+      t.textContent=s.short+' '+(p.rel[p.rel.length-1]>0?'+':'')+Math.round(p.rel[p.rel.length-1])+'%';
+      svg.appendChild(t);
+      const w=t.getComputedTextLength?t.getComputedTextLength():90;
+      x+=w+40;
+      if(x>W-110){ x=L; y+=18; }
+    });
+    svg.setAttribute('height',y+10);
+    svg.setAttribute('viewBox','0 0 '+W+' '+(y+10));
+  }
+
+  for(let i=0;i<D.years.length;i++){
+    const hit=el('rect',{x:xAt(i)-iw/(2*(D.years.length-1)),y:T,
+      width:iw/(D.years.length-1),height:ih,fill:'transparent',class:'hit'});
+    hit.addEventListener('pointerdown',__t); hit.addEventListener('mousemove',__t);
+    function __t(e){
+      let rows='';
+      D.panels.forEach(function(p){
+        const s=STYLE[p.t], v=p.rel[i];
+        rows+='<tr><td><i style="background:'+
+          (s.c==='var(--up)'?'#ee7733':'#0068a4')+'"></i>'+s.short+'</td><td>'+
+          p.y[i]+' ('+(v>0?'+':'')+Math.round(v)+'%)</td></tr>';
+      });
+      showTip(e,'<span class="t-h">'+D.years[i]+'</span><table>'+rows+'</table>');
+    }
+    hit.addEventListener('mouseleave',hideTip);
+    svg.appendChild(hit);
+  }
 }
 draw();
 let rt; addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(draw,140);});
