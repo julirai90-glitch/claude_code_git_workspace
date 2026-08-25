@@ -25,6 +25,7 @@ svg{display:block; max-width:100%; height:auto}
 .grid{stroke:var(--rule-soft); stroke-width:1}
 .lab{font-size:13px; font-weight:600}
 .labv{font-size:13px; font-weight:700; font-variant-numeric:tabular-nums}
+.lababs{font-size:11.5px; font-variant-numeric:tabular-nums}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
      padding-top:10px; margin:14px 0 0}
 .tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
@@ -79,7 +80,7 @@ function draw(){
   const W=document.querySelector('.chart').clientWidth||680;
   const narrow=W<520;
   /* room on the right for the direct labels — no legend box needed */
-  const L=narrow?42:46, R=narrow?12:150, T=16, B=30;
+  const L=narrow?42:46, R=narrow?12:168, T=16, B=30;
   const H=narrow?300:330;
   const iw=W-L-R, ih=H-T-B;
   const lo=-80, hi=60;
@@ -114,12 +115,17 @@ function draw(){
     svg.appendChild(el('circle',{cx:xAt(p.rel.length-1),cy:yAt(last),r:4,fill:s.c,
       stroke:'var(--surface)','stroke-width':1.8}));
     if(!narrow){
-      const t1=el('text',{x:L+iw+12,y:yAt(last)-1,class:'labv'});
+      const t1=el('text',{x:L+iw+12,y:yAt(last)-4,class:'labv'});
       t1.setAttribute('fill',s.c); t1.textContent=(last>0?'+':'')+Math.round(last)+'%';
       svg.appendChild(t1);
-      const t2=el('text',{x:L+iw+12,y:yAt(last)+14,class:'lab'});
+      const t2=el('text',{x:L+iw+12,y:yAt(last)+10,class:'lab'});
       t2.setAttribute('fill','var(--ink-2)'); t2.textContent=s.short;
       svg.appendChild(t2);
+      /* the absolute figures: a percentage alone says nothing about the size */
+      const t3=el('text',{x:L+iw+12,y:yAt(last)+24,class:'lababs'});
+      t3.setAttribute('fill','var(--ink-3)');
+      t3.textContent=p.y[0]+' → '+p.y[p.y.length-1];
+      svg.appendChild(t3);
     }
   });
 
@@ -132,11 +138,11 @@ function draw(){
         'stroke-dasharray':s.dash}));
       const t=el('text',{x:x+21,y:y,class:'tick'});
       t.setAttribute('fill','var(--ink-2)');
-      t.textContent=s.short+' '+(p.rel[p.rel.length-1]>0?'+':'')+Math.round(p.rel[p.rel.length-1])+'%';
+      t.textContent=s.short+' '+p.y[0]+'→'+p.y[p.y.length-1]+' ('+(p.rel[p.rel.length-1]>0?'+':'')+Math.round(p.rel[p.rel.length-1])+'%)';
       svg.appendChild(t);
       const w=t.getComputedTextLength?t.getComputedTextLength():90;
       x+=w+40;
-      if(x>W-110){ x=L; y+=18; }
+      if(x>W-150){ x=L; y+=18; }
     });
     svg.setAttribute('height',y+10);
     svg.setAttribute('viewBox','0 0 '+W+' '+(y+10));
