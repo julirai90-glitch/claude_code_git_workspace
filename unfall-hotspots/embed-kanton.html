@@ -813,6 +813,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
 
     <div class="row">
+      <button class="btn toggleBtn" id="toggleIndividual" type="button" aria-pressed="false">Einzelunf&auml;lle anzeigen</button>
+    </div>
+
+    <div class="row">
       <h2>Zeitfenster (3 Jahre gleitend)</h2>
       <div id="windowLabel">2023 &ndash; 2025</div>
       <input type="range" id="windowSlider" min="0" max="7" value="7" step="1">
@@ -832,10 +836,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div class="stat"><div class="num" id="statAccidents">-</div><div class="lbl">Unf&auml;lle im Zeitraum</div></div>
     </div>
     <div class="row statNote" style="margin-top:-8px; font-size:11px; color:var(--muted);">Werte gelten f&uuml;r den ganzen Kanton Graub&uuml;nden, unabh&auml;ngig von der Kartenansicht.</div>
-
-    <div class="row">
-      <button class="btn toggleBtn" id="toggleIndividual" type="button" aria-pressed="false">Einzelunf&auml;lle anzeigen</button>
-    </div>
 
     <div class="row" id="legend">
       <h2>Legende</h2>
