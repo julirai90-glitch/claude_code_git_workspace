@@ -846,7 +846,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
   </div>
 
-  <div class="credit">Leaflet | &copy; OpenStreetMap contributors &copy; CARTO</div>
+  <div class="credit">Leaflet | &copy; swisstopo</div>
 
   <div id="infoModal">
     <div class="card">
@@ -922,9 +922,9 @@ const GR_BOUNDS = [[46.1762, 8.6409], [47.0431, 10.5167]];
 
 const map = L.map('map', { zoomControl: true });
 map.fitBounds(GR_BOUNDS);   // embed opens on the canton
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-  subdomains: 'abcd', maxZoom: 19
+L.tileLayer('https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg', {
+  attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>',
+  maxZoom: 18
 }).addTo(map);
 
 let clusterLayer = L.layerGroup().addTo(map);

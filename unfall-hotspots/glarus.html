@@ -798,7 +798,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
   </div>
 
-  <div class="credit">Leaflet | &copy; OpenStreetMap contributors &copy; CARTO</div>
+  <div class="credit">Leaflet | &copy; swisstopo</div>
 
   <div id="infoModal">
     <div class="card">
@@ -869,9 +869,9 @@ const GLARUS_CENTER = [47.042381, 9.064495];
 const GL_BOUNDS = [[46.79, 8.85], [47.19, 9.26]];
 
 const map = L.map('map', { zoomControl: true }).setView(GLARUS_CENTER, 14);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-  subdomains: 'abcd', maxZoom: 19
+L.tileLayer('https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg', {
+  attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>',
+  maxZoom: 18
 }).addTo(map);
 
 let clusterLayer = L.layerGroup().addTo(map);
