@@ -815,7 +815,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
 
     <div class="row">
-      <button class="btn toggleBtn" id="toggleIndividual" type="button" aria-pressed="false">Einzelunf&auml;lle anzeigen</button>
+      <button class="btn toggleBtn active" id="toggleIndividual" type="button" aria-pressed="true">Einzelunf&auml;lle ausblenden</button>
     </div>
 
     <div class="row">
@@ -982,9 +982,7 @@ function render() {
   renderPoints(wKey, cat);
 }
 
-let showIndividual = false;
-let manualOverride = false;          // set once the reader uses the button
-const REVEAL_ZOOM = 12;              // from here on single accidents are legible
+let showIndividual = true;           // single accidents are visible by default
 
 function filteredAccidents(wKey, cat) {
   const [y1, y3] = wKey.split('-').map(Number);
@@ -1036,21 +1034,13 @@ document.getElementById('windowSlider').addEventListener('input', render);
 document.querySelectorAll('input[name="cat"]').forEach(el => el.addEventListener('change', render));
 document.getElementById('toggleIndividual').addEventListener('click', () => {
   showIndividual = !showIndividual;
-  manualOverride = true;      // the reader decided; stop switching automatically
   render();
 });
 
-/* Reveal single accidents on zoom-in, hide them again on zoom-out — unless the
-   reader has taken over via the button. Panning only redraws the viewport. */
+/* Single accidents stay visible at every zoom level; zooming and panning only
+   redraw the markers that are inside the current viewport. */
 map.on('zoomend', () => {
-  if (manualOverride) { renderPoints(currentWindowKey(), currentCategory()); return; }
-  const should = map.getZoom() >= REVEAL_ZOOM;
-  if (should !== showIndividual) {
-    showIndividual = should;
-    render();
-  } else if (showIndividual) {
-    renderPoints(currentWindowKey(), currentCategory());
-  }
+  if (showIndividual) renderPoints(currentWindowKey(), currentCategory());
 });
 map.on('moveend', () => {
   if (showIndividual) renderPoints(currentWindowKey(), currentCategory());
@@ -1077,11 +1067,6 @@ document.getElementById('infoModal').addEventListener('click', (e) => {
   if (e.target.id === 'infoModal') document.getElementById('infoModal').style.display = 'none';
 });
 
-// the page loads straight into the Gemeinde-Glarus view, already above the
-// reveal threshold — the zoomend listener never fires for that, so set the
-// initial state explicitly instead of leaving individuals hidden until the
-// reader touches the zoom.
-showIndividual = map.getZoom() >= REVEAL_ZOOM;
 render();
 </script>
 </body>
