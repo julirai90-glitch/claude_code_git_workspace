@@ -808,7 +808,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <header>
     <div class="headerleft">
       <h1>Unfall-Hotspots <span>Kanton Glarus</span></h1>
-      <div class="subtitle">Basierend auf ASTRA-Unfalldaten &middot; Methodik: ASTRA Black Spot Management</div>
+      <div class="subtitle">ASTRA-Unfalldaten, nur Unf&auml;lle mit Personenschaden &middot; Methodik: ASTRA Black Spot Management</div>
     </div>
     <button class="btn" id="infoBtn">&#8505; Methode &amp; Quelle</button>
   </header>
@@ -851,7 +851,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div class="stat"><div class="num" id="statClusters">-</div><div class="lbl">Hotspot-Cluster</div></div>
       <div class="stat"><div class="num" id="statAccidents">-</div><div class="lbl">Unf&auml;lle im Zeitraum</div></div>
     </div>
-    <div class="row statNote" style="margin-top:-8px; font-size:11px; color:var(--muted);">Werte gelten f&uuml;r den ganzen Kanton Glarus, unabh&auml;ngig von der Kartenansicht.</div>
+    <div class="row statNote" style="margin-top:-8px; font-size:11px; color:var(--muted);">Gez&auml;hlt werden nur Unf&auml;lle mit Personenschaden. Werte gelten f&uuml;r den ganzen Kanton Glarus, unabh&auml;ngig von der Kartenansicht.</div>
 
     <div class="row" id="legend">
       <h2>Legende</h2>
@@ -869,7 +869,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <button id="closeInfo">&times;</button>
       <h2>Infos zur Karte</h2>
       <p>Diese Karte zeigt Unfall-Hotspots im Kanton Glarus. Sie basiert auf den
-      offiziellen Unfalldaten des Bundesamts f&uuml;r Strassen (ASTRA), die den Kanton Glarus betreffen. Die
+      offiziellen Unfalldaten des Bundesamts f&uuml;r Strassen (ASTRA), die den Kanton Glarus betreffen.
+      <b>Enthalten sind ausschliesslich Unf&auml;lle mit Personenschaden</b> &ndash; also mit Get&ouml;teten,
+      Schwer- oder Leichtverletzten. Unf&auml;lle mit reinem Sachschaden (&laquo;Blechschaden&raquo;) werden im
+      ver&ouml;ffentlichten ASTRA-Datensatz nicht ausgewiesen und fehlen hier vollst&auml;ndig. Die
       Hotspots wurden nach der Methodik des ASTRA Black Spot Managements (BSM) f&uuml;r innerorts-&auml;hnliche
       Auswertungen ermittelt. Dabei werden Orte identifiziert, an denen sich innerhalb eines definierten Zeitraums
       besonders viele bzw. besonders schwere Unf&auml;lle im 50-Meter-Umkreis ereignen.</p>
@@ -918,7 +921,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
       <p style="color:var(--muted); font-size:12px; margin-top:18px;">Datenquelle: ASTRA &ndash; Strassenverkehrsunfallorte
       Schweiz (services3.arcgis.com/&hellip;/Strassenverkehrsunfallorte_v2_WFL1), Kanton Glarus (Code GL),
-      2016&ndash;2025. Analyse-Skript und Karte erstellt mit KI (Claude, Anthropic), angelehnt an das Vorbild der
+      2016&ndash;2025, Schweregrade as1&ndash;as3 (Get&ouml;tete, Schwer-, Leichtverletzte); die Kategorie
+      &laquo;Unfall mit Sachschaden&raquo; (as4) kommt in diesem Datensatz schweizweit nicht vor. Analyse-Skript und Karte erstellt mit KI (Claude, Anthropic), angelehnt an das Vorbild der
       Velokarte Z&uuml;rich von wnti.ch/ts&uuml;ri.ch.</p>
     </div>
   </div>
