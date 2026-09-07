@@ -709,8 +709,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
   }
   #panel h2 { font-size:13px; margin:0 0 8px 0; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
   .row { margin-bottom:14px; }
-  .viewToggle { display:flex; gap:6px; margin-bottom:4px; }
-  .viewToggle .btn { flex:1; text-align:center; }
+  .wideBtn { width:100%; text-align:center; margin-bottom:6px; }
+  .viewToggle { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:4px; }
+  .viewToggle .btn { text-align:center; padding:6px 4px; font-size:12.5px; white-space:normal; }
   #windowLabel { font-weight:700; font-size:15px; margin-bottom:6px; }
   input[type=range] { width:100%; accent-color: var(--accent); }
   .yearRange { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); }
@@ -809,9 +810,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <div id="map"></div>
 
   <div id="panel">
-    <div class="row viewToggle">
-      <button class="btn active" id="viewGlarus">Gemeinde Glarus</button>
-      <button class="btn" id="viewGL">Kanton Glarus</button>
+    <div class="row">
+      <h2>Kartenausschnitt</h2>
+      <button class="btn viewBtn wideBtn active" type="button" data-view="kanton">Kanton Glarus</button>
+      <div class="viewToggle">
+        <button class="btn viewBtn" type="button" data-view="nord">Glarus Nord</button>
+        <button class="btn viewBtn" type="button" data-view="glarus">Glarus</button>
+        <button class="btn viewBtn" type="button" data-view="sued">Glarus S&uuml;d</button>
+      </div>
     </div>
 
     <div class="row">
@@ -919,10 +925,18 @@ const ACC_TYPES = ["Abbiegeunfall", "Andere", "Auffahrunfall", "Einbiegeunfall",
 const ACC_MONTHS = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
 const SEV_LABEL = {1:'Unfall mit Get\u00f6teten', 2:'Unfall mit Schwerverletzten', 3:'Unfall mit Leichtverletzten'};
 const WINDOWS = ["2016-2018", "2017-2019", "2018-2020", "2019-2021", "2020-2022", "2021-2023", "2022-2024", "2023-2025"];
-const GLARUS_CENTER = [47.042381, 9.064495];
 const GL_BOUNDS = [[46.79, 8.85], [47.19, 9.26]];
+/* Bounding boxes of the three Glarus municipalities as [[S, W], [N, E]].
+   Source: swisstopo SearchServer, origins=gg25 (official municipal boundaries),
+   queried 2026-09-07. BFS numbers: Glarus Nord 1630, Glarus Sued 1631, Glarus 1632. */
+const VIEWS = {
+  kanton: GL_BOUNDS,
+  nord:   [[47.038340, 8.947851], [47.174712, 9.195227]],
+  glarus: [[46.964564, 8.891472], [47.084186, 9.135394]],
+  sued:   [[46.791852, 8.870036], [47.043474, 9.256333]]
+};
 
-const map = L.map('map', { zoomControl: true }).setView(GLARUS_CENTER, 14);
+const map = L.map('map', { zoomControl: true }).fitBounds(VIEWS.kanton);
 L.tileLayer('https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg', {
   attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>',
   maxZoom: 18
@@ -1046,15 +1060,12 @@ map.on('moveend', () => {
   if (showIndividual) renderPoints(currentWindowKey(), currentCategory());
 });
 
-document.getElementById('viewGlarus').addEventListener('click', () => {
-  map.setView(GLARUS_CENTER, 14);
-  document.getElementById('viewGlarus').classList.add('active');
-  document.getElementById('viewGL').classList.remove('active');
-});
-document.getElementById('viewGL').addEventListener('click', () => {
-  map.fitBounds(GL_BOUNDS);
-  document.getElementById('viewGL').classList.add('active');
-  document.getElementById('viewGlarus').classList.remove('active');
+const viewButtons = document.querySelectorAll('.viewBtn');
+viewButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    map.fitBounds(VIEWS[btn.dataset.view]);
+    viewButtons.forEach(b => b.classList.toggle('active', b === btn));
+  });
 });
 
 document.getElementById('infoBtn').addEventListener('click', () => {
