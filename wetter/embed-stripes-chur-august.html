@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>August-Temperatur Chur 1887–2026</title>
+<style>
+  :root{--blau:#0068A4;--orange:#EE7733;--grau:#6b7280;--hell:#eef2f5;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:#1f2937;margin:0;padding:12px;background:#fff;}
+  .card{max-width:696px;margin:0 auto;border:1px solid #e5e7eb;border-radius:14px;
+        padding:14px 16px 16px;box-shadow:0 4px 18px rgba(0,0,0,.06);position:relative;overflow:hidden;}
+  .accent{position:absolute;top:0;left:0;right:0;height:4px;background:var(--blau);}
+  .kicker{color:var(--orange);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:.68rem;margin-bottom:2px;}
+  .main-title{font-size:1.1rem;font-weight:800;color:#1f2937;margin:2px 0 2px;line-height:1.25;}
+  .title{font-size:.78rem;font-weight:400;color:#6b7280;margin:0 0 10px;}
+  svg{width:100%;display:block;touch-action:none;cursor:crosshair;overflow:visible;}
+  .scalebar{display:flex;align-items:center;gap:6px;font-size:.68rem;color:var(--grau);margin-top:6px;}
+  .scalebar .grad{height:10px;flex:1;border-radius:3px;
+    background:linear-gradient(90deg,#08306b,#4a90c2,#f7f7f7,#d6604d,#67000d);}
+  .callout{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0;}
+  .chip{background:var(--hell);border-radius:8px;padding:6px 10px;font-size:.74rem;}
+  .chip b{display:block;font-size:1.05rem;line-height:1.2;}
+  .chip.hot b{color:#c0392b;} .chip.rec b{color:#c0392b;}
+  .note{font-size:.66rem;color:var(--grau);margin-top:10px;line-height:1.4;}
+  .tip{position:fixed;pointer-events:none;background:#fff;border:1px solid #d1d5db;
+       border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);padding:6px 10px;
+       font-size:.78rem;opacity:0;transition:opacity .07s;z-index:60;}
+  .tip b{display:block;font-size:.9rem;margin-bottom:2px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="accent"></div>
+  <div class="kicker">Klima Graubünden</div>
+  <div class="main-title">Chur: durchschnittliche August-Temperatur seit 1887</div>
+  <div class="title">Jeder Streifen = ein August. Blau: kühler als üblich. Rot: wärmer.</div>
+  <svg id="svg" viewBox="0 0 660 170" role="img" aria-label="August-Stripes Chur 1887-2026"></svg>
+  <div class="scalebar">
+    <span id="sc-min">kühler</span><div class="grad"></div><span id="sc-max">wärmer</span>
+  </div>
+  <div class="callout">
+    <div class="chip hot"><b>Platz 1 von 140</b>August 2026, wärmster seit 1887</div>
+    <div class="chip rec"><b>23.2 °C</b>neuer Rekord (bisher 22.5 °C, 2003)</div>
+  </div>
+  <p class="note">Quelle: MeteoSchweiz (SMN, Open Government Data, CC BY). <b>August 2026 provisorisch</b>, Stand 8.9.2026. Kennzahlen: eigene Auswertung. Referenz: 1961–1990 (17.2 °C).</p>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+const STOPS=[[8,48,107],[74,144,194],[247,247,247],[214,96,77],[103,0,13]];
+function stripeColor(anom,maxAbs){
+  let t=Math.max(0,Math.min(1,(anom/maxAbs+1)/2));
+  const seg=t*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(seg)),f=seg-i;
+  const A=STOPS[i],B=STOPS[i+1];
+  return `rgb(${[0,1,2].map(k=>Math.round(A[k]+(B[k]-A[k])*f)).join(',')})`;
+}
+
+const DATA={"1887":16.67,"1888":15.38,"1889":15.55,"1890":15.94,"1891":15.15,"1892":18.51,"1893":18.21,"1894":16.41,"1895":16.55,"1896":14.29,"1897":17.04,"1898":18.32,"1899":18.41,"1900":15.86,"1901":16.65,"1902":16.56,"1903":16.82,"1904":17.84,"1905":16.78,"1906":17.78,"1907":17.47,"1908":15.22,"1909":16.28,"1910":16.32,"1911":19.91,"1912":14.16,"1913":15.67,"1914":16.99,"1915":15.53,"1916":16.41,"1917":16.64,"1918":16.48,"1919":18.78,"1920":15.56,"1921":17.63,"1922":16.86,"1923":18.28,"1924":14.21,"1925":16.91,"1926":17.0,"1927":16.43,"1928":17.97,"1929":17.05,"1930":16.62,"1931":15.24,"1932":19.52,"1933":18.06,"1934":16.02,"1935":16.57,"1936":16.57,"1937":16.91,"1938":17.19,"1939":17.57,"1940":15.83,"1941":15.48,"1942":17.28,"1943":19.14,"1944":20.72,"1945":16.5,"1946":16.71,"1947":18.91,"1948":17.08,"1949":17.76,"1950":17.82,"1951":17.34,"1952":18.38,"1953":17.02,"1954":15.79,"1955":16.24,"1956":15.68,"1957":15.69,"1958":18.23,"1959":17.23,"1960":16.93,"1961":17.25,"1962":18.64,"1963":16.53,"1964":17.04,"1965":16.27,"1966":15.3,"1967":17.7,"1968":16.09,"1969":16.73,"1970":17.46,"1971":19.02,"1972":16.88,"1973":19.27,"1974":18.57,"1975":17.7,"1976":15.57,"1977":15.66,"1978":16.07,"1979":15.84,"1980":18.1,"1981":17.38,"1982":16.98,"1983":17.62,"1984":16.6,"1985":16.46,"1986":17.54,"1987":16.67,"1988":17.86,"1989":17.83,"1990":18.84,"1991":19.42,"1992":21.01,"1993":17.88,"1994":19.09,"1995":17.2,"1996":17.22,"1997":19.14,"1998":18.85,"1999":18.39,"2000":19.11,"2001":19.42,"2002":17.81,"2003":22.51,"2004":18.86,"2005":16.36,"2006":15.47,"2007":17.6,"2008":18.54,"2009":20.58,"2010":17.65,"2011":20.18,"2012":19.82,"2013":19.26,"2014":16.74,"2015":20.99,"2016":18.94,"2017":20.1,"2018":21.37,"2019":19.71,"2020":19.72,"2021":17.57,"2022":20.89,"2023":19.97,"2024":22.08,"2025":20.05,"2026":23.19};
+const REF=17.18;
+const years=Object.keys(DATA).map(Number).sort((a,b)=>a-b);
+const anoms=years.map(y=>DATA[y]-REF);
+const maxAbs=Math.max(...anoms.map(Math.abs));
+
+document.getElementById('sc-min').textContent=(REF-maxAbs).toFixed(1)+' °C';
+document.getElementById('sc-max').textContent=(REF+maxAbs).toFixed(1)+' °C';
+
+const svg=document.getElementById('svg');
+const W=660,H=170,axH=40,plotH=H-axH;
+const bw=W/years.length;
+let s='';
+
+// stripes (clean, no text on top)
+years.forEach((y,i)=>{
+  const c=stripeColor(DATA[y]-REF,maxAbs);
+  const x=(i*bw).toFixed(2);
+  s+=`<rect x="${x}" y="0" width="${(bw+0.5).toFixed(2)}" height="${plotH}" fill="${c}" data-y="${y}" data-v="${DATA[y]}"/>`;
+});
+
+// standard axis ticks: 1900, 1950
+[1900,1950].forEach(y=>{
+  const i=years.indexOf(y); if(i<0)return;
+  const x=((i+0.5)*bw).toFixed(1);
+  s+=`<line x1="${x}" y1="${plotH}" x2="${x}" y2="${plotH+5}" stroke="#9ca3af" stroke-width="1"/>`;
+  s+=`<text x="${x}" y="${H-4}" text-anchor="middle" font-size="20" fill="#9ca3af" font-weight="500">${y}</text>`;
+});
+
+// 2003: thin coloured marker line + label in axis area
+const i03=years.indexOf(2003);
+if(i03>=0){
+  const x=((i03+0.5)*bw).toFixed(1);
+  s+=`<line x1="${x}" y1="0" x2="${x}" y2="${plotH+5}" stroke="#c0392b" stroke-width="1.2" opacity="0.55"/>`;
+  s+=`<text x="${x}" y="${H-4}" text-anchor="middle" font-size="20" fill="#c0392b" font-weight="700">2003</text>`;
+}
+
+// 2026: thin coloured marker line + label in axis area
+const i26=years.indexOf(2026);
+if(i26>=0){
+  const x=((i26+0.5)*bw).toFixed(1);
+  s+=`<line x1="${x}" y1="0" x2="${x}" y2="${plotH+5}" stroke="#EE7733" stroke-width="1.5" opacity="0.7"/>`;
+  // anchor end so it doesn't overflow right
+  const tx=Math.min(parseFloat(x),W-2);
+  s+=`<text x="${tx}" y="${H-4}" text-anchor="end" font-size="20" fill="#EE7733" font-weight="700">2026</text>`;
+}
+
+svg.innerHTML=s;
+
+const tip=document.getElementById('tip');
+svg.addEventListener('pointermove',ev=>{
+  const r=svg.getBoundingClientRect();
+  const xi=(ev.clientX-r.left)/r.width*W;
+  const i=Math.max(0,Math.min(years.length-1,Math.floor(xi/bw)));
+  const y=years[i],v=DATA[y],d=v-REF;
+  tip.innerHTML=`<b>${y}</b>${v.toFixed(1)} °C · ${d>=0?'+':''}${d.toFixed(1)} °C vs. Ref.`;
+  tip.style.opacity=1;
+  let lx=ev.clientX+12; if(lx+160>window.innerWidth)lx=ev.clientX-164;
+  tip.style.left=Math.max(4,lx)+'px'; tip.style.top=(ev.clientY-38)+'px';
+});
+svg.addEventListener('pointerleave',()=>tip.style.opacity=0);
+</script>
+</body>
+</html>

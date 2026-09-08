@@ -50,14 +50,9 @@
   .kpi .val{ font-size:1.75rem; font-weight:700; color:var(--blau); line-height:1.1; font-variant-numeric:tabular-nums; }
   .kpi .lbl{ font-size:.78rem; color:var(--muted); margin-top:5px; }
 
-  /* --- Embed-Slots --- */
-  .embed-slot{
-    border:2px dashed var(--blau); border-radius:10px; background:#F2F8FC;
-    padding:34px 20px; text-align:center; color:var(--blau); margin:24px 0 28px;
-  }
-  .embed-slot b{ display:block; font-size:.95rem; margin-bottom:4px; }
-  .embed-slot span{ font-size:.8rem; color:var(--muted); }
-  .embed-slot code{ background:#fff; border:1px solid var(--border); padding:1px 6px; border-radius:4px; font-size:.85em; color:var(--text); }
+  /* --- Embeds --- */
+  iframe.embed{ width:100%; border:0; display:block; margin:24px 0 28px; }
+  @media (max-width:520px){ iframe.embed{ height:560px !important; } }
 
   /* --- Tabellen --- */
   table{ width:100%; border-collapse:collapse; margin:20px 0 26px; font-size:.9rem; }
@@ -84,7 +79,7 @@
 <div class="wrap">
 
   <div class="draft-banner">
-    <b>Layout-Vorschau.</b> Alle Zahlen, Tabellen und Zitate sind final und belegt – <b>nur der Fliesstext</b> ist noch Platzhalter (grau unterlegt).
+    <b>Layout-Vorschau.</b> Alle Zahlen, Tabellen und Zitate sind final und belegt – <b>nur der Fliesstext</b> ist noch Platzhalter (grau unterlegt). Beide Grafiken sind fertig und interaktiv.
     Grundlage: <code>wetter-monatsrueckblick/2026-08/artikel-entwurf.md</code>. Vor Publikation dieses Banner und alle
     Platzhalter entfernen sowie die Zahlen gegen das definitive MeteoSchweiz-Klimabulletin (ab 10.9.2026) prüfen.
   </div>
@@ -128,10 +123,8 @@
     </tbody>
   </table>
 
-  <div class="embed-slot">
-    <b>Embed 1 · Warming Stripes Chur</b>
-    <span>Vorlage klonen: <code>klima-embed-juni-stripes-chur.html</code> → <code>klima-embed-aug2026-stripes-chur.html</code></span>
-  </div>
+  <iframe class="embed" src="embed-stripes-chur-august.html" height="420" loading="lazy"
+          title="Chur: durchschnittliche August-Temperatur seit 1887"></iframe>
 
   <h2>Wie ungewöhnlich das ist</h2>
   <p class="ph">Platzhalter-Absatz. Hitzetage, Sommertage und Tropennächte in Chur gegen die Norm 1991–2020, dazu die längste zusammenhängende Hitzeperiode.</p>
@@ -147,10 +140,8 @@
     </tbody>
   </table>
 
-  <div class="embed-slot">
-    <b>Embed 2 · Tagesmittel vs. Normal, August 2026</b>
-    <span>Vorlage klonen: <code>klima-embed-juni2026-tage-chur.html</code> → <code>klima-embed-aug2026-tage-chur.html</code></span>
-  </div>
+  <iframe class="embed" src="embed-tage-chur-august2026.html" height="500" loading="lazy"
+          title="Chur: Tagesdurchschnitt August 2026 im Vergleich zum Normal 1991–2020"></iframe>
 
   <p class="ph">Platzhalter-Absatz. Überleitung zu den Höhenlagen, wo Sommertage sonst die Ausnahme sind.</p>
 
