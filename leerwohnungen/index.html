@@ -91,8 +91,8 @@ footer code{background:var(--surface);border:1px solid var(--border);padding:.1r
     <p class="lede" id="lede"></p>
 
     <div class="tiles">
-      <div class="tile"><div class="fig" id="t-ziffer"></div><div class="lab">Leerwohnungsziffer Graubünden</div></div>
-      <div class="tile"><div class="fig" id="t-ch"></div><div class="lab">Leerwohnungsziffer Schweiz</div></div>
+      <div class="tile"><div class="fig" id="t-ziffer"></div><div class="lab">Leerstandsquote Graubünden</div></div>
+      <div class="tile"><div class="fig" id="t-ch"></div><div class="lab">Leerstandsquote Schweiz</div></div>
       <div class="tile"><div class="fig" id="t-max"></div><div class="lab" id="t-max-lab"></div></div>
       <div class="tile"><div class="fig" id="t-null"></div><div class="lab">Gemeinden ohne eine einzige leere Wohnung</div></div>
     </div>
@@ -100,15 +100,15 @@ footer code{background:var(--surface);border:1px solid var(--border);padding:.1r
 
   <section>
     <h2>Wo Wohnungen leer stehen</h2>
-    <p class="sub">Leerwohnungsziffer je Gemeinde, Stand <span class="k-stichtag2"></span>. Anteil der leerstehenden an allen Wohnungen. Fahren Sie über eine Gemeinde für die Zahlen.</p>
+    <p class="sub">Leerstandsquote je Gemeinde, Stand <span class="k-stichtag2"></span>. Anteil der leerstehenden an allen Wohnungen. Fahren Sie über eine Gemeinde für die Zahlen.</p>
     <div class="card">
       <div class="maprow">
-        <div><svg id="map" viewBox="0 0 640 420" role="img" aria-label="Karte der Leerwohnungsziffer je Bündner Gemeinde"></svg></div>
-        <div class="legend" id="map-legend"><h3>Leerwohnungsziffer</h3></div>
+        <div><svg id="map" viewBox="0 0 640 420" role="img" aria-label="Karte der Leerstandsquote je Bündner Gemeinde"></svg></div>
+        <div class="legend" id="map-legend"><h3>Leerstandsquote</h3></div>
       </div>
       <details>
         <summary>Alle 100 Gemeinden als Tabelle</summary>
-        <div class="scroll"><table id="tab-gem"><thead><tr><th>Gemeinde</th><th class="th-j">leer</th><th class="th-vj">leer</th><th class="th-j">Ziffer</th><th class="th-vj">Ziffer</th></tr></thead><tbody></tbody></table></div>
+        <div class="scroll"><table id="tab-gem"><thead><tr><th>Gemeinde</th><th class="th-j">leer</th><th class="th-vj">leer</th><th class="th-j">Quote</th><th class="th-vj">Quote</th></tr></thead><tbody></tbody></table></div>
       </details>
     </div>
   </section>
@@ -137,7 +137,7 @@ footer code{background:var(--surface);border:1px solid var(--border);padding:.1r
 
 <footer class="wrap">
   <p><b>Quelle:</b> <span id="f-quelle"></span>. Erhebung jeweils am 1. Juni.</p>
-  <p><b>Rechenweg:</b> Alle Leerwohnungsziffern sind die offiziellen Werte des BFS: leerstehende Wohnungen am 1. Juni geteilt durch den Wohnungsbestand des Vorjahres. <span id="f-kontrolle"></span></p>
+  <p><b>Rechenweg:</b> Alle Leerstandsquoten sind die offiziellen Werte des BFS, das sie Leerwohnungsziffer nennt: leerstehende Wohnungen am 1. Juni geteilt durch den Wohnungsbestand des Vorjahres. <span id="f-kontrolle"></span></p>
   <p><b>Nachbauen:</b> <code>python3 build_data.py &amp;&amp; python3 build_page.py</code> im Ordner <code>leerwohnungen/</code>. <code>build_data.py</code> zieht die Daten live vom BFS (<code>stats.swiss</code>) und von <code>data.gr.ch</code>.</p>
   <p>Daten abgerufen am <span id="f-datum"></span>. </p>
 </footer>

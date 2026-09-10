@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leerwohnungsziffer nach Gemeinde</title>
+<title>Leerstandsquote nach Gemeinde</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
@@ -63,7 +63,7 @@ svg{display:block; width:100%; height:auto}
 <div class="wrap">
   <div class="legend" id="legend"></div>
   <div class="legend-s" id="legend-s" aria-hidden="true"></div>
-  <div class="chart"><svg id="map" role="img" aria-label="Karte: Leerwohnungsziffer in den 100 Bündner Gemeinden" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="chart"><svg id="map" role="img" aria-label="Karte: Leerstandsquote in den 100 Bündner Gemeinden" preserveAspectRatio="xMidYMid meet"></svg></div>
   <p class="src">Quelle: <span class="lang">Bundesamt f&uuml;r Statistik </span>BFS, Leerwohnungsz&auml;hlung <span id="jahr"></span> (Stichtag 1. Juni). Grafik: S&uuml;dostschweiz</p>
 </div>
 <div class="tip" id="tip" role="status" aria-live="polite"></div>
@@ -122,7 +122,7 @@ function hideTip(){ tip.style.opacity = '0'; }
   svg.querySelectorAll('.gem').forEach(p => {
     const g = byCode[p.dataset.c];
     const html = `<span class="t-h">${g.n}</span><table>` +
-      `<tr><td>Leerwohnungsziffer</td><td>${pp(g.r)}</td></tr>` +
+      `<tr><td>Leerstandsquote</td><td>${pp(g.r)}</td></tr>` +
       `<tr><td>Leere Wohnungen</td><td>${fmt(g.v)}</td></tr>` +
       `<tr><td>Vorjahr</td><td>${pp(g.rp)} (${fmt(g.vp)})</td></tr></table>`;
     const on = e => {

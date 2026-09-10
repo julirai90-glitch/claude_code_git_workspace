@@ -45,18 +45,18 @@ Daten sind eingebettet (offline lauffähig). Update nach jeder Leerwohnungszähl
 
 | # | Embed | Was es zeigt | Direkt-Link |
 |---|---|---|---|
-| L1 | `leerwohnungen/embed-karte.html` | Choropleth: Leerwohnungsziffer aller 100 Gemeinden, Tooltip mit Vorjahr | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html) |
+| L1 | `leerwohnungen/embed-karte.html` | Choropleth: Leerstandsquote aller 100 Gemeinden, Tooltip mit Vorjahr | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html) |
 | L2 | `leerwohnungen/embed-verlauf.html` | Linie: leerstehende Wohnungen im Kanton seit 1995 | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-verlauf.html) |
 | L3 | `leerwohnungen/embed-tabelle.html` | Tabelle aller 100 Gemeinden mit Suche und Sortierung, scrollt im festen Rahmen | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-tabelle.html) |
 
-### L1. Karte Leerwohnungsziffer
+### L1. Karte Leerstandsquote
 
 **A — wächst mit der Breite, ohne Script (empfohlen):** Höhe = 71 % der Breite + 105 px
 ```html
 <div style="position:relative; width:100%; padding-top:calc(71% + 105px);">
   <iframe
     src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html"
-    title="Leerwohnungsziffer in den Bündner Gemeinden"
+    title="Leerstandsquote in den Bündner Gemeinden"
     loading="lazy" scrolling="no"
     style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>
 </div>
@@ -66,7 +66,7 @@ Daten sind eingebettet (offline lauffähig). Update nach jeder Leerwohnungszähl
 ```html
 <iframe
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html"
-  title="Leerwohnungsziffer in den Bündner Gemeinden"
+  title="Leerstandsquote in den Bündner Gemeinden"
   loading="lazy" scrolling="no"
   style="width:100%; height:600px; border:none; display:block;"></iframe>
 ```
@@ -98,7 +98,7 @@ Feste Höhe genügt: Die Tabelle scrollt innerhalb des Rahmens, Suchfeld und Que
 ```html
 <iframe
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-tabelle.html"
-  title="Leerwohnungsziffer aller Bündner Gemeinden"
+  title="Leerstandsquote aller Bündner Gemeinden"
   loading="lazy"
   style="width:100%; height:540px; border:none; display:block;"></iframe>
 ```
