@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leerwohnungsziffer nach Gemeinde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  /* sequential ramp, validated with dataviz validate_palette.js --ordinal on #fff (all checks pass) */
+  --s1:#8FB9D6; --s2:#5F9AC2; --s3:#3679A8; --s4:#14588B; --s5:#073F68;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.5}
+.wrap{padding:12px 16px 16px}
+.legend{display:flex; flex-wrap:wrap; gap:4px 16px; margin:0 0 10px; font-size:13px; color:var(--ink-2)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.legend i{width:14px; height:14px; border-radius:2px; display:inline-block}
+svg{display:block; width:100%; height:auto}
+.gem{stroke:#fff; stroke-width:.7; cursor:pointer}
+.gem.on{stroke:var(--ink); stroke-width:1.6}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:14px 0 0}
+.tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
+  transform:translate(-50%,-100%); background:#fff; color:var(--ink);
+  border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
+  padding:9px 12px; font-size:13px; line-height:1.45; white-space:nowrap; transition:opacity .09s}
+.tip table{border-collapse:collapse; font-size:12.5px}
+.tip td{padding:1px 0}
+.tip td:last-child{text-align:right; padding-left:16px; font-variant-numeric:tabular-nums; font-weight:600}
+.tip .t-h{font-weight:700; display:block; margin-bottom:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="legend" id="legend"></div>
+  <svg id="map" role="img" aria-label="Karte: Leerwohnungsziffer in den 100 Bündner Gemeinden"></svg>
+  <p class="src">Quelle: Bundesamt f&uuml;r Statistik BFS, Leerwohnungsz&auml;hlung <span id="jahr"></span> (Stichtag 1. Juni). Grafik: S&uuml;dostschweiz</p>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<script>
+const DATA = /*__DATA__*/;
+const M = DATA.meta;
+const fmt = n => n.toLocaleString('de-CH');
+const pp = n => n.toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.', ',') + ' %';
+document.getElementById('jahr').textContent = M.jahr;
+
+const BINS = [
+  {max:0.0001, col:'var(--s1)', lab:'keine leere Wohnung'},
+  {max:0.5,    col:'var(--s2)', lab:'unter 0,5 %'},
+  {max:1.0,    col:'var(--s3)', lab:'0,5 bis 1 %'},
+  {max:2.0,    col:'var(--s4)', lab:'1 bis 2 %'},
+  {max:1e9,    col:'var(--s5)', lab:'2 % und mehr'}
+];
+const binOf = r => BINS.find(b => r < b.max);
+document.getElementById('legend').innerHTML =
+  BINS.map(b => `<span><i style="background:${b.col}"></i>${b.lab}</span>`).join('');
+
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html; tip.style.opacity = '1';
+  const half = tip.offsetWidth/2, vw = window.innerWidth;
+  tip.style.left = Math.max(half+6, Math.min(vw-half-6, e.clientX)) + 'px';
+  tip.style.top = Math.max(tip.offsetHeight+8, e.clientY-12) + 'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+
+(function drawMap(){
+  const svg = document.getElementById('map'), W = 640, pad = 4;
+  const byCode = Object.fromEntries(DATA.gemeinden.map(g => [g.c, g]));
+  let x0=180, x1=-180, y0=90, y1=-90;
+  DATA.geo.forEach(f => f.g.forEach(p => p.forEach(r => r.forEach(([x,y]) => {
+    if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y;
+  }))));
+  // equirectangular with cos(lat) correction; the height follows the canton's shape
+  const k = Math.cos((y0+y1)/2 * Math.PI/180);
+  const s = (W-2*pad) / ((x1-x0)*k);
+  const H = Math.ceil((y1-y0)*s + 2*pad);
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const px = ([x,y]) => [(x-x0)*k*s + pad, (y1-y)*s + pad];
+
+  svg.innerHTML = DATA.geo.map(f => {
+    const g = byCode[f.c];
+    const d = f.g.map(poly => poly.map(ring =>
+      'M' + ring.map(p => px(p).map(v => v.toFixed(1)).join(',')).join('L') + 'Z').join('')).join('');
+    return `<path class="gem" d="${d}" fill="${binOf(g.r).col}" data-c="${f.c}"></path>`;
+  }).join('');
+
+  let active = null;
+  svg.querySelectorAll('.gem').forEach(p => {
+    const g = byCode[p.dataset.c];
+    const html = `<span class="t-h">${g.n}</span><table>` +
+      `<tr><td>Leerwohnungsziffer</td><td>${pp(g.r)}</td></tr>` +
+      `<tr><td>Leere Wohnungen</td><td>${fmt(g.v)}</td></tr>` +
+      `<tr><td>Vorjahr</td><td>${pp(g.rp)} (${fmt(g.vp)})</td></tr></table>`;
+    const on = e => {
+      if (active && active !== p) active.classList.remove('on');
+      active = p; p.classList.add('on'); svg.appendChild(p);   // outline on top of neighbours
+      showTip(e, html);
+    };
+    p.addEventListener('pointermove', on);
+    p.addEventListener('pointerdown', on);
+    p.addEventListener('pointerleave', () => { p.classList.remove('on'); hideTip(); });
+  });
+  document.addEventListener('pointerdown', ev => {
+    if (!(ev.target instanceof Element) || !ev.target.classList.contains('gem')) {
+      if (active) active.classList.remove('on');
+      hideTip();
+    }
+  }, true);
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</body>
+</html>

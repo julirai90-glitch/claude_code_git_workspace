@@ -37,6 +37,61 @@ Höhen-Sync: jeder Embed hat das iframe-resizer/contentWindow-Script — die res
 
 ---
 
+## Leerwohnungen Graubünden
+
+Daten sind eingebettet (offline lauffähig). Update nach jeder Leerwohnungszählung: `python3 build_data.py && python3 build_page.py` in `leerwohnungen/`, dann pushen — die URLs bleiben gleich.
+
+| # | Embed | Was es zeigt | Direkt-Link |
+|---|---|---|---|
+| L1 | `leerwohnungen/embed-karte.html` | Choropleth: Leerwohnungsziffer aller 100 Gemeinden, Tooltip mit Vorjahr | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html) |
+| L2 | `leerwohnungen/embed-verlauf.html` | Linie: leerstehende Wohnungen im Kanton seit 1995 | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-verlauf.html) |
+
+### L1. Karte Leerwohnungsziffer
+
+**A — responsive:**
+```html
+<iframe id="lw-karte"
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html"
+  title="Leerwohnungsziffer in den Bündner Gemeinden"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; display:block;"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#lw-karte');</script>
+```
+
+**B — einfach:**
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html"
+  title="Leerwohnungsziffer in den Bündner Gemeinden"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; min-height:600px; display:block;"></iframe>
+```
+
+### L2. Verlauf seit 1995
+
+**A — responsive:**
+```html
+<iframe id="lw-verlauf"
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-verlauf.html"
+  title="Leerstehende Wohnungen in Graubünden seit 1995"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; display:block;"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#lw-verlauf');</script>
+```
+
+**B — einfach:**
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-verlauf.html"
+  title="Leerstehende Wohnungen in Graubünden seit 1995"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; min-height:420px; display:block;"></iframe>
+```
+
+---
+
 ## Zweitwohnungs-Datenstory Graubünden
 
 Daten werden aus den geschwister-Files `zweitwohnungen_data.json`, `zweitwohnungen_kanton_zeitreihe.json` sowie der Datawrapper-Karte `uzHEN` zur Laufzeit geladen — bei jedem Datenupdate auf gh-pages aktualisiert sich der Embed automatisch.
@@ -376,5 +431,5 @@ Wenn du z.B. den Atlas und das Kanton-Embed auf derselben WordPress-Seite zeigen
 
 ---
 
-*Letztes Update: 2026-05-04.
+*Letztes Update: 2026-09-10.
 Bei Datenupdate auf gh-pages aktualisieren sich alle Embeds automatisch — keine Code-Änderung im einbettenden Artikel nötig.*

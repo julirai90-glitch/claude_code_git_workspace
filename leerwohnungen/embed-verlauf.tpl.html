@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leerstehende Wohnungen in Graubünden seit 1995</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --brand:#0068a4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.5}
+.wrap{padding:12px 16px 16px}
+.chart{width:100%}
+svg{display:block; max-width:100%; height:auto}
+.tick{font-size:12px; fill:var(--ink-3); font-variant-numeric:tabular-nums}
+.grid{stroke:var(--rule-soft); stroke-width:1}
+.base{stroke:var(--ink-3); stroke-width:1}
+.line{fill:none; stroke:var(--brand); stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.dot{fill:var(--brand); stroke:var(--surface); stroke-width:2}
+.labv{font-size:13px; font-weight:700; fill:var(--ink); font-variant-numeric:tabular-nums;
+  paint-order:stroke; stroke:var(--surface); stroke-width:3px; stroke-linejoin:round}
+.cross{stroke:var(--ink-3); stroke-width:1}
+.hit{fill:transparent; cursor:crosshair}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:14px 0 0}
+.tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
+  transform:translate(-50%,-100%); background:#fff; color:var(--ink);
+  border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
+  padding:9px 12px; font-size:13px; line-height:1.45; white-space:nowrap; transition:opacity .09s}
+.tip table{border-collapse:collapse; font-size:12.5px}
+.tip td{padding:1px 0}
+.tip td:last-child{text-align:right; padding-left:16px; font-variant-numeric:tabular-nums; font-weight:600}
+.tip .t-h{font-weight:700; display:block; margin-bottom:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="chart"><svg id="c" role="img" aria-label="Liniendiagramm: leerstehende Wohnungen im Kanton Graubünden seit 1995"></svg></div>
+  <p class="src">Quelle: Bundesamt f&uuml;r Statistik BFS, Leerwohnungsz&auml;hlung; Statistik Graub&uuml;nden. Stichtag jeweils 1. Juni. Grafik: S&uuml;dostschweiz</p>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<script>
+const DATA = /*__DATA__*/;
+const rows = DATA.kanton_reihe;
+const fmt = n => n.toLocaleString('de-CH');
+
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html; tip.style.opacity = '1';
+  const half = tip.offsetWidth/2, vw = window.innerWidth;
+  tip.style.left = Math.max(half+6, Math.min(vw-half-6, e.clientX)) + 'px';
+  tip.style.top = Math.max(tip.offsetHeight+8, e.clientY-12) + 'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('pointerdown', ev => {
+  if (!(ev.target instanceof Element) || !ev.target.classList.contains('hit')) hideTip();
+}, true);
+
+function draw(){
+  const svg = document.getElementById('c');
+  const W = document.querySelector('.chart').clientWidth || 660;
+  const H = Math.round(Math.max(240, Math.min(340, W * 0.5)));
+  const m = {t:28, r:18, b:28, l:44};
+  const pw = W-m.l-m.r, ph = H-m.t-m.b;
+  const j0 = rows[0].j, j1 = rows.at(-1).j;
+  const maxV = Math.ceil(Math.max(...rows.map(r => r.v)) / 500) * 500;
+  const X = j => m.l + (j - j0) / (j1 - j0) * pw;
+  const Y = v => m.t + ph - v / maxV * ph;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
+
+  let g = '';
+  for (let v = 0; v <= maxV; v += 500) {
+    g += `<line class="${v ? 'grid' : 'base'}" x1="${m.l}" x2="${W-m.r}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"></line>` +
+         `<text class="tick" x="${m.l-8}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end">${fmt(v)}</text>`;
+  }
+  const step = W < 440 ? 10 : 5;
+  for (let j = Math.ceil(j0/step)*step; j <= j1; j += step)
+    g += `<text class="tick" x="${X(j).toFixed(1)}" y="${H-m.b+18}" text-anchor="middle">${j}</text>`;
+
+  g += `<path class="line" d="M${rows.map(r => X(r.j).toFixed(1)+','+Y(r.v).toFixed(1)).join('L')}"></path>`;
+
+  // selective direct labels: the peak and the latest value
+  const peak = rows.reduce((a,b) => b.v > a.v ? b : a), last = rows.at(-1);
+  [[peak, `${fmt(peak.v)} (${peak.j})`, 'middle'], [last, `${fmt(last.v)} (${last.j})`, 'end']].forEach(([r, txt, anc]) => {
+    g += `<circle class="dot" cx="${X(r.j).toFixed(1)}" cy="${Y(r.v).toFixed(1)}" r="4.5"></circle>` +
+         `<text class="labv" x="${(X(r.j) + (anc === 'end' ? 4 : 0)).toFixed(1)}" y="${(Y(r.v)-11).toFixed(1)}" text-anchor="${anc}">${txt}</text>`;
+  });
+
+  g += `<g id="hov" style="opacity:0"><line class="cross" y1="${m.t}" y2="${m.t+ph}"></line><circle class="dot" r="5"></circle></g>` +
+       `<rect class="hit" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"></rect>`;
+  svg.innerHTML = g;
+
+  const hov = svg.querySelector('#hov'), hl = hov.querySelector('line'), hd = hov.querySelector('circle');
+  const hit = svg.querySelector('.hit');
+  const move = ev => {
+    const bb = svg.getBoundingClientRect();
+    const j = Math.round(j0 + ((ev.clientX - bb.left) / bb.width * W - m.l) / pw * (j1 - j0));
+    const row = rows.find(r => r.j === j) || (j < j0 ? rows[0] : last);
+    const i = rows.indexOf(row), prev = i > 0 ? rows[i-1] : null;
+    hov.style.opacity = 1;
+    hl.setAttribute('x1', X(row.j)); hl.setAttribute('x2', X(row.j));
+    hd.setAttribute('cx', X(row.j)); hd.setAttribute('cy', Y(row.v));
+    const d = prev ? row.v - prev.v : null;
+    showTip(ev, `<span class="t-h">1. Juni ${row.j}</span><table>` +
+      `<tr><td>Leere Wohnungen</td><td>${fmt(row.v)}</td></tr>` +
+      (prev ? `<tr><td>gegenüber Vorjahr</td><td>${d >= 0 ? '+' : '−'}${fmt(Math.abs(d))}</td></tr>` : '') +
+      `</table>`);
+  };
+  hit.addEventListener('pointermove', move);
+  hit.addEventListener('pointerdown', move);
+  hit.addEventListener('pointerleave', () => { hov.style.opacity = 0; hideTip(); });
+}
+// Redraw whenever the container width changes. ResizeObserver also fires once with the
+// real width after layout, which a plain draw() at load time can miss (it then fell back
+// to 660 px and the scaled-down SVG shrank the labels on phones).
+let lastW = 0, rt;
+new ResizeObserver(entries => {
+  const w = Math.round(entries[0].contentRect.width);
+  if (w && w !== lastW) { lastW = w; clearTimeout(rt); rt = setTimeout(draw, 60); }
+}).observe(document.querySelector('.chart'));
+</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</body>
+</html>
