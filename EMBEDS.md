@@ -41,6 +41,8 @@ Höhen-Sync: jeder Embed hat das iframe-resizer/contentWindow-Script — die res
 
 Daten sind eingebettet (offline lauffähig). Update nach jeder Leerwohnungszählung: `python3 build_data.py && python3 build_page.py` in `leerwohnungen/`, dann pushen — die URLs bleiben gleich.
 
+**Höhe:** Anders als die übrigen Embeds melden diese beiden ihre Höhe nicht per Script, sondern passen sich der Höhe an, die das iframe bekommt (fit-to-frame). Es wird deshalb nie etwas abgeschnitten, auch wenn das CMS Scripts entfernt oder eine feste Höhe setzt — ist das iframe zu niedrig, wird die Grafik kleiner. iframe-resizer ist hier weder nötig noch eingebaut.
+
 | # | Embed | Was es zeigt | Direkt-Link |
 |---|---|---|---|
 | L1 | `leerwohnungen/embed-karte.html` | Choropleth: Leerwohnungsziffer aller 100 Gemeinden, Tooltip mit Vorjahr | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html) |
@@ -48,48 +50,47 @@ Daten sind eingebettet (offline lauffähig). Update nach jeder Leerwohnungszähl
 
 ### L1. Karte Leerwohnungsziffer
 
-**A — responsive:**
+**A — wächst mit der Breite, ohne Script (empfohlen):** Höhe = 71 % der Breite + 105 px
 ```html
-<iframe id="lw-karte"
-  src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html"
-  title="Leerwohnungsziffer in den Bündner Gemeinden"
-  loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; display:block;"></iframe>
-<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
-<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#lw-karte');</script>
+<div style="position:relative; width:100%; padding-top:calc(71% + 105px);">
+  <iframe
+    src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html"
+    title="Leerwohnungsziffer in den Bündner Gemeinden"
+    loading="lazy" scrolling="no"
+    style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>
+</div>
 ```
 
-**B — einfach:**
+**B — feste Höhe (wenn das CMS nur URL und Höhe erlaubt):**
 ```html
 <iframe
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html"
   title="Leerwohnungsziffer in den Bündner Gemeinden"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:600px; display:block;"></iframe>
+  style="width:100%; height:600px; border:none; display:block;"></iframe>
 ```
 
 ### L2. Verlauf seit 1995
 
-**A — responsive:**
+**A — wächst mit der Breite, ohne Script (empfohlen):** Höhe = 45 % der Breite + 130 px
 ```html
-<iframe id="lw-verlauf"
-  src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-verlauf.html"
-  title="Leerstehende Wohnungen in Graubünden seit 1995"
-  loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; display:block;"></iframe>
-<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
-<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#lw-verlauf');</script>
+<div style="position:relative; width:100%; padding-top:calc(45% + 130px);">
+  <iframe
+    src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-verlauf.html"
+    title="Leerstehende Wohnungen in Graubünden seit 1995"
+    loading="lazy" scrolling="no"
+    style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>
+</div>
 ```
 
-**B — einfach:**
+**B — feste Höhe (wenn das CMS nur URL und Höhe erlaubt):**
 ```html
 <iframe
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-verlauf.html"
   title="Leerstehende Wohnungen in Graubünden seit 1995"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:420px; display:block;"></iframe>
+  style="width:100%; height:420px; border:none; display:block;"></iframe>
 ```
-
 ---
 
 ## Zweitwohnungs-Datenstory Graubünden

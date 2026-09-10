@@ -14,12 +14,15 @@
   --brand:#0068a4;
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--surface)}
+html,body{margin:0;padding:0;height:100%;background:var(--surface)}
 body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
   color:var(--ink); font-size:16px; line-height:1.5}
-.wrap{padding:12px 16px 16px}
-.chart{width:100%}
-svg{display:block; max-width:100%; height:auto}
+/* Fit-to-frame: the chart is drawn to the space the iframe gives it, so nothing is
+   ever cut off, with or without a resize script on the host page. */
+.wrap{height:100vh; display:flex; flex-direction:column; padding:12px 16px 12px}
+.src{flex:none}
+.chart{flex:1 1 auto; min-height:0; position:relative}
+.chart svg{display:block; position:absolute; left:0; top:0}
 .tick{font-size:12px; fill:var(--ink-3); font-variant-numeric:tabular-nums}
 .grid{stroke:var(--rule-soft); stroke-width:1}
 .base{stroke:var(--ink-3); stroke-width:1}
@@ -67,8 +70,9 @@ document.addEventListener('pointerdown', ev => {
 
 function draw(){
   const svg = document.getElementById('c');
-  const W = document.querySelector('.chart').clientWidth || 660;
-  const H = Math.round(Math.max(240, Math.min(340, W * 0.5)));
+  const box = document.querySelector('.chart');
+  const W = box.clientWidth || 660;
+  const H = Math.max(140, box.clientHeight || Math.round(W * 0.5));
   const m = {t:28, r:18, b:28, l:44};
   const pw = W-m.l-m.r, ph = H-m.t-m.b;
   const j0 = rows[0].j, j1 = rows.at(-1).j;
@@ -79,7 +83,8 @@ function draw(){
   svg.setAttribute('width', W); svg.setAttribute('height', H);
 
   let g = '';
-  for (let v = 0; v <= maxV; v += 500) {
+  const yStep = ph < 170 ? 1000 : 500;   // fewer gridlines when the frame is short
+  for (let v = 0; v <= maxV; v += yStep) {
     g += `<line class="${v ? 'grid' : 'base'}" x1="${m.l}" x2="${W-m.r}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"></line>` +
          `<text class="tick" x="${m.l-8}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end">${fmt(v)}</text>`;
   }
@@ -120,15 +125,13 @@ function draw(){
   hit.addEventListener('pointerdown', move);
   hit.addEventListener('pointerleave', () => { hov.style.opacity = 0; hideTip(); });
 }
-// Redraw whenever the container width changes. ResizeObserver also fires once with the
-// real width after layout, which a plain draw() at load time can miss (it then fell back
-// to 660 px and the scaled-down SVG shrank the labels on phones).
-let lastW = 0, rt;
+// Redraw whenever the box changes size. ResizeObserver also fires once with the real
+// size after layout, which a plain draw() at load time can miss.
+let lastW = 0, lastH = 0, rt;
 new ResizeObserver(entries => {
-  const w = Math.round(entries[0].contentRect.width);
-  if (w && w !== lastW) { lastW = w; clearTimeout(rt); rt = setTimeout(draw, 60); }
+  const r = entries[0].contentRect, w = Math.round(r.width), h = Math.round(r.height);
+  if (w && h && (w !== lastW || h !== lastH)) { lastW = w; lastH = h; clearTimeout(rt); rt = setTimeout(draw, 60); }
 }).observe(document.querySelector('.chart'));
 </script>
-<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 </body>
 </html>
