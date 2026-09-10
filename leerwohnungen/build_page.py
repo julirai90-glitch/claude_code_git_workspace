@@ -10,6 +10,7 @@ TARGETS = [
     ("template.html", "index.html", None),
     ("embed-karte.tpl.html", "embed-karte.html", ("meta", "gemeinden", "geo")),
     ("embed-verlauf.tpl.html", "embed-verlauf.html", ("meta", "kanton_reihe")),
+    ("embed-tabelle.tpl.html", "embed-tabelle.html", ("meta", "gemeinden")),
 ]
 
 with open(os.path.join(HERE, "data.json"), encoding="utf-8") as f:

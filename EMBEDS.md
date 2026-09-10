@@ -41,12 +41,13 @@ Höhen-Sync: jeder Embed hat das iframe-resizer/contentWindow-Script — die res
 
 Daten sind eingebettet (offline lauffähig). Update nach jeder Leerwohnungszählung: `python3 build_data.py && python3 build_page.py` in `leerwohnungen/`, dann pushen — die URLs bleiben gleich.
 
-**Höhe:** Anders als die übrigen Embeds melden diese beiden ihre Höhe nicht per Script, sondern passen sich der Höhe an, die das iframe bekommt (fit-to-frame). Es wird deshalb nie etwas abgeschnitten, auch wenn das CMS Scripts entfernt oder eine feste Höhe setzt — ist das iframe zu niedrig, wird die Grafik kleiner. iframe-resizer ist hier weder nötig noch eingebaut.
+**Höhe:** Anders als die übrigen Embeds melden diese ihre Höhe nicht per Script, sondern passen sich der Höhe an, die das iframe bekommt (fit-to-frame). Es wird deshalb nie etwas abgeschnitten, auch wenn das CMS Scripts entfernt oder eine feste Höhe setzt — ist das iframe zu niedrig, wird die Grafik kleiner. iframe-resizer ist hier weder nötig noch eingebaut.
 
 | # | Embed | Was es zeigt | Direkt-Link |
 |---|---|---|---|
 | L1 | `leerwohnungen/embed-karte.html` | Choropleth: Leerwohnungsziffer aller 100 Gemeinden, Tooltip mit Vorjahr | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-karte.html) |
 | L2 | `leerwohnungen/embed-verlauf.html` | Linie: leerstehende Wohnungen im Kanton seit 1995 | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-verlauf.html) |
+| L3 | `leerwohnungen/embed-tabelle.html` | Tabelle aller 100 Gemeinden mit Suche und Sortierung, scrollt im festen Rahmen | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-tabelle.html) |
 
 ### L1. Karte Leerwohnungsziffer
 
@@ -91,6 +92,17 @@ Daten sind eingebettet (offline lauffähig). Update nach jeder Leerwohnungszähl
   loading="lazy" scrolling="no"
   style="width:100%; height:420px; border:none; display:block;"></iframe>
 ```
+### L3. Tabelle alle Gemeinden
+
+Feste Höhe genügt: Die Tabelle scrollt innerhalb des Rahmens, Suchfeld und Quelle bleiben stehen.
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/leerwohnungen/embed-tabelle.html"
+  title="Leerwohnungsziffer aller Bündner Gemeinden"
+  loading="lazy"
+  style="width:100%; height:540px; border:none; display:block;"></iframe>
+```
+
 ---
 
 ## Zweitwohnungs-Datenstory Graubünden

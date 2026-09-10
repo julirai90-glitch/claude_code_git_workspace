@@ -28,8 +28,9 @@ body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
 .legend span{display:inline-flex; align-items:center; gap:6px}
 .legend i{width:14px; height:14px; border-radius:2px; display:inline-block}
 svg{display:block; width:100%; height:auto}
-.gem{stroke:#fff; stroke-width:.7; cursor:pointer}
-.gem.on{stroke:var(--ink); stroke-width:1.6}
+/* borders keep their pixel width however small the map is drawn */
+.gem{stroke:#fff; stroke-width:.6; vector-effect:non-scaling-stroke; cursor:pointer}
+.gem.on{stroke:var(--ink); stroke-width:1.5}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
      padding-top:10px; margin:14px 0 0}
 .tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
@@ -40,14 +41,30 @@ svg{display:block; width:100%; height:auto}
 .tip td{padding:1px 0}
 .tip td:last-child{text-align:right; padding-left:16px; font-variant-numeric:tabular-nums; font-weight:600}
 .tip .t-h{font-weight:700; display:block; margin-bottom:4px}
+/* Compact scale legend for phones: one row of steps instead of five labelled swatches */
+.legend-s{display:none; margin:0 0 8px; font-size:11px; color:var(--ink-2); line-height:1.2}
+.legend-s .row{display:flex; gap:2px}
+.legend-s .row + .row{margin-top:3px}
+.legend-s i{flex:1; height:10px; display:block}
+.legend-s span{flex:1; text-align:center; white-space:nowrap}
+/* On phones the legend and source line would wrap onto three lines each and leave the
+   map too little of the frame, so both get shorter and the margins narrower. */
+@media (max-width:480px){
+  .wrap{padding:8px 10px 8px}
+  .legend{display:none}
+  .legend-s{display:block}
+  .src{font-size:11px; margin-top:8px; padding-top:8px}
+  .src .lang{display:none}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="legend" id="legend"></div>
+  <div class="legend-s" id="legend-s" aria-hidden="true"></div>
   <div class="chart"><svg id="map" role="img" aria-label="Karte: Leerwohnungsziffer in den 100 Bündner Gemeinden" preserveAspectRatio="xMidYMid meet"></svg></div>
-  <p class="src">Quelle: Bundesamt f&uuml;r Statistik BFS, Leerwohnungsz&auml;hlung <span id="jahr"></span> (Stichtag 1. Juni). Grafik: S&uuml;dostschweiz</p>
+  <p class="src">Quelle: <span class="lang">Bundesamt f&uuml;r Statistik </span>BFS, Leerwohnungsz&auml;hlung <span id="jahr"></span> (Stichtag 1. Juni). Grafik: S&uuml;dostschweiz</p>
 </div>
 <div class="tip" id="tip" role="status" aria-live="polite"></div>
 <script>
@@ -67,6 +84,9 @@ const BINS = [
 const binOf = r => BINS.find(b => r < b.max);
 document.getElementById('legend').innerHTML =
   BINS.map(b => `<span><i style="background:${b.col}"></i>${b.lab}</span>`).join('');
+document.getElementById('legend-s').innerHTML =
+  `<div class="row">${BINS.map(b => `<i style="background:${b.col}"></i>`).join('')}</div>` +
+  `<div class="row">${['0 %', '< 0,5', '0,5–1', '1–2', '≥ 2 %'].map(t => `<span>${t}</span>`).join('')}</div>`;
 
 const tip = document.getElementById('tip');
 function showTip(e, html){

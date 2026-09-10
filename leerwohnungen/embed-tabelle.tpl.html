@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leerwohnungsziffer aller Bündner Gemeinden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5; --tint:#f4f7f9;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --brand:#0068a4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:15px; line-height:1.4}
+/* Fit-to-frame: the table fills the iframe and scrolls inside it, so the embed takes the
+   same space at any length and nothing is cut off, with or without host-page scripts. */
+.wrap{height:100vh; display:flex; flex-direction:column; padding:12px 16px 12px}
+.search,.src{flex:none}
+.search{position:relative; margin:0 0 10px}
+.search input{width:100%; font:inherit; font-size:15px; color:var(--ink);
+  padding:8px 34px 8px 12px; border:1px solid var(--rule); border-radius:3px; background:#fff}
+.search input:focus{outline:2px solid var(--brand); outline-offset:-1px; border-color:var(--brand)}
+.search button{position:absolute; right:4px; top:50%; transform:translateY(-50%);
+  border:0; background:none; font-size:18px; line-height:1; color:var(--ink-3); cursor:pointer; padding:4px 8px}
+.search button[hidden]{display:none}
+.scroll{flex:1 1 auto; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch;
+  border-top:1px solid var(--rule)}
+table{border-collapse:collapse; width:100%}
+th,td{padding:7px 8px; border-bottom:1px solid var(--rule-soft); text-align:right; vertical-align:middle}
+th:first-child,td:first-child{text-align:left; padding-left:2px}
+thead th{position:sticky; top:0; z-index:2; background:#fff; border-bottom:1px solid var(--rule);
+  font-size:12px; font-weight:600; color:var(--ink-3); padding-top:8px; padding-bottom:8px}
+thead button{font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer;
+  text-align:inherit; display:inline-flex; align-items:center; gap:4px}
+thead button:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+thead th[aria-sort] button{color:var(--ink)}
+.arrow{font-size:10px; width:8px; display:inline-block}
+td.n{font-variant-numeric:tabular-nums; white-space:nowrap}
+tr.ref td{background:var(--tint); font-weight:700}
+.z{display:flex; align-items:center; justify-content:flex-end; gap:8px}
+.bar{width:44px; height:6px; background:var(--rule-soft); border-radius:3px; overflow:hidden; flex:none}
+.bar i{display:block; height:100%; background:var(--brand); border-radius:3px}
+td.empty{text-align:left; color:var(--ink-3); padding:14px 2px}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:10px 0 0}
+.sm{display:none}
+@media (max-width:420px){
+  body{font-size:14px}
+  th,td{padding:7px 4px}
+  thead th{font-size:11px; vertical-align:bottom}
+  thead button{display:inline; white-space:normal}   /* headers may wrap onto two lines */
+  td:first-child{hyphens:auto}
+  .bar{display:none}
+  .lg{display:none} .sm{display:inline}
+}
+@media (max-width:340px){ th,td{padding:7px 3px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="search">
+    <input id="q" type="search" placeholder="Gemeinde suchen" aria-label="Gemeinde suchen" autocomplete="off">
+    <button id="clear" type="button" aria-label="Suche löschen" hidden>&times;</button>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr>
+        <th scope="col"><button data-k="n">Gemeinde<span class="arrow"></span></button></th>
+        <th scope="col"><button data-k="v"><span class="lg">Leere Wohnungen</span><span class="sm">Leere Whg.</span><span class="arrow"></span></button></th>
+        <th scope="col"><button data-k="r">Ziffer <span class="yj"></span><span class="arrow"></span></button></th>
+        <th scope="col"><button data-k="rp">Ziffer <span class="yv"></span><span class="arrow"></span></button></th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+  <p class="src">Quelle: Bundesamt f&uuml;r Statistik BFS, Leerwohnungsz&auml;hlung <span class="yj"></span> (Stichtag 1. Juni). Grafik: S&uuml;dostschweiz</p>
+</div>
+<script>
+const DATA = /*__DATA__*/;
+const M = DATA.meta;
+const fmt = n => n.toLocaleString('de-CH');
+const pp = n => n.toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.', ',') + ' %';
+const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+document.querySelectorAll('.yj').forEach(e => e.textContent = M.jahr);
+document.querySelectorAll('.yv').forEach(e => e.textContent = M.vorjahr);
+
+const rows = DATA.gemeinden.map(g => ({...g, key: norm(g.n)}));
+const maxR = Math.max(...rows.map(g => g.r));
+const bar = r => `<span class="bar"><i style="width:${(100 * r / maxR).toFixed(1)}%"></i></span>`;
+const ref = `<tr class="ref"><td>Kanton Graubünden</td><td class="n">${fmt(M.kanton_leer)}</td>` +
+  `<td class="n"><span class="z">${pp(M.kanton_ziffer)}${bar(M.kanton_ziffer)}</span></td>` +
+  `<td class="n">${pp(M.kanton_ziffer_vj)}</td></tr>`;
+
+let sortKey = 'r', sortDir = -1;   // default: highest rate first
+const tb = document.getElementById('tb'), q = document.getElementById('q'), clear = document.getElementById('clear');
+
+function render(){
+  const term = norm(q.value.trim());
+  const list = rows.filter(g => !term || g.key.includes(term)).sort((a, b) => {
+    const d = sortKey === 'n' ? a.n.localeCompare(b.n, 'de') : a[sortKey] - b[sortKey];
+    return d * sortDir || a.n.localeCompare(b.n, 'de');
+  });
+  tb.innerHTML = ref + (list.length ? list.map(g =>
+    `<tr><td>${g.n}</td><td class="n">${fmt(g.v)}</td>` +
+    `<td class="n"><span class="z">${pp(g.r)}${bar(g.r)}</span></td>` +
+    `<td class="n">${pp(g.rp)}</td></tr>`).join('')
+    : `<tr><td class="empty" colspan="4">Keine Gemeinde gefunden.</td></tr>`);
+  document.querySelectorAll('thead th').forEach(th => {
+    const k = th.querySelector('button').dataset.k;
+    if (k === sortKey) th.setAttribute('aria-sort', sortDir > 0 ? 'ascending' : 'descending');
+    else th.removeAttribute('aria-sort');
+    th.querySelector('.arrow').textContent = k === sortKey ? (sortDir > 0 ? '▲' : '▼') : '';
+  });
+  clear.hidden = !q.value;
+}
+
+document.querySelectorAll('thead button').forEach(b => b.addEventListener('click', () => {
+  const k = b.dataset.k;
+  if (k === sortKey) sortDir = -sortDir;
+  else { sortKey = k; sortDir = k === 'n' ? 1 : -1; }   // names A-Z, numbers high-to-low first
+  render();
+}));
+q.addEventListener('input', render);
+clear.addEventListener('click', () => { q.value = ''; render(); q.focus(); });
+render();
+</script>
+</body>
+</html>
