@@ -49,11 +49,7 @@ svg{display:block;width:100%;height:auto;overflow:visible}
 .dot{fill:var(--brand);stroke:var(--surface);stroke-width:2}
 .dlabel{font-size:11.5px;font-weight:600;fill:var(--text);font-variant-numeric:tabular-nums;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
 .dlabel.mut{fill:var(--muted);font-weight:500}
-.bar{fill:var(--brand)}
-.barlab{font-size:11.5px;fill:var(--text);font-variant-numeric:tabular-nums;paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
-.barname{font-size:12px;fill:var(--text)}
 .refline{stroke:var(--muted);stroke-width:1}
-.reftext{font-size:10.5px;fill:var(--muted);paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}
 .hit{fill:transparent;cursor:crosshair}
 
 /* tooltip */
@@ -112,7 +108,7 @@ footer code{background:var(--surface);border:1px solid var(--border);padding:.1r
       </div>
       <details>
         <summary>Alle 100 Gemeinden als Tabelle</summary>
-        <div class="scroll"><table id="tab-gem"><thead><tr><th>Gemeinde</th><th>Destination</th><th>leer</th><th class="th-bestand">Bestand</th><th>Ziffer</th><th>Vorjahr</th></tr></thead><tbody></tbody></table></div>
+        <div class="scroll"><table id="tab-gem"><thead><tr><th>Gemeinde</th><th class="th-j">leer</th><th class="th-vj">leer</th><th class="th-j">Ziffer</th><th class="th-vj">Ziffer</th></tr></thead><tbody></tbody></table></div>
       </details>
     </div>
   </section>
@@ -130,20 +126,6 @@ footer code{background:var(--surface);border:1px solid var(--border);padding:.1r
   </section>
 
   <section>
-    <h2>Leerstand nach Tourismusdestination</h2>
-    <p class="sub">Leerwohnungsziffer nach den 18 Tourismusdestinationen des Kantons, Stand <span class="k-stichtag2"></span>. Die Gemeinden wurden den Destinationen über ihre Lage zugeordnet.</p>
-    <div class="card">
-      <svg id="bars" viewBox="0 0 640 486" role="img" aria-label="Leerwohnungsziffer nach Tourismusdestination"></svg>
-      <details>
-        <summary>Destinationen als Tabelle</summary>
-        <table id="tab-dest"><thead><tr><th>Destination</th><th>Gemeinden</th><th>leer</th><th class="th-bestand">Bestand</th><th>Ziffer</th></tr></thead><tbody></tbody></table>
-      </details>
-    </div>
-    <div class="note" id="note-bestand" hidden></div>
-    <div class="note"><b>Zu prüfen vor Publikation:</b> Die Zuordnung Gemeinde → Destination stammt aus einem räumlichen Abgleich der Gemeindezentren mit den offiziellen Destinationsgrenzen. Alle 100 Gemeinden liessen sich eindeutig zuordnen; eine Stichprobe gegen die Destinations-Websites steht aus.</div>
-  </section>
-
-  <section>
     <h2>Was leer steht</h2>
     <p class="sub">Struktur des Leerstands im Kanton, Stand <span class="k-stichtag2"></span>. Die Merkmale überschneiden sich: Jede leere Wohnung ist gleichzeitig in einer Zeile jeder Gruppe enthalten.</p>
     <div class="card">
@@ -155,7 +137,7 @@ footer code{background:var(--surface);border:1px solid var(--border);padding:.1r
 
 <footer class="wrap">
   <p><b>Quelle:</b> <span id="f-quelle"></span>. Erhebung jeweils am 1. Juni.</p>
-  <p><b>Rechenweg:</b> Die Leerwohnungsziffern je Gemeinde, für den Kanton und die Schweiz sind die offiziellen Werte des BFS: leerstehende Wohnungen am 1. Juni geteilt durch den Wohnungsbestand des Vorjahres. Für die Destinationen sind die Gemeinden summiert; Nenner ist der Wohnungsbestand <span id="f-nenner"></span> von Statistik Graubünden. <span id="f-kontrolle"></span></p>
+  <p><b>Rechenweg:</b> Alle Leerwohnungsziffern sind die offiziellen Werte des BFS: leerstehende Wohnungen am 1. Juni geteilt durch den Wohnungsbestand des Vorjahres. <span id="f-kontrolle"></span></p>
   <p><b>Nachbauen:</b> <code>python3 build_data.py &amp;&amp; python3 build_page.py</code> im Ordner <code>leerwohnungen/</code>. <code>build_data.py</code> zieht die Daten live vom BFS (<code>stats.swiss</code>) und von <code>data.gr.ch</code>.</p>
   <p>Daten abgerufen am <span id="f-datum"></span>. </p>
 </footer>
@@ -168,41 +150,29 @@ const M = DATA.meta;
 const fmt = n => n.toLocaleString('de-CH');
 const pct = n => n.toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.', ',');
 const pp = n => pct(n) + '\u00A0%';
-const DEST = (() => {
-  const agg = {};
-  DATA.gemeinden.forEach(g => {
-    const a = agg[g.d] || (agg[g.d] = {v:0, b:0, n:0});
-    a.v += g.v; a.b += g.b; a.n++;
-  });
-  return Object.entries(agg).map(([d,a]) => ({d, ...a, r: 100*a.v/a.b})).sort((x,y) => y.r - x.r);
-})();
 
 /* ---------- headline numbers ---------- */
 const nullGem = DATA.gemeinden.filter(g => g.v === 0).length;
 const spitzenGem = [...DATA.gemeinden].sort((a,b) => b.r - a.r)[0];
 document.getElementById('k-stichtag').textContent = M.stichtag;
 document.querySelectorAll('.k-stichtag2').forEach(e => e.textContent = M.stichtag);
-const dMax = DEST[0], dMin = DEST.at(-1);
+const tiefsteGem = [...DATA.gemeinden].sort((a,b) => a.r - b.r)[0];
 document.getElementById('lede').textContent =
   `In Graubünden standen am ${M.stichtag} ${fmt(M.kanton_leer)} Wohnungen leer, ${pct(M.kanton_ziffer)} Prozent des Bestands. ` +
-  `Im Schweizer Schnitt sind es ${pct(M.schweiz_ziffer)} Prozent. ` +
-  `Innerhalb des Kantons reicht die Spanne nach Tourismusdestinationen${M.bestand_vorlaeufig ? ' (vorläufig gerechnet)' : ''} ` +
-  `von ${pct(dMin.r)} Prozent in ${dMin.d} bis ${pct(dMax.r)} Prozent in ${dMax.d}; ` +
-  `in ${nullGem} Gemeinden stand keine einzige Wohnung leer.`;
+  `Ein Jahr zuvor waren es ${fmt(M.kanton_leer_vj)} Wohnungen oder ${pct(M.kanton_ziffer_vj)} Prozent; im Schweizer Schnitt sind es ${pct(M.schweiz_ziffer)} Prozent. ` +
+  `Zwischen den Gemeinden reicht die Spanne ` +
+  (nullGem ? `von null leeren Wohnungen in ${nullGem} Gemeinden` : `von ${pct(tiefsteGem.r)} Prozent in ${tiefsteGem.n}`) +
+  ` bis ${pct(spitzenGem.r)} Prozent in ${spitzenGem.n}.`;
 document.getElementById('t-ziffer').textContent = pp(M.kanton_ziffer);
 document.getElementById('t-ch').textContent = pp(M.schweiz_ziffer);
 document.getElementById('t-max').textContent = pp(spitzenGem.r);
 document.getElementById('t-max-lab').textContent = 'Höchster Wert: ' + spitzenGem.n;
 document.getElementById('t-null').textContent = nullGem;
 document.getElementById('f-quelle').textContent = M.quelle;
-document.getElementById('f-nenner').textContent = M.nenner_jahr;
 document.getElementById('f-kontrolle').textContent = M.kontrolle;
 document.getElementById('f-datum').textContent = M.abgerufen;
-if (M.hinweis_bestand) {
-  const nb = document.getElementById('note-bestand');
-  nb.innerHTML = '<b>Vorläufig:</b> ' + M.hinweis_bestand; nb.hidden = false;
-}
-document.querySelectorAll('.th-bestand').forEach(e => e.textContent = 'Bestand ' + M.nenner_jahr);
+document.querySelectorAll('.th-j').forEach(e => e.textContent += ' ' + M.jahr);
+document.querySelectorAll('.th-vj').forEach(e => e.textContent += ' ' + M.vorjahr);
 
 /* ---------- tooltip ---------- */
 const tip = document.getElementById('tip');
@@ -254,11 +224,11 @@ const binOf = r => BINS.find(b => r < b.max);
   svg.querySelectorAll('.gem').forEach(p => {
     const g = byCode[p.dataset.c];
     const delta = g.rp === null ? '' :
-      `<div class="n" style="color:#9CC3DD">Vorjahr ${pp(g.rp)}</div>`;
+      `<div class="n" style="color:#9CC3DD">Vorjahr ${pp(g.rp)} · ${fmt(g.vp)} leer</div>`;
     p.addEventListener('mousemove', ev => showTip(
       `<b>${g.n}</b><div class="n">${pp(g.r)} leer</div>` +
       `<div class="n" style="color:#9CC3DD">${fmt(g.v)} leere Wohnungen</div>` +
-      delta + `<div style="color:#9CC3DD">${g.d}</div>`, ev));
+      delta, ev));
     p.addEventListener('mouseleave', hideTip);
   });
 
@@ -268,8 +238,8 @@ const binOf = r => BINS.find(b => r < b.max);
 
   document.querySelector('#tab-gem tbody').innerHTML = [...DATA.gemeinden]
     .sort((a,b) => b.r - a.r).map(g =>
-      `<tr><td>${g.n}</td><td>${g.d}</td><td class="n">${fmt(g.v)}</td><td class="n">${fmt(g.b)}</td>` +
-      `<td class="n">${pp(g.r)}</td><td class="n">${g.rp===null?'–':pp(g.rp)}</td></tr>`).join('');
+      `<tr><td>${g.n}</td><td class="n">${fmt(g.v)}</td><td class="n">${fmt(g.vp)}</td>` +
+      `<td class="n">${pp(g.r)}</td><td class="n">${pp(g.rp)}</td></tr>`).join('');
 })();
 
 /* ---------- 2. time series ---------- */
@@ -324,53 +294,6 @@ const binOf = r => BINS.find(b => r < b.max);
 
   document.querySelector('#tab-reihe tbody').innerHTML = rows.map((r,i) =>
     `<tr><td>${r.j}</td><td class="n">${fmt(r.v)}</td><td class="n">${i ? (r.v-rows[i-1].v >= 0 ? '+' : '') + fmt(r.v-rows[i-1].v) : '–'}</td></tr>`).join('');
-})();
-
-/* ---------- 3. destination ranking ---------- */
-(function drawBars(){
-  const svg = document.getElementById('bars'), W = 640, H = 486;
-  const m = {t:60, r:56, b:14, l:196};
-  const rows = DEST;
-  const pw = W-m.l-m.r, bh = (H-m.t-m.b)/rows.length;
-  const maxR = Math.ceil(Math.max(...rows.map(r => r.r))*2)/2;
-  const X = v => m.l + v/maxR*pw;
-
-  let g = '<g class="axis">';
-  for (let v = 0; v <= maxR; v += 0.5)
-    g += `<line class="gridline" x1="${X(v).toFixed(1)}" y1="${m.t-8}" x2="${X(v).toFixed(1)}" y2="${H-m.b}"></line>` +
-         `<text x="${X(v).toFixed(1)}" y="${m.t-46}" text-anchor="middle">${pp(v)}</text>`;
-  g += '</g>';
-
-  // reference lines: canton and national rate
-  // two reference lines sit close together, so their labels get their own rows
-  [[M.kanton_ziffer,'Kanton GR ' + pp(M.kanton_ziffer), 30],
-   [M.schweiz_ziffer,'Schweiz ' + pp(M.schweiz_ziffer), 14]].forEach(([v,lab,dy]) => {
-    g += `<line class="refline" x1="${X(v).toFixed(1)}" y1="${m.t-dy-4}" x2="${X(v).toFixed(1)}" y2="${H-m.b}"></line>` +
-         `<text class="reftext" x="${X(v).toFixed(1)}" y="${m.t-dy+4}" text-anchor="middle">${lab}</text>`;
-  });
-
-  rows.forEach((r,i) => {
-    // 2px surface gap between adjacent bars, 4px rounded data-end
-    const y = m.t + i*bh + 2, h = bh - 4, w = Math.max(X(r.r)-m.l, 2);
-    g += `<rect class="bar" x="${m.l}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="0"></rect>` +
-         `<rect class="bar" x="${(m.l+w-4).toFixed(1)}" y="${y.toFixed(1)}" width="4" height="${h.toFixed(1)}" rx="4"></rect>` +
-         `<text class="barname" x="${m.l-10}" y="${(y+h/2+4).toFixed(1)}" text-anchor="end">${r.d}</text>` +
-         `<text class="barlab" x="${(m.l+w+7).toFixed(1)}" y="${(y+h/2+4).toFixed(1)}">${pp(r.r)}</text>` +
-         `<rect class="hit" x="${m.l}" y="${y.toFixed(1)}" width="${pw}" height="${h.toFixed(1)}" data-i="${i}"></rect>`;
-  });
-  svg.innerHTML = g;
-
-  svg.querySelectorAll('.hit').forEach(el => {
-    const r = rows[+el.dataset.i];
-    el.addEventListener('mousemove', ev => showTip(
-      `<b>${r.d}</b><div class="n">${pp(r.r)} leer</div>` +
-      `<div class="n" style="color:#9CC3DD">${fmt(r.v)} von ${fmt(r.b)} Wohnungen (Bestand ${M.nenner_jahr})</div>` +
-      `<div style="color:#9CC3DD">${r.n} Gemeinde${r.n>1?'n':''}</div>`, ev));
-    el.addEventListener('mouseleave', hideTip);
-  });
-
-  document.querySelector('#tab-dest tbody').innerHTML = rows.map(r =>
-    `<tr><td>${r.d}</td><td class="n">${r.n}</td><td class="n">${fmt(r.v)}</td><td class="n">${fmt(r.b)}</td><td class="n">${pp(r.r)}</td></tr>`).join('');
 })();
 
 /* ---------- 4. structure table ---------- */
