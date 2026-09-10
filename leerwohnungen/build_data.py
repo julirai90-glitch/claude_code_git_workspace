@@ -2,44 +2,66 @@
 """
 Builds leerwohnungen/data.json for the vacancy-rate story page.
 
-Sources (all data.gr.ch, Opendatasoft Explore API v2.1):
-  dvs_awt_soci_20250909  Leerwohnungen je Gemeinde, 1995-2025 (BFS Leerwohnungszaehlung, 1.6.)
-  dvs_awt_soci_202509090 Wohnungsbestand je Gemeinde, 2010-2024 (BFS GWS)
-  dvs_awt_econ_202601260 Tourismusdestinationen Graubuenden (18 Polygone)
-  dvs_awt_regi_202502110 Gemeindegrenzen, Gemeindestand 01.01.2025 (100 Gemeinden)
+Sources
+  BFS, Leerwohnungszaehlung - SDMX API disseminate.stats.swiss, dataflow CH1.LWZ/DF_LWZ_1:
+      vacant dwellings and the official vacancy rate per municipality, canton and
+      Switzerland. Published at 08:30 on release day; Statistik GR mirrors it on
+      data.gr.ch only hours later, so the BFS is the primary source for current figures.
+  data.gr.ch (Statistik Graubuenden, Opendatasoft Explore API v2.1):
+      vacant dwellings per municipality since 1995 (long canton series), housing stock
+      per municipality (denominator for destination totals), tourism destination
+      boundaries, municipal boundaries, publication calendar.
 
-Official rate for year X = vacant dwellings X / housing stock X-1.
-Verified against the BFS press release 09.09.2025: GR 1062 / 185989 = 0.57%.
+Municipal, canton and national rates are the BFS figures, not recomputed. Destination
+rates are computed here as summed vacant dwellings over summed housing stock of the
+previous year. If that stock year is not published yet, the latest available one is
+used and the page flags the destination figures as provisional.
 """
+import csv
+import io
 import json
 import urllib.parse
 import urllib.request
 from datetime import date
 
-DS = {}
+GR_BASE = "https://data.gr.ch/api/explore/v2.1/catalog/datasets"
+BFS_BASE = "https://disseminate.stats.swiss/rest/data/CH1.LWZ,DF_LWZ_1,1.1.0"
+BFS_CSV = {"Accept": "application/vnd.sdmx.data+csv;version=1.0.0"}
 
-BASE = "https://data.gr.ch/api/explore/v2.1/catalog/datasets"
 # Tschiertschen-Praden merged into Chur on 01.01.2025; the stock dataset still
-# lists it separately for 2024, the vacancy dataset does not.
+# lists it separately for 2024.
 FUSION = {"3932": "3901"}
 
-# Dataset ids carry their publication date and change when Statistik GR
+# Dataset ids on data.gr.ch carry their publication date and change when Statistik GR
 # republishes, so they are resolved from the catalogue by title instead.
 DS_TITLES = {
-    "vacancy": "Leer stehende Wohnungen nach",
-    "stock":   "Wohnungen nach B",          # "Wohnungen nach Bündner Gemeinde, ..."
-    "dest":    "Tourismusdestinationen Graubünden",
+    "vacancy":  "Leer stehende Wohnungen nach",
+    "stock":    "Wohnungen nach B",          # "Wohnungen nach Bündner Gemeinde, ..."
+    "dest":     "Tourismusdestinationen Graubünden",
     "gemeinde": "Administrative Grundeinheiten",
+    "kalender": "alender",                   # publication calendar (optional)
 }
+OPTIONAL = {"kalender"}
+
+MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
+          "September", "Oktober", "November", "Dezember"]
+
+
+def fmt(n):
+    return f"{n:,}".replace(",", "’")
+
+
+# --- data access ---
+
+def http_json(url):
+    with urllib.request.urlopen(url, timeout=60) as r:
+        return json.load(r)
 
 
 def resolve_datasets():
-    """Maps our logical names onto the current dataset ids on data.gr.ch."""
-    url = BASE + "?" + urllib.parse.urlencode({"limit": 100, "lang": "de"})
-    with urllib.request.urlopen(url, timeout=60) as r:
-        catalogue = json.load(r)["results"]
+    url = GR_BASE + "?" + urllib.parse.urlencode({"limit": 100, "lang": "de"})
     titles = [(ds["dataset_id"], ds.get("metas", {}).get("default", {}).get("title") or "")
-              for ds in catalogue]
+              for ds in http_json(url)["results"]]
     found = {}
     for key, needle in DS_TITLES.items():
         # prefer a title that starts with the needle; only then fall back to "contains",
@@ -47,48 +69,43 @@ def resolve_datasets():
         # would shadow the "Tourismusdestinationen Graubuenden" boundary layer
         hit = next((i for i, t in titles if t.startswith(needle)), None) \
             or next((i for i, t in titles if needle in t), None)
-        if not hit:
+        if not hit and key not in OPTIONAL:
             raise SystemExit(f"dataset for '{needle}' not found in catalogue")
         found[key] = hit
     return found
 
 
-def fetch(dataset, **params):
+def gr_fetch(dataset, **params):
     params.setdefault("lang", "de")
-    url = f"{BASE}/{dataset}/records?" + urllib.parse.urlencode(params)
-    with urllib.request.urlopen(url, timeout=60) as r:
-        return json.load(r)["results"]
+    return http_json(f"{GR_BASE}/{dataset}/records?" + urllib.parse.urlencode(params))["results"]
 
 
-def paged(dataset, **params):
+def gr_paged(dataset, **params):
     out, offset = [], 0
     while True:
-        rows = fetch(dataset, limit=100, offset=offset, **params)
+        rows = gr_fetch(dataset, limit=100, offset=offset, **params)
         out += rows
         if len(rows) < 100:
             return out
         offset += 100
 
 
-def vacant(year, geo_prefix="3"):
-    """Total vacant dwellings per municipality for one year."""
-    return {
-        r["gr_kt_gde"]: r["obs_value"]
-        for r in paged(
-            DS["vacancy"],
-            where=(f"wohn_anzahl='_T' and leerwohn_typ='_T' "
-                   f"and time_period > date'{year-1}-12-31' and time_period < date'{year+1}-01-01' "
-                   f"and gr_kt_gde like '{geo_prefix}*'"),
-            select="gr_kt_gde,obs_value",
-        )
-    }
+def gr_latest_year(dataset):
+    rows = gr_fetch(dataset, select="time_period", group_by="time_period", limit=100)
+    return int(max(r["time_period"] for r in rows)[:4])
 
 
-def stock(year):
-    """Total housing stock per municipality, merged onto the 2025 boundaries."""
+def bfs_rows(key, start):
+    req = urllib.request.Request(f"{BFS_BASE}/{key}?startPeriod={start}", headers=BFS_CSV)
+    with urllib.request.urlopen(req, timeout=120) as r:
+        return list(csv.DictReader(io.TextIOWrapper(r, encoding="utf-8")))
+
+
+def stock(ds, year):
+    """Total housing stock per municipality, merged onto the current boundaries."""
     out = {}
-    for r in paged(
-        DS["stock"],
+    for r in gr_paged(
+        ds,
         where=(f"gkats_de='Total' and gbaups_de='Total' and wazims_de='Total' "
                f"and time_period > date'{year-1}-12-31' and time_period < date'{year+1}-01-01'"),
         select="gemeindename,obs_value",
@@ -96,6 +113,18 @@ def stock(year):
         code = FUSION.get(r["gemeindename"], r["gemeindename"])
         out[code] = out.get(code, 0) + r["obs_value"]
     return out
+
+
+def next_event(ds, needle):
+    """German date of the next calendar entry containing `needle`, or None."""
+    if not ds:
+        return None
+    today = date.today().isoformat()
+    for r in gr_fetch(ds, limit=100, order_by="start"):
+        if needle in (r.get("event") or "") and r["start"][:10] >= today:
+            y, m, d = (int(x) for x in r["start"][:10].split("-"))
+            return f"{d}. {MONATE[m-1]} {y}"
+    return None
 
 
 # --- geometry helpers (no shapely: point-in-polygon + Douglas-Peucker) ---
@@ -136,120 +165,115 @@ def simplify(pts, tol):
 
 
 def main():
-    global DS
-    DS = resolve_datasets()
-    print("datasets:", DS)
+    ds = resolve_datasets()
+    print("datasets:", ds)
+    gr_latest = gr_latest_year(ds["vacancy"])
+    stock_latest = gr_latest_year(ds["stock"])
 
-    latest = int(max(r["time_period"] for r in fetch(
-        DS["vacancy"], select="time_period", group_by="time_period", limit=100))[:4])
-    stock_latest = int(max(r["time_period"] for r in fetch(
-        DS["stock"], select="time_period", group_by="time_period", limit=100))[:4])
-    if stock_latest < latest - 1:
-        print(f"WARNING: newest stock year is {stock_latest}, denominator for "
-              f"{latest} would normally be {latest-1} — check the GWS release")
-    print(f"vacancy year {latest}, stock year {stock_latest}")
+    print("fetching BFS figures ...")
+    bfs = bfs_rows("._T._T..A", gr_latest - 1)
+    years = sorted({int(r["TIME_PERIOD"]) for r in bfs})
+    jahr = years[-1]
+    if jahr - 1 not in years:
+        raise SystemExit(f"BFS has no figures for {jahr-1}")
 
-    print("fetching vacancy + stock ...")
-    vac_now, vac_prev = vacant(latest), vacant(latest - 1)
-    stock_now, stock_prev = stock(stock_latest), stock(stock_latest - 1)
+    def pick(year, measure):
+        return {r["GR_KT_GDE"]: float(r["OBS_VALUE"]) for r in bfs
+                if int(r["TIME_PERIOD"]) == year and r["MEASURE_DIMENSION"] == measure}
 
-    print("fetching canton time series ...")
-    canton = [
+    obs_now, obs_prev = pick(jahr, "OBS"), pick(jahr - 1, "OBS")
+    rate_now, rate_prev = pick(jahr, "RATE"), pick(jahr - 1, "RATE")
+    provisional = stock_latest < jahr - 1
+    print(f"BFS year {jahr} | data.gr.ch vacancy {gr_latest} | stock {stock_latest}"
+          + ("  -> destination figures provisional" if provisional else ""))
+
+    print("fetching canton series and structure ...")
+    series = [
         (int(r["time_period"][:4]), r["obs_value"])
-        for r in paged(
-            DS["vacancy"],
-            where="gr_kt_gde='GR' and wohn_anzahl='_T' and leerwohn_typ='_T'",
-            select="time_period,obs_value", order_by="time_period",
-        )
+        for r in gr_paged(ds["vacancy"],
+                          where="gr_kt_gde='GR' and wohn_anzahl='_T' and leerwohn_typ='_T'",
+                          select="time_period,obs_value", order_by="time_period")
     ]
+    for y in years:
+        if y > gr_latest:
+            series.append((y, int(pick(y, "OBS")["GR"])))
 
-    print("fetching vacancy structure (canton, latest year) ...")
-    struct = {
-        r["leerwohn_typ"]: r["obs_value"]
-        for r in fetch(
-            DS["vacancy"],
-            where=(f"gr_kt_gde='GR' and wohn_anzahl='_T' "
-                   f"and time_period > date'{latest-1}-12-31'"),
-            select="leerwohn_typ,obs_value", limit=10,
-        )
-    }
-    rooms = {
-        r["wohn_anzahl"]: r["obs_value"]
-        for r in fetch(
-            DS["vacancy"],
-            where=(f"gr_kt_gde='GR' and leerwohn_typ='_T' "
-                   f"and time_period > date'{latest-1}-12-31'"),
-            select="wohn_anzahl,obs_value", limit=10,
-        )
-    }
+    struct = bfs_rows("GR...OBS.A", jahr)
+    struct = [r for r in struct if int(r["TIME_PERIOD"]) == jahr]
+    typ = {r["LEERWOHN_TYP"]: int(float(r["OBS_VALUE"])) for r in struct if r["WOHN_ANZAHL"] == "_T"}
+    zimmer = {r["WOHN_ANZAHL"]: int(float(r["OBS_VALUE"])) for r in struct if r["LEERWOHN_TYP"] == "_T"}
 
-    print("fetching geometries ...")
+    print("fetching stock and geometries ...")
+    stock_b = stock(ds["stock"], stock_latest)
     dests = [(r["tourismusdestination"], rings(r["geo_shape"]["geometry"]))
-             for r in fetch(DS["dest"], limit=20)]
-    gemeinden = paged(DS["gemeinde"])
+             for r in gr_fetch(ds["dest"], limit=20)]
 
-    features, dest_of, name_of = [], {}, {}
-    for r in gemeinden:
+    features, gem = [], []
+    for r in gr_paged(ds["gemeinde"]):
         code = r["bfs_nummer"]
-        name_of[code] = r["name"]
         x, y = r["geo_point_2d"]["lon"], r["geo_point_2d"]["lat"]
-        for dname, drings in dests:
-            if any(point_in_ring(x, y, rg) for rg in drings):
-                dest_of[code] = dname
-                break
+        dest = next((n for n, rs in dests if any(point_in_ring(x, y, rg) for rg in rs)), None)
+        if not dest:
+            raise SystemExit(f"no destination for {code} {r['name']}")
+        if code not in obs_now or code not in stock_b:
+            raise SystemExit(f"no BFS figure or stock for {code} {r['name']}")
         geom = r["geo_shape"]["geometry"]
-        polys = ([geom["coordinates"]] if geom["type"] == "Polygon"
-                 else geom["coordinates"])
-        simple = [[simplify(ring, 0.0012) for ring in poly] for poly in polys]
-        features.append({"c": code, "g": simple})
-
-    missing = [c for c in vac_now if c not in dest_of]
-    if missing:
-        raise SystemExit(f"no destination for: {missing}")
-
-    gem = []
-    for code, v in sorted(vac_now.items()):
-        b, bp = stock_now.get(code), stock_prev.get(code)
+        polys = [geom["coordinates"]] if geom["type"] == "Polygon" else geom["coordinates"]
+        features.append({"c": code, "g": [[simplify(ring, 0.0012) for ring in p] for p in polys]})
         gem.append({
-            "c": code,
-            "n": name_of[code],
-            "d": dest_of[code],
-            "v": v,                                   # vacant 2025
-            "vp": vac_prev.get(code),                 # vacant 2024
-            "b": b,                                   # stock 2024 (= denominator 2025)
-            "r": round(100 * v / b, 3) if b else None,
-            "rp": round(100 * vac_prev[code] / bp, 3) if bp and code in vac_prev else None,
+            "c": code, "n": r["name"], "d": dest,
+            "v": int(obs_now[code]), "vp": int(obs_prev[code]),
+            "b": stock_b[code],                 # stock of stock_latest (destination denominator)
+            "r": rate_now[code], "rp": rate_prev[code],   # official BFS rates
         })
+    gem.sort(key=lambda g: g["c"])
 
+    # controls
     total_v = sum(g["v"] for g in gem)
-    total_b = sum(g["b"] for g in gem)
-    print(f"control: {total_v} vacant / {total_b} stock = "
-          f"{100*total_v/total_b:.2f}%  (BFS press release: 1062 / 185989 / 0.57%)")
+    if total_v != int(obs_now["GR"]):
+        raise SystemExit(f"municipal sum {total_v} != BFS canton total {int(obs_now['GR'])}")
+    print(f"control: sum of {len(gem)} municipalities = {total_v} = BFS canton total; "
+          f"canton rate {rate_now['GR']}%, Switzerland {rate_now['8100']}%")
+    print(f"structure: rooms {zimmer} | types {typ}")
+
+    hinweis = None
+    if provisional:
+        when = next_event(ds["kalender"], "Gebäude- und Wohnungsstatistik")
+        hinweis = (f"Die Werte der Destinationen sind mit dem Wohnungsbestand {stock_latest} "
+                   f"gerechnet. Den Bestand {jahr-1}, mit dem das BFS die offizielle Ziffer "
+                   f"berechnet, veröffentlicht Statistik Graubünden "
+                   + (f"am {when}." if when else "mit der nächsten Gebäude- und Wohnungsstatistik.")
+                   + " Die Ziffern je Gemeinde und für den Kanton sind bereits die offiziellen Werte.")
 
     out = {
         "meta": {
-            "jahr": latest,
-            "stichtag": f"1. Juni {latest}",
+            "jahr": jahr,
+            "stichtag": f"1. Juni {jahr}",
             "nenner_jahr": stock_latest,
-            "kanton_leer": total_v,
-            "kanton_bestand": total_b,
-            "kanton_ziffer": round(100 * total_v / total_b, 2),
-            "schweiz_ziffer": 1.00,
-            "quelle": ("BFS Leerwohnungszaehlung und Gebaeude- und Wohnungsstatistik, "
-                       "bezogen ueber data.gr.ch (Statistik Graubuenden)"),
-            "abgerufen": date.today().isoformat(),
-            "kontrolle": ("Kantonssumme und -ziffer stimmen mit der BFS-Medienmitteilung "
-                          "vom 09.09.2025 ueberein (1062 / 185989 / 0,57%)."),
+            "bestand_vorlaeufig": provisional,
+            "kanton_leer": int(obs_now["GR"]),
+            "kanton_leer_vj": int(obs_prev["GR"]),
+            "kanton_ziffer": rate_now["GR"],
+            "kanton_ziffer_vj": rate_prev["GR"],
+            "schweiz_leer": int(obs_now["8100"]),
+            "schweiz_ziffer": rate_now["8100"],
+            "quelle": ("BFS, Leerwohnungszählung (stats.swiss); Statistik Graubünden "
+                       "(data.gr.ch): Zeitreihe seit 1995, Wohnungsbestand, Gemeinde- und "
+                       "Destinationsgrenzen"),
+            "abgerufen": date.today().strftime("%d.%m.%Y"),
+            "kontrolle": (f"Kontrolle: Die Summe der {len(gem)} Gemeinden ergibt exakt den "
+                          f"Kantonswert des BFS ({fmt(total_v)} leere Wohnungen)."),
+            "hinweis_bestand": hinweis,
         },
-        "kanton_reihe": [{"j": j, "v": v} for j, v in canton],
-        "struktur": {"typ": struct, "zimmer": rooms},
+        "kanton_reihe": [{"j": j, "v": v} for j, v in series],
+        "struktur": {"typ": typ, "zimmer": zimmer},
         "gemeinden": gem,
         "geo": features,
     }
     with open("leerwohnungen/data.json", "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     print(f"wrote leerwohnungen/data.json — {len(gem)} municipalities, "
-          f"{len(canton)} years, {len(set(dest_of.values()))} destinations")
+          f"{len(series)} years ({series[0][0]}–{series[-1][0]}), {len(dests)} destinations")
 
 
 if __name__ == "__main__":
