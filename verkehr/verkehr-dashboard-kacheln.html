@@ -1126,8 +1126,11 @@ function chartCard(s,dir,prov){
   // normalem Tempo heisst bloss wenig Verkehr.
   const cat=archivDay?archivDay.dt:dayType();
   card.append("p").attr("class","muster").text(musterSatz(k0,cat));
-  const W=330,H=192,m={t:8,r:8,b:18,l:34};
-  const SPLIT=124, BAND_T=138;     // Unterkante Tempo-Panel, Oberkante Mengenband
+  const W=330,H=214,m={t:8,r:8,b:18,l:34};
+  // SPLIT = Unterkante Tempo-Panel, BAND_T = Oberkante Mengenband. Die Grafik ist
+  // hoeher als das Tempo-Panel braucht: Der Zuwachs geht ganz an die Balken, damit
+  // der Mengenverlauf lesbar wird. Vorher waren es 36 px, jetzt 58.
+  const SPLIT=124, BAND_T=138;
   const svg=card.append("svg").attr("viewBox",`0 0 ${W} ${H}`).style("width","100%").style("height","auto");
   const x=d3.scaleLinear().domain([0,24]).range([m.l,W-m.r]);
   const key=k0;
