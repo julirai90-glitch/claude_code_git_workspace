@@ -52,8 +52,8 @@
   .bgroup small{font-weight:400;color:var(--muted);font-size:.82em}
   .bgroup span{font-weight:400;color:var(--muted)}
   .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:10px}
-  @media(max-width:520px){.tgrid{grid-template-columns:1fr 1fr;gap:8px}}
-  @media(max-width:360px){.tgrid{grid-template-columns:1fr}}
+  @media(max-width:620px){.tgrid{grid-template-columns:1fr 1fr;gap:8px}}
+  @media(max-width:480px){.tgrid{grid-template-columns:1fr}}
   .tile{border:1px solid var(--line);border-radius:10px;padding:10px 11px 9px;cursor:pointer;background:#fff;
         transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:7px}
   .tile:hover{box-shadow:0 3px 12px rgba(20,30,50,.09)}
@@ -118,6 +118,9 @@
   body.embed-meldungen #board,body.embed-meldungen #stauband{display:none}
   .bfilter{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .5em;margin:.1em 2px .5em}
   .bflabel{font-size:.72rem;color:var(--muted);flex:0 0 auto}
+  /* Label und zugehoerige Buttons bleiben zusammen. Vorher waren sie getrennte
+     Flex-Kinder: beim Umbruch stand "Strecke:" am Ende der Kanton-Zeile. */
+  .bfgrp{display:inline-flex;align-items:center;gap:.35em;flex:0 0 auto}
 
   /* ---- Detail (klappt direkt unter der angeklickten Kachel auf) ---- */
   .tdetail{grid-column:1/-1;margin:2px 0 6px;border:1px solid var(--line);border-radius:10px;padding:12px 12px 8px;background:#fafbfc;animation:bexp .18s ease}
@@ -927,16 +930,17 @@ function renderBoardBody(rows,sbtn,kbtn,rbtn){
   d3.select("#board").html(
     '<div class="bbar"><span class="bhead">Balken = Verkehrsmenge · Punkt = Fluss · tippen für Tagesverlauf</span>'
     +'<span class="toggle bsort">'+sbtn('load','Auslastung')+sbtn('vol','Verkehr')+sbtn('az','A–Z')+'</span></div>'
-    +'<div class="bfilter"><span class="bflabel">Kanton:</span>'
-    +'<span class="toggle">'+kbtn('alle','Alle')+kbtn('GR','GR')+kbtn('SG','SG')+kbtn('GL','GL')+kbtn('SZ','SZ')+'</span>'
-    +'<span class="bflabel" style="margin-left:.4em">Strecke:</span>'
-    +'<span class="toggle">'+rbtn('alle','Alle')+rbtn('A13','A13')+rbtn('A3','A3')+rbtn('pass','Pässe')+rbtn('andere','Weitere')+'</span>'
+    +'<div class="bfilter">'
+    +'<span class="bfgrp"><span class="bflabel">Kanton:</span>'
+    +'<span class="toggle">'+kbtn('alle','Alle')+kbtn('GR','GR')+kbtn('SG','SG')+kbtn('GL','GL')+kbtn('SZ','SZ')+'</span></span>'
+    +'<span class="bfgrp"><span class="bflabel">Strecke:</span>'
+    +'<span class="toggle">'+rbtn('alle','Alle')+rbtn('A13','A13')+rbtn('A3','A3')+rbtn('pass','Pässe')+rbtn('andere','Weitere')+'</span></span>'
     // Balken in den Kacheln: Menge oder Tempo. Gehoert hierher zu den anderen
     // Kachel-Einstellungen, nicht ueber den Tagesverlauf - der zeigt beides.
-    +'<span class="bflabel">Balken:</span>'
+    +'<span class="bfgrp"><span class="bflabel">Balken:</span>'
     +'<span class="toggle">'
     +'<button class="mbtn'+(metric==="flow"?" on":"")+'" data-m="flow">Fahrzeuge/h</button>'
-    +'<button class="mbtn'+(metric==="speed"?" on":"")+'" data-m="speed">Tempo km/h</button></span></div>'
+    +'<button class="mbtn'+(metric==="speed"?" on":"")+'" data-m="speed">Tempo km/h</button></span></span></div>'
     +section('&#9888; Aktuell auffällig <small>alle Korridore</small>',kritisch)
     +section('Hauptachsen <small>A13/A28 · Graubünden</small>',haupt)
     +section('Pässe &amp; Nebenstrassen <small>Graubünden</small>',pass)
