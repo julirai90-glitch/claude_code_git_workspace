@@ -48,6 +48,21 @@
   .axis text{fill:var(--muted);font-size:10px} .axis path,.axis line{stroke:#dfe3e8}
   .band{fill:var(--blau);opacity:.10} .med{fill:none;stroke:#9aa4b0;stroke-width:1.4;stroke-dasharray:4 3}
   .today{fill:none;stroke:var(--blau);stroke-width:2.4}
+  /* Verkehrsmenge: eigenes Band unten, ohne eigene Achse - siehe Kommentar im Code. */
+  .qbar{fill:#9aa4b0;opacity:.55}
+  .qband{fill:#9aa4b0;opacity:.14}
+  .trenn{stroke:var(--linie,#d8dde3);stroke-width:1}
+  .achslbl{font-size:8px;fill:var(--muted);text-anchor:end}
+  .muster{margin:2px 0 6px;font-size:13px;line-height:1.4;font-weight:600}
+  .chartleg{margin:4px 0 0;font-size:11px;color:var(--muted);line-height:1.7}
+  .chartleg .li{display:inline-block;margin-right:12px;white-space:nowrap}
+  .chartleg .k{display:inline-block;width:14px;height:3px;margin-right:4px;
+    vertical-align:middle;border-radius:2px}
+  .chartleg .k.today{background:var(--blau)}
+  .chartleg .k.med{background:#9aa4b0}
+  .chartleg .k.band{background:var(--blau);opacity:.28;height:8px}
+  .chartleg .k.qbar{background:#9aa4b0;opacity:.55;height:8px}
+  .tlbl{color:var(--muted);font-size:12px;margin-right:4px}
   .nowln{stroke:var(--orange);stroke-width:1;stroke-dasharray:2 2}
   .hoverln{stroke:#9aa4b0;stroke-width:1;stroke-dasharray:2 2;pointer-events:none}
   .hoverdot{fill:var(--blau);stroke:#fff;stroke-width:1.4;pointer-events:none}
@@ -1032,7 +1047,9 @@ function renderExpand(container, s){
   container.html(
     '<div class="dhead"><span class="dtitle">'+s.place+' · Tagesverlauf <span style="color:#6b7280;font-weight:400;font-size:.85em">'+s.road+'</span></span>'
     +'<span style="display:flex;align-items:center;gap:.4em;flex-wrap:wrap">'
-    +'<span class="toggle"><button class="mbtn'+(metric==="flow"?" on":"")+'" data-m="flow">Fahrzeuge/h</button>'
+    // Der Tagesverlauf zeigt Tempo und Menge zusammen; der Schalter wirkt nur noch
+    // auf die Werte in der Liste oben.
+    +'<span class="toggle"><span class="tlbl">Liste:</span><button class="mbtn'+(metric==="flow"?" on":"")+'" data-m="flow">Fahrzeuge/h</button>'
     +'<button class="mbtn'+(metric==="speed"?" on":"")+'" data-m="speed">Tempo km/h</button></span>'
     +archivSelectHtml()+'</span></div>'
     +'<div class="charts" id="charts"></div>');
@@ -1120,6 +1137,48 @@ function bucketize(ser){
   }));
 }
 
+// ---- Regelmaessiges Muster je Richtung und Tagestyp -------------------------
+// Uebernommen aus dem Generator von staulage (build.py, muster()). Bewusst dieselbe
+// Rechnung: Wenn Dashboard und Website verschiedene Fenster nennen wuerden, waere
+// keines mehr glaubwuerdig.
+// MUSTER_EINBRUCH: Ab wie viel Prozent unter dem Tagesmittel gilt eine Viertelstunde
+// als eng. MUSTER_MINFLOW: darunter ist das Tempo-Mittel zu duenn besetzt.
+const MUSTER_EINBRUCH=0.25, MUSTER_MINFLOW=120;
+function musterFenster(key,cat){
+  const bl=BASE&&BASE.data&&BASE.data[key]&&BASE.data[key][cat];
+  if(!bl||!bl.speed_med||!bl.flow_med) return null;
+  const paare=[];
+  for(let i=0;i<96;i++){
+    const sp=bl.speed_med[i], fl=bl.flow_med[i];
+    if(sp&&fl&&fl>=MUSTER_MINFLOW) paare.push([i,sp]);
+  }
+  if(paare.length<8) return null;
+  const schnitt=paare.reduce((a,p)=>a+p[1],0)/paare.length;
+  const tief=paare.filter(p=>(1-p[1]/schnitt)>=MUSTER_EINBRUCH).map(p=>p[0]);
+  // Ein Lauf je zusammenhaengender enger Phase; Luecken bis 30 Min werden ueberbrueckt.
+  // Eine einzelne enge Viertelstunde ist kein Muster, sondern Rauschen.
+  const laeufe=[];
+  for(const i of tief){
+    const last=laeufe[laeufe.length-1];
+    if(last&&i-last[last.length-1]<=3) last.push(i); else laeufe.push([i]);
+  }
+  const wert={}; paare.forEach(p=>wert[p[0]]=p[1]);
+  const zeit=i=>String(Math.floor(i/4)).padStart(2,'0')+':'+String((i%4)*15).padStart(2,'0');
+  const f=laeufe.filter(l=>l.length>=2).map(l=>({
+    von:zeit(l[0]), bis:zeit(l[l.length-1]+1),
+    kmh:Math.round(Math.min(...l.map(i=>wert[i])))
+  }));
+  return {fenster:f, schnitt:Math.round(schnitt)};
+}
+function musterSatz(key,cat){
+  const m=musterFenster(key,cat);
+  const tag={modo:'Werktags',fr:'Freitags',sa:'Samstags',so:'Sonntags'}[cat]||'Hier';
+  if(!m) return tag+' liegen zu wenige Vergleichswerte vor.';
+  if(!m.fenster.length) return tag+' gibt es hier keinen regelmässigen Einbruch.';
+  const teile=m.fenster.map(w=>w.von+'–'+w.bis+' Uhr (bis '+w.kmh+' km/h)');
+  return tag+' wird es hier regelmässig eng: '+teile.join(' und ')+'.';
+}
+
 function chartCard(s,dir,prov){
   const dd=s.dirs[dir];
   const card=d3.select("#charts").append("div").attr("class","card");
@@ -1130,30 +1189,28 @@ function chartCard(s,dir,prov){
     const arr=(archivDay.series&&archivDay.series[k0])||[];
     const flows=arr.map(p=>p[0]).filter(v=>v!=null), speeds=arr.map(p=>p[1]).filter(v=>v!=null);
     const partialNote=archivDay.partial?' <span style="color:var(--orange)" title="Weniger als 60 von 96 Viertelstunden erfasst">⚠ unvollständiger Tag</span>':'';
-    if(metric==="flow"){
-      // Fz/h * 0.25h je Slot summiert = Fahrzeuge des Tages (gleiche Methodik wie dayCount())
-      const tot=flows.length?Math.round(flows.reduce((a,b)=>a+b,0)/4):null;
-      card.append("p").attr("class","now").html('Tagestotal: <b>'+(tot!=null?'ca. '+tot.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'+partialNote);
-    } else {
-      const avgSp=speeds.length?Math.round(speeds.reduce((a,b)=>a+b,0)/speeds.length*10)/10:null;
-      card.append("p").attr("class","now").html('Ø Tempo (ganzer Tag): <b>'+(avgSp!=null?avgSp+' km/h':'–')+'</b>'+partialNote);
-    }
+    // Fz/h * 0.25h je Slot summiert = Fahrzeuge des Tages (gleiche Methodik wie dayCount())
+    const tot=flows.length?Math.round(flows.reduce((a,b)=>a+b,0)/4):null;
+    const avgSp=speeds.length?Math.round(speeds.reduce((a,b)=>a+b,0)/speeds.length*10)/10:null;
+    card.append("p").attr("class","now").html(
+      'Ø Tempo: <b>'+(avgSp!=null?avgSp+' km/h':'–')+'</b> · Tagestotal: <b>'
+      +(tot!=null?'ca. '+tot.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'+partialNote);
   } else {
-    let headline, hasVal;
-    if(metric==="flow"){ const lh=lastHourCount(k0); hasVal=lh!=null;
-      headline='letzte Stunde: <b>'+(hasVal?'ca. '+lh.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>'; }
-    else { const rs=recentSpeed(k0); hasVal=rs!=null;
-      let pctTxt='';
-      if(hasVal){
-        const cat0=dayType(), cbl0=BASE&&BASE.data&&BASE.data[k0]&&BASE.data[k0][cat0];
-        const idx0=Math.min(95,Math.max(0,Math.floor(swissParts(new Date()).h*4)));
-        const med0=cbl0&&cbl0.speed_med&&cbl0.speed_med[idx0];
-        if(med0) pctTxt=' · <span style="color:var(--muted)">'+Math.round(rs/med0*100)+'% vom üblichen Tempo</span>';
-      }
-      headline='Tempo: <b>'+(hasVal?'ca. '+rs+' km/h':'–')+'</b> <span style="font-weight:400;color:var(--muted)">(Ø 15 Min)</span>'+pctTxt; }
+    // Beide Groessen nebeneinander - der Umschalter ist im Chart entfallen.
+    const rs=recentSpeed(k0), lh=lastHourCount(k0);
+    const hasVal=rs!=null||lh!=null;
+    let pctTxt='';
+    if(rs!=null){
+      const cat0=dayType(), cbl0=BASE&&BASE.data&&BASE.data[k0]&&BASE.data[k0][cat0];
+      const idx0=Math.min(95,Math.max(0,Math.floor(swissParts(new Date()).h*4)));
+      const med0=cbl0&&cbl0.speed_med&&cbl0.speed_med[idx0];
+      if(med0) pctTxt=' <span style="font-weight:400;color:var(--muted)">('+Math.round(rs/med0*100)+'% vom üblichen)</span>';
+    }
+    let headline='Tempo: <b>'+(rs!=null?'ca. '+rs+' km/h':'–')+'</b>'+pctTxt
+      +' · letzte Stunde: <b>'+(lh!=null?'ca. '+lh.toLocaleString('de-CH')+' Fz':'–')+'</b>';
     let tword="";
     if(hasVal){
-      const tr=trend(k0, metric);
+      const tr=trend(k0,'speed');
       const w=tr>0?"▲ steigend":tr<0?"▼ sinkend":"– stabil";
       tword=' · <span class="trendword" title="Kurzfrist-Tendenz der letzten ~30 Min">'+w+'</span>';
     }
@@ -1163,48 +1220,79 @@ function chartCard(s,dir,prov){
       .attr("title","Hochrechnung aus den Stundenwerten seit Mitternacht – Schätzung, kein exakter Zählerstand")
       .html('heute bisher: <b>ca. '+dc.toLocaleString('de-CH')+'</b> Fahrzeuge');
   }
-  const W=330,H=150,m={t:6,r:8,b:18,l:34};
+  // ---- Grafik: Tempo oben, Verkehrsmenge als Band unten ---------------------
+  // Beide Groessen in EINEM Bild, aber NICHT auf zwei Y-Achsen: Wo sich zwei Skalen
+  // kreuzen, haengt allein von ihrer Ausrichtung ab - das erfindet einen Zusammenhang,
+  // den die Daten nicht hergeben. Stattdessen hat die Menge ein eigenes Band am
+  // unteren Rand ohne eigene Achse. Der Vergleich der beiden Verlaeufe ist genau die
+  // Aussage des Systems: Tempo runter UND Menge runter heisst Stau, Menge runter bei
+  // normalem Tempo heisst bloss wenig Verkehr.
+  const cat=archivDay?archivDay.dt:dayType();
+  card.append("p").attr("class","muster").text(musterSatz(k0,cat));
+  const W=330,H=192,m={t:8,r:8,b:18,l:34};
+  const SPLIT=124, BAND_T=138;     // Unterkante Tempo-Panel, Oberkante Mengenband
   const svg=card.append("svg").attr("viewBox",`0 0 ${W} ${H}`).style("width","100%").style("height","auto");
   const x=d3.scaleLinear().domain([0,24]).range([m.l,W-m.r]);
   const key=k0;
   const buckets=archivDay?bucketsFromArchive((archivDay.series&&archivDay.series[key])||null)
     :bucketize((window.__today&&window.__today.series&&window.__today.series[key])||[]);
-  // Vergleichslinie: bei Archivtag dessen eigenen Tagtyp nehmen (nicht "heute"), sonst live dayType()
-  const bl=(BASE&&BASE.data&&BASE.data[key])?BASE.data[key][archivDay?archivDay.dt:dayType()]:null;
+  const bl=(BASE&&BASE.data&&BASE.data[key])?BASE.data[key][cat]:null;
   const slotX=i=>i/4;
-  const medArr = bl ? (metric==="flow"?bl.flow_med:bl.speed_med) : null;
-  const p25=bl?bl.flow_p25:null, p75=bl?bl.flow_p75:null;
-  let yMax=10;
-  // d3.max liefert undefined bei lauter null (z.B. Baseline-Daytype mit 0 Tagen) -> NaN vermeiden
-  const mBase=medArr?d3.max(metric==="flow"?p75:medArr):null;
-  if(mBase!=null) yMax=Math.max(yMax,mBase);
-  if(buckets.length){const mb=d3.max(buckets,d=>metric==="flow"?(d.flow||0):(d.speed||0)); if(mb!=null) yMax=Math.max(yMax,mb);}
-  const y=d3.scaleLinear().domain([0,yMax*1.1]).nice().range([H-m.b,m.t]);
+
+  // Tempo-Skala: nur bis zum hoechsten vorkommenden Wert, nicht bis null. Die Achse
+  // endet bei SPLIT, darunter beginnt ein anderer Massstab.
+  let sMax=10;
+  if(bl&&bl.speed_med){const v=d3.max(bl.speed_med.filter(z=>z!=null)); if(v!=null)sMax=Math.max(sMax,v);}
+  if(buckets.length){const v=d3.max(buckets,d=>d.speed||0); if(v!=null)sMax=Math.max(sMax,v);}
+  const y=d3.scaleLinear().domain([0,sMax*1.1]).nice().range([SPLIT,m.t]);
+  // Mengen-Skala: eigenes Band, absichtlich ohne Achsenbeschriftung.
+  let qMax=10;
+  if(bl&&bl.flow_med){const v=d3.max(bl.flow_med.filter(z=>z!=null)); if(v!=null)qMax=Math.max(qMax,v);}
+  if(buckets.length){const v=d3.max(buckets,d=>d.flow||0); if(v!=null)qMax=Math.max(qMax,v);}
+  const yq=d3.scaleLinear().domain([0,qMax*1.05]).range([H-m.b,BAND_T]);
+
   svg.append("g").attr("class","axis").attr("transform",`translate(0,${H-m.b})`)
      .call(d3.axisBottom(x).ticks(6).tickFormat(d=>d+"h"));
   svg.append("g").attr("class","axis").attr("transform",`translate(${m.l},0)`)
-     .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format("~s")));
-  // Referenzband (nur flow) + Median, leere Slots überspringen
-  if(bl && metric==="flow"){
-    const area=d3.area().defined((d,i)=>p25[i]!=null&&p75[i]!=null).x((d,i)=>x(slotX(i))).y0((d,i)=>y(p25[i])).y1((d,i)=>y(p75[i])).curve(d3.curveMonotoneX);
-    svg.append("path").datum(p25).attr("class","band").attr("d",area);
+     .call(d3.axisLeft(y).ticks(3).tickFormat(d3.format("~s")));
+  svg.append("text").attr("class","achslbl").attr("x",m.l-2).attr("y",m.t-1).text("km/h");
+  svg.append("text").attr("class","achslbl").attr("x",m.l-2).attr("y",BAND_T-2).text("Fz/h");
+  // Trennlinie, damit niemand die Balken gegen die km/h-Achse liest
+  svg.append("line").attr("class","trenn").attr("x1",m.l).attr("x2",W-m.r)
+     .attr("y1",BAND_T-8).attr("y2",BAND_T-8);
+
+  // Vergleichsband Tempo (p25-p75), darueber der Median als gestrichelte Linie
+  if(bl&&bl.speed_p25&&bl.speed_p75){
+    const area=d3.area().defined((d,i)=>bl.speed_p25[i]!=null&&bl.speed_p75[i]!=null)
+      .x((d,i)=>x(slotX(i))).y0((d,i)=>y(bl.speed_p25[i])).y1((d,i)=>y(bl.speed_p75[i]))
+      .curve(d3.curveMonotoneX);
+    svg.append("path").datum(bl.speed_p25).attr("class","band").attr("d",area);
   }
-  if(medArr){
-    const ml=d3.line().defined((d,i)=>medArr[i]!=null).x((d,i)=>x(slotX(i))).y((d,i)=>y(medArr[i])).curve(d3.curveMonotoneX);
-    svg.append("path").datum(medArr).attr("class","med").attr("d",ml);
+  if(bl&&bl.speed_med){
+    const ml=d3.line().defined((d,i)=>bl.speed_med[i]!=null).x((d,i)=>x(slotX(i)))
+      .y((d,i)=>y(bl.speed_med[i])).curve(d3.curveMonotoneX);
+    svg.append("path").datum(bl.speed_med).attr("class","med").attr("d",ml);
   }
-  // heutige Linie = Viertelstunden-Mittel (Linie und Hover zeigen denselben Wert).
+  // uebliche Menge als heller Umriss hinter den heutigen Balken
+  if(bl&&bl.flow_med){
+    const qa=d3.area().defined((d,i)=>bl.flow_med[i]!=null).x((d,i)=>x(slotX(i)))
+      .y0(H-m.b).y1((d,i)=>yq(bl.flow_med[i])).curve(d3.curveMonotoneX);
+    svg.append("path").datum(bl.flow_med).attr("class","qband").attr("d",qa);
+  }
   if(buckets.length){
-    const tl=d3.line().x(d=>x(d.h)).y(d=>y(metric==="flow"?d.flow:d.speed))
-      .defined(d=>(metric==="flow"?d.flow:d.speed)!=null).curve(d3.curveMonotoneX);
+    const bw=Math.max(1.5,(x(0.25)-x(0))*0.7);
+    svg.append("g").selectAll("rect").data(buckets.filter(d=>d.flow!=null)).join("rect")
+      .attr("class","qbar").attr("x",d=>x(d.h)-bw/2).attr("width",bw)
+      .attr("y",d=>yq(d.flow)).attr("height",d=>Math.max(0,(H-m.b)-yq(d.flow)));
+    const tl=d3.line().x(d=>x(d.h)).y(d=>y(d.speed)).defined(d=>d.speed!=null)
+      .curve(d3.curveMonotoneX);
     svg.append("path").datum(buckets).attr("class","today").attr("d",tl);
   }
-  // Jetzt-Linie (ergibt bei einem vergangenen Archivtag keinen Sinn -> nur live)
   if(!archivDay){
     const nowH=swissParts(new Date()).h;
-    svg.append("line").attr("class","nowln").attr("x1",x(nowH)).attr("x2",x(nowH)).attr("y1",m.t).attr("y2",H-m.b);
+    svg.append("line").attr("class","nowln").attr("x1",x(nowH)).attr("x2",x(nowH))
+       .attr("y1",m.t).attr("y2",H-m.b);
   }
-  // Hover: Uhrzeit + Werte am nächstgelegenen Zeitpunkt
   const guide=svg.append("line").attr("class","hoverln").attr("y1",m.t).attr("y2",H-m.b).style("opacity",0);
   const hdot=svg.append("circle").attr("class","hoverdot").attr("r",3.2).style("opacity",0);
   svg.append("rect").attr("x",m.l).attr("y",m.t).attr("width",W-m.r-m.l).attr("height",H-m.b-m.t)
@@ -1217,25 +1305,35 @@ function chartCard(s,dir,prov){
         if(!best)return;
         const bx=x(best.h);
         guide.attr("x1",bx).attr("x2",bx).style("opacity",1);
-        const val=metric==="flow"?best.flow:best.speed;
-        if(val!=null)hdot.attr("cx",bx).attr("cy",y(val)).style("opacity",1);else hdot.style("opacity",0);
+        if(best.speed!=null)hdot.attr("cx",bx).attr("cy",y(best.speed)).style("opacity",1);
+        else hdot.style("opacity",0);
         let typ="";
-        const row="display:flex;justify-content:space-between;gap:1.2em;margin-top:2px";
-        if(bl){const arr=metric==="flow"?bl.flow_med:bl.speed_med;const mv=arr&&arr[best.idx];if(mv!=null)typ='<div style="'+row+'"><span>typisch</span><span>'+mv+(metric==="flow"?' Fz/h':' km/h')+'</span></div>';}
+        if(bl){
+          const sm=bl.speed_med&&bl.speed_med[best.idx], fm=bl.flow_med&&bl.flow_med[best.idx];
+          if(sm!=null||fm!=null) typ='<div class="r"><span>üblich</span><span>'
+            +(sm!=null?sm+' km/h':'–')+(fm!=null?' · '+fm+' Fz/h':'')+'</span></div>';
+        }
         const e=best.idx+1, endLbl=String(Math.floor(e/4)%24).padStart(2,'0')+':'+String((e%4)*15).padStart(2,'0');
-        tip.html('<b style="color:var(--ink)">'+best.label+'–'+endLbl+'</b> · Ø Viertelstunde'
-          +'<div style="'+row+'"><span>Fahrzeuge</span><span>'+(best.flow==null?'–':'ca. '+Math.round(best.flow)+' Fz/h')+'</span></div>'
-          +'<div style="'+row+'"><span>Tempo</span><span>'+(best.speed==null?'–':'ca. '+(Math.round(best.speed*10)/10)+' km/h')+'</span></div>'+typ)
-          .style("left",(ev.clientX+14)+"px").style("top",(ev.clientY+12)+"px").style("opacity",1);
+        tip.html('<b>'+best.label+'–'+endLbl+'</b> · Ø Viertelstunde'
+          +'<div class="r"><span>Tempo</span><span>'+(best.speed==null?'–':'ca. '+(Math.round(best.speed*10)/10)+' km/h')+'</span></div>'
+          +'<div class="r"><span>Fahrzeuge</span><span>'+(best.flow==null?'–':'ca. '+Math.round(best.flow)+' Fz/h')+'</span></div>'+typ)
+          .style("left",(ev.pageX+14)+"px").style("top",(ev.pageY+12)+"px").style("opacity",1);
      })
      .on("mouseleave",function(){guide.style("opacity",0);hdot.style("opacity",0);hideTip();});
-  // Hinweis solange wenige Vergleichstage erfasst sind (Faktentreue: keine Schein-Robustheit)
+  // Legendeneintraege als umbruchfaehige Einheiten. Frueher standen hier &nbsp;
+  // zwischen den Eintraegen - geschuetzte Leerzeichen brechen nicht um, die Zeile
+  // wurde breiter als das Display und schob die ganze Seite horizontal weg.
+  card.append("p").attr("class","chartleg")
+    .html('<span class="li"><span class="k today"></span>heute gemessen</span>'
+         +'<span class="li"><span class="k med"></span>übliches Tempo</span>'
+         +'<span class="li"><span class="k band"></span>üblicher Bereich</span>'
+         +'<span class="li"><span class="k qbar"></span>Fahrzeuge</span>');
   const blHasData = bl && bl.flow_med && bl.flow_med.some(v=>v!=null);
   if(blHasData){
     const cat=archivDay?archivDay.dt:dayType();
     const n=(BASE.n&&BASE.n[cat])||0;
     if(n<4) card.append("p").attr("class","bnote").html('Vergleichslinie vorläufig – erst '+n+' Vergleichstag'+(n===1?'':'e')+' ('+CATLABEL[cat]+') erfasst');
-  } else if(metric==="flow"){
+  } else {
     card.append("p").attr("class","bnote").html('Vergleichslinie folgt, sobald genug Tage erfasst sind');
   }
 }
