@@ -929,7 +929,13 @@ function renderBoardBody(rows,sbtn,kbtn,rbtn){
     +'<div class="bfilter"><span class="bflabel">Kanton:</span>'
     +'<span class="toggle">'+kbtn('alle','Alle')+kbtn('GR','GR')+kbtn('SG','SG')+kbtn('GL','GL')+kbtn('SZ','SZ')+'</span>'
     +'<span class="bflabel" style="margin-left:.4em">Strecke:</span>'
-    +'<span class="toggle">'+rbtn('alle','Alle')+rbtn('A13','A13')+rbtn('A3','A3')+rbtn('pass','Pässe')+rbtn('andere','Weitere')+'</span></div>'
+    +'<span class="toggle">'+rbtn('alle','Alle')+rbtn('A13','A13')+rbtn('A3','A3')+rbtn('pass','Pässe')+rbtn('andere','Weitere')+'</span>'
+    // Balken in den Kacheln: Menge oder Tempo. Gehoert hierher zu den anderen
+    // Kachel-Einstellungen, nicht ueber den Tagesverlauf - der zeigt beides.
+    +'<span class="bflabel">Balken:</span>'
+    +'<span class="toggle">'
+    +'<button class="mbtn'+(metric==="flow"?" on":"")+'" data-m="flow">Fahrzeuge/h</button>'
+    +'<button class="mbtn'+(metric==="speed"?" on":"")+'" data-m="speed">Tempo km/h</button></span></div>'
     +section('&#9888; Aktuell auffällig <small>alle Korridore</small>',kritisch)
     +section('Hauptachsen <small>A13/A28 · Graubünden</small>',haupt)
     +section('Pässe &amp; Nebenstrassen <small>Graubünden</small>',pass)
@@ -939,6 +945,7 @@ function renderBoardBody(rows,sbtn,kbtn,rbtn){
   d3.selectAll(".bsort button").on("click",function(){boardSort=this.getAttribute("data-sort");renderBoard();});
   d3.selectAll("[data-fkt]").on("click",function(){filterKt=this.getAttribute("data-fkt");renderBoard();});
   d3.selectAll("[data-frt]").on("click",function(){filterRoute=this.getAttribute("data-frt");renderBoard();});
+  d3.selectAll(".mbtn").on("click",function(){metric=this.getAttribute("data-m");renderBoard();});
   d3.selectAll(".tile").on("click",function(){select(this.getAttribute("data-id"), true);});
   // Embed-Button darf die Kachel nicht auf-/zuklappen
   document.querySelectorAll("[data-embed]").forEach(b=>b.addEventListener("click",ev=>{
@@ -965,15 +972,11 @@ function renderExpand(container, s){
   container.html(
     '<div class="dhead"><span class="dtitle">'+s.place+' · Tagesverlauf <span style="color:#6b7280;font-weight:400;font-size:.85em">'+s.road+'</span></span>'
     +'<span style="display:flex;align-items:center;gap:.4em;flex-wrap:wrap">'
-    // Der Umschalter steuert seit dem Chart-Umbau nur noch die Balken in der
-    // Kachel-Uebersicht - der Tagesverlauf zeigt Tempo und Menge ohnehin zusammen.
-    // Ohne die Beschriftung wirkt er, als haette er keine Wirkung.
-    +'<span class="toggle"><span class="tlbl">Kacheln:</span>'
-    +'<button class="mbtn'+(metric==="flow"?" on":"")+'" data-m="flow">Fahrzeuge/h</button>'
-    +'<button class="mbtn'+(metric==="speed"?" on":"")+'" data-m="speed">Tempo km/h</button></span>'
+    // Kein Fahrzeuge/Tempo-Umschalter mehr an dieser Stelle: Der Tagesverlauf zeigt
+    // beides zusammen. Der Schalter steuert nur die Balken in der Kachel-Uebersicht
+    // und steht deshalb dort bei den uebrigen Kachel-Filtern.
     +archivSelectHtml()+'</span></div>'
     +'<div class="charts" id="charts"></div>');
-  container.selectAll(".mbtn").on("click",function(){metric=this.getAttribute("data-m");renderBoard();});
   container.select(".archivsel").on("change",function(){
     const v=this.value;
     if(!v){ archivDate=null; renderBoard(); return; }
