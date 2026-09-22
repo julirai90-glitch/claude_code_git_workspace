@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fünfzehn Jahre Unfälle im Kanton Glarus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4;
+  /* severity ramp, the same three steps the hotspot map uses: dark to light */
+  --rot:#b5001e; --orange:#ee7733; --gelb:#f2b84b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px}
+.legend{display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-bottom:12px}
+.lg{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2)}
+.sw{width:12px; height:12px; border-radius:2px; flex:none}
+.chart{width:100%}
+svg{display:block; max-width:100%; height:auto}
+.tick{font-size:12px; fill:var(--ink-3)}
+.grid{stroke:var(--rule-soft); stroke-width:1}
+.axis{stroke:var(--rule); stroke-width:1}
+.hit{cursor:crosshair}
+h3{font-size:15px; margin:26px 0 4px; font-weight:600}
+h3 + .sub{font-size:13px; color:var(--ink-2); margin:0 0 12px}
+.blocks{width:100%}
+.brow{display:grid; grid-template-columns:var(--blabw) 1fr var(--bvalw); gap:10px;
+  align-items:center; margin-bottom:8px}
+.blab{font-size:13px; text-align:right; color:var(--ink-2); font-variant-numeric:tabular-nums}
+.btrack{position:relative; height:24px; background:var(--rule-soft); border-radius:3px}
+.bfill{position:absolute; left:0; top:0; bottom:0; border-radius:3px; background:var(--orange)}
+.bval{font-size:14px; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.bval b{color:var(--ink); font-size:16px}
+.note{margin:18px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
+  font-size:14px; color:var(--ink-2)}
+.note b{color:var(--ink); font-variant-numeric:tabular-nums}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:14px 0 0}
+.tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
+  transform:translate(-50%,-100%); background:#fff; color:var(--ink);
+  border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
+  padding:8px 11px; font-size:13px; line-height:1.4; white-space:nowrap; transition:opacity .09s}
+.tip .t-m{font-weight:700; display:block; margin-bottom:5px}
+.tip .t-tbl{border-collapse:collapse; font-size:13px}
+.tip .t-tbl td{padding:1px 0}
+.tip .t-tbl td:last-child{text-align:right; padding-left:18px;
+  font-variant-numeric:tabular-nums; font-weight:600}
+.tip .t-tbl i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px}
+.tip .t-sum td{border-top:1px solid var(--rule); padding-top:3px; color:var(--ink-2)}
+table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:10px}
+table.data th,table.data td{border-bottom:1px solid var(--rule-soft); padding:3px 5px;
+  text-align:right; font-variant-numeric:tabular-nums}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{color:var(--ink-3); font-weight:600}
+details{margin-top:12px; font-size:13px; color:var(--ink-2)}
+summary{cursor:pointer; color:var(--s1)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-palette="#b5001e,#ee7733,#f2b84b">
+<div class="wrap">
+  <div class="legend">
+    <span class="lg"><span class="sw" style="background:var(--rot)"></span>Unfall mit Get&ouml;teten</span>
+    <span class="lg"><span class="sw" style="background:var(--orange)"></span>mit Schwerverletzten</span>
+    <span class="lg"><span class="sw" style="background:var(--gelb)"></span>mit Leichtverletzten</span>
+  </div>
+  <div class="chart"><svg id="c" role="img" aria-label="Gestapelte S&auml;ulen: Unf&auml;lle im Kanton Glarus je Jahr von 2011 bis 2025, nach Schwere"></svg></div>
+
+  <h3>Der Anteil, der schwer oder t&ouml;dlich endet</h3>
+  <p class="sub">Je f&uuml;nf Jahre zusammengefasst &ndash; einzelne Jahre schwanken zu stark, um sie zu vergleichen.</p>
+  <div class="blocks" id="blocks"></div>
+
+  <p class="note" id="note"></p>
+  <p class="src">Unf&auml;lle mit Personenschaden, Kanton Glarus, nach Schwere des schwersten
+     Personenschadens. Quelle: Bundesamt f&uuml;r Strassen ASTRA, Strassenverkehrsunfallorte.
+     Grafik: S&uuml;dostschweiz</p>
+  <details>
+    <summary>Zahlen als Tabelle</summary>
+    <table class="data" id="tbl"></table>
+  </details>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<script>
+/* DATA-START */
+const YEARS_D = [{"y":2011,"n":86,"as1":1,"as2":14,"as3":71},{"y":2012,"n":81,"as1":2,"as2":17,"as3":62},{"y":2013,"n":93,"as1":2,"as2":16,"as3":75},{"y":2014,"n":90,"as1":1,"as2":17,"as3":72},{"y":2015,"n":105,"as1":4,"as2":26,"as3":75},{"y":2016,"n":100,"as1":1,"as2":17,"as3":82},{"y":2017,"n":95,"as1":0,"as2":24,"as3":71},{"y":2018,"n":86,"as1":2,"as2":19,"as3":65},{"y":2019,"n":92,"as1":2,"as2":17,"as3":73},{"y":2020,"n":94,"as1":0,"as2":22,"as3":72},{"y":2021,"n":86,"as1":0,"as2":19,"as3":67},{"y":2022,"n":93,"as1":3,"as2":18,"as3":72},{"y":2023,"n":95,"as1":3,"as2":22,"as3":70},{"y":2024,"n":83,"as1":2,"as2":19,"as3":62},{"y":2025,"n":87,"as1":3,"as2":26,"as3":58}];
+const BLOCKS = [{"label":"2011–2015","n":455,"k":100,"pct":22.0},{"label":"2016–2020","n":467,"k":104,"pct":22.3},{"label":"2021–2025","n":444,"k":115,"pct":25.9}];
+const FACTS = {"min":81,"max":105,"n":1366,"first":2011,"last":2025,"dead":26};
+/* DATA-END */
+function de(x){ return String(x).replace('.', ','); }
+
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  /* keep the tooltip inside the viewport: it is centred on the pointer */
+  const half = tip.offsetWidth / 2, vw = window.innerWidth;
+  tip.style.left = Math.max(half + 6, Math.min(vw - half - 6, e.clientX)) + 'px';
+  tip.style.top  = Math.max(tip.offsetHeight + 8, e.clientY - 12) + 'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('pointerdown', function(e){
+  if (!e.target.classList || !e.target.classList.contains('hit')) hideTip();
+}, true);
+
+const NS = 'http://www.w3.org/2000/svg';
+function el(n,a){ const x=document.createElementNS(NS,n); for(const k in (a||{})) x.setAttribute(k,a[k]); return x; }
+
+/* rounded cap on top, square at the baseline */
+function barPath(x,y,w,h,r){
+  r = Math.min(r, w/2, h);
+  return 'M'+x+','+(y+h)+' V'+(y+r)+' A'+r+','+r+' 0 0 1 '+(x+r)+','+y+
+         ' H'+(x+w-r)+' A'+r+','+r+' 0 0 1 '+(x+w)+','+(y+r)+' V'+(y+h)+' Z';
+}
+
+function draw(){
+  const W = document.querySelector('.chart').clientWidth || 640;
+  const narrow = W < 460;
+  const L = narrow ? 28 : 38, R = 8, T = 12, B = 32;
+  const H = narrow ? 250 : 300;
+  const iw = W-L-R, ih = H-T-B;
+  const max = 120, STEP = 30, GAP = 2;
+  const N = YEARS_D.length;
+  const bw = Math.min(narrow ? 18 : 30, iw/N - (narrow ? 3 : 6));
+  const xAt = i => L + iw*(i+0.5)/N - bw/2;
+  const yAt = v => T + ih - ih*v/max;
+  const svg = document.getElementById('c');
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+  svg.textContent = '';
+
+  for(let v=0; v<=max; v+=STEP){
+    svg.appendChild(el('line',{x1:L, y1:yAt(v), x2:W-R, y2:yAt(v), class: v===0?'axis':'grid'}));
+    const t = el('text',{x:L-7, y:yAt(v)+4, class:'tick','text-anchor':'end'});
+    t.textContent = v; svg.appendChild(t);
+  }
+
+  YEARS_D.forEach(function(d,i){
+    /* killed and severely injured sit on the baseline, so their thickness can
+       be compared across years without measuring from a moving edge */
+    const stack = [['as1','var(--rot)'], ['as2','var(--orange)'], ['as3','var(--gelb)']];
+    let below = 0;
+    stack.forEach(function(seg, k){
+      const v = d[seg[0]];
+      if(v <= 0){ return; }
+      const top = below + v;
+      svg.appendChild(el('path',{d:barPath(xAt(i), yAt(top), bw, ih*v/max, 4), fill:seg[1]}));
+      if(below > 0){
+        svg.appendChild(el('rect',{x:xAt(i), y:yAt(below)-GAP, width:bw, height:GAP,
+          fill:'var(--surface)'}));
+      }
+      below = top;
+    });
+    const compact = (iw / N) < 32;   /* space per column, not a viewport guess */
+    if(!compact || i % 2 === 0){
+      const t = el('text',{x:xAt(i)+bw/2, y:H-13, class:'tick','text-anchor':'middle'});
+      t.textContent = compact ? "'" + String(d.y).slice(2) : d.y;
+      svg.appendChild(t);
+    }
+    const hit = el('rect',{x:xAt(i)-1, y:T, width:bw+2, height:ih, fill:'transparent', class:'hit'});
+    function onHit(e){
+      showTip(e,
+        '<span class="t-m">' + d.y + '</span>' +
+        '<table class="t-tbl">' +
+          '<tr><td><i style="background:var(--rot)"></i>mit Getöteten</td><td>'+d.as1+'</td></tr>' +
+          '<tr><td><i style="background:var(--orange)"></i>mit Schwerverletzten</td><td>'+d.as2+'</td></tr>' +
+          '<tr><td><i style="background:var(--gelb)"></i>mit Leichtverletzten</td><td>'+d.as3+'</td></tr>' +
+          '<tr class="t-sum"><td>Total</td><td>'+d.n+'</td></tr>' +
+        '</table>');
+    }
+    hit.addEventListener('pointerdown', onHit);
+    hit.addEventListener('mousemove', onHit);
+    hit.addEventListener('mouseleave', hideTip);
+    svg.appendChild(hit);
+  });
+
+  /* the five-year blocks below, on a 0–40 % scale */
+  const narrowB = document.body.clientWidth < 460;
+  const host = document.getElementById('blocks');
+  host.style.setProperty('--blabw', narrowB ? '74px' : '96px');
+  host.style.setProperty('--bvalw', narrowB ? '92px' : '130px');
+  host.textContent = '';
+  const SCALE = 40;
+  BLOCKS.forEach(function(b){
+    const row = document.createElement('div');
+    row.className = 'brow';
+    row.innerHTML = '<div class="blab">' + b.label + '</div>' +
+      '<div class="btrack"><div class="bfill" style="width:' + (100*b.pct/SCALE) + '%"></div></div>' +
+      '<div class="bval"><b>' + de(b.pct.toFixed(1)) + ' %</b> ' +
+      '<span style="color:var(--ink-3)">' + b.k + '/' + b.n + '</span></div>';
+    host.appendChild(row);
+  });
+}
+draw();
+let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(draw, 140); });
+
+document.getElementById('note').innerHTML =
+  'In fünfzehn Jahren bewegt sich die Zahl der Unfälle zwischen <b>' + FACTS.min +
+  '</b> und <b>' + FACTS.max + '</b> pro Jahr — ohne erkennbare Richtung. Der Anteil der ' +
+  'Unfälle, die schwer oder tödlich enden, liegt in den letzten fünf Jahren höher als in ' +
+  'den ersten fünf. <b>Dieser Unterschied ist statistisch nicht gesichert</b> ' +
+  '(Chi-Quadrat 1,9, p = 0,17): Bei rund 90 Unfällen pro Jahr kann eine Verschiebung um ' +
+  'vier Prozentpunkte auch Zufall sein. Als Trend taugt sie nicht — als Hinweis, den man ' +
+  'weiterverfolgt, schon.';
+
+(function(){
+  let h = '<tr><th>Jahr</th><th>mit Get&ouml;teten</th><th>mit Schwer-<br>verletzten</th>' +
+          '<th>mit Leicht-<br>verletzten</th><th>Total</th><th>schwer oder<br>t&ouml;dlich</th></tr>';
+  YEARS_D.forEach(function(d){
+    h += '<tr><td>' + d.y + '</td><td>' + d.as1 + '</td><td>' + d.as2 + '</td><td>' + d.as3 +
+         '</td><td>' + d.n + '</td><td>' + de(Math.round(1000*(d.as1+d.as2)/d.n)/10) + ' %</td></tr>';
+  });
+  document.getElementById('tbl').innerHTML = h;
+})();
+</script>
+</body>
+</html>

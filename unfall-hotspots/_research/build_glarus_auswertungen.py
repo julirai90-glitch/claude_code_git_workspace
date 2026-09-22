@@ -9,6 +9,7 @@ The map answers "where"; these five answer "what is unusual about it":
   glarus-embed-schwere-strassen.html  share of severe outcomes per road
   glarus-embed-gemeinden.html     severity split per municipality
   glarus-embed-talalpstrasse.html the Talalpstrasse case: single-vehicle crashes
+  glarus-embed-entwicklung.html  fifteen years: flat count, severity drifting up
 
 Each page keeps its data between /* DATA-START */ and /* DATA-END */; this
 script recomputes those blocks so the numbers can never drift from the source.
@@ -379,6 +380,35 @@ def g6_talalpstrasse(acc, streets, orte, min_n=12):
     return js("FACTS", facts) + "\n" + js("RANK", rank[:8]) + "\n" + js("MIN_N", min_n)
 
 
+def g7_entwicklung(acc):
+    """Severity per year, and the five-year blocks behind it.
+
+    The count of accidents is flat across fifteen years; the share that ends
+    badly is not obviously so. First five years against last five gives
+    chi2 = 1.9, p = 0.17 — a hint, not a finding, and the page says that.
+    """
+    years = []
+    for y in YEARS:
+        rows = [a for a in acc if a["AccidentYear"] == y]
+        years.append({
+            "y": y, "n": len(rows),
+            "as1": sum(1 for a in rows if a["AccidentSeverityCategory"] == "as1"),
+            "as2": sum(1 for a in rows if a["AccidentSeverityCategory"] == "as2"),
+            "as3": sum(1 for a in rows if a["AccidentSeverityCategory"] == "as3"),
+        })
+    blocks = []
+    for y1 in (2011, 2016, 2021):
+        rows = [a for a in acc if y1 <= a["AccidentYear"] <= y1 + 4]
+        k = severe(rows)
+        blocks.append({"label": f"{y1}–{y1+4}", "n": len(rows), "k": k,
+                       "pct": round(100 * k / len(rows), 1)})
+    counts = [r["n"] for r in years]
+    facts = {"min": min(counts), "max": max(counts), "n": len(acc),
+             "first": years[0]["y"], "last": years[-1]["y"],
+             "dead": sum(r["as1"] for r in years)}
+    return js("YEARS_D", years) + "\n" + js("BLOCKS", blocks) + "\n" + js("FACTS", facts)
+
+
 # --------------------------------------------------------------------------
 def main():
     acc = load_accidents()
@@ -395,6 +425,7 @@ def main():
     patch("glarus-embed-schwere-strassen.html", g4_schwere_strassen(acc, streets, orte))
     patch("glarus-embed-gemeinden.html", g5_gemeinden(acc))
     patch("glarus-embed-talalpstrasse.html", g6_talalpstrasse(acc, streets, orte))
+    patch("glarus-embed-entwicklung.html", g7_entwicklung(acc))
 
 
 if __name__ == "__main__":
