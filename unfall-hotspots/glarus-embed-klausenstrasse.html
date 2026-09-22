@@ -18,34 +18,31 @@ html,body{margin:0;padding:0;background:var(--surface)}
 body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
   color:var(--ink); font-size:16px; line-height:1.55}
 .wrap{padding:12px 16px 16px}
-.stats{display:flex; gap:26px; flex-wrap:wrap; margin:0 0 16px;
-  border-bottom:1px solid var(--rule-soft); padding-bottom:14px}
-.stat .num{font-size:30px; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums}
-.stat .num.accent{color:var(--s2)}
-.stat .lbl{font-size:13px; color:var(--ink-2); max-width:190px}
-.legend{display:flex; gap:18px; flex-wrap:wrap; align-items:center; margin-bottom:12px}
+.legend{display:flex; gap:18px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
 .lg{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2)}
 .sw{width:12px; height:12px; border-radius:2px; flex:none}
-.chart{width:100%}
-svg{display:block; max-width:100%; height:auto}
-.tick{font-size:12px; fill:var(--ink-3)}
-.grid{stroke:var(--rule-soft); stroke-width:1}
-.axis{stroke:var(--rule); stroke-width:1}
+/* two pies side by side — the comparison is the whole point, so they never
+   stack: at 320 px each one still has ~130 px to live in */
+.pies{display:flex; gap:14px; align-items:flex-start}
+.pie{flex:1 1 0; min-width:0; text-align:center}
+.pie svg{display:block; width:100%; max-width:210px; height:auto; margin:0 auto}
+.pie .cap{font-size:15px; font-weight:600; margin-bottom:8px; line-height:1.25}
+.pie .cap span{display:block; font-weight:400; font-size:13px; color:var(--ink-3)}
+.pie .val{font-size:30px; font-weight:700; line-height:1.15; margin-top:8px;
+  font-variant-numeric:tabular-nums; color:var(--s2)}
+.pie .sub{font-size:13px; color:var(--ink-2); line-height:1.3}
+.facts{margin:18px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
+  font-size:14px; color:var(--ink-2)}
+.facts b{color:var(--ink); font-variant-numeric:tabular-nums}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
      padding-top:10px; margin:14px 0 0}
 .tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
   transform:translate(-50%,-100%); background:#fff; color:var(--ink);
   border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
   padding:8px 11px; font-size:13px; line-height:1.4; white-space:nowrap; transition:opacity .09s}
+.tip .t-m{font-weight:700; display:block; margin-bottom:4px}
 .tip b{font-variant-numeric:tabular-nums}
-.tip .t-m{font-weight:700; display:block; margin-bottom:5px}
-.tip .t-tbl{border-collapse:collapse; font-size:13px}
-.tip .t-tbl td{padding:1px 0}
-.tip .t-tbl td:last-child{text-align:right; padding-left:18px;
-  font-variant-numeric:tabular-nums; font-weight:600}
-.tip .t-tbl i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px}
-.tip .t-sum td{border-top:1px solid var(--rule); padding-top:3px; color:var(--ink-2)}
-.hit{cursor:crosshair}
+.slice{cursor:crosshair}
 table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:10px}
 table.data th,table.data td{border-bottom:1px solid var(--rule-soft); padding:3px 5px;
   text-align:right; font-variant-numeric:tabular-nums}
@@ -58,18 +55,19 @@ summary{cursor:pointer; color:var(--s1)}
 </head>
 <body data-palette="#0068a4,#ee7733">
 <div class="wrap">
-  <div class="stats" id="stats"></div>
   <div class="legend">
-    <span class="lg"><span class="sw" style="background:var(--s2)"></span>mit Motorradbeteiligung</span>
+    <span class="lg"><span class="sw" style="background:var(--s2)"></span>Unfall mit Motorradbeteiligung</span>
     <span class="lg"><span class="sw" style="background:var(--s1)"></span>&uuml;brige Unf&auml;lle</span>
   </div>
-  <div class="chart"><svg id="c" role="img" aria-label="S&auml;ulendiagramm: Unf&auml;lle auf der Klausenstrasse nach Monat, Motorradunf&auml;lle als obere Schicht"></svg></div>
-  <p class="src">Unf&auml;lle mit Personenschaden auf der Klausenstrasse (Gemeinde Glarus S&uuml;d,
-     Abschnitt ab Linthal bis zur Kantonsgrenze), 2011&ndash;2025.
-     Quelle: Bundesamt f&uuml;r Strassen ASTRA, Strassenverkehrsunfallorte; Strassenzuordnung: swisstopo.
-     Grafik: S&uuml;dostschweiz</p>
+  <div class="pies" id="pies"></div>
+  <p class="facts" id="facts"></p>
+  <p class="src">Unf&auml;lle mit Personenschaden 2011&ndash;2025. Die Klausenstrasse ist hier der
+     Glarner Abschnitt ab Linthal bis zur Kantonsgrenze. Die Passstrasse ist &uuml;ber den
+     Winter gesperrt; 46 der 47 Unf&auml;lle fallen in die Monate Mai bis Oktober.
+     Quelle: Bundesamt f&uuml;r Strassen ASTRA, Strassenverkehrsunfallorte;
+     Strassenzuordnung: swisstopo. Grafik: S&uuml;dostschweiz</p>
   <details>
-    <summary>Zahlen als Tabelle</summary>
+    <summary>Zahlen als Tabelle, inklusive Verteilung &uuml;ber das Jahr</summary>
     <table class="data" id="tbl"></table>
   </details>
 </div>
@@ -77,21 +75,10 @@ summary{cursor:pointer; color:var(--s1)}
 <script>
 /* DATA-START */
 const S = [{"m":1,"all":0,"moto":0},{"m":2,"all":1,"moto":0},{"m":3,"all":0,"moto":0},{"m":4,"all":0,"moto":0},{"m":5,"all":7,"moto":6},{"m":6,"all":9,"moto":7},{"m":7,"all":11,"moto":11},{"m":8,"all":8,"moto":7},{"m":9,"all":9,"moto":3},{"m":10,"all":2,"moto":2},{"m":11,"all":0,"moto":0},{"m":12,"all":0,"moto":0}];
-const FACTS = {"n":47,"moto":36,"self":34,"weekend":23,"severe":15,"dead":2,"kanton_moto_pct":17.5};
+const FACTS = {"n":47,"moto":36,"self":34,"weekend":23,"severe":15,"dead":2,"kanton_n":1366,"kanton_moto":239,"kanton_moto_pct":17.5,"pct":76.6};
 /* DATA-END */
-const MN = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
 const MONTHS_FULL = ['Januar','Februar','März','April','Mai','Juni','Juli','August',
                      'September','Oktober','November','Dezember'];
-
-document.getElementById('stats').innerHTML =
-  '<div class="stat"><div class="num">' + FACTS.n + '</div>' +
-  '<div class="lbl">Unfälle mit Personenschaden, 2011–2025</div></div>' +
-  '<div class="stat"><div class="num accent">' + FACTS.moto + '</div>' +
-  '<div class="lbl">davon mit Motorrad — ' +
-  Math.round(100*FACTS.moto/FACTS.n) + ' % gegenüber ' +
-  String(FACTS.kanton_moto_pct).replace('.', ',') + ' % im ganzen Kanton</div></div>' +
-  '<div class="stat"><div class="num">' + FACTS.self + '</div>' +
-  '<div class="lbl">Schleuder- oder Selbstunfälle, ohne zweite Partei</div></div>';
 
 const tip = document.getElementById('tip');
 function showTip(e, html){
@@ -103,76 +90,64 @@ function showTip(e, html){
   tip.style.top  = Math.max(tip.offsetHeight + 8, e.clientY - 12) + 'px';
 }
 function hideTip(){ tip.style.opacity = '0'; }
+/* tapping anywhere but a slice closes the tooltip — phones have no mouseleave */
 document.addEventListener('pointerdown', function(e){
-  if (!e.target.classList || !e.target.classList.contains('hit')) hideTip();
+  if (!e.target.classList || !e.target.classList.contains('slice')) hideTip();
 }, true);
 
 const NS = 'http://www.w3.org/2000/svg';
 function el(n,a){ const x=document.createElementNS(NS,n); for(const k in (a||{})) x.setAttribute(k,a[k]); return x; }
+function de(x){ return String(x).replace('.', ','); }
 
-/* rounded cap on top, square at the baseline */
-function barPath(x,y,w,h,r){
-  r = Math.min(r, w/2, h);
-  return 'M'+x+','+(y+h)+' V'+(y+r)+' A'+r+','+r+' 0 0 1 '+(x+r)+','+y+
-         ' H'+(x+w-r)+' A'+r+','+r+' 0 0 1 '+(x+w)+','+(y+r)+' V'+(y+h)+' Z';
+/* one wedge, drawn from 12 o'clock clockwise */
+function wedge(cx, cy, r, from, to){
+  const a0 = (from - 0.25) * 2 * Math.PI, a1 = (to - 0.25) * 2 * Math.PI;
+  const x0 = cx + r*Math.cos(a0), y0 = cy + r*Math.sin(a0);
+  const x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1);
+  const large = (to - from) > 0.5 ? 1 : 0;
+  return 'M'+cx+','+cy+' L'+x0+','+y0+' A'+r+','+r+' 0 '+large+' 1 '+x1+','+y1+' Z';
 }
 
-function draw(){
-  const W = document.querySelector('.chart').clientWidth || 640;
-  const narrow = W < 430;
-  const L = narrow ? 26 : 34, R = 10, T = 12, B = 34;
-  const H = narrow ? 230 : 280;
-  const iw = W-L-R, ih = H-T-B;
-  const max = 12, STEP = 3, GAP = 2;
-  const bw = Math.min(narrow ? 20 : 34, iw/12 - (narrow ? 4 : 8));
-  const xAt = i => L + iw*(i+0.5)/12 - bw/2;
-  const yAt = v => T + ih - ih*v/max;
-  const svg = document.getElementById('c');
-  svg.setAttribute('viewBox','0 0 '+W+' '+H);
-  svg.setAttribute('width',W); svg.setAttribute('height',H);
-  svg.textContent = '';
-
-  for(let v=0; v<=max; v+=STEP){
-    svg.appendChild(el('line',{x1:L, y1:yAt(v), x2:W-R, y2:yAt(v), class: v===0?'axis':'grid'}));
-    const t = el('text',{x:L-8, y:yAt(v)+4, class:'tick','text-anchor':'end'});
-    t.textContent = v; svg.appendChild(t);
-  }
-
-  S.forEach(function(d,i){
-    const rest = d.all - d.moto;
-    if(rest > 0){
-      svg.appendChild(el('path',{d:barPath(xAt(i), yAt(rest), bw, ih*rest/max, 4),
-        fill:'var(--s1)'}));
-    }
-    /* motorcycles on top: the layer that is the whole story here */
-    if(d.moto > 0){
-      svg.appendChild(el('path',{d:barPath(xAt(i), yAt(d.all), bw, ih*d.moto/max, 4),
-        fill:'var(--s2)'}));
-      if(rest > 0){
-        svg.appendChild(el('rect',{x:xAt(i), y:yAt(rest)-GAP, width:bw, height:GAP,
-          fill:'var(--surface)'}));
-      }
-    }
-    const t = el('text',{x:xAt(i)+bw/2, y:H-14, class:'tick','text-anchor':'middle'});
-    t.textContent = MN[i]; svg.appendChild(t);
-    const hit = el('rect',{x:xAt(i)-2, y:T, width:bw+4, height:ih, fill:'transparent', class:'hit'});
+function pie(where, title, sub, part, total){
+  const share = part / total;
+  const R = 100, C = 106;          /* 2 px of air for the surface ring */
+  const svg = el('svg', {viewBox:'0 0 212 212', role:'img',
+    'aria-label': title + ': ' + Math.round(100*share) + ' Prozent der Unfälle mit Motorrad'});
+  /* the rest first, the motorcycle wedge on top of it */
+  svg.appendChild(el('path', {d: wedge(C, C, R, share, 1), fill:'var(--s1)', class:'slice'}));
+  svg.appendChild(el('path', {d: wedge(C, C, R, 0, share), fill:'var(--s2)', class:'slice',
+    stroke:'var(--surface)', 'stroke-width':2}));
+  const host = document.createElement('div');
+  host.className = 'pie';
+  host.innerHTML = '<div class="cap">' + title + '<span>' + sub + '</span></div>';
+  host.appendChild(svg);
+  const val = document.createElement('div');
+  val.innerHTML = '<div class="val">' + de(Math.round(1000*share)/10) + ' %</div>' +
+    '<div class="sub">mit Motorrad<br>(' + part + ' von ' + total + ')</div>';
+  host.appendChild(val);
+  svg.querySelectorAll('.slice').forEach(function(s, i){
     function onHit(e){
-      showTip(e,
-        '<span class="t-m">' + MONTHS_FULL[i] + ' (2011–2025)</span>' +
-        '<table class="t-tbl">' +
-          '<tr><td><i style="background:var(--s2)"></i>mit Motorrad</td><td>'+d.moto+'</td></tr>' +
-          '<tr><td><i style="background:var(--s1)"></i>übrige Unfälle</td><td>'+rest+'</td></tr>' +
-          '<tr class="t-sum"><td>Total</td><td>'+d.all+'</td></tr>' +
-        '</table>');
+      showTip(e, '<span class="t-m">' + title + '</span>' +
+        (i === 1 ? '<b>' + part + '</b> Unfälle mit Motorrad'
+                 : '<b>' + (total-part) + '</b> Unfälle ohne Motorrad') +
+        ' von ' + total);
     }
-    hit.addEventListener('pointerdown', onHit);
-    hit.addEventListener('mousemove', onHit);
-    hit.addEventListener('mouseleave', hideTip);
-    svg.appendChild(hit);
+    s.addEventListener('pointerdown', onHit);
+    s.addEventListener('mousemove', onHit);
+    s.addEventListener('mouseleave', hideTip);
   });
+  where.appendChild(host);
 }
-draw();
-let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(draw, 140); });
+
+const pies = document.getElementById('pies');
+pie(pies, 'Klausenstrasse', 'Linthal–Kantonsgrenze', FACTS.moto, FACTS.n);
+pie(pies, 'Kanton Glarus', 'alle Strassen', FACTS.kanton_moto, FACTS.kanton_n);
+
+document.getElementById('facts').innerHTML =
+  'Von den <b>' + FACTS.n + '</b> Unfällen auf der Klausenstrasse sind <b>' + FACTS.self +
+  '</b> Schleuder- oder Selbstunfälle, bei denen keine zweite Partei beteiligt war. ' +
+  '<b>' + FACTS.weekend + '</b> passierten an einem Samstag oder Sonntag, <b>' +
+  FACTS.severe + '</b> endeten schwer oder tödlich.';
 
 (function(){
   let h = '<tr><th>Monat</th><th>mit Motorrad</th><th>&uuml;brige</th><th>Total</th></tr>';
@@ -180,8 +155,10 @@ let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(dr
     h += '<tr><td>' + MONTHS_FULL[i] + '</td><td>' + d.moto + '</td><td>' +
          (d.all-d.moto) + '</td><td>' + d.all + '</td></tr>';
   });
-  h += '<tr><td><b>Total</b></td><td><b>' + FACTS.moto + '</b></td><td><b>' +
-       (FACTS.n-FACTS.moto) + '</b></td><td><b>' + FACTS.n + '</b></td></tr>';
+  h += '<tr><td><b>Klausenstrasse total</b></td><td><b>' + FACTS.moto + '</b></td><td><b>' +
+       (FACTS.n-FACTS.moto) + '</b></td><td><b>' + FACTS.n + '</b></td></tr>' +
+       '<tr><td><b>Kanton Glarus total</b></td><td><b>' + FACTS.kanton_moto + '</b></td><td><b>' +
+       (FACTS.kanton_n-FACTS.kanton_moto) + '</b></td><td><b>' + FACTS.kanton_n + '</b></td></tr>';
   document.getElementById('tbl').innerHTML = h;
 })();
 </script>

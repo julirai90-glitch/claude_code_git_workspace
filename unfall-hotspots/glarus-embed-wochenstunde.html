@@ -12,7 +12,7 @@
   --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
   --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
   --s1:#0068a4; --s2:#ee7733;
-  /* sequential ramp, one hue, light to dark — magnitude, not identity */
+  /* sequential ramp, one hue, light to dark — magnitude */
   --q0:#f1f4f6; --q1:#cfe1ed; --q2:#9cc4dc; --q3:#5c9ec6; --q4:#0068a4;
 }
 *{box-sizing:border-box}
@@ -25,14 +25,23 @@ body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
 .stat .num{font-size:30px; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums}
 .stat .num.accent{color:var(--s2)}
 .stat .lbl{font-size:13px; color:var(--ink-2); max-width:200px}
-.legend{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px;
+.legend{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px;
   font-size:13px; color:var(--ink-2)}
 .ramp{display:inline-flex; align-items:center; gap:3px}
-.ramp .sw{width:20px; height:12px; border-radius:2px; flex:none}
-.chart{width:100%}
-svg{display:block; max-width:100%; height:auto}
-.tick{font-size:12px; fill:var(--ink-3)}
-.rowlab{font-size:13px; fill:var(--ink-2)}
+.ramp .sw{width:18px; height:12px; border-radius:2px; flex:none}
+/* the grid runs top to bottom: 24 hour rows, seven weekday columns.
+   Seven columns fit the narrowest phone; 24 never did. */
+.grid{width:100%; max-width:520px}
+.hrow{display:grid; grid-template-columns:var(--labw) 1fr; gap:7px; align-items:center;
+  margin-bottom:2px}
+.hlab{font-size:12px; color:var(--ink-3); text-align:right;
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.hlab.night{color:var(--s2); font-weight:600}
+.hcells{display:grid; grid-template-columns:repeat(7,1fr); gap:2px}
+.cell{height:var(--cellh); border-radius:2px; cursor:crosshair}
+.head .hcells{text-align:center; font-size:12px; color:var(--ink-2); font-weight:600}
+.head .cell{height:auto; cursor:default}
+.wknd{color:var(--s2)}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
      padding-top:10px; margin:14px 0 0}
 .tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
@@ -41,8 +50,7 @@ svg{display:block; max-width:100%; height:auto}
   padding:8px 11px; font-size:13px; line-height:1.4; white-space:nowrap; transition:opacity .09s}
 .tip .t-m{font-weight:700; display:block; margin-bottom:4px}
 .tip b{font-variant-numeric:tabular-nums}
-.hit{cursor:crosshair}
-table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:14px}
+table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:10px}
 table.data th,table.data td{border-bottom:1px solid var(--rule-soft); padding:3px 5px;
   text-align:right; font-variant-numeric:tabular-nums}
 table.data th:first-child,table.data td:first-child{text-align:left}
@@ -66,8 +74,9 @@ summary{cursor:pointer; color:var(--s1)}
     </span>
     <span id="rampLab">0 &rarr; 29</span>
   </div>
-  <div class="chart"><svg id="c" role="img" aria-label="Raster: Unf&auml;lle im Kanton Glarus nach Wochentag und Tagesstunde, 2011 bis 2025"></svg></div>
+  <div class="grid" id="mx" role="img" aria-label="Raster: Unf&auml;lle im Kanton Glarus nach Tagesstunde (Zeilen) und Wochentag (Spalten), 2011 bis 2025"></div>
   <p class="src">Unf&auml;lle mit Personenschaden, Kanton Glarus 2011&ndash;2025 (n&nbsp;=&nbsp;1366).
+     Orange markiert sind die Nachtstunden 22 bis 5&nbsp;Uhr.
      Quelle: Bundesamt f&uuml;r Strassen ASTRA, Strassenverkehrsunfallorte. Grafik: S&uuml;dostschweiz</p>
   <details>
     <summary>Zahlen als Tabelle</summary>
@@ -82,6 +91,10 @@ const M = [[2,3,0,0,1,2,5,10,6,5,10,16,14,15,10,9,24,19,16,8,3,3,3,1],[1,1,3,1,1
 const FACTS = {"we_night":56,"we_all":405,"we_pct":13.8,"wd_night":64,"wd_all":961,"wd_pct":6.7};
 /* DATA-END */
 const WD_SHORT = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+const MAX = Math.max.apply(null, M.map(r => Math.max.apply(null, r)));
+document.getElementById('rampLab').textContent = '0 → ' + MAX;
+/* night = 22:00–04:59, the window the two key figures are built on */
+const isNight = h => h >= 22 || h <= 4;
 
 /* the grid shows the whole week at once; this is the part worth stating
    outright, because a share is not something you can read off cell colours */
@@ -93,8 +106,6 @@ document.getElementById('stats').innerHTML =
   '<div class="stat"><div class="num">' + String(FACTS.wd_pct).replace('.', ',') + ' %</div>' +
   '<div class="lbl">an den Werktagen Montag bis Freitag (' +
   FACTS.wd_night + ' von ' + FACTS.wd_all + ')</div></div>';
-const MAX = Math.max.apply(null, M.map(r => Math.max.apply(null, r)));
-document.getElementById('rampLab').textContent = '0 → ' + MAX;
 
 const tip = document.getElementById('tip');
 function showTip(e, html){
@@ -108,13 +119,10 @@ function showTip(e, html){
 function hideTip(){ tip.style.opacity = '0'; }
 /* tapping anywhere but a cell closes the tooltip — phones have no mouseleave */
 document.addEventListener('pointerdown', function(e){
-  if (!e.target.classList || !e.target.classList.contains('hit')) hideTip();
+  if (!e.target.classList || !e.target.classList.contains('cell')) hideTip();
 }, true);
 
-const NS = 'http://www.w3.org/2000/svg';
-function el(n,a){ const x=document.createElementNS(NS,n); for(const k in (a||{})) x.setAttribute(k,a[k]); return x; }
-
-/* five steps of one hue: empty hour, then quartiles of the non-empty range */
+/* five steps of one hue: empty hour, then the range split into four bands */
 function colorOf(v){
   if(v === 0) return 'var(--q0)';
   const t = v / MAX;
@@ -125,47 +133,44 @@ function colorOf(v){
 }
 
 function draw(){
-  const W = document.querySelector('.chart').clientWidth || 640;
-  const narrow = W < 480;
-  const L = narrow ? 30 : 42, R = 4, T = 18, B = 6;
-  const iw = W - L - R;
-  const GAP = 2;                       /* surface gap between cells */
-  const cw = iw / 24;
-  const ch = Math.max(narrow ? 17 : 21, Math.min(30, cw * 1.15));
-  const H = T + 7 * ch + B;
-  const svg = document.getElementById('c');
-  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-  svg.setAttribute('width', W); svg.setAttribute('height', H);
-  svg.textContent = '';
+  const narrow = document.body.clientWidth < 420;
+  const mx = document.getElementById('mx');
+  mx.style.setProperty('--labw', narrow ? '24px' : '58px');
+  mx.style.setProperty('--cellh', narrow ? '19px' : '22px');
+  mx.textContent = '';
 
-  /* hour axis: every third hour on phones, every second otherwise */
-  const step = narrow ? 6 : 3;
-  for(let h = 0; h < 24; h += step){
-    const t = el('text', {x: L + cw*(h+0.5), y: T - 6, class:'tick', 'text-anchor':'middle'});
-    t.textContent = (h < 10 ? '0' : '') + h;
-    svg.appendChild(t);
-  }
+  const head = document.createElement('div');
+  head.className = 'hrow head';
+  head.innerHTML = '<div class="hlab"></div><div class="hcells">' +
+    WD_SHORT.map(function(d, i){
+      return '<span class="cell' + (i >= 5 ? ' wknd' : '') + '">' + d + '</span>';
+    }).join('') + '</div>';
+  mx.appendChild(head);
 
-  M.forEach(function(row, d){
-    const lab = el('text', {x: L - 7, y: T + d*ch + ch/2 + 4, class:'rowlab', 'text-anchor':'end'});
-    lab.textContent = narrow ? WD_SHORT[d] : WD[d].slice(0,2) + '.';
-    svg.appendChild(lab);
-    row.forEach(function(v, h){
-      svg.appendChild(el('rect', {x: L + cw*h + GAP/2, y: T + d*ch + GAP/2,
-        width: Math.max(1, cw - GAP), height: ch - GAP, rx: 2, fill: colorOf(v)}));
-      const hit = el('rect', {x: L + cw*h, y: T + d*ch, width: cw, height: ch,
-        fill:'transparent', class:'hit'});
+  for(let h = 0; h < 24; h++){
+    const row = document.createElement('div');
+    row.className = 'hrow';
+    let cells = '';
+    for(let d = 0; d < 7; d++){
+      cells += '<span class="cell" data-d="' + d + '" style="background:' +
+               colorOf(M[d][h]) + '"></span>';
+    }
+    row.innerHTML = '<div class="hlab' + (isNight(h) ? ' night' : '') + '">' +
+      (h < 10 ? '0' : '') + h + (narrow ? '' : ' Uhr') + '</div>' +
+      '<div class="hcells">' + cells + '</div>';
+    row.querySelectorAll('.cell').forEach(function(c){
+      const d = +c.dataset.d, v = M[d][h];
       function onHit(e){
         showTip(e, '<span class="t-m">' + WD[d] + ', ' +
-          (h<10?'0':'') + h + '–00–' + (h<10?'0':'') + h + '–59 Uhr</span>' +
-          '<b>' + v + '</b> Unf' + 'älle');
+          (h < 10 ? '0' : '') + h + ' bis ' + (h < 10 ? '0' : '') + h + ':59 Uhr</span>' +
+          '<b>' + v + '</b> Unfall' + (v === 1 ? '' : 'e'));
       }
-      hit.addEventListener('pointerdown', onHit);
-      hit.addEventListener('mousemove', onHit);
-      hit.addEventListener('mouseleave', hideTip);
-      svg.appendChild(hit);
+      c.addEventListener('pointerdown', onHit);
+      c.addEventListener('mousemove', onHit);
+      c.addEventListener('mouseleave', hideTip);
     });
-  });
+    mx.appendChild(row);
+  }
 }
 draw();
 let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(draw, 140); });
@@ -173,12 +178,12 @@ let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(dr
 /* table view — the relief the contrast check asks for, and a printable fallback */
 (function(){
   let h = '<tr><th>Stunde</th>';
-  for(let i=0;i<7;i++) h += '<th>' + WD_SHORT[i] + '</th>';
+  for(let i = 0; i < 7; i++) h += '<th>' + WD_SHORT[i] + '</th>';
   h += '<th>Total</th></tr>';
-  for(let hr=0; hr<24; hr++){
+  for(let hr = 0; hr < 24; hr++){
     let sum = 0;
-    h += '<tr><td>' + (hr<10?'0':'') + hr + ' Uhr</td>';
-    for(let d=0; d<7; d++){ h += '<td>' + M[d][hr] + '</td>'; sum += M[d][hr]; }
+    h += '<tr><td>' + (hr < 10 ? '0' : '') + hr + ' Uhr</td>';
+    for(let d = 0; d < 7; d++){ h += '<td>' + M[d][hr] + '</td>'; sum += M[d][hr]; }
     h += '<td>' + sum + '</td></tr>';
   }
   document.getElementById('tbl').innerHTML = h;

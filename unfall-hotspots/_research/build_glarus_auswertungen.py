@@ -226,9 +226,11 @@ def g2_klausen(acc, streets):
         "weekend": sum(1 for a in kl if a["AccidentWeekDay_de"] in ("Samstag", "Sonntag")),
         "severe": severe(kl),
         "dead": sum(1 for a in kl if a["AccidentSeverityCategory"] == "as1"),
-        "kanton_moto_pct": round(100 * sum(1 for a in acc
-                                 if a["AccidentInvolvingMotorcycle"] == "true") / len(acc), 1),
+        "kanton_n": len(acc),
+        "kanton_moto": sum(1 for a in acc if a["AccidentInvolvingMotorcycle"] == "true"),
     }
+    facts["kanton_moto_pct"] = round(100 * facts["kanton_moto"] / facts["kanton_n"], 1)
+    facts["pct"] = round(100 * facts["moto"] / facts["n"], 1)
     return js("S", months) + "\n" + js("FACTS", facts)
 
 
