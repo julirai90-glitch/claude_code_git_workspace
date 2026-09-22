@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klausenstrasse: je höher, desto Motorrad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4; --s2:#ee7733;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px}
+.legend{display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-bottom:6px}
+.lg{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2)}
+.sw{width:12px; height:12px; border-radius:2px; flex:none}
+/* the profile reads top to bottom: pass at the top, the two valleys below */
+.prof{width:100%; margin-top:10px}
+.head{display:grid; grid-template-columns:1fr var(--midw) 1fr; gap:8px;
+  font-size:13px; font-weight:600; color:var(--ink-2); margin-bottom:8px}
+.head .l{text-align:right}
+.head .m{text-align:center; font-weight:400; color:var(--ink-3); font-size:12px}
+.hrow{display:grid; grid-template-columns:1fr var(--midw) 1fr; gap:8px;
+  align-items:center; margin-bottom:3px}
+.side{display:flex; align-items:center; height:22px}
+.side.l{flex-direction:row-reverse}
+.seg{height:100%; display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-variant-numeric:tabular-nums; color:#fff; font-weight:600;
+  box-shadow:0 0 0 1px var(--surface) inset}
+.seg.moto{background:var(--s2); color:var(--ink)}
+.seg.rest{background:var(--s1)}
+.side.l .seg:first-child{border-radius:0 3px 3px 0}
+.side.l .seg:last-child{border-radius:3px 0 0 3px}
+.side.r .seg:first-child{border-radius:3px 0 0 3px}
+.side.r .seg:last-child{border-radius:0 3px 3px 0}
+.mid{text-align:center; font-size:12px; color:var(--ink-3);
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.mid b{color:var(--ink-2); font-weight:600}
+.marker{display:grid; grid-template-columns:1fr var(--midw) 1fr; gap:8px;
+  font-size:11px; color:var(--ink-3); margin:1px 0 4px}
+.marker div:nth-child(2){text-align:center}
+.marker span{display:inline-block; border-top:1px dashed var(--rule); padding-top:2px}
+.facts{margin:20px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
+  font-size:14px; color:var(--ink-2)}
+.facts b{color:var(--ink); font-variant-numeric:tabular-nums}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:14px 0 0}
+.tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
+  transform:translate(-50%,-100%); background:#fff; color:var(--ink);
+  border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
+  padding:8px 11px; font-size:13px; line-height:1.4; white-space:nowrap; transition:opacity .09s}
+.tip .t-m{font-weight:700; display:block; margin-bottom:4px}
+.tip b{font-variant-numeric:tabular-nums}
+.side{cursor:crosshair}
+table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:10px}
+table.data th,table.data td{border-bottom:1px solid var(--rule-soft); padding:3px 5px;
+  text-align:right; font-variant-numeric:tabular-nums}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{color:var(--ink-3); font-weight:600}
+details{margin-top:12px; font-size:13px; color:var(--ink-2)}
+summary{cursor:pointer; color:var(--s1)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-palette="#ee7733,#0068a4">
+<div class="wrap">
+  <div class="legend">
+    <span class="lg"><span class="sw" style="background:var(--s2)"></span>Unfall mit Motorrad</span>
+    <span class="lg"><span class="sw" style="background:var(--s1)"></span>&uuml;brige Unf&auml;lle</span>
+  </div>
+  <div class="prof" id="prof" role="img" aria-label="H&ouml;henprofil: Unf&auml;lle auf der Klausenstrasse nach H&ouml;henlage, Urner Seite links, Glarner Seite rechts"></div>
+  <p class="facts" id="facts"></p>
+  <p class="src" id="src"></p>
+  <details>
+    <summary>Zahlen als Tabelle</summary>
+    <table class="data" id="tbl"></table>
+  </details>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<script>
+/* DATA-START */
+const ROWS = [{"from":1800,"to":1999,"Uri":{"n":18,"moto":15,"severe":6},"Glarus":{"n":0,"moto":0,"severe":0}},{"from":1600,"to":1799,"Uri":{"n":18,"moto":15,"severe":6},"Glarus":{"n":0,"moto":0,"severe":0}},{"from":1400,"to":1599,"Uri":{"n":10,"moto":10,"severe":5},"Glarus":{"n":0,"moto":0,"severe":0}},{"from":1200,"to":1399,"Uri":{"n":13,"moto":11,"severe":5},"Glarus":{"n":6,"moto":4,"severe":2}},{"from":1000,"to":1199,"Uri":{"n":10,"moto":7,"severe":4},"Glarus":{"n":11,"moto":6,"severe":1}},{"from":800,"to":999,"Uri":{"n":16,"moto":5,"severe":4},"Glarus":{"n":19,"moto":17,"severe":9}},{"from":600,"to":799,"Uri":{"n":8,"moto":2,"severe":1},"Glarus":{"n":11,"moto":9,"severe":3}},{"from":400,"to":599,"Uri":{"n":17,"moto":8,"severe":2},"Glarus":{"n":0,"moto":0,"severe":0}}];
+const FACTS = {"pass":1948,"band":200,"Uri":{"n":110,"moto":73,"severe":33,"dead":4,"low":488,"high":1935},"Glarus":{"n":47,"moto":36,"severe":15,"dead":2,"low":660,"high":1306},"total":{"n":157,"moto":109,"severe":48,"dead":6}};
+/* DATA-END */
+const SIDES = ['Uri', 'Glarus'];
+function de(x){ return String(x).replace('.', ','); }
+
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  /* keep the tooltip inside the viewport: it is centred on the pointer */
+  const half = tip.offsetWidth / 2, vw = window.innerWidth;
+  tip.style.left = Math.max(half + 6, Math.min(vw - half - 6, e.clientX)) + 'px';
+  tip.style.top  = Math.max(tip.offsetHeight + 8, e.clientY - 12) + 'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('pointerdown', function(e){
+  if (!e.target.closest || !e.target.closest('.side')) hideTip();
+}, true);
+
+/* one common scale for both sides, so left and right stay comparable */
+const MAX = Math.max.apply(null, ROWS.map(r => Math.max(r.Uri.n, r.Glarus.n)));
+
+function draw(){
+  const narrow = document.body.clientWidth < 460;
+  const host = document.getElementById('prof');
+  host.style.setProperty('--midw', narrow ? '86px' : '110px');
+  host.textContent = '';
+
+  const head = document.createElement('div');
+  head.className = 'head';
+  head.innerHTML = '<div class="l">Urner Seite</div>' +
+    '<div class="m">' + (narrow ? 'm ü. M.' : 'Höhe über Meer') + '</div>' +
+    '<div>Glarner Seite</div>';
+  host.appendChild(head);
+
+  ROWS.forEach(function(r, i){
+    /* the pass and the cantonal border are what make the profile readable */
+    if(r.from <= FACTS.pass && (i === 0 || ROWS[i-1].from > FACTS.pass)){
+      const m = document.createElement('div');
+      m.className = 'marker';
+      m.innerHTML = '<div></div><div><span>Klausenpass ' + FACTS.pass + ' m</span></div><div></div>';
+      host.appendChild(m);
+    }
+    const row = document.createElement('div');
+    row.className = 'hrow';
+    row.innerHTML =
+      '<div class="side l" data-b="' + i + '" data-s="Uri">' + segs(r.Uri) + '</div>' +
+      '<div class="mid"><b>' + r.from + '</b>–' + r.to + '</div>' +
+      '<div class="side r" data-b="' + i + '" data-s="Glarus">' + segs(r.Glarus) + '</div>';
+    row.querySelectorAll('.side').forEach(function(sd){
+      const d = r[sd.dataset.s];
+      function onHit(e){
+        if(d.n === 0){ hideTip(); return; }
+        showTip(e, '<span class="t-m">' + sd.dataset.s + ', ' + r.from + '–' + r.to + ' m</span>' +
+          '<b>' + d.n + '</b> Unfälle, davon <b>' + d.moto + '</b> mit Motorrad' +
+          '<br><span style="color:var(--ink-3)">' + d.severe + ' schwer oder tödlich</span>');
+      }
+      sd.addEventListener('pointerdown', onHit);
+      sd.addEventListener('mousemove', onHit);
+      sd.addEventListener('mouseleave', hideTip);
+    });
+    host.appendChild(row);
+
+    /* the Glarus stretch stops at the border, not at the pass */
+    if(r.from === 1200){
+      const m = document.createElement('div');
+      m.className = 'marker';
+      m.innerHTML = '<div></div><div></div><div><span>Kantonsgrenze ≈ 1300 m</span></div>';
+      host.appendChild(m);
+    }
+  });
+}
+
+function segs(d){
+  if(d.n === 0) return '';
+  const w = 100 * d.n / MAX;
+  const moto = d.moto / d.n, rest = 1 - moto;
+  let h = '';
+  if(d.moto > 0) h += '<div class="seg moto" style="width:' + (w*moto) + '%">' +
+    (w*moto > 9 ? d.moto : '') + '</div>';
+  if(d.n - d.moto > 0) h += '<div class="seg rest" style="width:' + (w*rest) + '%">' +
+    (w*rest > 9 ? (d.n - d.moto) : '') + '</div>';
+  return h;
+}
+draw();
+let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(draw, 140); });
+
+/* derive the threshold figures from the bands themselves — a hand-written
+   share would be the Uri side only and read as if it held for both */
+(function(){
+  function sum(pred, side){
+    let n = 0, moto = 0;
+    ROWS.filter(pred).forEach(function(r){
+      (side ? [side] : SIDES).forEach(function(k){ n += r[k].n; moto += r[k].moto; });
+    });
+    return {n: n, moto: moto, pct: n ? Math.round(100*moto/n) : 0};
+  }
+  const lowUR = sum(r => r.from < 1000, 'Uri');
+  const high  = sum(r => r.from >= 1000);
+  document.getElementById('facts').innerHTML =
+    'Über die ganze Strecke sind es <b>' + FACTS.total.n + '</b> Unfälle mit Personenschaden, ' +
+    '<b>' + FACTS.total.moto + '</b> davon mit einem Motorrad und <b>' + FACTS.total.dead +
+    '</b> mit Getöteten. Der Unterschied liegt in der Höhe: Auf der Urner Seite unterhalb ' +
+    'von 1000 Metern, wo die Strasse durch Altdorf und Bürglen führt, ist gut ein Drittel ' +
+    'der Unfälle ein Motorradunfall (<b>' + lowUR.moto + '</b> von <b>' + lowUR.n + '</b>). ' +
+    'Oberhalb von 1000 Metern sind es auf beiden Seiten zusammen vier von fünf (<b>' +
+    high.moto + '</b> von <b>' + high.n + '</b>).';
+})();
+
+document.getElementById('src').innerHTML =
+  'Unfälle mit Personenschaden auf der Klausenstrasse, 2011–2025: ' +
+  '<b>' + FACTS.Uri.n + '</b> auf Urner Gebiet (' + FACTS.Uri.low + '–' + FACTS.Uri.high +
+  ' m), <b>' + FACTS.Glarus.n + '</b> auf Glarner (' + FACTS.Glarus.low + '–' +
+  FACTS.Glarus.high + ' m). Die Glarner Seite endet an der Kantonsgrenze auf rund 1300 m; ' +
+  'Urnerboden, Passhöhe und der ganze Abstieg nach Altdorf gehören zu Uri — deshalb ist die ' +
+  'Urner Seite so viel länger. Balkenlänge = Zahl der Unfälle, beide Seiten im gleichen ' +
+  'Massstab. Quellen: Bundesamt für Strassen ASTRA, Strassenverkehrsunfallorte; ' +
+  'Strassenzuordnung und Höhenmodell: swisstopo. Grafik: Südostschweiz';
+
+(function(){
+  let h = '<tr><th>H&ouml;he</th><th>UR Unf&auml;lle</th><th>UR Motorrad</th>' +
+          '<th>GL Unf&auml;lle</th><th>GL Motorrad</th></tr>';
+  ROWS.forEach(function(r){
+    h += '<tr><td>' + r.from + '–' + r.to + ' m</td><td>' + r.Uri.n + '</td><td>' + r.Uri.moto +
+         '</td><td>' + r.Glarus.n + '</td><td>' + r.Glarus.moto + '</td></tr>';
+  });
+  h += '<tr><td><b>Total</b></td><td><b>' + FACTS.Uri.n + '</b></td><td><b>' + FACTS.Uri.moto +
+       '</b></td><td><b>' + FACTS.Glarus.n + '</b></td><td><b>' + FACTS.Glarus.moto + '</b></td></tr>';
+  document.getElementById('tbl').innerHTML = h;
+})();
+</script>
+</body>
+</html>

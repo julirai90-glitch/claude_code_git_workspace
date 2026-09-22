@@ -10,6 +10,7 @@ The map answers "where"; these five answer "what is unusual about it":
   glarus-embed-gemeinden.html     severity split per municipality
   glarus-embed-talalpstrasse.html the Talalpstrasse case: single-vehicle crashes
   glarus-embed-entwicklung.html  fifteen years: flat count, severity drifting up
+  glarus-embed-klausen-hoehe.html the whole Klausen road by elevation, GL + UR
 
 Each page keeps its data between /* DATA-START */ and /* DATA-END */; this
 script recomputes those blocks so the numbers can never drift from the source.
@@ -409,6 +410,57 @@ def g7_entwicklung(acc):
     return js("YEARS_D", years) + "\n" + js("BLOCKS", blocks) + "\n" + js("FACTS", facts)
 
 
+# The Klausen road crosses the cantonal border: Linthal to about 1300 m is
+# Glarus, the Urnerboden, the pass itself and the whole descent to Altdorf
+# are Uri. Uri accidents and the elevation of every point are cached
+# separately — see cache/ur_klausenstrasse.json and cache/klausen_hoehen.json.
+BAND = 200          # metres per elevation band
+PASS_HEIGHT = 1948  # Klausenpass
+
+
+def g8_klausen_hoehe(acc, streets):
+    ur = json.load(open(os.path.join(CACHE, "ur_klausenstrasse.json"), encoding="utf-8"))
+    hoehen = json.load(open(os.path.join(CACHE, "klausen_hoehen.json"), encoding="utf-8"))
+    ur_street = ur["streets"]
+    side = {
+        "Uri": [a for a in ur["acc"]
+                if (ur_street.get(a["AccidentUID"]) or [None])[0] == "Klausenstrasse"],
+        "Glarus": [a for a in acc if street_of(a, streets) == "Klausenstrasse"],
+    }
+
+    def band_of(a):
+        h = hoehen.get(a["AccidentUID"])
+        return None if h is None else int(h // BAND) * BAND
+
+    bands = sorted({band_of(a) for rows in side.values() for a in rows if band_of(a)},
+                   reverse=True)
+    rows = []
+    for b in bands:
+        row = {"from": b, "to": b + BAND - 1}
+        for name, accs in side.items():
+            here = [a for a in accs if band_of(a) == b]
+            row[name] = {
+                "n": len(here),
+                "moto": sum(1 for a in here if a["AccidentInvolvingMotorcycle"] == "true"),
+                "severe": severe(here),
+            }
+        rows.append(row)
+
+    facts = {"pass": PASS_HEIGHT, "band": BAND}
+    for name, accs in side.items():
+        hs = [hoehen[a["AccidentUID"]] for a in accs if hoehen.get(a["AccidentUID"])]
+        facts[name] = {
+            "n": len(accs),
+            "moto": sum(1 for a in accs if a["AccidentInvolvingMotorcycle"] == "true"),
+            "severe": severe(accs),
+            "dead": sum(1 for a in accs if a["AccidentSeverityCategory"] == "as1"),
+            "low": round(min(hs)), "high": round(max(hs)),
+        }
+    facts["total"] = {k: facts["Uri"][k] + facts["Glarus"][k]
+                      for k in ("n", "moto", "severe", "dead")}
+    return js("ROWS", rows) + "\n" + js("FACTS", facts)
+
+
 # --------------------------------------------------------------------------
 def main():
     acc = load_accidents()
@@ -426,6 +478,7 @@ def main():
     patch("glarus-embed-gemeinden.html", g5_gemeinden(acc))
     patch("glarus-embed-talalpstrasse.html", g6_talalpstrasse(acc, streets, orte))
     patch("glarus-embed-entwicklung.html", g7_entwicklung(acc))
+    patch("glarus-embed-klausen-hoehe.html", g8_klausen_hoehe(acc, streets))
 
 
 if __name__ == "__main__":
