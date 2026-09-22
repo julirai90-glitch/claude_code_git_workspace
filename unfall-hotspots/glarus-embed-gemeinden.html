@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glarus Süd: weniger Unfälle, schwerere Folgen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4;
+  /* severity ramp, same three steps the hotspot map uses: dark to light */
+  --rot:#b5001e; --orange:#ee7733; --gelb:#f2b84b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px}
+.legend{display:flex; gap:18px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
+.lg{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2)}
+.sw{width:12px; height:12px; border-radius:2px; flex:none}
+.rows{width:100%}
+.brow{margin-bottom:14px}
+.brow.total{border-top:1px solid var(--rule-soft); padding-top:12px}
+.bhead{display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+  margin-bottom:4px}
+.bname{font-size:15px; font-weight:600}
+.bname span{font-weight:400; color:var(--ink-3); font-size:13px}
+.bkey{font-size:13px; color:var(--ink-2); font-variant-numeric:tabular-nums; text-align:right}
+.bkey b{color:var(--ink); font-size:15px}
+.bar{display:flex; height:22px; border-radius:3px; overflow:hidden; cursor:crosshair}
+.seg{position:relative; display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-variant-numeric:tabular-nums; color:#fff; font-weight:600;
+  box-shadow:0 0 0 1px var(--surface) inset}
+.seg.dark-text{color:var(--ink)}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:14px 0 0}
+.tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
+  transform:translate(-50%,-100%); background:#fff; color:var(--ink);
+  border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
+  padding:8px 11px; font-size:13px; line-height:1.4; transition:opacity .09s}
+.tip .t-m{font-weight:700; display:block; margin-bottom:5px}
+.tip .t-tbl{border-collapse:collapse; font-size:13px}
+.tip .t-tbl td{padding:1px 0}
+.tip .t-tbl td:last-child{text-align:right; padding-left:18px;
+  font-variant-numeric:tabular-nums; font-weight:600}
+.tip .t-tbl i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px}
+.tip .t-sum td{border-top:1px solid var(--rule); padding-top:3px; color:var(--ink-2)}
+table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:10px}
+table.data th,table.data td{border-bottom:1px solid var(--rule-soft); padding:3px 5px;
+  text-align:right; font-variant-numeric:tabular-nums}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{color:var(--ink-3); font-weight:600}
+details{margin-top:12px; font-size:13px; color:var(--ink-2)}
+summary{cursor:pointer; color:var(--s1)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-palette="#b5001e,#ee7733,#f2b84b">
+<div class="wrap">
+  <div class="legend">
+    <span class="lg"><span class="sw" style="background:var(--rot)"></span>Unfall mit Get&ouml;teten</span>
+    <span class="lg"><span class="sw" style="background:var(--orange)"></span>mit Schwerverletzten</span>
+    <span class="lg"><span class="sw" style="background:var(--gelb)"></span>mit Leichtverletzten</span>
+  </div>
+  <div class="rows" id="rows" role="img" aria-label="Gestapelte Balken: Unfallschwere je Glarner Gemeinde, Anteile in Prozent"></div>
+  <p class="src">Alle Unf&auml;lle mit Personenschaden 2011&ndash;2025, nach Schwere des schlimmsten
+     Personenschadens. Balkenl&auml;nge = Anteil, nicht Anzahl: Glarus Nord hat mehr als doppelt
+     so viele Unf&auml;lle wie Glarus S&uuml;d. Quelle: Bundesamt f&uuml;r Strassen ASTRA,
+     Strassenverkehrsunfallorte. Grafik: S&uuml;dostschweiz</p>
+  <details>
+    <summary>Zahlen als Tabelle</summary>
+    <table class="data" id="tbl"></table>
+  </details>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<script>
+/* DATA-START */
+const ROWS = [{"name":"Glarus Nord","n":636,"as1":10,"as2":135,"as3":491,"moto":99},{"name":"Glarus","n":436,"as1":7,"as2":79,"as3":350,"moto":70},{"name":"Glarus Süd","n":294,"as1":9,"as2":79,"as3":206,"moto":70},{"name":"Kanton Glarus","n":1366,"as1":26,"as2":293,"as3":1047,"moto":239,"total":true}];
+/* DATA-END */
+
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  const half = tip.offsetWidth / 2, vw = window.innerWidth;
+  tip.style.left = Math.max(half + 6, Math.min(vw - half - 6, e.clientX)) + 'px';
+  tip.style.top  = Math.max(tip.offsetHeight + 8, e.clientY - 12) + 'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('pointerdown', function(e){
+  if (!e.target.classList || !e.target.classList.contains('bar')) hideTip();
+}, true);
+
+function pct(v, n){ return 100 * v / n; }
+function de(x){ return String(x).replace('.', ','); }
+
+function draw(){
+  const narrow = document.body.clientWidth < 460;
+  const host = document.getElementById('rows');
+  host.textContent = '';
+
+  ROWS.forEach(function(r){
+    const sev = r.as1 + r.as2;
+    const row = document.createElement('div');
+    row.className = 'brow' + (r.total ? ' total' : '');
+    /* the share of severe outcomes is the point of the chart — say it in words,
+       so the reader never has to measure the bar */
+    row.innerHTML =
+      '<div class="bhead">' +
+        '<div class="bname">' + r.name + ' <span>' + r.n + ' Unfälle</span></div>' +
+        '<div class="bkey"><b>' + de(Math.round(pct(sev, r.n) * 10) / 10) + ' %</b>' +
+          (narrow ? '' : ' schwer oder tödlich') + '</div>' +
+      '</div>' +
+      '<div class="bar">' +
+        '<div class="seg" style="width:' + pct(r.as1, r.n) + '%;background:var(--rot)"></div>' +
+        '<div class="seg dark-text" style="width:' + pct(r.as2, r.n) + '%;background:var(--orange)">' +
+          (pct(r.as2, r.n) > 9 ? r.as2 : '') + '</div>' +
+        '<div class="seg dark-text" style="width:' + pct(r.as3, r.n) + '%;background:var(--gelb)">' +
+          r.as3 + '</div>' +
+      '</div>';
+    const bar = row.querySelector('.bar');
+    function onHit(e){
+      showTip(e, '<span class="t-m">' + r.name + '</span>' +
+        '<table class="t-tbl">' +
+          '<tr><td><i style="background:var(--rot)"></i>mit Getöteten</td><td>' + r.as1 + '</td></tr>' +
+          '<tr><td><i style="background:var(--orange)"></i>mit Schwerverletzten</td><td>' + r.as2 + '</td></tr>' +
+          '<tr><td><i style="background:var(--gelb)"></i>mit Leichtverletzten</td><td>' + r.as3 + '</td></tr>' +
+          '<tr class="t-sum"><td>Unfälle total</td><td>' + r.n + '</td></tr>' +
+          '<tr class="t-sum"><td>davon mit Motorrad</td><td>' + r.moto + '</td></tr>' +
+        '</table>');
+    }
+    bar.addEventListener('pointerdown', onHit);
+    bar.addEventListener('mousemove', onHit);
+    bar.addEventListener('mouseleave', hideTip);
+    host.appendChild(row);
+  });
+}
+draw();
+let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(draw, 140); });
+
+(function(){
+  let h = '<tr><th>Gemeinde</th><th>Unf&auml;lle</th><th>mit Get&ouml;teten</th>' +
+          '<th>mit Schwer-<br>verletzten</th><th>mit Leicht-<br>verletzten</th>' +
+          '<th>schwer oder<br>t&ouml;dlich</th></tr>';
+  ROWS.forEach(function(r){
+    const sev = r.as1 + r.as2;
+    h += '<tr><td>' + r.name + '</td><td>' + r.n + '</td><td>' + r.as1 + '</td><td>' +
+         r.as2 + '</td><td>' + r.as3 + '</td><td>' +
+         de(Math.round(pct(sev, r.n) * 10) / 10) + ' %</td></tr>';
+  });
+  document.getElementById('tbl').innerHTML = h;
+})();
+</script>
+</body>
+</html>

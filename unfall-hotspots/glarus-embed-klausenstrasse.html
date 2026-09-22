@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klausenstrasse: eine Strasse, ein Fahrzeugtyp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4; --s2:#ee7733;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px}
+.stats{display:flex; gap:26px; flex-wrap:wrap; margin:0 0 16px;
+  border-bottom:1px solid var(--rule-soft); padding-bottom:14px}
+.stat .num{font-size:30px; font-weight:700; line-height:1.1; font-variant-numeric:tabular-nums}
+.stat .num.accent{color:var(--s2)}
+.stat .lbl{font-size:13px; color:var(--ink-2); max-width:190px}
+.legend{display:flex; gap:18px; flex-wrap:wrap; align-items:center; margin-bottom:12px}
+.lg{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2)}
+.sw{width:12px; height:12px; border-radius:2px; flex:none}
+.chart{width:100%}
+svg{display:block; max-width:100%; height:auto}
+.tick{font-size:12px; fill:var(--ink-3)}
+.grid{stroke:var(--rule-soft); stroke-width:1}
+.axis{stroke:var(--rule); stroke-width:1}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:14px 0 0}
+.tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
+  transform:translate(-50%,-100%); background:#fff; color:var(--ink);
+  border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
+  padding:8px 11px; font-size:13px; line-height:1.4; white-space:nowrap; transition:opacity .09s}
+.tip b{font-variant-numeric:tabular-nums}
+.tip .t-m{font-weight:700; display:block; margin-bottom:5px}
+.tip .t-tbl{border-collapse:collapse; font-size:13px}
+.tip .t-tbl td{padding:1px 0}
+.tip .t-tbl td:last-child{text-align:right; padding-left:18px;
+  font-variant-numeric:tabular-nums; font-weight:600}
+.tip .t-tbl i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px}
+.tip .t-sum td{border-top:1px solid var(--rule); padding-top:3px; color:var(--ink-2)}
+.hit{cursor:crosshair}
+table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:10px}
+table.data th,table.data td{border-bottom:1px solid var(--rule-soft); padding:3px 5px;
+  text-align:right; font-variant-numeric:tabular-nums}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{color:var(--ink-3); font-weight:600}
+details{margin-top:12px; font-size:13px; color:var(--ink-2)}
+summary{cursor:pointer; color:var(--s1)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-palette="#0068a4,#ee7733">
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+  <div class="legend">
+    <span class="lg"><span class="sw" style="background:var(--s2)"></span>mit Motorradbeteiligung</span>
+    <span class="lg"><span class="sw" style="background:var(--s1)"></span>&uuml;brige Unf&auml;lle</span>
+  </div>
+  <div class="chart"><svg id="c" role="img" aria-label="S&auml;ulendiagramm: Unf&auml;lle auf der Klausenstrasse nach Monat, Motorradunf&auml;lle als obere Schicht"></svg></div>
+  <p class="src">Unf&auml;lle mit Personenschaden auf der Klausenstrasse (Gemeinde Glarus S&uuml;d,
+     Abschnitt ab Linthal bis zur Kantonsgrenze), 2011&ndash;2025.
+     Quelle: Bundesamt f&uuml;r Strassen ASTRA, Strassenverkehrsunfallorte; Strassenzuordnung: swisstopo.
+     Grafik: S&uuml;dostschweiz</p>
+  <details>
+    <summary>Zahlen als Tabelle</summary>
+    <table class="data" id="tbl"></table>
+  </details>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<script>
+/* DATA-START */
+const S = [{"m":1,"all":0,"moto":0},{"m":2,"all":1,"moto":0},{"m":3,"all":0,"moto":0},{"m":4,"all":0,"moto":0},{"m":5,"all":7,"moto":6},{"m":6,"all":9,"moto":7},{"m":7,"all":11,"moto":11},{"m":8,"all":8,"moto":7},{"m":9,"all":9,"moto":3},{"m":10,"all":2,"moto":2},{"m":11,"all":0,"moto":0},{"m":12,"all":0,"moto":0}];
+const FACTS = {"n":47,"moto":36,"self":34,"weekend":23,"severe":15,"dead":2,"kanton_moto_pct":17.5};
+/* DATA-END */
+const MN = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const MONTHS_FULL = ['Januar','Februar','März','April','Mai','Juni','Juli','August',
+                     'September','Oktober','November','Dezember'];
+
+document.getElementById('stats').innerHTML =
+  '<div class="stat"><div class="num">' + FACTS.n + '</div>' +
+  '<div class="lbl">Unfälle mit Personenschaden, 2011–2025</div></div>' +
+  '<div class="stat"><div class="num accent">' + FACTS.moto + '</div>' +
+  '<div class="lbl">davon mit Motorrad — ' +
+  Math.round(100*FACTS.moto/FACTS.n) + ' % gegenüber ' +
+  String(FACTS.kanton_moto_pct).replace('.', ',') + ' % im ganzen Kanton</div></div>' +
+  '<div class="stat"><div class="num">' + FACTS.self + '</div>' +
+  '<div class="lbl">Schleuder- oder Selbstunfälle, ohne zweite Partei</div></div>';
+
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  /* keep the tooltip inside the viewport: it is centred on the pointer */
+  const half = tip.offsetWidth / 2, vw = window.innerWidth;
+  tip.style.left = Math.max(half + 6, Math.min(vw - half - 6, e.clientX)) + 'px';
+  tip.style.top  = Math.max(tip.offsetHeight + 8, e.clientY - 12) + 'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('pointerdown', function(e){
+  if (!e.target.classList || !e.target.classList.contains('hit')) hideTip();
+}, true);
+
+const NS = 'http://www.w3.org/2000/svg';
+function el(n,a){ const x=document.createElementNS(NS,n); for(const k in (a||{})) x.setAttribute(k,a[k]); return x; }
+
+/* rounded cap on top, square at the baseline */
+function barPath(x,y,w,h,r){
+  r = Math.min(r, w/2, h);
+  return 'M'+x+','+(y+h)+' V'+(y+r)+' A'+r+','+r+' 0 0 1 '+(x+r)+','+y+
+         ' H'+(x+w-r)+' A'+r+','+r+' 0 0 1 '+(x+w)+','+(y+r)+' V'+(y+h)+' Z';
+}
+
+function draw(){
+  const W = document.querySelector('.chart').clientWidth || 640;
+  const narrow = W < 430;
+  const L = narrow ? 26 : 34, R = 10, T = 12, B = 34;
+  const H = narrow ? 230 : 280;
+  const iw = W-L-R, ih = H-T-B;
+  const max = 12, STEP = 3, GAP = 2;
+  const bw = Math.min(narrow ? 20 : 34, iw/12 - (narrow ? 4 : 8));
+  const xAt = i => L + iw*(i+0.5)/12 - bw/2;
+  const yAt = v => T + ih - ih*v/max;
+  const svg = document.getElementById('c');
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+  svg.textContent = '';
+
+  for(let v=0; v<=max; v+=STEP){
+    svg.appendChild(el('line',{x1:L, y1:yAt(v), x2:W-R, y2:yAt(v), class: v===0?'axis':'grid'}));
+    const t = el('text',{x:L-8, y:yAt(v)+4, class:'tick','text-anchor':'end'});
+    t.textContent = v; svg.appendChild(t);
+  }
+
+  S.forEach(function(d,i){
+    const rest = d.all - d.moto;
+    if(rest > 0){
+      svg.appendChild(el('path',{d:barPath(xAt(i), yAt(rest), bw, ih*rest/max, 4),
+        fill:'var(--s1)'}));
+    }
+    /* motorcycles on top: the layer that is the whole story here */
+    if(d.moto > 0){
+      svg.appendChild(el('path',{d:barPath(xAt(i), yAt(d.all), bw, ih*d.moto/max, 4),
+        fill:'var(--s2)'}));
+      if(rest > 0){
+        svg.appendChild(el('rect',{x:xAt(i), y:yAt(rest)-GAP, width:bw, height:GAP,
+          fill:'var(--surface)'}));
+      }
+    }
+    const t = el('text',{x:xAt(i)+bw/2, y:H-14, class:'tick','text-anchor':'middle'});
+    t.textContent = MN[i]; svg.appendChild(t);
+    const hit = el('rect',{x:xAt(i)-2, y:T, width:bw+4, height:ih, fill:'transparent', class:'hit'});
+    function onHit(e){
+      showTip(e,
+        '<span class="t-m">' + MONTHS_FULL[i] + ' (2011–2025)</span>' +
+        '<table class="t-tbl">' +
+          '<tr><td><i style="background:var(--s2)"></i>mit Motorrad</td><td>'+d.moto+'</td></tr>' +
+          '<tr><td><i style="background:var(--s1)"></i>übrige Unfälle</td><td>'+rest+'</td></tr>' +
+          '<tr class="t-sum"><td>Total</td><td>'+d.all+'</td></tr>' +
+        '</table>');
+    }
+    hit.addEventListener('pointerdown', onHit);
+    hit.addEventListener('mousemove', onHit);
+    hit.addEventListener('mouseleave', hideTip);
+    svg.appendChild(hit);
+  });
+}
+draw();
+let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(draw, 140); });
+
+(function(){
+  let h = '<tr><th>Monat</th><th>mit Motorrad</th><th>&uuml;brige</th><th>Total</th></tr>';
+  S.forEach(function(d,i){
+    h += '<tr><td>' + MONTHS_FULL[i] + '</td><td>' + d.moto + '</td><td>' +
+         (d.all-d.moto) + '</td><td>' + d.all + '</td></tr>';
+  });
+  h += '<tr><td><b>Total</b></td><td><b>' + FACTS.moto + '</b></td><td><b>' +
+       (FACTS.n-FACTS.moto) + '</b></td><td><b>' + FACTS.n + '</b></td></tr>';
+  document.getElementById('tbl').innerHTML = h;
+})();
+</script>
+</body>
+</html>

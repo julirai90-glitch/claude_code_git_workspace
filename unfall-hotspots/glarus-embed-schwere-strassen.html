@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wo die Unfälle am schlimmsten enden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4; --s2:#ee7733;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px}
+.legend{display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-bottom:14px;
+  font-size:13px; color:var(--ink-2)}
+.lg{display:inline-flex; align-items:center; gap:7px}
+.lg .sw{width:14px; height:11px; border-radius:2px; background:var(--s1); flex:none}
+.lg .swci{width:20px; height:11px; flex:none; position:relative}
+.lg .swci::before{content:''; position:absolute; left:0; right:0; top:5px; height:1px;
+  background:var(--ink-3)}
+.lg .swref{width:2px; height:13px; flex:none; background:var(--s2)}
+.rows{width:100%}
+.brow{display:grid; grid-template-columns:var(--labw) 1fr var(--valw); gap:9px;
+  align-items:center; padding:3px 0}
+.brow.head{color:var(--ink-3); font-size:12px; padding-bottom:6px}
+.blab{font-size:13px; line-height:1.2; text-align:right; overflow-wrap:break-word}
+@media (max-width:560px){.blab{font-size:12px}}
+.blab b{font-weight:600}
+.blab span{color:var(--ink-3); white-space:nowrap}
+.btrack{position:relative; height:16px; background:var(--rule-soft); border-radius:2px;
+  cursor:crosshair}
+.bfill{position:absolute; left:0; top:0; bottom:0; background:var(--s1);
+  border-radius:2px 3px 3px 2px}
+.bci{position:absolute; top:7px; height:2px; background:var(--ink-3); opacity:.75}
+.bci::before,.bci::after{content:''; position:absolute; top:-3px; width:1px; height:8px;
+  background:var(--ink-3)}
+.bci::before{left:0} .bci::after{right:0}
+.bref{position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--s2)}
+.bval{font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.bval b{color:var(--ink)}
+.axis{display:grid; grid-template-columns:var(--labw) 1fr var(--valw); gap:9px;
+  font-size:12px; color:var(--ink-3); margin-top:4px}
+.axticks{position:relative; height:16px}
+.axticks span{position:absolute; transform:translateX(-50%); white-space:nowrap}
+.axticks span:last-child{transform:translateX(-100%)}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:14px 0 0}
+.tip{position:fixed; pointer-events:none; z-index:9; opacity:0;
+  transform:translate(-50%,-100%); background:#fff; color:var(--ink);
+  border:1px solid var(--rule); border-radius:3px; box-shadow:0 4px 14px rgba(20,32,42,.15);
+  padding:8px 11px; font-size:13px; line-height:1.4; transition:opacity .09s; max-width:260px}
+.tip .t-m{font-weight:700; display:block; margin-bottom:4px}
+.tip b{font-variant-numeric:tabular-nums}
+table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:10px}
+table.data th,table.data td{border-bottom:1px solid var(--rule-soft); padding:3px 5px;
+  text-align:right; font-variant-numeric:tabular-nums}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{color:var(--ink-3); font-weight:600}
+details{margin-top:12px; font-size:13px; color:var(--ink-2)}
+summary{cursor:pointer; color:var(--s1)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-palette="#0068a4,#ee7733">
+<div class="wrap">
+  <div class="legend">
+    <span class="lg"><span class="sw"></span>Anteil schwer oder t&ouml;dlich</span>
+    <span class="lg"><span class="swci"></span>95-%-Unsicherheitsbereich</span>
+    <span class="lg"><span class="swref"></span>Kanton Glarus: <span id="refLab"></span></span>
+  </div>
+  <div class="rows" id="rows" role="img" aria-label="Balkendiagramm: Anteil schwerer und t&ouml;dlicher Unf&auml;lle je Strasse im Kanton Glarus"></div>
+  <div class="axis" id="axis"><div></div><div class="axticks" id="axticks"></div><div></div></div>
+  <p class="src">Strassen mit mindestens <span id="minN"></span> Unf&auml;llen mit Personenschaden,
+     Kanton Glarus 2011&ndash;2025. &laquo;Schwer oder t&ouml;dlich&raquo; = Unfall mit Getöteten oder
+     Schwerverletzten. Der Unsicherheitsbereich (Wilson, 95&nbsp;%) zeigt, wie stark ein Anteil
+     bei so kleinen Fallzahlen schwanken kann &ndash; &uuml;berlappende Bereiche sind nicht
+     unterscheidbar. Quelle: Bundesamt f&uuml;r Strassen ASTRA, Strassenverkehrsunfallorte;
+     Strassen- und Ortsnamen: swisstopo. Grafik: S&uuml;dostschweiz</p>
+  <details>
+    <summary>Zahlen als Tabelle</summary>
+    <table class="data" id="tbl"></table>
+  </details>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<script>
+/* DATA-START */
+const ROWS = [{"street":"Talalpstrasse","place":"Filzbach","n":16,"severe":8,"pct":50.0,"moto":0,"velo":3,"fuss":1},{"street":"Oberurnerstrasse","place":"Näfels","n":19,"severe":8,"pct":42.1,"moto":3,"velo":4,"fuss":2},{"street":"Flechsenstrasse","place":"Mollis","n":13,"severe":5,"pct":38.5,"moto":3,"velo":2,"fuss":1},{"street":"Kirchweg","place":"Glarus","n":24,"severe":8,"pct":33.3,"moto":1,"velo":6,"fuss":6},{"street":"Hauptstrasse","place":"Schwanden GL","n":15,"severe":5,"pct":33.3,"moto":0,"velo":3,"fuss":4},{"street":"Molliserstrasse","place":"Näfels","n":12,"severe":4,"pct":33.3,"moto":2,"velo":7,"fuss":1},{"street":"Unterdorf","place":"Näfels","n":12,"severe":4,"pct":33.3,"moto":2,"velo":0,"fuss":1},{"street":"Klausenstrasse","place":"Linthal","n":47,"severe":15,"pct":31.9,"moto":36,"velo":8,"fuss":0},{"street":"Klöntalerstrasse","place":"Klöntal","n":12,"severe":3,"pct":25.0,"moto":4,"velo":3,"fuss":0},{"street":"Landstrasse","place":"Glarus","n":54,"severe":11,"pct":20.4,"moto":12,"velo":7,"fuss":8},{"street":"Gerichtshausstrasse","place":"Glarus","n":12,"severe":2,"pct":16.7,"moto":3,"velo":2,"fuss":2},{"street":"Oberdorf","place":"Näfels","n":13,"severe":2,"pct":15.4,"moto":0,"velo":4,"fuss":2},{"street":"Hauptstrasse","place":"Mitlödi","n":20,"severe":3,"pct":15.0,"moto":2,"velo":0,"fuss":0},{"street":"Molliserstrasse","place":"Netstal","n":27,"severe":4,"pct":14.8,"moto":1,"velo":4,"fuss":2},{"street":"Landstrasse","place":"Netstal","n":48,"severe":7,"pct":14.6,"moto":7,"velo":2,"fuss":6},{"street":"Nationalstrasse (A3)","place":"Bilten","n":48,"severe":7,"pct":14.6,"moto":2,"velo":0,"fuss":0},{"street":"Nationalstrasse (A3)","place":"Glarus Nord","n":14,"severe":2,"pct":14.3,"moto":0,"velo":0,"fuss":0},{"street":"Mühle","place":"Näfels","n":17,"severe":2,"pct":11.8,"moto":5,"velo":0,"fuss":0},{"street":"Ygrubenstrasse","place":"Glarus","n":14,"severe":1,"pct":7.1,"moto":1,"velo":5,"fuss":2},{"street":"Nationalstrasse (A3)","place":"Filzbach","n":14,"severe":1,"pct":7.1,"moto":0,"velo":1,"fuss":0},{"street":"Schäniserstrasse","place":"Bilten","n":22,"severe":1,"pct":4.5,"moto":3,"velo":2,"fuss":0},{"street":"Altweg","place":"Näfels","n":14,"severe":0,"pct":0.0,"moto":1,"velo":5,"fuss":2},{"street":"Kirchstrasse","place":"Glarus","n":13,"severe":0,"pct":0.0,"moto":0,"velo":5,"fuss":2}];
+const REF = 23.4;
+const MIN_N = 12;
+/* DATA-END */
+const SCALE = 80;   /* percent at the right edge — wide enough for every interval */
+
+document.getElementById('refLab').textContent = String(REF).replace('.', ',') + ' %';
+document.getElementById('minN').textContent = MIN_N;
+
+/* Wilson score interval — at n = 12…50 the normal approximation is useless */
+function wilson(k, n){
+  const z = 1.96, p = k/n, d = 1 + z*z/n;
+  const c = (p + z*z/(2*n)) / d;
+  const s = z * Math.sqrt(p*(1-p)/n + z*z/(4*n*n)) / d;
+  return [Math.max(0, c-s)*100, Math.min(1, c+s)*100];
+}
+
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html;
+  tip.style.opacity = '1';
+  const half = tip.offsetWidth / 2, vw = window.innerWidth;
+  tip.style.left = Math.max(half + 6, Math.min(vw - half - 6, e.clientX)) + 'px';
+  tip.style.top  = Math.max(tip.offsetHeight + 8, e.clientY - 12) + 'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('pointerdown', function(e){
+  if (!e.target.classList || !e.target.classList.contains('btrack')) hideTip();
+}, true);
+
+function draw(){
+  const narrow = document.body.clientWidth < 560;
+  const host = document.getElementById('rows');
+  const labw = narrow ? '124px' : '210px', valw = narrow ? '50px' : '86px';
+  [host, document.getElementById('axis')].forEach(function(n){
+    n.style.setProperty('--labw', labw);
+    n.style.setProperty('--valw', valw);
+  });
+  host.textContent = '';
+
+  ROWS.forEach(function(r){
+    const ci = wilson(r.severe, r.n);
+    const row = document.createElement('div');
+    row.className = 'brow';
+    row.innerHTML =
+      '<div class="blab"><b>' + r.street + '</b><br><span>' + r.place + '</span></div>' +
+      '<div class="btrack">' +
+        '<div class="bfill" style="width:' + (100*r.pct/SCALE) + '%"></div>' +
+        '<div class="bci" style="left:' + (100*ci[0]/SCALE) + '%;width:' +
+          (100*(ci[1]-ci[0])/SCALE) + '%"></div>' +
+        '<div class="bref" style="left:' + (100*REF/SCALE) + '%"></div>' +
+      '</div>' +
+      '<div class="bval"><b>' + r.severe + '</b>/' + r.n +
+        (narrow ? '' : ' · ' + Math.round(r.pct) + ' %') + '</div>';
+    const track = row.querySelector('.btrack');
+    function onHit(e){
+      showTip(e, '<span class="t-m">' + r.street + ', ' + r.place + '</span>' +
+        '<b>' + r.severe + '</b> von <b>' + r.n + '</b> Unfällen schwer oder tödlich (' +
+        String(r.pct).replace('.', ',') + ' %)<br>' +
+        '<span style="color:var(--ink-3)">Unsicherheitsbereich ' + Math.round(ci[0]) +
+        '–' + Math.round(ci[1]) + ' %<br>beteiligt: ' + r.moto + '× Motorrad, ' +
+        r.velo + '× Velo, ' + r.fuss + '× zu Fuss</span>');
+    }
+    track.addEventListener('pointerdown', onHit);
+    track.addEventListener('mousemove', onHit);
+    track.addEventListener('mouseleave', hideTip);
+    host.appendChild(row);
+  });
+
+  let ax = '';
+  const tick = narrow ? 40 : 20;
+  for(let v = 0; v <= SCALE; v += tick) ax += '<span style="left:' + (100*v/SCALE) + '%">' + v + ' %</span>';
+  document.getElementById('axticks').innerHTML = ax;
+}
+draw();
+let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(draw, 140); });
+
+(function(){
+  let h = '<tr><th>Strasse</th><th>Ort</th><th>Unf&auml;lle</th>' +
+          '<th>schwer/<br>t&ouml;dlich</th><th>Anteil</th><th>Unsicherheits-<br>bereich</th></tr>';
+  ROWS.forEach(function(r){
+    const ci = wilson(r.severe, r.n);
+    h += '<tr><td>' + r.street + '</td><td style="text-align:left">' + r.place + '</td><td>' +
+         r.n + '</td><td>' + r.severe + '</td><td>' + String(r.pct).replace('.', ',') +
+         ' %</td><td>' + Math.round(ci[0]) + '–' + Math.round(ci[1]) + ' %</td></tr>';
+  });
+  document.getElementById('tbl').innerHTML = h;
+})();
+</script>
+</body>
+</html>
