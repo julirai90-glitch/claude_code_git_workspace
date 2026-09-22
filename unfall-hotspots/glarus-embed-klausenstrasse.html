@@ -12,6 +12,7 @@
   --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
   --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
   --s1:#0068a4; --s2:#ee7733;
+  --p1:#ee7733; --p2:#0068a4; --p3:#6ba3c9; --p4:#c3ccd4;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--surface)}
@@ -56,8 +57,10 @@ summary{cursor:pointer; color:var(--s1)}
 <body data-palette="#0068a4,#ee7733">
 <div class="wrap">
   <div class="legend">
-    <span class="lg"><span class="sw" style="background:var(--s2)"></span>Unfall mit Motorradbeteiligung</span>
-    <span class="lg"><span class="sw" style="background:var(--s1)"></span>&uuml;brige Unf&auml;lle</span>
+    <span class="lg"><span class="sw" style="background:var(--p1)"></span>Motorrad beteiligt</span>
+    <span class="lg"><span class="sw" style="background:var(--p2)"></span>Velo beteiligt</span>
+    <span class="lg"><span class="sw" style="background:var(--p3)"></span>Fussg&auml;nger beteiligt</span>
+    <span class="lg"><span class="sw" style="background:var(--p4)"></span>nur Motorfahrzeuge</span>
   </div>
   <div class="pies" id="pies"></div>
   <p class="facts" id="facts"></p>
@@ -75,7 +78,7 @@ summary{cursor:pointer; color:var(--s1)}
 <script>
 /* DATA-START */
 const S = [{"m":1,"all":0,"moto":0},{"m":2,"all":1,"moto":0},{"m":3,"all":0,"moto":0},{"m":4,"all":0,"moto":0},{"m":5,"all":7,"moto":6},{"m":6,"all":9,"moto":7},{"m":7,"all":11,"moto":11},{"m":8,"all":8,"moto":7},{"m":9,"all":9,"moto":3},{"m":10,"all":2,"moto":2},{"m":11,"all":0,"moto":0},{"m":12,"all":0,"moto":0}];
-const FACTS = {"n":47,"moto":36,"self":34,"weekend":23,"severe":15,"dead":2,"kanton_n":1366,"kanton_moto":239,"kanton_moto_pct":17.5,"pct":76.6};
+const FACTS = {"n":47,"moto":36,"parts":[{"Motorrad":36,"Velo":8,"zu Fuss":0,"nur Motorfahrzeuge":3},{"Motorrad":239,"Velo":253,"zu Fuss":133,"nur Motorfahrzeuge":741}],"self":34,"weekend":23,"severe":15,"dead":2,"kanton_n":1366,"kanton_moto":239,"kanton_moto_pct":17.5,"pct":76.6};
 /* DATA-END */
 const MONTHS_FULL = ['Januar','Februar','März','April','Mai','Juni','Juli','August',
                      'September','Oktober','November','Dezember'];
@@ -108,40 +111,50 @@ function wedge(cx, cy, r, from, to){
   return 'M'+cx+','+cy+' L'+x0+','+y0+' A'+r+','+r+' 0 '+large+' 1 '+x1+','+y1+' Z';
 }
 
-function pie(where, title, sub, part, total){
-  const share = part / total;
+const PARTS = ['Motorrad','Velo','zu Fuss','nur Motorfahrzeuge'];
+const PART_COL = ['var(--p1)','var(--p2)','var(--p3)','var(--p4)'];
+
+function pie(where, title, sub, counts){
+  const total = PARTS.reduce((s,k) => s + counts[k], 0);
   const R = 100, C = 106;          /* 2 px of air for the surface ring */
   const svg = el('svg', {viewBox:'0 0 212 212', role:'img',
-    'aria-label': title + ': ' + Math.round(100*share) + ' Prozent der Unfälle mit Motorrad'});
-  /* the rest first, the motorcycle wedge on top of it */
-  svg.appendChild(el('path', {d: wedge(C, C, R, share, 1), fill:'var(--s1)', class:'slice'}));
-  svg.appendChild(el('path', {d: wedge(C, C, R, 0, share), fill:'var(--s2)', class:'slice',
-    stroke:'var(--surface)', 'stroke-width':2}));
+    'aria-label': title + ': ' + Math.round(100*counts['Motorrad']/total) +
+                  ' Prozent der Unfälle mit Motorrad'});
+  let at = 0;
+  PARTS.forEach(function(k, i){
+    const share = counts[k] / total;
+    if(share <= 0) return;
+    /* a full circle needs a circle element — the arc path degenerates at 360° */
+    svg.appendChild(share >= 1
+      ? el('circle', {cx:C, cy:C, r:R, fill:PART_COL[i], class:'slice', 'data-i':i})
+      : el('path', {d: wedge(C, C, R, at, at+share), fill:PART_COL[i], class:'slice',
+                    'data-i':i, stroke:'var(--surface)', 'stroke-width':2}));
+    at += share;
+  });
   const host = document.createElement('div');
   host.className = 'pie';
   host.innerHTML = '<div class="cap">' + title + '<span>' + sub + '</span></div>';
   host.appendChild(svg);
   const val = document.createElement('div');
-  val.innerHTML = '<div class="val">' + de(Math.round(1000*share)/10) + ' %</div>' +
-    '<div class="sub">mit Motorrad<br>(' + part + ' von ' + total + ')</div>';
+  val.innerHTML = '<div class="val">' + de(Math.round(1000*counts['Motorrad']/total)/10) +
+    ' %</div><div class="sub">mit Motorrad<br>(' + counts['Motorrad'] + ' von ' + total + ')</div>';
   host.appendChild(val);
-  svg.querySelectorAll('.slice').forEach(function(s, i){
+  svg.querySelectorAll('.slice').forEach(function(sl){
+    const k = PARTS[+sl.dataset.i];
     function onHit(e){
-      showTip(e, '<span class="t-m">' + title + '</span>' +
-        (i === 1 ? '<b>' + part + '</b> Unfälle mit Motorrad'
-                 : '<b>' + (total-part) + '</b> Unfälle ohne Motorrad') +
-        ' von ' + total);
+      showTip(e, '<span class="t-m">' + title + '</span>' + k + ': <b>' + counts[k] +
+        '</b> von ' + total + ' (' + Math.round(100*counts[k]/total) + ' %)');
     }
-    s.addEventListener('pointerdown', onHit);
-    s.addEventListener('mousemove', onHit);
-    s.addEventListener('mouseleave', hideTip);
+    sl.addEventListener('pointerdown', onHit);
+    sl.addEventListener('mousemove', onHit);
+    sl.addEventListener('mouseleave', hideTip);
   });
   where.appendChild(host);
 }
 
 const pies = document.getElementById('pies');
-pie(pies, 'Klausenstrasse', 'Linthal–Kantonsgrenze', FACTS.moto, FACTS.n);
-pie(pies, 'Kanton Glarus', 'alle Strassen', FACTS.kanton_moto, FACTS.kanton_n);
+pie(pies, 'Klausenstrasse', 'Linthal–Kantonsgrenze', FACTS.parts[0]);
+pie(pies, 'Kanton Glarus', 'alle Strassen', FACTS.parts[1]);
 
 document.getElementById('facts').innerHTML =
   'Von den <b>' + FACTS.n + '</b> Unfällen auf der Klausenstrasse sind <b>' + FACTS.self +
@@ -150,15 +163,18 @@ document.getElementById('facts').innerHTML =
   FACTS.severe + '</b> endeten schwer oder tödlich.';
 
 (function(){
-  let h = '<tr><th>Monat</th><th>mit Motorrad</th><th>&uuml;brige</th><th>Total</th></tr>';
-  S.forEach(function(d,i){
-    h += '<tr><td>' + MONTHS_FULL[i] + '</td><td>' + d.moto + '</td><td>' +
-         (d.all-d.moto) + '</td><td>' + d.all + '</td></tr>';
+  let h = '<tr><th>Beteiligt</th><th>Klausenstrasse</th><th>Kanton Glarus</th></tr>';
+  PARTS.forEach(function(k){
+    h += '<tr><td>' + k + '</td><td>' + FACTS.parts[0][k] + '</td><td>' +
+         FACTS.parts[1][k] + '</td></tr>';
   });
-  h += '<tr><td><b>Klausenstrasse total</b></td><td><b>' + FACTS.moto + '</b></td><td><b>' +
-       (FACTS.n-FACTS.moto) + '</b></td><td><b>' + FACTS.n + '</b></td></tr>' +
-       '<tr><td><b>Kanton Glarus total</b></td><td><b>' + FACTS.kanton_moto + '</b></td><td><b>' +
-       (FACTS.kanton_n-FACTS.kanton_moto) + '</b></td><td><b>' + FACTS.kanton_n + '</b></td></tr>';
+  h += '<tr><td><b>Total</b></td><td><b>' + FACTS.n + '</b></td><td><b>' +
+       FACTS.kanton_n + '</b></td></tr>';
+  h += '<tr><th colspan="3" style="padding-top:12px">Klausenstrasse nach Monat</th></tr>';
+  S.forEach(function(d,i){
+    if(d.all > 0) h += '<tr><td>' + MONTHS_FULL[i] + '</td><td colspan="2">' + d.all +
+      ' Unfälle, davon ' + d.moto + ' mit Motorrad</td></tr>';
+  });
   document.getElementById('tbl').innerHTML = h;
 })();
 </script>

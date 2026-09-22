@@ -8,6 +8,7 @@ The map answers "where"; these five answer "what is unusual about it":
   glarus-embed-wochenstunde.html  weekday x hour, the weekend-night pattern
   glarus-embed-schwere-strassen.html  share of severe outcomes per road
   glarus-embed-gemeinden.html     severity split per municipality
+  glarus-embed-talalpstrasse.html the Talalpstrasse case: single-vehicle crashes
 
 Each page keeps its data between /* DATA-START */ and /* DATA-END */; this
 script recomputes those blocks so the numbers can never drift from the source.
@@ -136,6 +137,26 @@ def place_of(a, orte):
     return GEM[a["MunicipalityCode"]] if (not ort or ort in OUTSIDE_GL) else ort
 
 
+# The three ASTRA participation flags can co-occur (a cyclist hit while a
+# pedestrian crosses). Assigning each accident to exactly one group by this
+# order keeps the pie slices adding up to the total.
+PARTY_ORDER = ["Motorrad", "Velo", "zu Fuss", "nur Motorfahrzeuge"]
+
+
+def parties(rows):
+    out = dict.fromkeys(PARTY_ORDER, 0)
+    for a in rows:
+        if a["AccidentInvolvingMotorcycle"] == "true":
+            out["Motorrad"] += 1
+        elif a["AccidentInvolvingBicycle"] == "true":
+            out["Velo"] += 1
+        elif a["AccidentInvolvingPedestrian"] == "true":
+            out["zu Fuss"] += 1
+        else:
+            out["nur Motorfahrzeuge"] += 1
+    return out
+
+
 def clusters(rows, radius):
     """Greedy 'densest point first' clustering, the same idea the map uses.
 
@@ -222,6 +243,7 @@ def g2_klausen(acc, streets):
     facts = {
         "n": len(kl),
         "moto": sum(1 for a in kl if a["AccidentInvolvingMotorcycle"] == "true"),
+        "parts": [parties(kl), parties(acc)],
         "self": sum(1 for a in kl if a["AccidentType_de"] == "Schleuder- oder Selbstunfall"),
         "weekend": sum(1 for a in kl if a["AccidentWeekDay_de"] in ("Samstag", "Sonntag")),
         "severe": severe(kl),
@@ -302,6 +324,54 @@ def g5_gemeinden(acc):
     return js("ROWS", rows)
 
 
+SELF = "Schleuder- oder Selbstunfall"
+
+
+def g6_talalpstrasse(acc, streets, orte, min_n=12):
+    """Talalpstrasse against the canton, plus the roads it leads.
+
+    Accidents per kilometre would be the intuitive danger measure, but it
+    ranks short village junctions on top and says nothing here. What is
+    genuinely extreme on this road is that almost nobody crashes into anyone:
+    14 of 16 are single-vehicle accidents (canton: 36 %).
+    """
+    def share(rows, pred):
+        return {"n": len(rows), "k": sum(1 for a in rows if pred(a)),
+                "pct": round(100 * sum(1 for a in rows if pred(a)) / len(rows), 1)}
+
+    tal = [a for a in acc if street_of(a, streets) == "Talalpstrasse"]
+    is_self = lambda a: a["AccidentType_de"] == SELF
+    is_sev = lambda a: a["AccidentSeverityCategory"] in SEVERE
+
+    agg = collections.defaultdict(list)
+    for a in acc:
+        s = street_of(a, streets)
+        if s:
+            agg[(s, place_of(a, orte))].append(a)
+    rank = []
+    for (s, place), m in agg.items():
+        if len(m) >= min_n:
+            rank.append({"street": s, "place": place, "n": len(m),
+                         "self": sum(1 for a in m if is_self(a)),
+                         "pct": round(100 * sum(1 for a in m if is_self(a)) / len(m), 1)})
+    rank.sort(key=lambda r: (-r["pct"], -r["n"]))
+
+    facts = {
+        "n": len(tal),
+        "self": share(tal, is_self), "kanton_self": share(acc, is_self),
+        "severe": share(tal, is_sev), "kanton_severe": share(acc, is_sev),
+        # one January outlier — a min/max span would read as "January to October"
+        "months": sorted(collections.Counter(a["AccidentMonth"] for a in tal).items()),
+        "hours": [min(a["AccidentHour"] for a in tal if a["AccidentHour"] is not None),
+                  max(a["AccidentHour"] for a in tal if a["AccidentHour"] is not None)],
+        "weekend": sum(1 for a in tal if a["AccidentWeekDay_de"] in ("Samstag", "Sonntag")),
+        "velo": sum(1 for a in tal if a["AccidentInvolvingBicycle"] == "true"),
+        "moto": sum(1 for a in tal if a["AccidentInvolvingMotorcycle"] == "true"),
+        "km": 6.65,  # OpenStreetMap, ways named Talalpstrasse in canton GL
+    }
+    return (js("FACTS", facts) + "\n" + js("RANK", rank[:8]) + "\n" + js("MIN_N", min_n))
+
+
 # --------------------------------------------------------------------------
 def main():
     acc = load_accidents()
@@ -317,6 +387,7 @@ def main():
     patch("glarus-embed-wochenstunde.html", g3_wochenstunde(acc))
     patch("glarus-embed-schwere-strassen.html", g4_schwere_strassen(acc, streets, orte))
     patch("glarus-embed-gemeinden.html", g5_gemeinden(acc))
+    patch("glarus-embed-talalpstrasse.html", g6_talalpstrasse(acc, streets, orte))
 
 
 if __name__ == "__main__":
