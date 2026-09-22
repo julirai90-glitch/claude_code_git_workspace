@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Talalpstrasse: wo man allein verunfallt</title>
+<title>Filzbach–Habergschwänd: wo man allein verunfallt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
@@ -72,13 +72,14 @@ summary{cursor:pointer; color:var(--s1)}
 </div>
 <script>
 /* DATA-START */
-const FACTS = {"n":16,"self":{"n":16,"k":14,"pct":87.5},"kanton_self":{"n":1366,"k":495,"pct":36.2},"severe":{"n":16,"k":8,"pct":50.0},"kanton_severe":{"n":1366,"k":319,"pct":23.4},"months":[[1,1],[6,3],[7,6],[8,3],[9,1],[10,2]],"hours":[11,18],"weekend":8,"velo":3,"moto":0,"km":6.65};
-const RANK = [{"street":"Talalpstrasse","place":"Filzbach","n":16,"self":14,"pct":87.5},{"street":"Klausenstrasse","place":"Linthal","n":47,"self":34,"pct":72.3},{"street":"Mühle","place":"Näfels","n":17,"self":9,"pct":52.9},{"street":"Nationalstrasse","place":"Glarus Nord","n":14,"self":7,"pct":50.0},{"street":"Klöntalerstrasse","place":"Klöntal","n":12,"self":6,"pct":50.0},{"street":"Nationalstrasse","place":"Filzbach","n":14,"self":6,"pct":42.9},{"street":"Nationalstrasse","place":"Bilten","n":48,"self":18,"pct":37.5},{"street":"Ygrubenstrasse","place":"Glarus","n":14,"self":4,"pct":28.6}];
+const FACTS = {"n":17,"self":{"n":17,"k":15,"pct":88.2},"kanton_self":{"n":1366,"k":495,"pct":36.2},"severe":{"n":17,"k":8,"pct":47.1},"kanton_severe":{"n":1366,"k":319,"pct":23.4},"weekend":{"n":17,"k":8,"pct":47.1},"kanton_weekend":{"n":1366,"k":405,"pct":29.6},"months":[[1,1],[6,3],[7,6],[8,4],[9,1],[10,2]],"hours":[11,18],"types":[["Schleuder- oder Selbstunfall",15],["Fussgängerunfall",1],["Einbiegeunfall",1]],"parts":{"Motorrad":0,"Velo":3,"zu Fuss":1,"nur Motorfahrzeuge":13},"km":8.31,"label":"Talalpstrasse/Habergschwändstrasse"};
+const RANK = [{"street":"Talalpstrasse/Habergschwändstrasse","place":"Filzbach","n":17,"self":15,"pct":88.2},{"street":"Klausenstrasse","place":"Linthal","n":47,"self":34,"pct":72.3},{"street":"Mühle","place":"Näfels","n":17,"self":9,"pct":52.9},{"street":"Nationalstrasse","place":"Glarus Nord","n":14,"self":7,"pct":50.0},{"street":"Klöntalerstrasse","place":"Klöntal","n":12,"self":6,"pct":50.0},{"street":"Nationalstrasse","place":"Filzbach","n":14,"self":6,"pct":42.9},{"street":"Nationalstrasse","place":"Bilten","n":48,"self":18,"pct":37.5},{"street":"Ygrubenstrasse","place":"Glarus","n":14,"self":4,"pct":28.6}];
 const MIN_N = 12;
 /* DATA-END */
 const MN = ['Januar','Februar','März','April','Mai','Juni','Juli','August',
             'September','Oktober','November','Dezember'];
 function de(x){ return String(x).replace('.', ','); }
+const ROUTE = '<b>Talalpstrasse und<br>Habergschwändstrasse</b><br>Filzbach';
 
 /* both bars share one 0–100 % scale, so the two rows are directly comparable */
 function pair(title, a, b, labelA, labelB){
@@ -99,9 +100,11 @@ function row(label, d, accent){
 
 document.getElementById('pairs').innerHTML =
   pair('Unfälle ohne zweite Partei — Schleuder- und Selbstunfälle',
-       FACTS.self, FACTS.kanton_self, '<b>Talalpstrasse</b><br>Filzbach', 'Kanton Glarus') +
+       FACTS.self, FACTS.kanton_self, ROUTE, 'Kanton Glarus') +
   pair('Unfälle, die schwer oder tödlich enden',
-       FACTS.severe, FACTS.kanton_severe, '<b>Talalpstrasse</b><br>Filzbach', 'Kanton Glarus');
+       FACTS.severe, FACTS.kanton_severe, ROUTE, 'Kanton Glarus') +
+  pair('Unfälle an einem Samstag oder Sonntag',
+       FACTS.weekend, FACTS.kanton_weekend, ROUTE, 'Kanton Glarus');
 
 /* the months are not a span: 15 sit in the summer half year, one in January */
 (function(){
@@ -109,13 +112,16 @@ document.getElementById('pairs').innerHTML =
   const n = summer.reduce((s, m) => s + m[1], 0);
   const rest = FACTS.months.filter(m => m[0] < 5 || m[0] > 10);
   const first = MN[summer[0][0]-1], last = MN[summer[summer.length-1][0]-1];
+  const t = FACTS.types.map(x => '<b>' + x[1] + '</b>× ' + x[0]).join(', ');
   document.getElementById('facts').innerHTML =
-    '<b>' + n + '</b> der <b>' + FACTS.n + '</b> Unfälle fielen in die Monate ' + first +
-    ' bis ' + last + (rest.length ? ', ' + (rest.length === 1 ? 'einer' : rest.length + ' weitere') +
+    'Die <b>' + FACTS.n + '</b> Unfälle im Einzelnen: ' + t + '. Beteiligt waren <b>' +
+    FACTS.parts['Velo'] + '</b>× ein Velo und <b>' + FACTS.parts['zu Fuss'] +
+    '</b>× eine Person zu Fuss, nie ein Motorrad; bei den übrigen <b>' +
+    FACTS.parts['nur Motorfahrzeuge'] + '</b> ist keine dieser Gruppen vermerkt. ' +
+    '<b>' + n + '</b> der Unfälle fielen in die Monate ' + first + ' bis ' + last +
+    (rest.length ? ', ' + (rest.length === 1 ? 'einer' : rest.length + ' weitere') +
       ' in den ' + MN[rest[0][0]-1] : '') +
-    ' — und alle in die Zeit zwischen ' + FACTS.hours[0] + ' und ' + FACTS.hours[1] +
-    ' Uhr. <b>' + FACTS.weekend + '</b> davon passierten an einem Samstag oder Sonntag. ' +
-    'Kein einziger Unfall mit einem Motorrad, <b>' + FACTS.velo + '</b> mit einem Velo.';
+    ' — und alle in die Zeit zwischen ' + FACTS.hours[0] + ' und ' + FACTS.hours[1] + ' Uhr.';
 })();
 
 /* the ranking is what turns one road into a finding: it leads the canton */
@@ -125,8 +131,9 @@ document.getElementById('pairs').innerHTML =
   let h = '<h3>Anteil Unfälle ohne zweite Partei — Strassen mit mindestens ' + MIN_N +
           ' Unfällen</h3>';
   RANK.forEach(function(r){
-    const lead = r.street === 'Talalpstrasse';
-    h += '<div class="rrow"><div class="rlab"><b>' + r.street + '</b>' +
+    const lead = r.street === FACTS.label;
+    /* the merged route name is too long for the phone label column */
+    h += '<div class="rrow"><div class="rlab"><b>' + r.street.replace('/', '/<br>') + '</b>' +
          (narrow ? '<br><span class="rplace">' + r.place + '</span>' : ', ' + r.place) + '</div>' +
          '<div class="rtrack"><div class="rfill' + (lead ? ' accent' : '') +
          '" style="width:' + r.pct + '%"></div></div>' +
@@ -136,12 +143,20 @@ document.getElementById('pairs').innerHTML =
 })();
 
 document.getElementById('src').innerHTML =
-  'Unfälle mit Personenschaden, Kanton Glarus 2011–2025. Die Talalpstrasse führt von ' +
-  'Filzbach zur Talstation der Sportbahnen Kerenzerberg und weiter bergwärts, ' +
-  de(FACTS.km) + ' km lang. Gemessen an der Zahl der Unfälle pro Kilometer ist sie ' +
-  'unauffällig; aussergewöhnlich ist, <i>wie</i> dort verunfallt wird. ' +
-  'Quelle: Bundesamt für Strassen ASTRA, Strassenverkehrsunfallorte; ' +
-  'Strassennamen: swisstopo; Strassenlänge: OpenStreetMap. Grafik: Südostschweiz';
+  'Unfälle mit Personenschaden, Kanton Glarus 2011–2025. Die beiden Strassen bilden die ' +
+  de(FACTS.km) + ' km lange Strecke von Filzbach zur Talstation der Sportbahnen ' +
+  'Kerenzerberg und weiter hinauf nach Habergschwänd. Gemessen an der Zahl der Unfälle ' +
+  'pro Kilometer ist sie unauffällig; aussergewöhnlich ist, <i>wie</i> dort verunfallt wird. ' +
+  '<b>Zur Einordnung:</b> Die Unfallstatistik des ASTRA kennt nur die Kategorien Velo, ' +
+  'Motorrad und Fussgänger — Trottinette werden nicht separat ausgewiesen und erscheinen ' +
+  'als Schleuder- oder Selbstunfall ohne Vermerk. Mehrere Unfälle auf dieser Strecke sind ' +
+  'von der Kantonspolizei Glarus als Trottinett-Selbstunfälle gemeldet worden, darunter ' +
+  'der einzige Unfall auf der Habergschwändstrasse (18. August 2022). Wie viele der ' +
+  FACTS.parts['nur Motorfahrzeuge'] + ' Unfälle ohne Vermerk Trottinette betreffen, ' +
+  'geht aus den Daten nicht hervor. ' +
+  'Quellen: Bundesamt für Strassen ASTRA, Strassenverkehrsunfallorte; Strassennamen: ' +
+  'swisstopo; Strassenlänge: OpenStreetMap; Polizeimeldungen: Kantonspolizei Glarus. ' +
+  'Grafik: Südostschweiz';
 
 (function(){
   let h = '<tr><th>Strasse</th><th>Ort</th><th>Unf&auml;lle</th>' +

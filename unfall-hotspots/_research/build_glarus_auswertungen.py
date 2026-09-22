@@ -326,50 +326,57 @@ def g5_gemeinden(acc):
 
 SELF = "Schleuder- oder Selbstunfall"
 
+# The Kerenzerberg scooter descent runs over two named roads; the street
+# register splits them, the route is one thing. 8.31 km according to
+# OpenStreetMap, which matches the ~7 km the operator advertises.
+ROUTE = {"Talalpstrasse", "Habergschwändstrasse"}
+ROUTE_LABEL = "Talalpstrasse/Habergschwändstrasse"
+
 
 def g6_talalpstrasse(acc, streets, orte, min_n=12):
-    """Talalpstrasse against the canton, plus the roads it leads.
+    """The Filzbach-Habergschwänd descent against the canton.
 
     Accidents per kilometre would be the intuitive danger measure, but it
-    ranks short village junctions on top and says nothing here. What is
-    genuinely extreme on this road is that almost nobody crashes into anyone:
-    14 of 16 are single-vehicle accidents (canton: 36 %).
+    ranks short village junctions on top and leaves this road mid-field. What
+    is genuinely extreme here is that almost nobody crashes into anyone else.
     """
     def share(rows, pred):
-        return {"n": len(rows), "k": sum(1 for a in rows if pred(a)),
-                "pct": round(100 * sum(1 for a in rows if pred(a)) / len(rows), 1)}
+        k = sum(1 for a in rows if pred(a))
+        return {"n": len(rows), "k": k, "pct": round(100 * k / len(rows), 1)}
 
-    tal = [a for a in acc if street_of(a, streets) == "Talalpstrasse"]
+    route = [a for a in acc if street_of(a, streets) in ROUTE]
     is_self = lambda a: a["AccidentType_de"] == SELF
     is_sev = lambda a: a["AccidentSeverityCategory"] in SEVERE
+    is_we = lambda a: a["AccidentWeekDay_de"] in ("Samstag", "Sonntag")
 
+    # ranking by single-vehicle share, with the two route roads merged
     agg = collections.defaultdict(list)
     for a in acc:
-        s = street_of(a, streets)
-        if s:
-            agg[(s, place_of(a, orte))].append(a)
-    rank = []
-    for (s, place), m in agg.items():
-        if len(m) >= min_n:
-            rank.append({"street": s, "place": place, "n": len(m),
-                         "self": sum(1 for a in m if is_self(a)),
-                         "pct": round(100 * sum(1 for a in m if is_self(a)) / len(m), 1)})
+        st_name = street_of(a, streets)
+        if not st_name:
+            continue
+        key = (ROUTE_LABEL, "Filzbach") if st_name in ROUTE else (st_name, place_of(a, orte))
+        agg[key].append(a)
+    rank = [{"street": k[0], "place": k[1], "n": len(m),
+             "self": sum(1 for a in m if is_self(a)),
+             "pct": round(100 * sum(1 for a in m if is_self(a)) / len(m), 1)}
+            for k, m in agg.items() if len(m) >= min_n]
     rank.sort(key=lambda r: (-r["pct"], -r["n"]))
 
     facts = {
-        "n": len(tal),
-        "self": share(tal, is_self), "kanton_self": share(acc, is_self),
-        "severe": share(tal, is_sev), "kanton_severe": share(acc, is_sev),
-        # one January outlier — a min/max span would read as "January to October"
-        "months": sorted(collections.Counter(a["AccidentMonth"] for a in tal).items()),
-        "hours": [min(a["AccidentHour"] for a in tal if a["AccidentHour"] is not None),
-                  max(a["AccidentHour"] for a in tal if a["AccidentHour"] is not None)],
-        "weekend": sum(1 for a in tal if a["AccidentWeekDay_de"] in ("Samstag", "Sonntag")),
-        "velo": sum(1 for a in tal if a["AccidentInvolvingBicycle"] == "true"),
-        "moto": sum(1 for a in tal if a["AccidentInvolvingMotorcycle"] == "true"),
-        "km": 6.65,  # OpenStreetMap, ways named Talalpstrasse in canton GL
+        "n": len(route),
+        "self": share(route, is_self), "kanton_self": share(acc, is_self),
+        "severe": share(route, is_sev), "kanton_severe": share(acc, is_sev),
+        "weekend": share(route, is_we), "kanton_weekend": share(acc, is_we),
+        "months": sorted(collections.Counter(a["AccidentMonth"] for a in route).items()),
+        "hours": [min(a["AccidentHour"] for a in route if a["AccidentHour"] is not None),
+                  max(a["AccidentHour"] for a in route if a["AccidentHour"] is not None)],
+        "types": collections.Counter(a["AccidentType_de"] for a in route).most_common(),
+        "parts": parties(route),
+        "km": 8.31,
+        "label": ROUTE_LABEL,
     }
-    return (js("FACTS", facts) + "\n" + js("RANK", rank[:8]) + "\n" + js("MIN_N", min_n))
+    return js("FACTS", facts) + "\n" + js("RANK", rank[:8]) + "\n" + js("MIN_N", min_n)
 
 
 # --------------------------------------------------------------------------
