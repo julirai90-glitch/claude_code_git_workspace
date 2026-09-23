@@ -5,6 +5,59 @@ Alle Embeds liegen unter `https://julirai90-glitch.github.io/claude_code_git_wor
 Container-Breite: 696 px (Konvention Datenstory-Serie).
 Höhen-Sync: jeder Embed hat das iframe-resizer/contentWindow-Script — die responsive Variante (Code A) passt sich automatisch an, die einfache (Code B) nutzt eine feste Mindesthöhe.
 
+**Achtung bei `<details>`:** Chrome liefert für Elemente in einem zugeklappten `<details>` ein veraltetes Bounding-Rect. Die Standardmethode `lowestElement` zählt diese unsichtbaren Elemente mit und meldet eine zu grosse Höhe — beim Tankrechner waren es 2342 statt 1809 px, also rund 590 px Leerraum. Embeds mit Aufklapp-Elementen setzen deshalb im Kind-Dokument vor dem Resizer-Script:
+```html
+<script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
+```
+Zusätzlich beim Auf- und Zuklappen `window.parentIFrame.size()` aufrufen, sonst wächst der Rahmen nicht mit.
+
+---
+
+## Tankstellen-Rechner Glarus
+
+Interaktiver Rechner: Ab welchem Preisunterschied lohnt es sich, für eine Tankfüllung weiter
+zu fahren? Presets für Vorarlberg, Liechtenstein und den Umweg zur günstigeren Tankstelle in
+der Region, Startorte sind acht Glarner Ortschaften.
+
+Die voreingestellten Preise sind datierte Referenzwerte und lassen sich im Rechner
+überschreiben. Zum Aktualisieren: Block `REF` in `tankrechner/tankrechner-glarus.html`
+(zwischen `DATA-START` und `DATA-END`) anpassen und `tankrechner/_research/quellen.md`
+nachführen.
+
+| # | Embed | Was es zeigt | Direkt-Link |
+|---|---|---|---|
+| T1 | `tankrechner/tankrechner-glarus.html` | Rechner mit Fazit, Break-even-Kurve und Tabelle | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html) |
+
+### T1. Tankstellen-Rechner
+
+**A — responsive (empfohlen):**
+```html
+<iframe id="tankrechner"
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html"
+  title="Tankstellen-Rechner: Lohnt sich die Fahrt zum günstigeren Sprit?"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; display:block;"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#tankrechner');</script>
+```
+
+**B — einfach:**
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html"
+  title="Tankstellen-Rechner: Lohnt sich die Fahrt zum günstigeren Sprit?"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; min-height:2400px; display:block;"></iframe>
+```
+
+Gemessene Inhaltshöhen: 1810 px ab 700 px Breite, 2280 px bei 560 px, rund 2400 px auf dem
+Handy – der Rechner wird dort einspaltig. Variante B braucht deshalb 2400 px Mindesthöhe und
+lässt am Desktop viel Leerraum. Wo immer möglich Variante A verwenden.
+
+Das Embed gibt die Messmethode selbst vor (`documentElementScroll`) und meldet die Höhe neu,
+sobald jemand «Zahlen als Tabelle» oder «So wird gerechnet» aufklappt. Der Einbettungscode
+braucht dafür nichts Besonderes.
+
 ---
 
 ## Wahlen GR 2026
