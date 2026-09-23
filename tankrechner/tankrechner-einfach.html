@@ -148,7 +148,8 @@ svg{display:block; max-width:100%; height:auto}
 
 <p class="src">CO₂: 2,32 kg je Liter Benzin, beim Verbrennen (Bundesamt für Umwelt,
 Emissionsfaktoren des Treibhausgasinventars, Januar 2026). Förderung, Raffinerie und Transport
-sind nicht eingerechnet.<br>
+sind nicht eingerechnet. Vergleichswert: 3,5 Tonnen CO₂ pro Kopf und Jahr, also 9,6 Kilogramm
+pro Tag (BAFU, Treibhausgasinventar 2024, Emissionen im Inland).<br>
 Fahrzeugkosten: eigene Berechnung auf Basis der TCS-Kilometerkosten 2026
 (Medienmitteilung vom 6. Januar 2026). Von den 27,5 Rappen variablen Kosten je Kilometer
 entfallen 8,6 Rappen auf den Treibstoff – bleiben rund 19 Rappen für Wertminderung, Reifen und
@@ -162,12 +163,22 @@ const FZK = 19;     /* Rappen pro km neben dem Sprit, hergeleitet aus TCS 2026 *
 /* CO2 beim Verbrennen von Benzin, kg je Liter. BAFU, Emissionsfaktoren des
    schweizerischen Treibhausgasinventars, Januar 2026. Diesel läge bei 2.62. */
 const CO2 = 2.32;
+/* 3,5 t CO2 pro Kopf und Jahr (BAFU, Treibhausgasinventar 2024) – 9,6 kg pro Tag */
+const PRO_KOPF_TAG = 3500 / 365;
 /* DATA-END */
 
 const fr = n => (n<0?"−":"") + Math.abs(n).toFixed(2);
 const de = (n,d=0) => n.toFixed(d).replace(".", ",");
 /* Eine Nachkommastelle nur, wenn sie etwas aussagt: 7,5 aber 7 statt 7,0 */
 const zahl = n => n >= 10 ? de(n) : de(n,1).replace(/,0$/, "");
+/* Wie lange eine Person im Schnitt braucht, um so viel CO2 zu verursachen */
+function proKopfZeit(kg){
+  const tage = kg / PRO_KOPF_TAG;
+  if (tage >= 1)  return de(tage,1).replace(/,0$/,"") + " Tagen";
+  const std = tage * 24;
+  return std >= 1 ? (Math.round(std) === 1 ? "einer Stunde" : Math.round(std) + " Stunden")
+                  : Math.round(std * 60) + " Minuten";
+}
 
 /* Startwerte: Bleifrei 95 im Landesdurchschnitt 2.10 CHF/l (Erhebung des TCS, Stand
    18. September 2026), die zweite Tankstelle 10 Rappen günstiger. */
@@ -317,7 +328,8 @@ function render(){
         : "";
     co2El.innerHTML = "Für den Umweg verbrennen Sie rund <b>"
       + zahl(liter) + " Liter</b> zusätzlich" + teil
-      + ". Dabei entstehen <b>" + zahl(co2) + " kg CO\u2082</b>.";
+      + ". Dabei entstehen <b>" + zahl(co2) + " kg CO\u2082</b> – so viel, wie eine Person in "
+      + "der Schweiz im Schnitt in " + proKopfZeit(co2) + " verursacht.";
   } else { co2El.textContent = ""; }
 
   document.getElementById("chartSub").textContent =

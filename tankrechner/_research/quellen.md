@@ -166,6 +166,21 @@ Urteil transportieren.
 Brennstoffe). Jeder angesetzte CO2-Preis wäre frei gewählt, deshalb erscheint das CO2 nicht in
 der Frankenrechnung.
 
+**Vergleichswert im Embed:** 3,5 Tonnen CO2 pro Kopf und Jahr, also **9,6 kg pro Tag**.
+Quelle: BAFU, «Klima: Das Wichtigste in Kürze» auf Basis des Treibhausgasinventars 2024
+(`https://www.bafu.admin.ch/de/zustand-klima`): «Dies entspricht einem Treibhausgasausstoss von
+4.5 t CO2-Äquivalente pro Kopf (davon CO2: 3.5 t pro Kopf).»
+
+Verwendet wird der **CO2-Wert (3,5 t)**, nicht die CO2-Äquivalente (4,5 t), weil der Rechner
+reines CO2 aus der Verbrennung ausweist. Es sind die **Inlandemissionen** nach
+Territorialprinzip; der konsumbasierte Fussabdruck liegt mit rund 15 t CO2-Äquivalenten pro
+Kopf deutlich höher (Stand 2023), enthält aber graue Emissionen importierter Güter und passt
+deshalb nicht zu einer einzelnen Autofahrt.
+
+*Einschränkung:* Der Pro-Kopf-Wert enthält alle Sektoren, also auch Heizen, Industrie und
+Landwirtschaft. Der Vergleich beantwortet die Frage «ist das viel?» mit einer Zeitspanne, setzt
+aber eine Einzelhandlung zu einem Gesamtdurchschnitt ins Verhältnis.
+
 **Grenze:** Elektroautos bildet der Rechner nicht ab, er fragt nach Litern. Im Embed vermerkt.
 
 ## Zollregeln für Treibstoff

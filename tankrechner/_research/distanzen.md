@@ -49,9 +49,9 @@ und der gewählten Route.
 
 ## Matrix: Fahrzeit einfach in Minuten
 
-Gleiche Abfrage (`annotations=duration`), gleiche Zeilen und Spalten. **Im Embed wird die
-Fahrzeit derzeit nicht angezeigt** – sie war kurzzeitig eingebaut und wurde am 23.09.2026 wieder
-entfernt. Die Zahlen bleiben hier dokumentiert, falls sie später gebraucht werden.
+Gleiche Abfrage (`annotations=duration`), gleiche Zeilen und Spalten. Im Embed steht die
+verdoppelte Zeit, auf fünf Minuten gerundet, gemeinsam mit Spritverbrauch und CO2 unterhalb der
+Frankenrechnung – und nur dann, wenn die Strecke nicht von Hand verändert wurde.
 
 | von \ nach | Bilten | Nieder­urnen | Näfels | Netstal | Glarus | Schwanden | Linthal | Elm | Balzers | Feldkirch |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -64,7 +64,7 @@ entfernt. Die Zahlen bleiben hier dokumentiert, falls sie später gebraucht werd
 | Linthal | 41 | 36 | 31 | 25 | 25 | 15 | 0 | 30 | 67 | 88 |
 | Elm | 41 | 37 | 32 | 26 | 26 | 17 | 30 | 0 | 68 | 89 |
 
-Falls die Zeit je wieder angezeigt wird: **nicht in Franken umrechnen.** Ein Stundenansatz wäre
+Die Zeit wird **nicht in Franken umgerechnet.** Ein Stundenansatz wäre
 frei gewählt und angreifbar; was jemandem seine Zeit wert ist, entscheidet er selbst. Der Anstoss
 kam aus dem Overlord-Review vom 23.09.2026 (Perspektive Methodenkritiker), der die Fahrzeit als
 fehlende Grösse benannte – dort mit 1,5 bis 2 Stunden veranschlagt, tatsächlich sind es für die
