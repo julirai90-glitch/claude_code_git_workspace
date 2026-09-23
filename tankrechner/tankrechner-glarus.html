@@ -122,6 +122,12 @@ Grenze liegt.</p>
     <p class="hint" id="zielHint"></p>
   </div>
 
+  <div class="f full" id="stationWrap" hidden>
+    <label for="station">Tankstelle in Vorarlberg</label>
+    <select id="station"></select>
+    <p class="hint" id="stationHint"></p>
+  </div>
+
   <div class="f">
     <label for="dist">Strecke einfach</label>
     <div class="row">
@@ -161,18 +167,12 @@ Grenze liegt.</p>
   </div>
 
   <div class="f">
-    <label for="pch">Preis Schweiz</label>
+    <label for="pch" id="pchLab">Preis bei Ihnen</label>
     <div class="row">
       <input type="number" id="pch" min="0" max="5" step="0.01">
       <span class="unit">CHF/l</span>
     </div>
     <p class="hint" id="pchHint"></p>
-  </div>
-
-  <div class="f full" id="stationWrap" hidden>
-    <label for="station">Tankstelle in Vorarlberg</label>
-    <select id="station"></select>
-    <p class="hint" id="stationHint"></p>
   </div>
 
   <div class="f">
@@ -732,6 +732,7 @@ function preisfeldSetzen(){
         "Voreingestellt ist der Landesdurchschnitt – tragen Sie ein, was die Tankstelle "
         + "tatsächlich verlangt.";
   }
+  document.getElementById("pchLab").textContent = "Preis in " + ORTE[S.start].n;
   document.getElementById("pchHint").textContent =
       "Landesdurchschnitt, Stand " + REF.ch.stand + " (TCS). Tragen Sie den Preis ein, den Sie "
       + "zahlen.";

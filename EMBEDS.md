@@ -55,7 +55,7 @@ Mehrweg inklusive Rückweg.
   style="width:0; min-width:100%; border:none; min-height:2550px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 1902 px ab 700 px Breite, 2432 px bei 500 px, rund 2550 px auf dem
+Gemessene Inhaltshöhen: 1797 px ab 700 px Breite, 2432 px bei 500 px, rund 2550 px auf dem
 Handy – der Rechner wird dort einspaltig. Variante B braucht deshalb 2400 px Mindesthöhe und
 lässt am Desktop viel Leerraum. Wo immer möglich Variante A verwenden.
 
