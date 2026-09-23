@@ -871,7 +871,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div><span class="legendDot" style="background:var(--orange)"></span> Schwerverletzte (Gewicht 2)</div>
       <div><span class="legendDot" style="background:var(--gelb)"></span> Leichtverletzte (Gewicht 1)</div>
       <div class="legendNote" style="margin-top:6px; font-size:11px; color:var(--muted);">Cluster-Gr&ouml;sse &amp; Farbe &#8776; Hotspot-Score</div>
-      <div id="extentNote" style="display:none; margin-top:4px; font-size:11px; color:var(--muted);">Gestrichelter Ring = der tats&auml;chliche Suchradius</div>
+      <div id="extentNote" style="display:none; margin-top:4px; font-size:11px; color:var(--muted);">Gestrichelt = der Kreis zeigt jetzt den tats&auml;chlichen Suchradius</div>
     </div>
   </div>
 
@@ -982,16 +982,31 @@ L.tileLayer('https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/defaul
 }).addTo(map);
 
 let clusterLayer = L.layerGroup().addTo(map);
-/* The metre-accurate rings live in their own layer: below zoom 14 a 50 m
-   circle is a pixel wide, so showing it there would only add noise. */
-const extentLayer = L.layerGroup();
-const EXTENT_MIN_ZOOM = 14;
-function syncExtentLayer() {
-  const on = map.getZoom() >= EXTENT_MIN_ZOOM;
-  if (on && !map.hasLayer(extentLayer)) extentLayer.addTo(map);
-  else if (!on && map.hasLayer(extentLayer)) map.removeLayer(extentLayer);
+/* How many pixels a distance in metres covers at the current zoom. Asking
+   Leaflet to project two points keeps this correct whatever the CRS is. */
+function metresToPixels(lat, lon, metres) {
+  const east = lon + metres / (111320 * Math.cos(lat * Math.PI / 180));
+  return Math.abs(map.project([lat, east]).x - map.project([lat, lon]).x);
+}
+
+/* The circle is a symbol while zoomed out and the actual search radius once
+   that radius is the bigger of the two — one circle, not two. */
+const clusterMarkers = [];
+function symbolRadius(c) { return 6 + Math.sqrt(c.n_accidents) * 3.2; }
+
+function sizeClusterMarkers() {
+  let anyTrue = false;
+  clusterMarkers.forEach(function(entry) {
+    const { marker, c } = entry;
+    const truePx = metresToPixels(c.lat, c.lon, RADIUS);
+    const isTrue = truePx >= symbolRadius(c);
+    marker.setRadius(Math.max(symbolRadius(c), truePx));
+    marker.setStyle(isTrue ? { dashArray: '4 4', fillOpacity: 0.18 }
+                           : { dashArray: null, fillOpacity: 0.45 });
+    if (isTrue) anyTrue = true;
+  });
   const note = document.getElementById('extentNote');
-  if (note) note.style.display = on ? '' : 'none';
+  if (note) note.style.display = anyTrue ? '' : 'none';
 }
 let pointLayer = L.layerGroup();
 
@@ -1111,7 +1126,7 @@ document.getElementById('radius100').addEventListener('click', () => setRadius(1
 /* the hint also lives in the HTML; set it from the same source at startup so
    the two can never drift apart */
 document.getElementById('radiusHint').textContent = RADIUS_HINT[RADIUS];
-map.on('zoomend', syncExtentLayer);
+map.on('zoomend', sizeClusterMarkers);
 
 function render() {
   const [y1, y2] = currentRange();
@@ -1127,16 +1142,10 @@ function render() {
                        : ' – die ASTRA-Schwelle von 5 Punkten gilt für 3 Jahre. Längere Zeiträume ergeben mehr, kürzere weniger Hotspots.');
 
   clusterLayer.clearLayers();
-  extentLayer.clearLayers();
+  clusterMarkers.length = 0;
   const maxScore = data.clusters.length ? Math.max(...data.clusters.map(c => c.score)) : 5;
   data.clusters.forEach(c => {
     const radius = 6 + Math.sqrt(c.n_accidents) * 3.2;
-    /* the search radius itself — the symbol above is sized by accident count
-       and carries no distance information, this is what backs the popup */
-    L.circle([c.lat, c.lon], {
-      radius: RADIUS, color: scoreColor(c.score, maxScore), weight: 1.5,
-      opacity: 0.7, dashArray: '4 4', fill: false, interactive: false
-    }).addTo(extentLayer);
     const marker = L.circleMarker([c.lat, c.lon], {
       radius: radius,
       color: scoreColor(c.score, maxScore),
@@ -1151,9 +1160,10 @@ function render() {
       `Velo: ${c.bike} &middot; Fussg&auml;nger: ${c.ped} &middot; Motorrad: ${c.moto}`
     );
     marker.addTo(clusterLayer);
+    clusterMarkers.push({ marker, c });
   });
 
-  syncExtentLayer();
+  sizeClusterMarkers();
   renderPoints([y1, y2], cat);
 }
 
