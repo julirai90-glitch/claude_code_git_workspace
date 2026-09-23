@@ -111,13 +111,13 @@ Grenze liegt.</p>
 <fieldset>
 <div class="grid">
 
-  <div class="f full">
-    <span class="lab">Wohin zum Tanken?</span>
-    <div class="seg" id="segZiel" role="group" aria-label="Ziel">
-      <button type="button" data-v="at">Vorarlberg (A)</button>
-      <button type="button" data-v="fl">Liechtenstein</button>
-      <button type="button" data-v="ch">Tankstelle in der Region</button>
-    </div>
+  <div class="f">
+    <label for="ziel">Wohin zum Tanken?</label>
+    <select id="ziel">
+      <option value="at">Vorarlberg (A)</option>
+      <option value="fl">Liechtenstein</option>
+      <option value="ch">Tankstelle in der Region</option>
+    </select>
     <p class="hint" id="zielHint"></p>
   </div>
 
@@ -137,15 +137,8 @@ Grenze liegt.</p>
     <p class="hint" id="distHint"></p>
   </div>
 
-  <div class="f full">
-    <span class="lab">Was für eine Fahrt ist das?</span>
-    <div class="seg" id="segModus" role="group" aria-label="Fahrttyp">
-      <button type="button" data-v="extra">Extrafahrt nur zum Tanken</button>
-      <button type="button" data-v="umweg">Umweg – ich bin sowieso unterwegs</button>
-    </div>
-  </div>
 
-  <div class="f full">
+  <div class="f">
     <span class="lab">Treibstoff</span>
     <div class="seg" id="segFuel" role="group" aria-label="Treibstoff">
       <button type="button" data-v="benzin">Benzin 95</button>
@@ -385,7 +378,7 @@ function noetigerVorteil(km, mitFzk){
 function render(){
   const r = calc();
   const lohnt = r.netto > 0;
-  const strecke = S.modus === "extra" ? "einfache Strecke" : "Mehrweg";
+  const strecke = S.modus === "extra" ? "einfache Strecke" : "Umweg";
 
   /* Fazit */
   const res = document.getElementById("res");
@@ -496,7 +489,7 @@ function drawChart(r){
     s += `<text class="tick" x="${X(v).toFixed(1)}" y="${t+ih+16}" text-anchor="middle">${v}</text>`;
   }
   s += `<line class="axis" x1="${l}" y1="${t+ih}" x2="${W-rr}" y2="${t+ih}"/>`;
-  s += `<text class="alab" x="${l}" y="${H-6}">${S.modus==="extra" ? "Strecke einfach" : "Mehrweg"} in Kilometern</text>`;
+  s += `<text class="alab" x="${l}" y="${H-6}">${S.modus==="extra" ? "Strecke einfach" : "Umweg"} in Kilometern</text>`;
   s += `<text class="alab" x="${l-34}" y="${t-11}">Rappen je Liter</text>`;
 
   /* Fläche oberhalb der aktiven Linie: hier lohnt es sich */
@@ -544,7 +537,7 @@ function drawTable(){
     + " l/100 km, " + (S.fzk ? de(S.satz,0) + " Rp./km Fahrzeugkosten" : "ohne Fahrzeugkosten")
     + ", " + (S.modus==="extra" ? "Hin- und Rückfahrt" : "reiner Umweg") + ".";
 
-  let h = "<tr><th>" + (S.modus==="extra" ? "Strecke einfach" : "Mehrweg") + "</th>"
+  let h = "<tr><th>" + (S.modus==="extra" ? "Strecke einfach" : "Umweg") + "</th>"
         + T_DIFF.map(d => "<th>" + d + " Rp.</th>").join("") + "</tr>";
   h += T_DIST.map(dist =>
       "<tr><td>" + dist + " km</td>" + T_DIFF.map(diff => {
@@ -694,15 +687,13 @@ function zielWechsel(){
     S.dist = ORTE[S.start][at ? "at" : "fl"];
     S.modus = "extra";
   } else {
-    S.dist = 5;
+    S.dist = 10;
     S.modus = "umweg";
     S.einmalig = 0;
     document.getElementById("einmalig").value = 0;
   }
   document.getElementById("dist").value  = S.dist;
   document.getElementById("distR").value = Math.min(S.dist, 120);
-  document.getElementById("segModus").querySelectorAll("button").forEach(x =>
-      x.setAttribute("aria-pressed", String(x.dataset.v === S.modus)));
 
   document.getElementById("zielHint").textContent = at
     ? "Gerechnet wird bis Feldkirch, der nächstgelegenen Stadt in Vorarlberg."
@@ -744,12 +735,15 @@ function preisfeldSetzen(){
       "Vignette für 10 Tage einrechnen (" + de(REF.vignette,2) + " EUR)";
 }
 
+/* Die Bedeutung der Distanz hängt am Ziel, nicht an einem eigenen Schalter:
+   Zu einer Tankstelle im Ausland fährt man hin und zurück; in der Region geht es um
+   den Umweg, den man zusätzlich zur ohnehin gefahrenen Strecke macht. */
 function modusTexte(){
   const extra = S.modus === "extra";
-  document.getElementById("distLab").textContent = extra ? "Strecke einfach" : "Mehrweg gesamt";
+  document.getElementById("distLab").textContent = extra ? "Strecke einfach" : "Umweg hin und zurück";
   document.getElementById("distHint").textContent = extra
     ? "Hin- und Rückweg werden gerechnet, also das Doppelte."
-    : "Nur die zusätzlichen Kilometer gegenüber Ihrer normalen Route.";
+    : "Alle zusätzlichen Kilometer zusammen, Rückweg inbegriffen.";
   document.getElementById("einmaligHint").textContent = S.ziel === "at"
     ? "Etwa die Vignette, wenn Sie die Autobahn benutzen."
     : "Etwa Parkgebühren.";
@@ -778,9 +772,11 @@ function fuelWechsel(){
   document.getElementById("startHint").textContent =
       "Fahrstrecke laut Routenberechnung, gerundet.";
 
-  seg("segZiel",  "ziel",  zielWechsel);
-  seg("segModus", "modus", modusTexte);
-  seg("segFuel",  "fuel",  fuelWechsel);
+  const zielSel = document.getElementById("ziel");
+  zielSel.value = S.ziel;
+  zielSel.addEventListener("change", () => { S.ziel = zielSel.value; zielWechsel(); render(); });
+
+  seg("segFuel", "fuel", fuelWechsel);
 
   num("dist",  "dist");
   num("verb",  "verb");

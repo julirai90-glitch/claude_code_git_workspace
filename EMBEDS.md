@@ -52,10 +52,10 @@ Mehrweg inklusive Rückweg.
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html"
   title="Tankstellen-Rechner: Lohnt sich die Fahrt zum günstigeren Sprit?"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:2650px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:2550px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 2034 px ab 700 px Breite, 2521 px bei 500 px, rund 2650 px auf dem
+Gemessene Inhaltshöhen: 1902 px ab 700 px Breite, 2447 px bei 500 px, rund 2550 px auf dem
 Handy – der Rechner wird dort einspaltig. Variante B braucht deshalb 2400 px Mindesthöhe und
 lässt am Desktop viel Leerraum. Wo immer möglich Variante A verwenden.
 
@@ -425,7 +425,7 @@ Wenn du **mehrere Embeds auf derselben Seite** einbindest, reicht Variante A —
 <iframe src="https://julirai90-glitch.github.io/claude_code_git_workspace/zwg_embed_bumpchart_animated.html"
   title="Wer überholt wen? Animation 2017→2026"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:2650px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:2550px; display:block;"></iframe>
 ```
 
 ---
