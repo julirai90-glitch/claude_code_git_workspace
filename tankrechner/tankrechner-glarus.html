@@ -435,8 +435,7 @@ function render(){
       + " km rechnen";
 
   document.getElementById("distHint").innerHTML = S.dist > 0
-      ? "Fahrstrecke laut Routenberechnung, einfache Strecke. Gerechnet werden <b>"
-        + de(r.km,0) + " km</b> – Hin- und Rückweg."
+      ? "Gerechnet werden <b>" + de(r.km,0) + " km</b> – Hin- und Rückweg."
       : "Keine Fahrt, keine Zusatzkilometer.";
 
   document.getElementById("chartSub").textContent =
