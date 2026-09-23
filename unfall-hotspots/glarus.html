@@ -888,7 +888,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       Hotspots wurden in Anlehnung an das ASTRA Black Spot Management (BSM) ermittelt &ndash; mit zwei bewussten
       Abweichungen: Der Zeitraum ist frei w&auml;hlbar statt auf drei Jahre festgelegt, und der Suchradius l&auml;sst
       sich zwischen 50 und 100 Metern umschalten (siehe Schritt 2). Dabei werden Orte identifiziert, an denen sich innerhalb eines definierten Zeitraums
-      besonders viele bzw. besonders schwere Unf&auml;lle im 50-Meter-Umkreis ereignen.</p>
+      besonders viele bzw. besonders schwere Unf&auml;lle im gew&auml;hlten Umkreis ereignen.</p>
       <p>Damit ein Ort als Hotspot gilt, muss der gewichtete Score aller Unf&auml;lle in seinem 50-m-Umkreis
       mindestens 5 Punkte erreichen. Get&ouml;tete und Schwerverletzte z&auml;hlen doppelt, Leichtverletzte einfach.
       Der ausgewertete Zeitraum ist frei w&auml;hlbar; das ASTRA-Verfahren ist allerdings auf drei aufeinanderfolgende
@@ -1096,6 +1096,9 @@ function setRadius(r) {
 }
 document.getElementById('radius50').addEventListener('click', () => setRadius(50));
 document.getElementById('radius100').addEventListener('click', () => setRadius(100));
+/* the hint also lives in the HTML; set it from the same source at startup so
+   the two can never drift apart */
+document.getElementById('radiusHint').textContent = RADIUS_HINT[RADIUS];
 
 function render() {
   const [y1, y2] = currentRange();
@@ -1123,7 +1126,7 @@ function render() {
     });
     marker.bindPopup(
       `<b>Hotspot-Score: ${c.score}</b><br>` +
-      `${c.n_accidents} Unf&auml;lle im 50-m-Umkreis (${y1}–${y2})<br>` +
+      `${c.n_accidents} Unf&auml;lle im ${RADIUS}-m-Umkreis (${y1}–${y2})<br>` +
       `Get&ouml;tete: ${c.fatal} &middot; Schwerverletzte: ${c.severe} &middot; Leichtverletzte: ${c.light}<br>` +
       `Velo: ${c.bike} &middot; Fussg&auml;nger: ${c.ped} &middot; Motorrad: ${c.moto}`
     );
