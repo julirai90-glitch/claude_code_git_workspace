@@ -27,7 +27,8 @@ nachführen.
 | # | Embed | Was es zeigt | Direkt-Link |
 |---|---|---|---|
 | T1 | `tankrechner/tankrechner-glarus.html` | Vollversion: Start und Ziel als Auswahl (acht Glarner Ortschaften, Balzers, Feldkirch), Distanz automatisch, Live-Tankstellenpreise aus Vorarlberg, Fazit, CO₂-Angabe, Kurve, Tabelle | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html) |
-| T2 | `tankrechner/tankrechner-einfach.html` | Kurzversion: zwei Preise, Umweg, Tankfüllung, Verbrauch – Fazit, Grenzwert und Kurve | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html) |
+| T2 | `tankrechner/tankrechner-einfach.html` | Kurzversion: zwei Preise, Umweg, Tankfüllung, Verbrauch – Fazit, Grenzwert, Folgen-Box und Kurve | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html) |
+| T3 | `tankrechner/tankrechner-graubuenden.html` | Graubünden: 23 Orte als Start und Ziel (Chur voreingestellt), Distanz automatisch, sonst wie T2 | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-graubuenden.html) |
 
 Beide stehen für sich; T2 ist nicht abhängig von T1. Unterschied in der Distanzlogik: T1 fragt
 die einfache Strecke und verdoppelt sie bei einer Extrafahrt, T2 fragt direkt den gesamten
@@ -91,6 +92,34 @@ das auch – der Einbettungscode braucht keine Sonderbehandlung.
 ```
 
 Gemessene Inhaltshöhen: 1269 px ab 700 px Breite, 1491 px bei 500 px, rund 1580 px auf dem Handy.
+
+### T3. Tankstellen-Rechner Graubünden
+
+Gleicher Aufbau wie T2, aber mit Ortsauswahl statt freier Kilometerangabe: 23 Orte von Arosa
+bis Zernez, Chur ist voreingestellt. Strecke und Fahrzeit kommen aus einer Routing-Matrix, das
+Streckenfeld bleibt editierbar. Kein Ausland, keine Wechselkurse, keine Tankstellenabfrage.
+
+**A — responsive (empfohlen):**
+```html
+<iframe id="tankrechner-gr"
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-graubuenden.html"
+  title="Lohnt sich die Fahrt zur günstigeren Tankstelle?"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; display:block;"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' }, '#tankrechner-gr');</script>
+```
+
+**B — einfach:**
+```html
+<iframe
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-graubuenden.html"
+  title="Lohnt sich die Fahrt zur günstigeren Tankstelle?"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; min-height:1800px; display:block;"></iframe>
+```
+
+Gemessene Inhaltshöhen: 1402 px ab 700 px Breite, 1720 px bei 500 px, rund 1800 px auf dem Handy.
 
 ---
 
