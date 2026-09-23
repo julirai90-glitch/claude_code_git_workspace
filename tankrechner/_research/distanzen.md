@@ -49,9 +49,9 @@ und der gewählten Route.
 
 ## Matrix: Fahrzeit einfach in Minuten
 
-Gleiche Abfrage (`annotations=duration`), gleiche Zeilen und Spalten. Im Embed wird die
-verdoppelte Zeit genannt, auf fünf Minuten gerundet, und nur dann, wenn die Strecke nicht von
-Hand verändert wurde.
+Gleiche Abfrage (`annotations=duration`), gleiche Zeilen und Spalten. **Im Embed wird die
+Fahrzeit derzeit nicht angezeigt** – sie war kurzzeitig eingebaut und wurde am 23.09.2026 wieder
+entfernt. Die Zahlen bleiben hier dokumentiert, falls sie später gebraucht werden.
 
 | von \ nach | Bilten | Nieder­urnen | Näfels | Netstal | Glarus | Schwanden | Linthal | Elm | Balzers | Feldkirch |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -64,10 +64,10 @@ Hand verändert wurde.
 | Linthal | 41 | 36 | 31 | 25 | 25 | 15 | 0 | 30 | 67 | 88 |
 | Elm | 41 | 37 | 32 | 26 | 26 | 17 | 30 | 0 | 68 | 89 |
 
-Die Zeit wird **nicht in Franken umgerechnet.** Ein Stundenansatz wäre frei gewählt und
-angreifbar; was jemandem seine Zeit wert ist, entscheidet er selbst. Der Hinweis kam aus dem
-Overlord-Review vom 23.09.2026 (Perspektive Methodenkritiker), der die Fahrzeit als fehlende
-Grösse benannte – dort mit 1,5 bis 2 Stunden veranschlagt, tatsächlich sind es für die
+Falls die Zeit je wieder angezeigt wird: **nicht in Franken umrechnen.** Ein Stundenansatz wäre
+frei gewählt und angreifbar; was jemandem seine Zeit wert ist, entscheidet er selbst. Der Anstoss
+kam aus dem Overlord-Review vom 23.09.2026 (Perspektive Methodenkritiker), der die Fahrzeit als
+fehlende Grösse benannte – dort mit 1,5 bis 2 Stunden veranschlagt, tatsächlich sind es für die
 Rundfahrt Glarus–Feldkirch rund 2 Stunden 20 Minuten.
 
 ## Tankstellen als Zielorte

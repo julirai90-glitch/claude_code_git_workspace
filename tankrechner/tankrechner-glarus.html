@@ -308,18 +308,6 @@ const ORTE = [
   {n:"Balzers",       typ:"fl"},
   {n:"Feldkirch",     typ:"at"}
 ];
-/* Fahrzeit einfach in Minuten, gleiche Abfrage, gleiche Zeilen/Spalten */
-const ZEIT = [
-  [  0,  6,  9, 15, 22, 27, 40, 41, 37, 58],
-  [  6,  0,  5, 11, 18, 23, 36, 37, 36, 57],
-  [ 10,  5,  0,  6, 13, 18, 31, 32, 36, 57],
-  [ 16, 11,  6,  0,  7, 12, 25, 26, 42, 63],
-  [ 23, 19, 14,  8,  0, 12, 25, 26, 50, 71],
-  [ 28, 23, 18, 12, 12,  0, 15, 17, 54, 75],
-  [ 41, 36, 31, 25, 25, 15,  0, 30, 67, 88],
-  [ 41, 37, 32, 26, 26, 17, 30,  0, 68, 89]
-];
-
 /* Zeile = Startort (die acht Glarner), Spalte = Ziel (alle zehn) */
 const DIST = [
   [ 0,  4,  9, 14, 17, 23, 33, 36, 47, 73],
@@ -363,18 +351,9 @@ function zahl(n){
   return n >= 10 ? de(n,0) : de(n,1).replace(/,0$/, "");
 }
 
-/* Minuten in eine lesbare Dauer: "40 Minuten", "2 Stunden 20 Minuten" */
-function dauer(min){
-  min = Math.round(min / 5) * 5;                 /* auf 5 Minuten gerundet */
-  const h = Math.floor(min / 60), m = min % 60;
-  if (h === 0) return m + " Minuten";
-  const std = h === 1 ? "1 Stunde" : h + " Stunden";
-  return m === 0 ? std : std + " " + m + " Minuten";
-}
-
 /* ---------- Zustand ---------- */
 const S = {
-  ziel:9, start:4, dist:80, zeit:71, fuel:"benzin",
+  ziel:9, start:4, dist:80, fuel:"benzin",
   verb:6.5, menge:45, pch:REF.ch.benzin, pzEur:REF.at.benzin, pzChf:REF.ch.benzin,
   kurs:REF.kurs.wert, einmalig:0, fzk:true, satz:REF.fzk
 };
@@ -474,14 +453,8 @@ function render(){
       "müsste der Liter mindestens günstiger sein, damit sich Ihre " + de(S.dist,0)
       + " km rechnen";
 
-  /* Die Fahrzeit stammt aus derselben Routing-Abfrage wie die Distanz. Sie wird nur
-     genannt, nicht in Franken umgerechnet – was jemandem seine Zeit wert ist, entscheidet
-     er selbst. Bei von Hand geänderter Strecke passt die hinterlegte Zeit nicht mehr. */
-  const zeitPasst = S.dist === DIST[S.start][S.ziel];
   document.getElementById("distHint").innerHTML = S.dist > 0
       ? "Gerechnet werden <b>" + de(r.km,0) + " km</b> – Hin- und Rückweg."
-        + (zeitPasst && S.zeit > 0 ? " Dafür sind Sie rund <b>" + dauer(2*S.zeit)
-           + "</b> unterwegs." : "")
       : "Keine Fahrt, keine Zusatzkilometer.";
 
   /* Erst die Liter, dann das CO2: Liter versteht jeder, und der Anteil an der Tankfüllung
@@ -774,7 +747,6 @@ function zielWechsel(){
   document.getElementById("stationWrap").hidden = !at;
 
   S.dist = DIST[S.start][S.ziel];
-  S.zeit = ZEIT[S.start][S.ziel];
   document.getElementById("dist").value  = S.dist;
   document.getElementById("distR").value = Math.min(S.dist, 120);
 
