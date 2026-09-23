@@ -26,7 +26,7 @@ nachführen.
 
 | # | Embed | Was es zeigt | Direkt-Link |
 |---|---|---|---|
-| T1 | `tankrechner/tankrechner-glarus.html` | Vollversion: Ziel-Presets, Wechselkurs, Fazit, Kurve, Tabelle | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html) |
+| T1 | `tankrechner/tankrechner-glarus.html` | Vollversion: Ziel-Presets, Live-Tankstellenpreise aus Vorarlberg, Wechselkurs, Fazit, Kurve, Tabelle | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html) |
 | T2 | `tankrechner/tankrechner-einfach.html` | Kurzversion: zwei Preise, Umweg, Tankfüllung, Verbrauch – Fazit, Grenzwert und Kurve | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html) |
 
 Beide stehen für sich; T2 ist nicht abhängig von T1. Unterschied in der Distanzlogik: T1 fragt
@@ -52,16 +52,21 @@ Mehrweg inklusive Rückweg.
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html"
   title="Tankstellen-Rechner: Lohnt sich die Fahrt zum günstigeren Sprit?"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:2400px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:2650px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 1810 px ab 700 px Breite, 2280 px bei 560 px, rund 2400 px auf dem
+Gemessene Inhaltshöhen: 2034 px ab 700 px Breite, 2521 px bei 500 px, rund 2650 px auf dem
 Handy – der Rechner wird dort einspaltig. Variante B braucht deshalb 2400 px Mindesthöhe und
 lässt am Desktop viel Leerraum. Wo immer möglich Variante A verwenden.
 
 Das Embed gibt die Messmethode selbst vor (`documentElementScroll`) und meldet die Höhe neu,
 sobald jemand «Zahlen als Tabelle» oder «So wird gerechnet» aufklappt. Der Einbettungscode
 braucht dafür nichts Besonderes.
+
+Beim Preset «Vorarlberg» fragt T1 die aktuellen Tankstellenpreise beim Spritpreisrechner der
+E-Control ab (`api.e-control.at`, CORS freigegeben, Abfrage direkt aus dem Browser). Fällt die
+Schnittstelle aus, rechnet das Embed mit dem hinterlegten Landesdurchschnitt weiter und sagt
+das auch – der Einbettungscode braucht keine Sonderbehandlung.
 
 ### T2. Tankstellen-Rechner, Kurzversion
 
@@ -420,7 +425,7 @@ Wenn du **mehrere Embeds auf derselben Seite** einbindest, reicht Variante A —
 <iframe src="https://julirai90-glitch.github.io/claude_code_git_workspace/zwg_embed_bumpchart_animated.html"
   title="Wer überholt wen? Animation 2017→2026"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:2400px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:2650px; display:block;"></iframe>
 ```
 
 ---

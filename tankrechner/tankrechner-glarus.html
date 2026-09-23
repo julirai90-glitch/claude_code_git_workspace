@@ -181,6 +181,12 @@ Grenze liegt.</p>
     <p class="hint" id="pchHint"></p>
   </div>
 
+  <div class="f full" id="stationWrap" hidden>
+    <label for="station">Tankstelle in Vorarlberg</label>
+    <select id="station"></select>
+    <p class="hint" id="stationHint"></p>
+  </div>
+
   <div class="f">
     <label for="pz" id="pzLab">Preis am Ziel</label>
     <div class="row">
@@ -301,6 +307,9 @@ const ORTE = [
   {n:"Linthal",      at:96, fl:70},
   {n:"Elm",          at:99, fl:73}
 ];
+
+/* Suchpunkt für die Tankstellenabfrage: Feldkirch, das Ziel des Vorarlberg-Presets */
+const AT_SUCHE = {lat:47.2523920, lon:9.5917476};
 
 /* Referenzpreise, siehe _research/quellen.md */
 const REF = {
@@ -550,8 +559,11 @@ function drawSrc(){
   const q = [];
   q.push("Voreingestellte Preise: Schweiz " + fr(REF.ch[S.fuel]) + " CHF/l (Erhebung des TCS, "
        + "Stand " + REF.ch.stand + ")");
-  q.push("Österreich " + de(REF.at[S.fuel],3) + " EUR/l (Fachverband der Energierohstoff- und "
-       + "Kraftstoffindustrie, Erhebung " + REF.at.stand + ")");
+  q.push(STATIONEN.length
+       ? "Österreich: gemeldete Tankstellenpreise im Raum Feldkirch (Spritpreisrechner der "
+         + "E-Control, heute abgerufen)"
+       : "Österreich " + de(REF.at[S.fuel],3) + " EUR/l (Fachverband der Energierohstoff- und "
+         + "Kraftstoffindustrie, Erhebung " + REF.at.stand + ")");
   q.push("Wechselkurs: Schweizerische Nationalbank, Monatsmittel " + REF.kurs.stand);
   q.push("Fahrzeugkosten hergeleitet aus der TCS-Kilometerkostenrechnung vom 6. Januar 2026");
   document.getElementById("src").innerHTML =
@@ -559,6 +571,79 @@ function drawSrc(){
     + "Zoll: Der Treibstoff im Tank ist bei der Einreise in die Schweiz abgabenfrei, dazu bis "
     + "25 Liter im Reservekanister. Für jeden weiteren Liter fallen 80 Rappen Zoll plus "
     + "8,1 Prozent Mehrwertsteuer an (Bundesamt für Zoll und Grenzsicherheit).";
+}
+
+/* ---------- Tankstellenpreise aus Österreich ----------
+   Offizieller Spritpreisrechner der E-Control. Die Schnittstelle gibt die günstigsten
+   Stationen rund um einen Punkt zurück; Preise sind in Euro. Schlägt die Abfrage fehl,
+   bleibt der Landesdurchschnitt stehen – das Embed funktioniert auch ohne. */
+let STATIONEN = [];
+let pzManuell = false;      /* Wer den Preis selbst tippt, dem schreiben wir nicht hinein */
+
+/* Die Schnittstelle liefert Namen in Grossbuchstaben. Kurze Wörter bleiben gross,
+   sonst würde aus BP ein "Bp". */
+function titelFall(t){
+  return String(t).split(/(\s+|[-\/])/).map(w => {
+    if (!/\p{L}/u.test(w)) return w;
+    if (w.length <= 4 && w === w.toUpperCase()) return w;
+    const k = w.toLowerCase();
+    if (k === "gmbh") return "GmbH";
+    if (k === "kg" || k === "ag" || k === "og") return k.toUpperCase();
+    return k.charAt(0).toUpperCase() + k.slice(1);
+  }).join("");
+}
+
+async function ladeStationen(){
+  const sel  = document.getElementById("station");
+  const hint = document.getElementById("stationHint");
+  sel.innerHTML = '<option>wird geladen …</option>';
+  hint.textContent = "";
+
+  const typ = S.fuel === "diesel" ? "DIE" : "SUP";
+  const url = "https://api.e-control.at/sprit/1.0/search/gas-stations/by-address"
+            + `?latitude=${AT_SUCHE.lat}&longitude=${AT_SUCHE.lon}&fuelType=${typ}`
+            + "&includeClosed=false";
+  try {
+    const ctrl = new AbortController();
+    const abbruch = setTimeout(() => ctrl.abort(), 7000);
+    const antwort = await fetch(url, {signal: ctrl.signal});
+    clearTimeout(abbruch);
+    if (!antwort.ok) throw new Error("HTTP " + antwort.status);
+
+    STATIONEN = (await antwort.json())
+      .filter(x => (x.prices || []).length && x.prices[0].amount > 0)
+      .map(x => ({
+        name:  titelFall(x.name),
+        ort:   titelFall(x.location && x.location.city || ""),
+        preis: x.prices[0].amount
+      }))
+      .sort((a,b) => a.preis - b.preis)
+      .slice(0, 8);
+    if (!STATIONEN.length) throw new Error("keine Preise geliefert");
+
+    sel.innerHTML = STATIONEN.map((x,i) =>
+        `<option value="${i}">${x.name}, ${x.ort} – ${de(x.preis,3)} €</option>`).join("")
+      + `<option value="-1">Landesdurchschnitt – ${de(REF.at[S.fuel],3)} €</option>`;
+    sel.value = "0";
+    hint.textContent = "Gemeldete Preise im Raum Feldkirch, abgerufen "
+        + new Date().toLocaleString("de-CH", {dateStyle:"short", timeStyle:"short"})
+        + " beim Spritpreisrechner der E-Control.";
+    if (!pzManuell) stationWaehlen(0);
+  } catch (e) {
+    STATIONEN = [];
+    sel.innerHTML = `<option value="-1">Landesdurchschnitt – ${de(REF.at[S.fuel],3)} €</option>`;
+    hint.textContent = "Die Tankstellenpreise liessen sich gerade nicht abrufen – der Rechner "
+        + "verwendet den Landesdurchschnitt. Sie können den Preis auch selbst eintragen.";
+  }
+}
+
+function stationWaehlen(i){
+  const preis = i >= 0 && STATIONEN[i] ? STATIONEN[i].preis : REF.at[S.fuel];
+  S.pzEur = preis;
+  document.getElementById("pz").value = preis;
+  document.getElementById("pzHint").textContent =
+      "Entspricht " + fr(preis * S.kurs) + " CHF/l beim eingestellten Wechselkurs.";
+  render();
 }
 
 /* ---------- Bedienung ---------- */
@@ -603,6 +688,7 @@ function zielWechsel(){
   document.getElementById("startWrap").hidden = ch;
   document.getElementById("kursWrap").hidden  = !at;
   document.getElementById("vignetteBtn").hidden = !at;
+  document.getElementById("stationWrap").hidden = !at;
 
   if (!ch){
     S.dist = ORTE[S.start][at ? "at" : "fl"];
@@ -625,6 +711,7 @@ function zielWechsel(){
 
   preisfeldSetzen();
   modusTexte();
+  if (at) ladeStationen();
 }
 
 function preisfeldSetzen(){
@@ -673,6 +760,7 @@ function fuelWechsel(){
   S.pch = REF.ch[S.fuel];
   document.getElementById("pch").value = S.pch.toFixed(2);
   preisfeldSetzen();
+  if (S.ziel === "at") ladeStationen();
 }
 
 /* ---------- Start ---------- */
@@ -707,8 +795,15 @@ function fuelWechsel(){
     if (!isNaN(v) && v >= 0){ S.pch = v; render(); }
   });
 
+  const stationSel = document.getElementById("station");
+  stationSel.addEventListener("change", () => {
+    pzManuell = false;
+    stationWaehlen(parseInt(stationSel.value, 10));
+  });
+
   const pz = document.getElementById("pz");
   pz.addEventListener("input", () => {
+    pzManuell = true;
     const v = parseFloat(pz.value);
     if (isNaN(v) || v < 0) return;
     if (S.ziel === "at"){

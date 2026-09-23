@@ -40,6 +40,39 @@ Infogram-Widget, das nicht mehr erreichbar ist.
 `https://www.wko.at/industrie/energierohstoff-kraftstoff/kraftstoffpreise`
 Pumpenpreise inklusive Mineralölsteuer und Umsatzsteuer, österreichweiter Durchschnitt.
 
+## Tankstellenpreise Österreich (Live-Abfrage)
+
+Die Vollversion fragt beim Preset «Vorarlberg» die tatsächlich gemeldeten Preise der
+Tankstellen im Raum Feldkirch ab – beim offiziellen Spritpreisrechner der E-Control
+(Energie-Control Austria, Regulierungsbehörde).
+
+```
+GET https://api.e-control.at/sprit/1.0/search/gas-stations/by-address
+      ?latitude=47.2523920&longitude=9.5917476&fuelType=SUP|DIE&includeClosed=false
+```
+
+- Suchpunkt ist Feldkirch, das Ziel des Presets; die Antwort enthält Name, Adresse,
+  Koordinaten, Öffnungszeiten und den gemeldeten Preis je Tankstelle.
+- `fuelType`: `SUP` = Eurosuper 95, `DIE` = Diesel.
+- Die Schnittstelle gibt die günstigsten Stationen rund um den Suchpunkt zurück. Der Rechner
+  zeigt die acht günstigsten zur Auswahl und übernimmt die günstigste als Voreinstellung.
+- Die Preise stammen aus den gesetzlich vorgeschriebenen Meldungen der Tankstellenbetreiber.
+  In Österreich dürfen Preise nur einmal täglich um 12 Uhr erhöht werden, Senkungen sind
+  jederzeit möglich – der Abrufzeitpunkt steht deshalb im Embed.
+
+**Abfrage direkt aus dem Browser.** Die Schnittstelle gibt CORS frei (sie spiegelt die
+anfragende Origin), eine Zwischenspeicherung auf eigenen Servern ist deshalb nicht nötig.
+Geprüft am 23.09.2026: Abfrage ab `https://julirai90-glitch.github.io` erlaubt.
+
+**Fallback.** Schlägt die Abfrage fehl oder dauert sie länger als 7 Sekunden, bleibt der
+österreichische Landesdurchschnitt (siehe oben) stehen, und das Embed weist darauf hin. Der
+Rechner funktioniert also auch ohne die Schnittstelle. Getestet am 23.09.2026, indem die
+Domain im Testbrowser auf localhost umgeleitet wurde.
+
+**Beispielwerte vom 23.09.2026** (zur Nachvollziehbarkeit): Eurosuper 95 ab EUR 1,929
+(JET Tankstelle und DISK Gutmann, beide Feldkirch), Diesel ab EUR 2,209 an denselben
+Stationen. Der Landesdurchschnitt lag mit EUR 1,925 praktisch gleichauf.
+
 ## Liechtenstein
 
 Keine offizielle Preisstatistik gefunden. Der Startwert entspricht deshalb dem Schweizer Wert –
