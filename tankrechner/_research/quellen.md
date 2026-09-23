@@ -138,6 +138,36 @@ Gegenprobe über die Energiequote: 0,115 × 11'112 = CHF 1'278/Jahr ÷ 15'016 km
 Die 74 Rp./km werden bewusst **nicht** verwendet: Sie enthalten Fixkosten (Abschreibung nach
 Zeit, Versicherung, Steuer, Garage), die auch ohne die Tankfahrt anfallen.
 
+## CO2-Emissionsfaktoren
+
+| Wert | Quelle | Stand |
+|---|---|---|
+| Benzin: 2,32 kg CO2 je Liter | BAFU, Faktenblatt «CO2-Emissionsfaktoren des schweizerischen Treibhausgasinventars» | Januar 2026 |
+| Diesel: 2,62 kg CO2 je Liter | dieselbe Quelle | Januar 2026 |
+
+`https://www.bafu.admin.ch/dam/en/sd-web/NlGIhzJ8OW0t/Faktenblatt_CO2-Emissionsfaktoren_01-2026_DE.pdf`
+(Die direkt verlinkten PDF-Adressen der Suchmaschinen liefern alle HTTP 502; die funktionierende
+Adresse steht im HTML der Seite «CO2-Statistik» des BAFU.)
+
+Herleitung im Faktenblatt, von uns nachgerechnet:
+Benzin 0,0426 GJ/kg × 73,8 kg CO2/GJ = 3,14 kg CO2/kg, × 0,737 kg/l Dichte = **2,32 kg/l** ✓
+
+**Systemgrenze: nur die Verbrennung** (tank-to-wheel). Was bei Förderung, Raffinerie und
+Transport anfällt, ist nicht enthalten; mit diesen Vorketten läge der Wert rund ein Fünftel
+höher. Die Wahl ist im Embed offengelegt.
+
+**Bezugsgrösse:** Gerechnet werden nur die Zusatzkilometer – der getankte Treibstoff wird
+ohnehin verbrannt, gleichgültig wo er gekauft wird. Eingeordnet wird das Ergebnis an den
+Emissionen der Tankfüllung selbst, also an einer Grösse aus dem Tool; bewusst kein externer
+Vergleich («so viel wie ein Flug nach …»), weil solche Vergleiche Bezugsgrössen mischen und ein
+Urteil transportieren.
+
+**Keine Monetarisierung:** Auf Treibstoffe erhebt die Schweiz keine CO2-Abgabe (anders als auf
+Brennstoffe). Jeder angesetzte CO2-Preis wäre frei gewählt, deshalb erscheint das CO2 nicht in
+der Frankenrechnung.
+
+**Grenze:** Elektroautos bildet der Rechner nicht ab, er fragt nach Litern. Im Embed vermerkt.
+
 ## Zollregeln für Treibstoff
 
 Bundesamt für Zoll und Grenzsicherheit (BAZG), «Treibstoff und Fahrzeugreparaturen»,

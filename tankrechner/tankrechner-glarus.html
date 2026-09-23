@@ -66,6 +66,8 @@ input[type=range]{flex:1 1 130px; min-width:130px; accent-color:var(--s1)}
 .split td:last-child{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
 .split tr:last-child td{border-bottom:0; font-weight:700; padding-top:6px}
 .split .neg{color:var(--schlecht)}
+.co2{margin:12px 0 0; font-size:14px; color:var(--ink-2); line-height:1.5}
+.co2 b{color:var(--ink); font-variant-numeric:tabular-nums}
 .be{display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; margin:16px 0 0}
 .be .k{border-top:2px solid var(--rule); padding-top:8px}
 .be .kv{font-size:22px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.15}
@@ -224,6 +226,8 @@ Grenze liegt.</p>
   <table class="split" id="split"></table>
 </div>
 
+<p class="co2" id="co2"></p>
+
 <div class="be">
   <div class="k">
     <div class="kv" id="be1"></div>
@@ -272,8 +276,15 @@ Grenze liegt.</p>
   TCS, für Österreich aus der wöchentlichen Erhebung des dortigen Fachverbands. An einzelnen
   Tankstellen liegen die Preise deutlich darüber oder darunter; für Ihre eigene Rechnung tragen
   Sie am besten ein, was Sie tatsächlich vor sich sehen.</p>
+  <p><b>Das CO₂</b> ist jenes, das beim Verbrennen des zusätzlich verfahrenen Treibstoffs
+  entsteht – 2,32 Kilogramm je Liter Benzin, 2,62 je Liter Diesel (Bundesamt für Umwelt,
+  Emissionsfaktoren des Treibhausgasinventars, Januar 2026). Was bei Förderung, Raffinerie und
+  Transport anfällt, ist nicht eingerechnet; damit läge der Wert rund ein Fünftel höher.
+  Gerechnet wird nur die zusätzliche Fahrt: Der getankte Treibstoff wird ohnehin verbrannt,
+  gleichgültig wo man ihn kauft.</p>
   <p><b>Nicht berücksichtigt:</b> Ihre Zeit, Parkgebühren und der Umstand, dass viele die Fahrt
-  ohnehin mit einem Einkauf verbinden.</p>
+  ohnehin mit einem Einkauf verbinden. Elektroautos bildet der Rechner nicht ab – er fragt
+  nach Litern, nicht nach Kilowattstunden.</p>
 </details>
 
 <p class="src" id="src"></p>
@@ -311,6 +322,11 @@ const DIST = [
 
 /* Suchpunkt für die Tankstellenabfrage: Feldkirch, das Ziel des Vorarlberg-Presets */
 const AT_SUCHE = {lat:47.2523920, lon:9.5917476};
+
+/* CO2 beim Verbrennen, kg je Liter. BAFU, Faktenblatt «CO2-Emissionsfaktoren des
+   schweizerischen Treibhausgasinventars», Stand Januar 2026. Nur die Verbrennung,
+   ohne Förderung, Raffinerie und Transport. */
+const CO2 = {benzin:2.32, diesel:2.62};
 
 /* Referenzpreise, siehe _research/quellen.md */
 const REF = {
@@ -435,6 +451,24 @@ function render(){
   document.getElementById("distHint").innerHTML = S.dist > 0
       ? "Gerechnet werden <b>" + de(r.km,0) + " km</b> – Hin- und Rückweg."
       : "Keine Fahrt, keine Zusatzkilometer.";
+
+  /* CO2 der Zusatzkilometer, eingeordnet an der Tankfüllung selbst – eine Bezugsgrösse
+     aus dem Tool, kein externer Vergleich. */
+  const co2El = document.getElementById("co2");
+  if (r.km > 0 && S.menge > 0){
+    const faktor    = CO2[S.fuel];
+    const co2Fahrt  = r.km * (S.verb/100) * faktor;
+    const co2Tank   = S.menge * faktor;
+    const anteil    = co2Fahrt / co2Tank * 100;
+    co2El.innerHTML = "Für die " + de(r.km,0) + " Zusatzkilometer entstehen <b>"
+      + (co2Fahrt < 10 ? de(co2Fahrt,1) : de(co2Fahrt,0)) + " kg CO\u2082</b>. Das "
+      + (anteil < 1 || Math.round(anteil) === 1 ? "ist " : "sind ")
+      + (anteil < 1 ? "weniger als ein Prozent" : de(anteil,0) + " Prozent")
+      + " dessen, was beim Verbrennen der Tankfüllung selbst anfällt ("
+      + de(co2Tank,0) + " kg).";
+  } else {
+    co2El.textContent = "";
+  }
 
   document.getElementById("chartSub").textContent =
       "Bei " + de(S.menge,0) + " Litern Tankmenge, " + de(S.verb,1)
@@ -573,6 +607,8 @@ function drawSrc(){
          + "Kraftstoffindustrie, Erhebung " + REF.at.stand + ")");
   q.push("Wechselkurs: Schweizerische Nationalbank, Monatsmittel " + REF.kurs.stand);
   q.push("Fahrzeugkosten hergeleitet aus der TCS-Kilometerkostenrechnung vom 6. Januar 2026");
+  q.push("CO\u2082: " + de(CO2[S.fuel],2) + " kg je Liter " + (S.fuel==="diesel"?"Diesel":"Benzin")
+       + " (BAFU, Emissionsfaktoren des Treibhausgasinventars, Januar 2026)");
   document.getElementById("src").innerHTML =
       "Quellen: " + q.join(" · ") + ".<br>"
     + "Zoll: Der Treibstoff im Tank ist bei der Einreise in die Schweiz abgabenfrei, dazu bis "

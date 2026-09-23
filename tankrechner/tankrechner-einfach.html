@@ -60,6 +60,8 @@ svg{display:block; max-width:100%; height:auto}
 .legend{display:flex; gap:16px; flex-wrap:wrap; margin:8px 0 0}
 .lg{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2)}
 .lg i{width:18px; height:3px; flex:none; border-radius:2px}
+.co2{margin:10px 0 0; font-size:14px; color:var(--ink-2); line-height:1.5}
+.co2 b{color:var(--ink); font-variant-numeric:tabular-nums}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
      padding-top:10px; margin:16px 0 0; line-height:1.5}
 @media (max-width:560px){ .grid{grid-template-columns:1fr} }
@@ -133,6 +135,7 @@ svg{display:block; max-width:100%; height:auto}
 </div>
 
 <p class="grenze" id="grenze"></p>
+<p class="co2" id="co2"></p>
 
 <h2>Wie viel günstiger muss der Sprit sein, damit sich der Umweg lohnt?</h2>
 <p class="chart-sub" id="chartSub"></p>
@@ -143,7 +146,10 @@ svg{display:block; max-width:100%; height:auto}
   <span class="lg" style="color:var(--ink-3)">Punkt: Ihre Einstellung</span>
 </div>
 
-<p class="src">Fahrzeugkosten: eigene Berechnung auf Basis der TCS-Kilometerkosten 2026
+<p class="src">CO₂: 2,32 kg je Liter Benzin, beim Verbrennen (Bundesamt für Umwelt,
+Emissionsfaktoren des Treibhausgasinventars, Januar 2026). Förderung, Raffinerie und Transport
+sind nicht eingerechnet.<br>
+Fahrzeugkosten: eigene Berechnung auf Basis der TCS-Kilometerkosten 2026
 (Medienmitteilung vom 6. Januar 2026). Von den 27,5 Rappen variablen Kosten je Kilometer
 entfallen 8,6 Rappen auf den Treibstoff – bleiben rund 19 Rappen für Wertminderung, Reifen und
 Reparaturen. Die oft genannten 74 Rappen enthalten auch Fixkosten, die ohnehin anfallen.</p>
@@ -152,7 +158,10 @@ Reparaturen. Die oft genannten 74 Rappen enthalten auch Fixkosten, die ohnehin a
 
 <script>
 /* DATA-START */
-const FZK = 19;   /* Rappen pro km neben dem Sprit, hergeleitet aus TCS 2026 */
+const FZK = 19;     /* Rappen pro km neben dem Sprit, hergeleitet aus TCS 2026 */
+/* CO2 beim Verbrennen von Benzin, kg je Liter. BAFU, Emissionsfaktoren des
+   schweizerischen Treibhausgasinventars, Januar 2026. Diesel läge bei 2.62. */
+const CO2 = 2.32;
 /* DATA-END */
 
 const fr = n => (n<0?"−":"") + Math.abs(n).toFixed(2);
@@ -296,6 +305,19 @@ function render(){
      : (r.diff < 0
         ? "Tankstelle B ist teurer – jeder Umweg dorthin kostet Sie Geld."
         : "Beide Tankstellen sind gleich teuer – zu holen gibt es nichts.");
+
+  const co2El = document.getElementById("co2");
+  if (S.dist > 0 && S.menge > 0){
+    const co2Fahrt = S.dist * (S.verb/100) * CO2;
+    const co2Tank  = S.menge * CO2;
+    const anteil   = co2Fahrt / co2Tank * 100;
+    co2El.innerHTML = "Der Umweg verursacht <b>"
+      + (co2Fahrt < 10 ? co2Fahrt.toFixed(1).replace(".", ",") : de(co2Fahrt))
+      + " kg CO\u2082</b> – "
+      + (anteil < 1 ? "weniger als ein Prozent" : de(anteil) + " Prozent")
+      + " dessen, was beim Verbrennen der Tankfüllung selbst anfällt (" + de(co2Tank) + " kg, "
+      + "gerechnet mit Benzin).";
+  } else { co2El.textContent = ""; }
 
   document.getElementById("chartSub").textContent =
       "Bei " + de(S.menge) + " Litern Tankfüllung und " + S.verb.toFixed(1).replace(".", ",")
