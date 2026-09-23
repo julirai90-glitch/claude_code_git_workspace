@@ -120,7 +120,6 @@ Grenze liegt.</p>
   <div class="f">
     <label for="ziel">Wo wollen Sie tanken?</label>
     <select id="ziel"></select>
-    <p class="hint" id="zielHint"></p>
   </div>
 
   <div class="f full" id="stationWrap" hidden>
@@ -703,14 +702,6 @@ function zielWechsel(){
   document.getElementById("dist").value  = S.dist;
   document.getElementById("distR").value = Math.min(S.dist, 120);
 
-  document.getElementById("zielHint").textContent = at
-    ? "In Feldkirch steht die nächste Tankstelle in Vorarlberg."
-    : (fl ? "Liechtenstein gehört zum Schweizer Zollgebiet – die Mineralölsteuer ist dieselbe. "
-          + "Kurz vor der Grenze, in Trübbach, stehen schon Schweizer Tankstellen."
-          : (S.ziel === S.start
-             ? "Ihr eigener Ort: keine Zusatzkilometer, der Preisunterschied bleibt Ihnen ganz."
-             : "Tanken in einer anderen Glarner Ortschaft."));
-
   preisfeldSetzen();
   if (at) ladeStationen();
 }
@@ -732,8 +723,10 @@ function preisfeldSetzen(){
        offizielle Preisquelle – Startwert ist deshalb der Landesdurchschnitt. */
     S.pzChf = REF.ch[S.fuel];
     pz.step = "0.01"; pz.value = S.pzChf.toFixed(2);
-    document.getElementById("pzHint").textContent =
-        "Voreingestellt ist der Landesdurchschnitt – tragen Sie ein, was die Tankstelle "
+    document.getElementById("pzHint").textContent = zielTyp() === "fl"
+      ? "Liechtenstein hat dieselbe Mineralölsteuer wie die Schweiz – ein systematischer "
+        + "Preisvorteil ist nicht zu erwarten. Voreingestellt ist der Landesdurchschnitt."
+      : "Voreingestellt ist der Landesdurchschnitt – tragen Sie ein, was die Tankstelle "
         + "tatsächlich verlangt.";
   }
   document.getElementById("pchLab").textContent = "Preis in " + ORTE[S.start].n;
