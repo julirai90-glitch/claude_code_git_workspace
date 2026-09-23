@@ -73,7 +73,7 @@ summary{cursor:pointer; color:var(--s1)}
 <script>
 /* DATA-START */
 const FACTS = {"n":17,"self":{"n":17,"k":15,"pct":88.2},"kanton_self":{"n":1366,"k":495,"pct":36.2},"severe":{"n":17,"k":8,"pct":47.1},"kanton_severe":{"n":1366,"k":319,"pct":23.4},"weekend":{"n":17,"k":8,"pct":47.1},"kanton_weekend":{"n":1366,"k":405,"pct":29.6},"months":[[1,1],[6,3],[7,6],[8,4],[9,1],[10,2]],"hours":[11,18],"types":[["Schleuder- oder Selbstunfall",15],["Fussgängerunfall",1],["Einbiegeunfall",1]],"parts":{"Motorrad":0,"Velo":3,"zu Fuss":1,"nur Motorfahrzeuge":13},"km":8.31,"label":"Talalpstrasse/Habergschwändstrasse"};
-const RANK = [{"street":"Talalpstrasse/Habergschwändstrasse","place":"Filzbach","n":17,"self":15,"pct":88.2},{"street":"Klausenstrasse","place":"Linthal","n":47,"self":34,"pct":72.3},{"street":"Mühle","place":"Näfels","n":17,"self":9,"pct":52.9},{"street":"Nationalstrasse","place":"Glarus Nord","n":14,"self":7,"pct":50.0},{"street":"Klöntalerstrasse","place":"Klöntal","n":12,"self":6,"pct":50.0}];
+const RANK = [{"street":"Talalpstrasse/Habergschwändstrasse","place":"Filzbach","n":17,"self":15,"pct":88.2},{"street":"Klausenstrasse","place":"Linthal","n":47,"self":34,"pct":72.3},{"street":"Mühle","place":"Näfels","n":17,"self":9,"pct":52.9}];
 const RANK_FULL = [{"street":"Talalpstrasse/Habergschwändstrasse","place":"Filzbach","n":17,"self":15,"pct":88.2},{"street":"Klausenstrasse","place":"Linthal","n":47,"self":34,"pct":72.3},{"street":"Mühle","place":"Näfels","n":17,"self":9,"pct":52.9},{"street":"Nationalstrasse","place":"Glarus Nord","n":14,"self":7,"pct":50.0},{"street":"Klöntalerstrasse","place":"Klöntal","n":12,"self":6,"pct":50.0},{"street":"Nationalstrasse","place":"Filzbach","n":14,"self":6,"pct":42.9},{"street":"Nationalstrasse","place":"Bilten","n":48,"self":18,"pct":37.5},{"street":"Ygrubenstrasse","place":"Glarus","n":14,"self":4,"pct":28.6},{"street":"Hauptstrasse","place":"Schwanden GL","n":15,"self":4,"pct":26.7},{"street":"Landstrasse","place":"Netstal","n":48,"self":12,"pct":25.0},{"street":"Kirchweg","place":"Glarus","n":24,"self":6,"pct":25.0},{"street":"Flechsenstrasse","place":"Mollis","n":13,"self":3,"pct":23.1},{"street":"Molliserstrasse","place":"Netstal","n":27,"self":6,"pct":22.2},{"street":"Hauptstrasse","place":"Mitlödi","n":20,"self":4,"pct":20.0},{"street":"Molliserstrasse","place":"Näfels","n":12,"self":2,"pct":16.7},{"street":"Altweg","place":"Näfels","n":14,"self":2,"pct":14.3},{"street":"Schäniserstrasse","place":"Bilten","n":22,"self":3,"pct":13.6},{"street":"Oberurnerstrasse","place":"Näfels","n":19,"self":2,"pct":10.5},{"street":"Landstrasse","place":"Glarus","n":54,"self":5,"pct":9.3},{"street":"Oberdorf","place":"Näfels","n":13,"self":1,"pct":7.7},{"street":"Kirchstrasse","place":"Glarus","n":13,"self":0,"pct":0.0},{"street":"Gerichtshausstrasse","place":"Glarus","n":12,"self":0,"pct":0.0},{"street":"Unterdorf","place":"Näfels","n":12,"self":0,"pct":0.0}];
 const MIN_N = 12;
 /* DATA-END */
@@ -135,7 +135,7 @@ document.getElementById('pairs').innerHTML =
   const narrow = document.body.clientWidth < 520;
   document.getElementById('rank').style.setProperty('--rlabw', narrow ? '116px' : '190px');
   let h = '<h3>Anteil Unfälle ohne zweite Partei — Strassen mit mindestens ' + MIN_N +
-          ' Unfällen — die fünf höchsten</h3>';
+          ' Unfällen — die drei höchsten</h3>';
   RANK.forEach(function(r){
     const lead = r.street === FACTS.label;
     /* the merged route name is too long for the phone label column */

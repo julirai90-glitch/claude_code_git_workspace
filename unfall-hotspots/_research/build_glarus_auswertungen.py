@@ -380,7 +380,7 @@ def g6_talalpstrasse(acc, streets, orte, min_n=12):
     }
     # five rows carry the finding; the rest lives in the table view, which
     # keeps the embed from running to 2000 px in a narrow column
-    return (js("FACTS", facts) + "\n" + js("RANK", rank[:5]) + "\n"
+    return (js("FACTS", facts) + "\n" + js("RANK", rank[:3]) + "\n"
             + js("RANK_FULL", rank) + "\n" + js("MIN_N", min_n))
 
 
