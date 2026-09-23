@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lohnt sich der Umweg zur günstigeren Tankstelle?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4; --s2:#ee7733;
+  --gut:#009988; --schlecht:#b5001e;
+  --gut-bg:#e6f4f2; --schlecht-bg:#fbeaec;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px; max-width:696px; margin:0 auto}
+.intro{margin:0 0 14px; font-size:15px; color:var(--ink-2)}
+fieldset{border:0; margin:0; padding:0}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:12px 18px}
+.full{grid-column:1 / -1}
+.f > label{display:block; font-size:13px; font-weight:600; color:var(--ink-2); margin-bottom:4px}
+.hint{font-size:12px; color:var(--ink-3); margin-top:3px; line-height:1.35}
+.row{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+input[type=number]{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--rule);
+  border-radius:3px; padding:6px 7px; background:#fff; width:92px; flex:none;
+  font-variant-numeric:tabular-nums}
+input[type=range]{flex:1 1 130px; min-width:130px; accent-color:var(--s1)}
+.unit{font-size:13px; color:var(--ink-3); flex:none}
+.check{display:flex; align-items:flex-start; gap:8px; font-size:14px; color:var(--ink);
+  margin-top:2px}
+.check input{margin-top:4px; accent-color:var(--s1); flex:none}
+.res{margin:18px 0 0; border-radius:4px; padding:14px 16px}
+.res.gut{background:var(--gut-bg); border-left:4px solid var(--gut)}
+.res.schlecht{background:var(--schlecht-bg); border-left:4px solid var(--schlecht)}
+.res .head{font-size:19px; font-weight:700; line-height:1.3; margin:0}
+.res.gut .head{color:#00695f}
+.res.schlecht .head{color:var(--schlecht)}
+.split{margin:11px 0 0; width:100%; border-collapse:collapse; font-size:14px}
+.split td{padding:3px 0; border-bottom:1px solid rgba(20,32,42,.09)}
+.split td:last-child{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+.split tr:last-child td{border-bottom:0; font-weight:700; padding-top:6px}
+.split .neg{color:var(--schlecht)}
+.grenze{margin:14px 0 0; padding-top:10px; border-top:2px solid var(--rule); font-size:15px;
+  color:var(--ink-2)}
+.grenze b{color:var(--ink); font-size:17px; font-variant-numeric:tabular-nums}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:16px 0 0; line-height:1.5}
+@media (max-width:560px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body data-palette="#ee7733,#0068a4">
+<div class="wrap">
+
+<p class="intro">Eine Tankstelle weiter weg ist günstiger – lohnt sich die Fahrt?</p>
+
+<fieldset>
+<div class="grid">
+
+  <div class="f">
+    <label for="pa">Preis Tankstelle A</label>
+    <div class="row">
+      <input type="number" id="pa" min="0" max="5" step="0.01" value="1.72">
+      <span class="unit">CHF/l</span>
+    </div>
+    <p class="hint">Wo Sie sonst tanken.</p>
+  </div>
+
+  <div class="f">
+    <label for="pb">Preis Tankstelle B</label>
+    <div class="row">
+      <input type="number" id="pb" min="0" max="5" step="0.01" value="1.62">
+      <span class="unit">CHF/l</span>
+    </div>
+    <p class="hint">Die günstigere, weiter entfernte.</p>
+  </div>
+
+  <div class="f">
+    <label for="dist">Umweg nach B</label>
+    <div class="row">
+      <input type="number" id="dist" min="0" max="300" step="1" value="10">
+      <span class="unit">km</span>
+      <input type="range" id="distR" min="0" max="60" step="1" aria-label="Umweg">
+    </div>
+    <p class="hint">Alle zusätzlichen Kilometer zusammen, Rückweg inbegriffen.</p>
+  </div>
+
+  <div class="f">
+    <label for="menge">Tankfüllung</label>
+    <div class="row">
+      <input type="number" id="menge" min="5" max="120" step="1" value="45">
+      <span class="unit">Liter</span>
+      <input type="range" id="mengeR" min="10" max="90" step="1" aria-label="Tankfüllung">
+    </div>
+  </div>
+
+  <div class="f">
+    <label for="verb">Verbrauch</label>
+    <div class="row">
+      <input type="number" id="verb" min="2" max="20" step="0.1" value="6.5">
+      <span class="unit">l/100 km</span>
+      <input type="range" id="verbR" min="3" max="15" step="0.1" aria-label="Verbrauch">
+    </div>
+  </div>
+
+  <div class="f full">
+    <label class="check">
+      <input type="checkbox" id="fzk" checked>
+      <span>Fahrzeugkosten mitrechnen – jeder Kilometer kostet neben dem Sprit rund
+      19 Rappen an Wertminderung, Reifen und Reparaturen.</span>
+    </label>
+  </div>
+
+</div>
+</fieldset>
+
+<div class="res" id="res" role="status" aria-live="polite">
+  <p class="head" id="resHead"></p>
+  <table class="split" id="split"></table>
+</div>
+
+<p class="grenze" id="grenze"></p>
+
+<p class="src">Fahrzeugkosten: eigene Berechnung auf Basis der TCS-Kilometerkosten 2026
+(Medienmitteilung vom 6. Januar 2026). Von den 27,5 Rappen variablen Kosten je Kilometer
+entfallen 8,6 Rappen auf den Treibstoff – bleiben rund 19 Rappen für Wertminderung, Reifen und
+Reparaturen. Die oft genannten 74 Rappen enthalten auch Fixkosten, die ohnehin anfallen.</p>
+
+</div>
+
+<script>
+/* DATA-START */
+const FZK = 19;   /* Rappen pro km neben dem Sprit, hergeleitet aus TCS 2026 */
+/* DATA-END */
+
+const fr = n => (n<0?"−":"") + Math.abs(n).toFixed(2);
+const de = (n,d=0) => n.toFixed(d).replace(".", ",");
+
+const S = { pa:1.72, pb:1.62, dist:10, menge:45, verb:6.5, fzk:true };
+
+/* Der Rechenkern. km ist der gesamte Mehrweg, Rückweg also bereits enthalten.
+   Der Sprit für den Umweg wird zum Mittel aus beiden Preisen gerechnet: hin noch
+   mit dem teureren, zurück bereits mit dem günstigeren. */
+function calc(o){
+  o = o || {};
+  const km = o.dist !== undefined ? o.dist : S.dist;
+  const c  = S.fzk ? FZK/100 : 0;
+  const diff = S.pa - S.pb;
+  const pM   = (S.pa + S.pb) / 2;
+
+  const ersparnis = S.menge * diff;
+  const sprit     = km * (S.verb/100) * pM;
+  const fahrzeug  = km * c;
+  const netto     = ersparnis - sprit - fahrzeug;
+  const proKm     = (S.verb/100) * pM + c;
+  const dStar     = proKm > 0 ? ersparnis / proKm : Infinity;
+
+  return {diff, ersparnis, sprit, fahrzeug, netto, dStar};
+}
+
+function render(){
+  const r = calc();
+  const lohnt = r.netto > 0;
+
+  document.getElementById("res").className = "res " + (lohnt ? "gut" : "schlecht");
+  document.getElementById("resHead").textContent = lohnt
+      ? "Ja – Sie sparen " + fr(r.netto) + " Franken"
+      : (r.netto === 0 ? "Genau die Null"
+                       : "Nein – Sie zahlen " + fr(-r.netto) + " Franken drauf");
+
+  const rows = [
+    [r.ersparnis >= 0 ? "Ersparnis an der Säule" : "Mehrkosten an der Säule", r.ersparnis],
+    ["Treibstoff für " + de(S.dist) + " km Umweg", -r.sprit]
+  ];
+  if (S.fzk) rows.push(["Fahrzeugkosten für " + de(S.dist) + " km", -r.fahrzeug]);
+  rows.push(["Unter dem Strich", r.netto]);
+  document.getElementById("split").innerHTML = rows.map(([k,v]) =>
+     "<tr><td>" + k + "</td><td class='" + (v<0?"neg":"") + "'>"
+     + (v>0?"+":"") + fr(v) + "</td></tr>").join("");
+
+  document.getElementById("grenze").innerHTML = r.diff > 0
+     ? "Bei " + de(Math.round(r.diff*100)) + " Rappen Unterschied lohnt sich ein Umweg von "
+       + "<b>bis " + de(r.dStar) + " km</b>."
+     : (r.diff < 0
+        ? "Tankstelle B ist teurer – jeder Umweg dorthin kostet Sie Geld."
+        : "Beide Tankstellen sind gleich teuer – zu holen gibt es nichts.");
+
+  hoeheMelden();
+}
+
+let hoeheT;
+function hoeheMelden(){
+  if (!window.parentIFrame) return;
+  clearTimeout(hoeheT);
+  hoeheT = setTimeout(() => window.parentIFrame.size(), 60);
+}
+
+/* Zahlenfeld und Schieberegler laufen synchron */
+function num(id, key){
+  const a = document.getElementById(id), b = document.getElementById(id+"R");
+  const set = (v, from) => {
+    v = parseFloat(v);
+    if (isNaN(v)) return;
+    v = Math.max(parseFloat(a.min), Math.min(parseFloat(a.max), v));
+    S[key] = v;
+    if (from !== "a") a.value = v;
+    if (b && from !== "b") b.value = Math.max(parseFloat(b.min), Math.min(parseFloat(b.max), v));
+    render();
+  };
+  a.addEventListener("input", () => set(a.value, "a"));
+  a.addEventListener("blur",  () => { a.value = S[key]; });
+  if (b){ b.value = S[key]; b.addEventListener("input", () => set(b.value, "b")); }
+}
+
+(function init(){
+  ["pa","pb","dist","menge","verb"].forEach(k => num(k, k));
+  const fzk = document.getElementById("fzk");
+  fzk.addEventListener("change", () => { S.fzk = fzk.checked; render(); });
+  render();
+})();
+</script>
+</body>
+</html>
