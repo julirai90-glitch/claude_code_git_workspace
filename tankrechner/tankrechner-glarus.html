@@ -34,6 +34,7 @@ fieldset{border:0; margin:0; padding:0}
 .f > label, .f > .lab{display:block; font-size:13px; font-weight:600; color:var(--ink-2);
   margin-bottom:4px}
 .hint{font-size:12px; color:var(--ink-3); margin-top:3px; line-height:1.35}
+.hint b{color:var(--ink-2); font-variant-numeric:tabular-nums}
 .seg{display:flex; border:1px solid var(--rule); border-radius:3px; overflow:hidden}
 .seg button{flex:1; appearance:none; border:0; background:#fff; padding:7px 4px;
   font:inherit; font-size:14px; color:var(--ink-2); cursor:pointer; border-right:1px solid var(--rule)}
@@ -135,7 +136,7 @@ Grenze liegt.</p>
       <span class="unit">km</span>
       <input type="range" id="distR" min="0" max="120" step="1" aria-label="Strecke">
     </div>
-    <p class="hint">Fahrstrecke laut Routenberechnung. Hin- und Rückweg werden gerechnet, also das Doppelte.</p>
+    <p class="hint" id="distHint"></p>
   </div>
 
 
@@ -432,6 +433,11 @@ function render(){
   document.getElementById("be2l").textContent =
       "müsste der Liter mindestens günstiger sein, damit sich Ihre " + de(S.dist,0)
       + " km rechnen";
+
+  document.getElementById("distHint").innerHTML = S.dist > 0
+      ? "Fahrstrecke laut Routenberechnung, einfache Strecke. Gerechnet werden <b>"
+        + de(r.km,0) + " km</b> – Hin- und Rückweg."
+      : "Keine Fahrt, keine Zusatzkilometer.";
 
   document.getElementById("chartSub").textContent =
       "Bei " + de(S.menge,0) + " Litern Tankmenge, " + de(S.verb,1)
