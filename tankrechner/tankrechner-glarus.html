@@ -509,12 +509,17 @@ function render(){
     const liter = r.km * S.verb / 100;
     const co2   = liter * CO2[S.fuel];
     const zeilen = [];
-    if (S.dist === DIST[S.start][S.ziel] && S.zeit > 0)
-      zeilen.push(["Sie sind unterwegs", dauer(2 * S.zeit).replace("einer Stunde","1 Stunde")]);
+    /* Die Fahrzeit skaliert mit der Strecke: Wird sie von Hand geändert, bleibt die
+       Durchschnittsgeschwindigkeit der hinterlegten Route erhalten, statt dass die
+       Zeitangabe einfach verschwindet. */
+    const refKm = DIST[S.start][S.ziel], refMin = ZEIT[S.start][S.ziel];
+    const minuten = refKm > 0 ? S.dist / refKm * refMin : 0;
+    if (minuten > 0)
+      zeilen.push(["Sie sind unterwegs", dauer(2 * minuten).replace("einer Stunde","1 Stunde")]);
     zeilen.push(["Zusätzlicher Treibstoff", zahl(liter) + " Liter"
       + (S.menge > 0 && liter <= S.menge
          ? " (" + de(liter / S.menge * 100, 0) + " % der Tankfüllung)" : "")]);
-    zeilen.push(["CO\u2082 beim Verbrennen", zahl(co2) + " kg"]);
+    zeilen.push(["Zusätzlicher CO\u2082-Ausstoss", zahl(co2) + " kg"]);
     document.getElementById("folgenBody").innerHTML = zeilen.map(([k,v]) =>
         "<tr><td>" + k + "</td><td>" + v + "</td></tr>").join("");
     document.getElementById("folgenRel").textContent =

@@ -51,7 +51,15 @@ und der gewählten Route.
 
 Gleiche Abfrage (`annotations=duration`), gleiche Zeilen und Spalten. Im Embed steht die
 verdoppelte Zeit, auf fünf Minuten gerundet, gemeinsam mit Spritverbrauch und CO2 unterhalb der
-Frankenrechnung – und nur dann, wenn die Strecke nicht von Hand verändert wurde.
+Frankenrechnung.
+
+Wird die Strecke von Hand geändert, **skaliert die Zeit proportional mit** – die
+Durchschnittsgeschwindigkeit der hinterlegten Route bleibt also erhalten (Glarus–Feldkirch:
+80 km in 71 Minuten, rund 68 km/h). Das ist eine Näherung: Ein kürzerer Weg führt in
+Wirklichkeit über andere Strassen. Sie ist der Alternative vorzuziehen, die Zeitangabe bei
+jeder Handeingabe verschwinden zu lassen – eine Zeile, die ohne erkennbaren Grund fehlt,
+irritiert mehr, als die Näherung schadet. Keine Zeitangabe gibt es nur, wenn Start und Ziel
+identisch sind; dann fehlt die Referenzstrecke.
 
 | von \ nach | Bilten | Nieder­urnen | Näfels | Netstal | Glarus | Schwanden | Linthal | Elm | Balzers | Feldkirch |
 |---|---|---|---|---|---|---|---|---|---|---|

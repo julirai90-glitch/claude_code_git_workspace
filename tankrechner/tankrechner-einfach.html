@@ -341,7 +341,7 @@ function render(){
         ? " (" + de(liter / S.menge * 100) + " % der Tankfüllung)" : "";
     document.getElementById("folgenBody").innerHTML =
         "<tr><td>Zusätzlicher Treibstoff</td><td>" + zahl(liter) + " Liter" + anteil + "</td></tr>"
-      + "<tr><td>CO\u2082 beim Verbrennen</td><td>" + zahl(co2) + " kg</td></tr>";
+      + "<tr><td>Zusätzlicher CO\u2082-Ausstoss</td><td>" + zahl(co2) + " kg</td></tr>";
     document.getElementById("folgenRel").textContent =
         "So viel CO\u2082 verursacht eine Person in der Schweiz im Schnitt in "
         + proKopfZeit(co2) + ".";
