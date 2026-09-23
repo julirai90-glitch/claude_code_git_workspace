@@ -184,16 +184,21 @@ let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(dr
     });
     return {n: n, moto: moto, pct: n ? Math.round(100*moto/n) : 0};
   }
-  const lowUR = sum(r => r.from < 1000, 'Uri');
+  /* both halves over the same population — comparing "Uri below" against
+     "both sides above" mixes two different things and overstates the gap */
+  const low   = sum(r => r.from < 1000);
   const high  = sum(r => r.from >= 1000);
+  const lowUR = sum(r => r.from < 1000, 'Uri');
   document.getElementById('facts').innerHTML =
     'Über die ganze Strecke sind es <b>' + FACTS.total.n + '</b> Unfälle mit Personenschaden, ' +
     '<b>' + FACTS.total.moto + '</b> davon mit einem Motorrad und <b>' + FACTS.total.dead +
-    '</b> mit Getöteten. Der Unterschied liegt in der Höhe: Auf der Urner Seite unterhalb ' +
-    'von 1000 Metern, wo die Strasse durch Altdorf und Bürglen führt, ist gut ein Drittel ' +
-    'der Unfälle ein Motorradunfall (<b>' + lowUR.moto + '</b> von <b>' + lowUR.n + '</b>). ' +
-    'Oberhalb von 1000 Metern sind es auf beiden Seiten zusammen vier von fünf (<b>' +
-    high.moto + '</b> von <b>' + high.n + '</b>).';
+    '</b> Unfälle mit Getöteten. Der Unterschied liegt in der Höhe: Unterhalb von 1000 Metern ' +
+    'ist gut jeder zweite Unfall ein Motorradunfall (<b>' + low.moto + '</b> von <b>' + low.n +
+    '</b>), oberhalb vier von fünf (<b>' + high.moto + '</b> von <b>' + high.n + '</b>). ' +
+    'Am deutlichsten ist es dort, wo die Strasse durch Siedlungsgebiet führt: auf der Urner ' +
+    'Seite unter 1000 Metern, also in Altdorf und Bürglen, sind es nur <b>' + lowUR.moto +
+    '</b> von <b>' + lowUR.n + '</b>. Der Glarner Abschnitt ist auf ganzer Länge Passzufahrt ' +
+    'und hat auch unten schon hohe Motorradanteile.';
 })();
 
 document.getElementById('src').innerHTML =

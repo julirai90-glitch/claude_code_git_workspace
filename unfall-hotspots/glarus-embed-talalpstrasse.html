@@ -121,7 +121,12 @@ document.getElementById('pairs').innerHTML =
     '<b>' + n + '</b> der Unfälle fielen in die Monate ' + first + ' bis ' + last +
     (rest.length ? ', ' + (rest.length === 1 ? 'einer' : rest.length + ' weitere') +
       ' in den ' + MN[rest[0][0]-1] : '') +
-    ' — und alle in die Zeit zwischen ' + FACTS.hours[0] + ' und ' + FACTS.hours[1] + ' Uhr.';
+    ' — und alle in die Zeit zwischen ' + FACTS.hours[0] + ' und ' + FACTS.hours[1] + ' Uhr.' +
+    /* the two bars are not equally solid — say which one carries weight */
+    ' <span style="color:var(--ink-3)">Belastbar ist davon der Anteil der Unfälle ohne zweite ' +
+    'Partei (Fisher p = 0,000013). Dass hier auch überdurchschnittlich viele Unfälle schwer ' +
+    'enden, ist bei 17 Fällen ein schwacher Befund (p = 0,037) und hält einer Korrektur für ' +
+    'die Zahl der geprüften Hypothesen nicht stand.</span>';
 })();
 
 /* the ranking is what turns one road into a finding: it leads the canton */
