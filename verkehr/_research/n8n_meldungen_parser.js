@@ -80,6 +80,8 @@ function felder(t){
 const recs = xml.match(/<dx223:situationRecord\b[\s\S]*?<\/dx223:situationRecord>/g) || [];
 const out = [];
 const seen = {};
+let nParsed = 0;   // Records, aus denen ueberhaupt Klartext extrahiert werden konnte -
+                   // gemessen VOR Regions-/Akut-Filter (Ausfallschutz-Grundlage, s.u.)
 for (const rec of recs) {
   // Klartext steht in den value-Kommentaren; "((...))" sind interne TIC-Codes.
   const vals = [];
@@ -88,6 +90,7 @@ for (const rec of recs) {
   while ((m = reV.exec(rec)) !== null) { if (!m[1].startsWith('((')) vals.push(unesc(m[1])); }
   const t = vals.join(' ').replace(/\n/g,' ').trim();
   if (!t) continue;
+  nParsed++;
   if (/^(Aufgehoben|Révoqué|Revocato)/.test(t)) continue;
   if (!ROADS.test(t)) continue;
   // Korridor-Praefix ("A3 Zuerich -> Chur") abschneiden, sonst matcht der Ortsfilter
@@ -195,7 +198,33 @@ for (const rec of recs) {
 const rank = { sperrung: 0, stau: 1, stoerung: 2 };
 out.sort((a,b) => (rank[a.art] - rank[b.art]) || (Date.parse(b.aktualisiert) - Date.parse(a.aktualisiert)));
 
-const payload = { generated: new Date().toISOString().replace(/\.\d+Z$/,'Z'), quelle: 'ASTRA / opentransportdata.swiss (DATEX II)', meldungen: out };
+const payload = { generated: new Date().toISOString().replace(/\.\d+Z$/,'Z'), quelle: 'ASTRA / opentransportdata.swiss (DATEX II)', meldungen: out, roh_eintraege: recs.length, geparst: nParsed };
 const sd = $getWorkflowStaticData('global');
+
+// Ausfallschutz, korrigiert 19.09.2026: "defekt" heisst, dass der Parser aus KEINEM
+// einzigen Record ueberhaupt Klartext extrahieren konnte (nParsed === 0) - gemessen
+// VOR dem Regions- und Akut-Filter. Die erste Fassung mass das erst NACH diesen
+// Filtern (out.length === 0) und verwechselte damit "0 regionale/akute Meldungen"
+// (an einem ruhigen Tag der Normalfall) mit einem kaputten Parser - und loeste dadurch
+// bei jeder stillen Lage faelschlich eine Stoerung aus. Ein leeres meldungen:[] mit
+// frischem generated ist eine legitime ruhige Lage und keine Stoerung.
+if (recs.length > 0 && nParsed === 0) {
+  let alt = null;
+  try { alt = JSON.parse(sd.meldungen || 'null'); } catch (e) { alt = null; }
+  if (alt && alt.meldungen) {
+    const stoerung = {
+      seit: new Date().toISOString().replace(/\.\d+Z$/,'Z'),
+      roh_eintraege: recs.length,
+      geparst: nParsed,
+      grund: 'Parser hat aus ' + recs.length + ' Records keinen einzigen inhaltlich auswerten koennen'
+    };
+    alt.stoerung = stoerung;                     // generated bleibt bewusst der alte
+    alt.roh_eintraege = recs.length;
+    alt.geparst = nParsed;
+    sd.meldungen = JSON.stringify(alt);
+    return [{ json: { ok: false, count: 0, geprueft: recs.length, geparst: nParsed, stoerung: stoerung.grund } }];
+  }
+}
+
 sd.meldungen = JSON.stringify(payload);
-return [{ json: { ok: true, count: out.length, geprueft: recs.length } }];
+return [{ json: { ok: true, count: out.length, geprueft: recs.length, geparst: nParsed } }];
