@@ -125,7 +125,7 @@ Grenze liegt.</p>
   <div class="f full" id="stationWrap" hidden>
     <label for="station">Tankstelle in Vorarlberg</label>
     <select id="station"></select>
-    <p class="hint" id="stationHint"></p>
+    <p class="hint" id="stationHint" role="status" aria-live="polite"></p>
   </div>
 
   <div class="f">
@@ -333,7 +333,7 @@ const rp  = n => Math.abs(n) >= 1
 /* ---------- Zustand ---------- */
 const S = {
   ziel:9, start:4, dist:80, fuel:"benzin",
-  verb:6.5, menge:45, pch:REF.ch.benzin, pzEur:REF.at.benzin, pzChf:null,
+  verb:6.5, menge:45, pch:REF.ch.benzin, pzEur:REF.at.benzin, pzChf:REF.ch.benzin,
   kurs:REF.kurs.wert, einmalig:0, fzk:true, satz:REF.fzk
 };
 
@@ -586,6 +586,8 @@ function drawSrc(){
    bleibt der Landesdurchschnitt stehen – das Embed funktioniert auch ohne. */
 let STATIONEN = [];
 let pzManuell = false;      /* Wer den Preis selbst tippt, dem schreiben wir nicht hinein */
+let ladeLauf = 0;           /* Nur die jüngste Abfrage darf schreiben – sonst überholt eine
+                               langsame Diesel-Antwort die schnellere für Benzin */
 
 /* Die Schnittstelle liefert Namen in Grossbuchstaben. Kurze Wörter bleiben gross,
    sonst würde aus BP ein "Bp". */
@@ -601,6 +603,7 @@ function titelFall(t){
 }
 
 async function ladeStationen(){
+  const lauf = ++ladeLauf;
   const sel  = document.getElementById("station");
   const hint = document.getElementById("stationHint");
   sel.innerHTML = '<option>wird geladen …</option>';
@@ -616,6 +619,7 @@ async function ladeStationen(){
     const antwort = await fetch(url, {signal: ctrl.signal});
     clearTimeout(abbruch);
     if (!antwort.ok) throw new Error("HTTP " + antwort.status);
+    if (lauf !== ladeLauf) return;          /* überholt: eine neuere Abfrage gilt */
 
     STATIONEN = (await antwort.json())
       .filter(x => (x.prices || []).length && x.prices[0].amount > 0)
@@ -637,6 +641,7 @@ async function ladeStationen(){
         + " beim Spritpreisrechner der E-Control.";
     if (!pzManuell) stationWaehlen(0);
   } catch (e) {
+    if (lauf !== ladeLauf) return;
     STATIONEN = [];
     sel.innerHTML = `<option value="-1">Landesdurchschnitt – ${de(REF.at[S.fuel],3)} €</option>`;
     hint.textContent = "Die Tankstellenpreise liessen sich gerade nicht abrufen – der Rechner "
@@ -672,12 +677,16 @@ function seg(id, key, after){
 /* Zahlenfeld und Schieberegler laufen synchron */
 function num(id, key, after){
   const a = document.getElementById(id), b = document.getElementById(id+"R");
+  const min = parseFloat(a.min), max = parseFloat(a.max);
   const set = (v, from) => {
-    v = parseFloat(v);
-    if (isNaN(v)) return;
-    v = Math.max(parseFloat(a.min), Math.min(parseFloat(a.max), v));
+    const roh = parseFloat(v);
+    if (isNaN(roh)) return;
+    v = Math.max(min, Math.min(max, roh));
     S[key] = v;
-    if (from !== "a") a.value = v;
+    /* Unmögliche Eingaben sofort richtigstellen, sonst zeigt das Feld -50 km, während
+       mit 0 gerechnet wird. Zu kleine Werte erst beim Verlassen des Feldes – sonst
+       liesse sich in einem Feld mit Minimum 5 keine 12 mehr tippen. */
+    if (from !== "a" || roh < 0 || roh > max) a.value = v;
     if (b && from !== "b") b.value = Math.max(parseFloat(b.min), Math.min(parseFloat(b.max), v));
     if (after) after();
     render();
