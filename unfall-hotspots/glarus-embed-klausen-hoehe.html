@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Klausenstrasse: je höher, desto Motorrad</title>
+<title>Die Klausenstrasse im Profil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
@@ -12,42 +12,25 @@
   --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
   --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
   --s1:#0068a4; --s2:#ee7733;
+  --berg:#e4eaef; --berg-line:#c2ced8;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--surface)}
 body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
   color:var(--ink); font-size:16px; line-height:1.55}
 .wrap{padding:12px 16px 16px}
-.legend{display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-bottom:6px}
+.legend{display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-bottom:8px}
 .lg{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2)}
-.sw{width:12px; height:12px; border-radius:2px; flex:none}
-/* the profile reads top to bottom: pass at the top, the two valleys below */
-.prof{width:100%; margin-top:10px}
-.head{display:grid; grid-template-columns:1fr var(--midw) 1fr; gap:8px;
-  font-size:13px; font-weight:600; color:var(--ink-2); margin-bottom:8px}
-.head .l{text-align:right}
-.head .m{text-align:center; font-weight:400; color:var(--ink-3); font-size:12px}
-.hrow{display:grid; grid-template-columns:1fr var(--midw) 1fr; gap:8px;
-  align-items:center; margin-bottom:3px}
-.side{display:flex; align-items:center; height:22px}
-.side.l{flex-direction:row-reverse}
-.seg{height:100%; display:flex; align-items:center; justify-content:center;
-  font-size:11px; font-variant-numeric:tabular-nums; color:#fff; font-weight:600;
-  box-shadow:0 0 0 1px var(--surface) inset}
-.seg.moto{background:var(--s2); color:var(--ink)}
-.seg.rest{background:var(--s1)}
-.side.l .seg:first-child{border-radius:0 3px 3px 0}
-.side.l .seg:last-child{border-radius:3px 0 0 3px}
-.side.r .seg:first-child{border-radius:3px 0 0 3px}
-.side.r .seg:last-child{border-radius:0 3px 3px 0}
-.mid{text-align:center; font-size:12px; color:var(--ink-3);
-  font-variant-numeric:tabular-nums; white-space:nowrap}
-.mid b{color:var(--ink-2); font-weight:600}
-.marker{display:grid; grid-template-columns:1fr var(--midw) 1fr; gap:8px;
-  font-size:11px; color:var(--ink-3); margin:1px 0 4px}
-.marker div:nth-child(2){text-align:center}
-.marker span{display:inline-block; border-top:1px dashed var(--rule); padding-top:2px}
-.facts{margin:20px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
+.dot{width:11px; height:11px; border-radius:50%; flex:none; box-shadow:0 0 0 1.5px var(--surface)}
+.chart{width:100%}
+svg{display:block; max-width:100%; height:auto}
+.tick{font-size:11px; fill:var(--ink-3)}
+.grid{stroke:var(--rule-soft); stroke-width:1}
+.place{font-size:11px; fill:var(--ink-2)}
+.place.strong{font-weight:700; fill:var(--ink)}
+.pline{stroke:var(--berg-line); stroke-width:1; stroke-dasharray:2 3}
+.border{stroke:var(--ink-3); stroke-width:1; stroke-dasharray:4 3}
+.facts{margin:16px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
   font-size:14px; color:var(--ink-2)}
 .facts b{color:var(--ink); font-variant-numeric:tabular-nums}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
@@ -58,7 +41,7 @@ body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
   padding:8px 11px; font-size:13px; line-height:1.4; white-space:nowrap; transition:opacity .09s}
 .tip .t-m{font-weight:700; display:block; margin-bottom:4px}
 .tip b{font-variant-numeric:tabular-nums}
-.side{cursor:crosshair}
+.hit{cursor:crosshair}
 table.data{border-collapse:collapse; font-size:13px; width:100%; margin-top:10px}
 table.data th,table.data td{border-bottom:1px solid var(--rule-soft); padding:3px 5px;
   text-align:right; font-variant-numeric:tabular-nums}
@@ -72,10 +55,11 @@ summary{cursor:pointer; color:var(--s1)}
 <body data-palette="#ee7733,#0068a4">
 <div class="wrap">
   <div class="legend">
-    <span class="lg"><span class="sw" style="background:var(--s2)"></span>Unfall mit Motorrad</span>
-    <span class="lg"><span class="sw" style="background:var(--s1)"></span>&uuml;brige Unf&auml;lle</span>
+    <span class="lg"><span class="dot" style="background:var(--s2)"></span>Unfall mit Motorrad</span>
+    <span class="lg"><span class="dot" style="background:var(--s1)"></span>&uuml;brige Unf&auml;lle</span>
+    <span class="lg" style="color:var(--ink-3)">jeder Punkt ein Unfall &middot; gestapelt, wo sie sich h&auml;ufen</span>
   </div>
-  <div class="prof" id="prof" role="img" aria-label="H&ouml;henprofil: Unf&auml;lle auf der Klausenstrasse nach H&ouml;henlage, Urner Seite links, Glarner Seite rechts"></div>
+  <div class="chart"><svg id="c" role="img" aria-label="H&ouml;henprofil der Klausenstrasse von Altdorf &uuml;ber den Klausenpass nach Linthal, mit jedem Unfall als Punkt"></svg></div>
   <p class="facts" id="facts"></p>
   <p class="src" id="src"></p>
   <details>
@@ -86,10 +70,11 @@ summary{cursor:pointer; color:var(--s1)}
 <div class="tip" id="tip" role="status" aria-live="polite"></div>
 <script>
 /* DATA-START */
-const ROWS = [{"from":1800,"to":1999,"Uri":{"n":18,"moto":15,"severe":6},"Glarus":{"n":0,"moto":0,"severe":0}},{"from":1600,"to":1799,"Uri":{"n":18,"moto":15,"severe":6},"Glarus":{"n":0,"moto":0,"severe":0}},{"from":1400,"to":1599,"Uri":{"n":10,"moto":10,"severe":5},"Glarus":{"n":0,"moto":0,"severe":0}},{"from":1200,"to":1399,"Uri":{"n":13,"moto":11,"severe":5},"Glarus":{"n":6,"moto":4,"severe":2}},{"from":1000,"to":1199,"Uri":{"n":10,"moto":7,"severe":4},"Glarus":{"n":11,"moto":6,"severe":1}},{"from":800,"to":999,"Uri":{"n":16,"moto":5,"severe":4},"Glarus":{"n":19,"moto":17,"severe":9}},{"from":600,"to":799,"Uri":{"n":8,"moto":2,"severe":1},"Glarus":{"n":11,"moto":9,"severe":3}},{"from":400,"to":599,"Uri":{"n":17,"moto":8,"severe":2},"Glarus":{"n":0,"moto":0,"severe":0}}];
-const FACTS = {"pass":1948,"band":200,"Uri":{"n":110,"moto":73,"severe":33,"dead":4,"low":488,"high":1935},"Glarus":{"n":47,"moto":36,"severe":15,"dead":2,"low":660,"high":1306},"total":{"n":157,"moto":109,"severe":48,"dead":6}};
+const PROFIL = [[0,488],[330,503],[517,511],[752,519],[894,525],[1047,533],[1161,541],[1258,548],[1363,554],[1493,565],[1737,585],[1901,599],[1992,606],[2151,619],[2230,625],[2327,633],[2611,655],[2879,643],[3114,651],[3357,659],[3582,669],[3875,686],[4249,701],[4479,706],[4871,724],[5091,739],[5363,756],[5548,762],[5861,779],[5987,784],[6308,799],[6628,822],[6855,837],[7109,859],[7211,863],[7371,876],[7473,884],[7659,900],[7934,922],[7982,926],[8199,944],[8391,959],[8538,968],[8818,983],[8930,989],[9174,1001],[9413,1010],[9599,1014],[9875,1021],[10115,1031],[10228,1028],[10339,1040],[10541,1048],[10781,1039],[10943,1026],[11130,1010],[11261,1002],[11433,994],[11585,998],[11715,1005],[11941,1016],[12388,1052],[12486,1059],[12639,1070],[12889,1090],[13016,1099],[13282,1121],[13388,1129],[13554,1143],[13842,1166],[14218,1197],[14448,1216],[14534,1222],[14645,1231],[14839,1247],[15151,1270],[15236,1275],[15317,1278],[15502,1292],[15841,1321],[15985,1333],[16168,1350],[16400,1363],[16615,1388],[16848,1408],[17138,1432],[17232,1439],[17610,1470],[17684,1475],[17866,1490],[18114,1510],[18540,1539],[18755,1555],[18979,1571],[19105,1582],[19236,1592],[19396,1605],[19497,1612],[19728,1632],[19823,1640],[20081,1662],[20209,1673],[20348,1685],[20475,1696],[20604,1706],[20837,1724],[21060,1744],[21313,1764],[21584,1774],[21669,1779],[21976,1803],[22074,1811],[22242,1824],[22367,1834],[22617,1854],[23130,1896],[23445,1918],[23801,1943],[24045,1942],[24292,1925],[24669,1899],[24839,1887],[25109,1869],[25180,1865],[25209,1863],[25740,1820],[25810,1816],[25831,1815],[25940,1808],[26131,1794],[26269,1784],[26294,1783],[26344,1780],[26373,1779],[26471,1772],[26497,1769],[26542,1766],[26563,1765],[26632,1760],[26778,1750],[27028,1729],[27334,1703],[27416,1698],[27450,1696],[27649,1682],[28043,1653],[28273,1644],[28379,1636],[28536,1622],[28715,1608],[28733,1607],[28820,1600],[28929,1592],[28950,1591],[29106,1579],[29125,1578],[29167,1575],[29402,1556],[29594,1540],[29618,1539],[29691,1533],[29989,1508],[30304,1481],[30558,1460],[30587,1458],[30699,1450],[30770,1445],[30790,1444],[31379,1403],[31899,1380],[32507,1375],[33055,1350],[34539,1344],[35415,1316],[35797,1319],[36198,1315],[36343,1313],[36613,1306],[36781,1302],[37063,1296],[37503,1273],[37638,1262],[37810,1250],[38008,1235],[38154,1223],[38281,1213],[38856,1170],[39025,1157],[39502,1118],[39589,1113],[39835,1092],[40115,1070],[40215,1064],[40405,1049],[40648,1031],[40884,1014],[41233,989],[41305,985],[41514,970],[41742,954],[41926,941],[42086,930],[42209,923],[42289,919],[42395,911],[42513,901],[42759,880],[42851,874],[43160,853],[43278,844],[43378,836],[43486,828],[43673,814],[43803,804],[43860,801],[44027,788],[44326,843],[44652,739],[44804,727],[44949,713],[45335,685],[45478,676],[45789,662],[46042,660]];
+const PUNKTE = [{"side":"Uri","km":31379,"off":22,"h":1402,"moto":1,"sev":"as2"},{"side":"Uri","km":24613,"off":3,"h":1903,"moto":1,"sev":"as1"},{"side":"Uri","km":0,"off":27,"h":488,"moto":0,"sev":"as3"},{"side":"Uri","km":54,"off":1,"h":491,"moto":0,"sev":"as3"},{"side":"Uri","km":13375,"off":4,"h":1128,"moto":1,"sev":"as3"},{"side":"Uri","km":21802,"off":8,"h":1790,"moto":1,"sev":"as2"},{"side":"Uri","km":27803,"off":12,"h":1667,"moto":1,"sev":"as3"},{"side":"Uri","km":1294,"off":1,"h":551,"moto":0,"sev":"as2"},{"side":"Uri","km":22828,"off":11,"h":1870,"moto":1,"sev":"as3"},{"side":"Uri","km":7125,"off":11,"h":861,"moto":1,"sev":"as2"},{"side":"Uri","km":24613,"off":7,"h":1903,"moto":1,"sev":"as2"},{"side":"Uri","km":30171,"off":2,"h":1492,"moto":1,"sev":"as2"},{"side":"Uri","km":24837,"off":0,"h":1888,"moto":1,"sev":"as3"},{"side":"Uri","km":1984,"off":1,"h":605,"moto":1,"sev":"as2"},{"side":"Uri","km":22828,"off":61,"h":1867,"moto":1,"sev":"as3"},{"side":"Uri","km":8869,"off":4,"h":986,"moto":1,"sev":"as3"},{"side":"Uri","km":30165,"off":3,"h":1492,"moto":1,"sev":"as3"},{"side":"Uri","km":35088,"off":4,"h":1324,"moto":1,"sev":"as3"},{"side":"Uri","km":31379,"off":12,"h":1403,"moto":1,"sev":"as3"},{"side":"Uri","km":26277,"off":2,"h":1784,"moto":1,"sev":"as3"},{"side":"Uri","km":9448,"off":2,"h":1012,"moto":0,"sev":"as3"},{"side":"Uri","km":8398,"off":3,"h":960,"moto":0,"sev":"as3"},{"side":"Uri","km":7188,"off":2,"h":863,"moto":0,"sev":"as3"},{"side":"Uri","km":22161,"off":3,"h":1818,"moto":1,"sev":"as3"},{"side":"Uri","km":13337,"off":5,"h":1109,"moto":1,"sev":"as3"},{"side":"Uri","km":11047,"off":6,"h":1018,"moto":1,"sev":"as2"},{"side":"Uri","km":25180,"off":2,"h":1865,"moto":1,"sev":"as3"},{"side":"Uri","km":20900,"off":2,"h":1729,"moto":1,"sev":"as3"},{"side":"Uri","km":3376,"off":5,"h":660,"moto":0,"sev":"as3"},{"side":"Uri","km":23698,"off":6,"h":1935,"moto":1,"sev":"as3"},{"side":"Uri","km":0,"off":11,"h":488,"moto":1,"sev":"as3"},{"side":"Uri","km":7831,"off":40,"h":917,"moto":0,"sev":"as3"},{"side":"Uri","km":6334,"off":9,"h":800,"moto":0,"sev":"as3"},{"side":"Uri","km":2001,"off":2,"h":607,"moto":0,"sev":"as3"},{"side":"Uri","km":26299,"off":3,"h":1783,"moto":1,"sev":"as3"},{"side":"Uri","km":24632,"off":6,"h":1901,"moto":1,"sev":"as2"},{"side":"Uri","km":27320,"off":5,"h":1705,"moto":1,"sev":"as2"},{"side":"Uri","km":7916,"off":12,"h":920,"moto":0,"sev":"as3"},{"side":"Uri","km":1338,"off":0,"h":552,"moto":0,"sev":"as1"},{"side":"Uri","km":1325,"off":1,"h":552,"moto":1,"sev":"as3"},{"side":"Uri","km":23489,"off":41,"h":1924,"moto":0,"sev":"as3"},{"side":"Uri","km":20264,"off":1,"h":1678,"moto":1,"sev":"as3"},{"side":"Uri","km":1417,"off":8,"h":558,"moto":0,"sev":"as3"},{"side":"Uri","km":8962,"off":6,"h":991,"moto":1,"sev":"as3"},{"side":"Uri","km":15233,"off":1,"h":1275,"moto":1,"sev":"as3"},{"side":"Uri","km":15373,"off":2,"h":1282,"moto":0,"sev":"as3"},{"side":"Uri","km":1114,"off":2,"h":538,"moto":1,"sev":"as3"},{"side":"Uri","km":34672,"off":1,"h":1341,"moto":1,"sev":"as3"},{"side":"Uri","km":27538,"off":2,"h":1690,"moto":0,"sev":"as3"},{"side":"Uri","km":0,"off":17,"h":488,"moto":0,"sev":"as3"},{"side":"Uri","km":7349,"off":1,"h":874,"moto":0,"sev":"as3"},{"side":"Uri","km":14620,"off":1,"h":1229,"moto":1,"sev":"as3"},{"side":"Uri","km":5275,"off":16,"h":750,"moto":0,"sev":"as3"},{"side":"Uri","km":25405,"off":40,"h":1844,"moto":1,"sev":"as1"},{"side":"Uri","km":1387,"off":1,"h":556,"moto":0,"sev":"as3"},{"side":"Uri","km":1279,"off":3,"h":550,"moto":1,"sev":"as3"},{"side":"Uri","km":14589,"off":7,"h":1227,"moto":1,"sev":"as2"},{"side":"Uri","km":31379,"off":7,"h":1403,"moto":1,"sev":"as3"},{"side":"Uri","km":2896,"off":3,"h":649,"moto":0,"sev":"as3"},{"side":"Uri","km":33434,"off":47,"h":1348,"moto":1,"sev":"as2"},{"side":"Uri","km":20475,"off":2,"h":1696,"moto":1,"sev":"as3"},{"side":"Uri","km":15349,"off":2,"h":1280,"moto":1,"sev":"as3"},{"side":"Uri","km":24632,"off":5,"h":1902,"moto":1,"sev":"as2"},{"side":"Uri","km":30384,"off":21,"h":1480,"moto":1,"sev":"as2"},{"side":"Uri","km":15304,"off":11,"h":1276,"moto":1,"sev":"as3"},{"side":"Uri","km":21604,"off":0,"h":1775,"moto":0,"sev":"as3"},{"side":"Uri","km":20725,"off":4,"h":1717,"moto":1,"sev":"as2"},{"side":"Uri","km":15191,"off":2,"h":1273,"moto":1,"sev":"as2"},{"side":"Uri","km":21008,"off":5,"h":1739,"moto":1,"sev":"as3"},{"side":"Uri","km":22638,"off":7,"h":1857,"moto":0,"sev":"as3"},{"side":"Uri","km":27422,"off":1,"h":1698,"moto":1,"sev":"as3"},{"side":"Uri","km":30362,"off":2,"h":1476,"moto":1,"sev":"as2"},{"side":"Uri","km":10954,"off":14,"h":1021,"moto":1,"sev":"as2"},{"side":"Uri","km":27334,"off":3,"h":1704,"moto":1,"sev":"as2"},{"side":"Uri","km":27334,"off":3,"h":1704,"moto":1,"sev":"as2"},{"side":"Uri","km":142,"off":7,"h":495,"moto":1,"sev":"as3"},{"side":"Uri","km":11143,"off":9,"h":1014,"moto":0,"sev":"as3"},{"side":"Uri","km":30354,"off":8,"h":1477,"moto":1,"sev":"as3"},{"side":"Uri","km":25006,"off":1,"h":1876,"moto":1,"sev":"as3"},{"side":"Uri","km":31371,"off":3,"h":1404,"moto":1,"sev":"as3"},{"side":"Uri","km":6756,"off":4,"h":830,"moto":0,"sev":"as3"},{"side":"Uri","km":1144,"off":3,"h":540,"moto":0,"sev":"as3"},{"side":"Uri","km":14561,"off":3,"h":1224,"moto":0,"sev":"as2"},{"side":"Uri","km":54,"off":4,"h":491,"moto":1,"sev":"as3"},{"side":"Uri","km":6642,"off":6,"h":823,"moto":0,"sev":"as3"},{"side":"Uri","km":6802,"off":10,"h":833,"moto":0,"sev":"as3"},{"side":"Uri","km":0,"off":1,"h":488,"moto":0,"sev":"as3"},{"side":"Uri","km":303,"off":11,"h":501,"moto":1,"sev":"as3"},{"side":"Uri","km":794,"off":4,"h":521,"moto":1,"sev":"as3"},{"side":"Uri","km":20264,"off":2,"h":1678,"moto":1,"sev":"as1"},{"side":"Uri","km":24613,"off":2,"h":1903,"moto":1,"sev":"as3"},{"side":"Uri","km":34967,"off":22,"h":1329,"moto":1,"sev":"as3"},{"side":"Uri","km":33088,"off":5,"h":1350,"moto":1,"sev":"as2"},{"side":"Uri","km":22287,"off":4,"h":1828,"moto":0,"sev":"as3"},{"side":"Uri","km":3276,"off":1,"h":657,"moto":1,"sev":"as3"},{"side":"Uri","km":7083,"off":2,"h":858,"moto":0,"sev":"as3"},{"side":"Uri","km":18117,"off":74,"h":1553,"moto":1,"sev":"as2"},{"side":"Uri","km":7417,"off":3,"h":880,"moto":1,"sev":"as2"},{"side":"Uri","km":7518,"off":5,"h":888,"moto":0,"sev":"as2"},{"side":"Uri","km":11064,"off":3,"h":1016,"moto":1,"sev":"as3"},{"side":"Uri","km":24661,"off":2,"h":1899,"moto":1,"sev":"as3"},{"side":"Uri","km":13375,"off":1,"h":1128,"moto":1,"sev":"as2"},{"side":"Uri","km":1992,"off":1,"h":606,"moto":0,"sev":"as3"},{"side":"Uri","km":6802,"off":5,"h":833,"moto":1,"sev":"as2"},{"side":"Uri","km":7214,"off":1,"h":864,"moto":0,"sev":"as3"},{"side":"Uri","km":20669,"off":0,"h":1712,"moto":1,"sev":"as3"},{"side":"Uri","km":9521,"off":4,"h":1014,"moto":1,"sev":"as3"},{"side":"Uri","km":21328,"off":1,"h":1764,"moto":0,"sev":"as3"},{"side":"Uri","km":13717,"off":1,"h":1156,"moto":0,"sev":"as2"},{"side":"Uri","km":22268,"off":1,"h":1826,"moto":1,"sev":"as2"},{"side":"Glarus","km":43323,"off":1,"h":841,"moto":1,"sev":"as3"},{"side":"Glarus","km":45734,"off":8,"h":664,"moto":1,"sev":"as2"},{"side":"Glarus","km":41906,"off":3,"h":943,"moto":1,"sev":"as2"},{"side":"Glarus","km":38868,"off":3,"h":1169,"moto":1,"sev":"as3"},{"side":"Glarus","km":37543,"off":5,"h":1269,"moto":0,"sev":"as3"},{"side":"Glarus","km":42065,"off":3,"h":932,"moto":1,"sev":"as3"},{"side":"Glarus","km":42803,"off":3,"h":877,"moto":1,"sev":"as2"},{"side":"Glarus","km":44597,"off":3,"h":744,"moto":1,"sev":"as3"},{"side":"Glarus","km":41203,"off":12,"h":991,"moto":1,"sev":"as2"},{"side":"Glarus","km":45314,"off":17,"h":688,"moto":1,"sev":"as3"},{"side":"Glarus","km":45211,"off":10,"h":693,"moto":1,"sev":"as2"},{"side":"Glarus","km":36651,"off":3,"h":1306,"moto":1,"sev":"as3"},{"side":"Glarus","km":46001,"off":3,"h":660,"moto":1,"sev":"as3"},{"side":"Glarus","km":39510,"off":1,"h":1118,"moto":0,"sev":"as3"},{"side":"Glarus","km":38764,"off":57,"h":1186,"moto":1,"sev":"as3"},{"side":"Glarus","km":42489,"off":3,"h":903,"moto":1,"sev":"as1"},{"side":"Glarus","km":41949,"off":2,"h":940,"moto":1,"sev":"as3"},{"side":"Glarus","km":40166,"off":3,"h":1066,"moto":0,"sev":"as3"},{"side":"Glarus","km":38764,"off":71,"h":1186,"moto":0,"sev":"as3"},{"side":"Glarus","km":44959,"off":1,"h":714,"moto":1,"sev":"as2"},{"side":"Glarus","km":41596,"off":12,"h":962,"moto":1,"sev":"as3"},{"side":"Glarus","km":39529,"off":4,"h":1116,"moto":1,"sev":"as3"},{"side":"Glarus","km":43836,"off":2,"h":802,"moto":1,"sev":"as3"},{"side":"Glarus","km":38130,"off":9,"h":1224,"moto":1,"sev":"as3"},{"side":"Glarus","km":41922,"off":2,"h":942,"moto":1,"sev":"as3"},{"side":"Glarus","km":44780,"off":5,"h":734,"moto":1,"sev":"as3"},{"side":"Glarus","km":41571,"off":3,"h":966,"moto":0,"sev":"as2"},{"side":"Glarus","km":41430,"off":10,"h":980,"moto":1,"sev":"as3"},{"side":"Glarus","km":38764,"off":58,"h":1186,"moto":1,"sev":"as3"},{"side":"Glarus","km":45273,"off":7,"h":689,"moto":1,"sev":"as3"},{"side":"Glarus","km":41015,"off":6,"h":1004,"moto":1,"sev":"as2"},{"side":"Glarus","km":40542,"off":6,"h":1039,"moto":0,"sev":"as3"},{"side":"Glarus","km":38764,"off":66,"h":1187,"moto":1,"sev":"as3"},{"side":"Glarus","km":41439,"off":4,"h":977,"moto":1,"sev":"as1"},{"side":"Glarus","km":44668,"off":4,"h":738,"moto":1,"sev":"as3"},{"side":"Glarus","km":40958,"off":4,"h":1008,"moto":0,"sev":"as3"},{"side":"Glarus","km":38247,"off":2,"h":1216,"moto":0,"sev":"as2"},{"side":"Glarus","km":36645,"off":5,"h":1306,"moto":1,"sev":"as2"},{"side":"Glarus","km":44610,"off":3,"h":743,"moto":0,"sev":"as3"},{"side":"Glarus","km":44923,"off":6,"h":717,"moto":0,"sev":"as3"},{"side":"Glarus","km":41548,"off":5,"h":968,"moto":1,"sev":"as2"},{"side":"Glarus","km":41322,"off":4,"h":983,"moto":1,"sev":"as3"},{"side":"Glarus","km":41631,"off":3,"h":962,"moto":0,"sev":"as3"},{"side":"Glarus","km":43692,"off":1,"h":813,"moto":1,"sev":"as2"},{"side":"Glarus","km":37409,"off":4,"h":1280,"moto":1,"sev":"as3"},{"side":"Glarus","km":41637,"off":4,"h":962,"moto":1,"sev":"as3"},{"side":"Glarus","km":43717,"off":6,"h":810,"moto":1,"sev":"as2"}];
+const ORTE = [{"name":"Altdorf","km":0,"off":733},{"name":"Bürglen","km":1680,"off":94},{"name":"Unterschächen","km":14804,"off":140},{"name":"Klausenpass","km":24153,"off":80},{"name":"Urnerboden","km":33262,"off":715},{"name":"Linthal","km":45865,"off":404}];
+const FACTS = {"total":{"n":157,"moto":109,"severe":48,"dead":6},"Uri":{"n":110,"moto":73,"severe":33,"dead":4},"Glarus":{"n":47,"moto":36,"severe":15,"dead":2},"low":{"n":71,"moto":41,"severe":19,"dead":3},"high":{"n":86,"moto":68,"severe":29,"dead":3},"lowUri":{"n":41,"moto":15,"severe":7,"dead":1},"border_km":35500,"peak":[23801,1943],"len_km":46.0};
 /* DATA-END */
-const SIDES = ['Uri', 'Glarus'];
 function de(x){ return String(x).replace('.', ','); }
 
 const tip = document.getElementById('tip');
@@ -103,123 +88,141 @@ function showTip(e, html){
 }
 function hideTip(){ tip.style.opacity = '0'; }
 document.addEventListener('pointerdown', function(e){
-  if (!e.target.closest || !e.target.closest('.side')) hideTip();
+  if (!e.target.classList || !e.target.classList.contains('hit')) hideTip();
 }, true);
 
-/* one common scale for both sides, so left and right stay comparable */
-const MAX = Math.max.apply(null, ROWS.map(r => Math.max(r.Uri.n, r.Glarus.n)));
+const NS = 'http://www.w3.org/2000/svg';
+function el(n,a){ const x=document.createElementNS(NS,n); for(const k in (a||{})) x.setAttribute(k,a[k]); return x; }
+
+const KM_MAX = PROFIL[PROFIL.length-1][0];
+const H_MIN = 300, H_MAX = 2400;   /* headroom: the stacks at the pass run high */
 
 function draw(){
-  const narrow = document.body.clientWidth < 460;
-  const host = document.getElementById('prof');
-  host.style.setProperty('--midw', narrow ? '86px' : '110px');
-  host.textContent = '';
+  const W = document.querySelector('.chart').clientWidth || 640;
+  const narrow = W < 500;
+  const L = narrow ? 30 : 40, R = 8, T = narrow ? 42 : 34, B = 34;
+  const H = narrow ? 330 : 380;
+  const iw = W-L-R, ih = H-T-B;
+  const x = km => L + iw * km / KM_MAX;
+  const y = h  => T + ih - ih * (h - H_MIN) / (H_MAX - H_MIN);
+  const svg = document.getElementById('c');
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+  svg.textContent = '';
 
-  const head = document.createElement('div');
-  head.className = 'head';
-  head.innerHTML = '<div class="l">Urner Seite</div>' +
-    '<div class="m">' + (narrow ? 'm ü. M.' : 'Höhe über Meer') + '</div>' +
-    '<div>Glarner Seite</div>';
-  host.appendChild(head);
+  for(let h = 500; h <= 2000; h += 500){
+    svg.appendChild(el('line',{x1:L, y1:y(h), x2:W-R, y2:y(h), class:'grid'}));
+    const t = el('text',{x:L-6, y:y(h)+4, class:'tick','text-anchor':'end'});
+    t.textContent = h; svg.appendChild(t);
+  }
 
-  ROWS.forEach(function(r, i){
-    /* the pass and the cantonal border are what make the profile readable */
-    if(r.from <= FACTS.pass && (i === 0 || ROWS[i-1].from > FACTS.pass)){
-      const m = document.createElement('div');
-      m.className = 'marker';
-      m.innerHTML = '<div></div><div><span>Klausenpass ' + FACTS.pass + ' m</span></div><div></div>';
-      host.appendChild(m);
-    }
-    const row = document.createElement('div');
-    row.className = 'hrow';
-    row.innerHTML =
-      '<div class="side l" data-b="' + i + '" data-s="Uri">' + segs(r.Uri) + '</div>' +
-      '<div class="mid"><b>' + r.from + '</b>–' + r.to + '</div>' +
-      '<div class="side r" data-b="' + i + '" data-s="Glarus">' + segs(r.Glarus) + '</div>';
-    row.querySelectorAll('.side').forEach(function(sd){
-      const d = r[sd.dataset.s];
-      function onHit(e){
-        if(d.n === 0){ hideTip(); return; }
-        showTip(e, '<span class="t-m">' + sd.dataset.s + ', ' + r.from + '–' + r.to + ' m</span>' +
-          '<b>' + d.n + '</b> Unfälle, davon <b>' + d.moto + '</b> mit Motorrad' +
-          '<br><span style="color:var(--ink-3)">' + d.severe + ' schwer oder tödlich</span>');
-      }
-      sd.addEventListener('pointerdown', onHit);
-      sd.addEventListener('mousemove', onHit);
-      sd.addEventListener('mouseleave', hideTip);
-    });
-    host.appendChild(row);
+  /* the mountain: the road's own elevation profile as a filled silhouette */
+  let dpath = 'M' + x(PROFIL[0][0]) + ',' + y(PROFIL[0][1]);
+  PROFIL.forEach(function(p){ dpath += ' L' + x(p[0]).toFixed(1) + ',' + y(p[1]).toFixed(1); });
+  const base = dpath + ' L' + x(KM_MAX) + ',' + (T+ih) + ' L' + x(0) + ',' + (T+ih) + ' Z';
+  svg.appendChild(el('path',{d:base, fill:'var(--berg)'}));
+  svg.appendChild(el('path',{d:dpath, fill:'none', stroke:'var(--berg-line)', 'stroke-width':1.5,
+    'stroke-linejoin':'round'}));
 
-    /* the Glarus stretch stops at the border, not at the pass */
-    if(r.from === 1200){
-      const m = document.createElement('div');
-      m.className = 'marker';
-      m.innerHTML = '<div></div><div></div><div><span>Kantonsgrenze ≈ 1300 m</span></div>';
-      host.appendChild(m);
-    }
+  /* cantonal border, so the two halves stay tellable apart */
+  const bx = x(FACTS.border_km);
+  svg.appendChild(el('line',{x1:bx, y1:T-2, x2:bx, y2:T+ih, class:'border'}));
+  const bl = el('text',{x:bx-4, y:T-8, class:'place','text-anchor':'end'});
+  bl.textContent = 'Uri'; svg.appendChild(bl);
+  const br = el('text',{x:bx+4, y:T-8, class:'place','text-anchor':'start'});
+  br.textContent = 'Glarus'; svg.appendChild(br);
+
+  /* place names along the bottom; on a phone only the three that orient */
+  const keep = narrow ? ['Altdorf','Klausenpass','Linthal']
+                     : ['Altdorf','Unterschächen','Klausenpass','Urnerboden','Linthal'];
+  ORTE.forEach(function(o){
+    if(keep.indexOf(o.name) < 0) return;
+    const px = x(o.km);
+    svg.appendChild(el('line',{x1:px, y1:T+ih, x2:px, y2:T+ih+4, class:'pline'}));
+    const anchor = o.km < KM_MAX*0.08 ? 'start' : (o.km > KM_MAX*0.92 ? 'end' : 'middle');
+    const t = el('text',{x:px, y:H-20, class:'place' + (o.name==='Klausenpass' ? ' strong':''),
+      'text-anchor':anchor});
+    t.textContent = o.name; svg.appendChild(t);
   });
-}
+  const km = el('text',{x:W-R, y:H-6, class:'tick','text-anchor':'end'});
+  km.textContent = de(FACTS.len_km) + ' km'; svg.appendChild(km);
+  const m = el('text',{x:narrow ? L+2 : L-6, y:T-8, class:'tick',
+    'text-anchor': narrow ? 'start' : 'end'});
+  m.textContent = 'm ü. M.'; svg.appendChild(m);
 
-function segs(d){
-  if(d.n === 0) return '';
-  const w = 100 * d.n / MAX;
-  const moto = d.moto / d.n, rest = 1 - moto;
-  let h = '';
-  if(d.moto > 0) h += '<div class="seg moto" style="width:' + (w*moto) + '%">' +
-    (w*moto > 9 ? d.moto : '') + '</div>';
-  if(d.n - d.moto > 0) h += '<div class="seg rest" style="width:' + (w*rest) + '%">' +
-    (w*rest > 9 ? (d.n - d.moto) : '') + '</div>';
-  return h;
+  /* one dot per accident, sitting on the road and stacking upwards where
+     several share a stretch — the stack height is the local density */
+  const r = narrow ? 3 : 3.6, gap = 2 * r + 1.4;
+  const placed = [];
+  PUNKTE.slice().sort((a,b) => a.km - b.km).forEach(function(p){
+    const px = x(p.km), py0 = y(p.h) - r - 1;
+    /* push strictly upwards — assigning q.y - gap outright lets a dot bounce
+       between two neighbours and never settle */
+    let py = py0;
+    for(let pass = 0; pass < 200; pass++){
+      let moved = false;
+      for(const q of placed){
+        if(Math.abs(q.x - px) < gap && Math.abs(q.y - py) < gap){
+          py = Math.min(py, q.y - gap); moved = true;
+        }
+      }
+      if(!moved) break;
+    }
+    placed.push({x:px, y:py, p:p});
+  });
+  placed.forEach(function(q){
+    svg.appendChild(el('circle',{cx:q.x.toFixed(1), cy:q.y.toFixed(1), r:r,
+      fill: q.p.moto ? 'var(--s2)' : 'var(--s1)',
+      stroke:'var(--surface)', 'stroke-width':1.4}));
+    const hit = el('circle',{cx:q.x.toFixed(1), cy:q.y.toFixed(1), r:r+3,
+      fill:'transparent', class:'hit'});
+    const sev = {as1:'Unfall mit Getöteten', as2:'Unfall mit Schwerverletzten',
+                 as3:'Unfall mit Leichtverletzten'}[q.p.sev];
+    function onHit(e){
+      showTip(e, '<span class="t-m">km ' + de((q.p.km/1000).toFixed(1)) + ' · ' + q.p.h +
+        ' m ü. M.</span>' + (q.p.moto ? 'mit Motorrad' : 'ohne Motorrad') + '<br>' +
+        '<span style="color:var(--ink-3)">' + sev + ' · Kanton ' + q.p.side + '</span>');
+    }
+    hit.addEventListener('pointerdown', onHit);
+    hit.addEventListener('mousemove', onHit);
+    hit.addEventListener('mouseleave', hideTip);
+    svg.appendChild(hit);
+  });
 }
 draw();
 let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(draw, 140); });
 
-/* derive the threshold figures from the bands themselves — a hand-written
-   share would be the Uri side only and read as if it held for both */
-(function(){
-  function sum(pred, side){
-    let n = 0, moto = 0;
-    ROWS.filter(pred).forEach(function(r){
-      (side ? [side] : SIDES).forEach(function(k){ n += r[k].n; moto += r[k].moto; });
-    });
-    return {n: n, moto: moto, pct: n ? Math.round(100*moto/n) : 0};
-  }
-  /* both halves over the same population — comparing "Uri below" against
-     "both sides above" mixes two different things and overstates the gap */
-  const low   = sum(r => r.from < 1000);
-  const high  = sum(r => r.from >= 1000);
-  const lowUR = sum(r => r.from < 1000, 'Uri');
-  document.getElementById('facts').innerHTML =
-    'Über die ganze Strecke sind es <b>' + FACTS.total.n + '</b> Unfälle mit Personenschaden, ' +
-    '<b>' + FACTS.total.moto + '</b> davon mit einem Motorrad und <b>' + FACTS.total.dead +
-    '</b> Unfälle mit Getöteten. Der Unterschied liegt in der Höhe: Unterhalb von 1000 Metern ' +
-    'ist gut jeder zweite Unfall ein Motorradunfall (<b>' + low.moto + '</b> von <b>' + low.n +
-    '</b>), oberhalb vier von fünf (<b>' + high.moto + '</b> von <b>' + high.n + '</b>). ' +
-    'Am deutlichsten ist es dort, wo die Strasse durch Siedlungsgebiet führt: auf der Urner ' +
-    'Seite unter 1000 Metern, also in Altdorf und Bürglen, sind es nur <b>' + lowUR.moto +
-    '</b> von <b>' + lowUR.n + '</b>. Der Glarner Abschnitt ist auf ganzer Länge Passzufahrt ' +
-    'und hat auch unten schon hohe Motorradanteile.';
-})();
+document.getElementById('facts').innerHTML =
+  'Auf den <b>' + de(FACTS.len_km) + '</b> Kilometern zwischen Altdorf und Linthal sind in ' +
+  '15 Jahren <b>' + FACTS.total.n + '</b> Unfälle mit Personenschaden passiert, <b>' +
+  FACTS.total.moto + '</b> davon mit einem Motorrad, <b>' + FACTS.total.dead +
+  '</b> mit Getöteten. Der Unterschied liegt in der Höhe: Unterhalb von 1000 Metern ist gut ' +
+  'jeder zweite Unfall ein Motorradunfall (<b>' + FACTS.low.moto + '</b> von <b>' +
+  FACTS.low.n + '</b>), oberhalb vier von fünf (<b>' + FACTS.high.moto + '</b> von <b>' +
+  FACTS.high.n + '</b>). Am deutlichsten ist es dort, wo die Strasse durch Siedlungsgebiet ' +
+  'führt: auf der Urner Seite unter 1000 Metern, also in Altdorf und Bürglen, sind es nur <b>' +
+  FACTS.lowUri.moto + '</b> von <b>' + FACTS.lowUri.n + '</b>.';
 
 document.getElementById('src').innerHTML =
-  'Unfälle mit Personenschaden auf der Klausenstrasse, 2011–2025: ' +
-  '<b>' + FACTS.Uri.n + '</b> auf Urner Gebiet (' + FACTS.Uri.low + '–' + FACTS.Uri.high +
-  ' m), <b>' + FACTS.Glarus.n + '</b> auf Glarner (' + FACTS.Glarus.low + '–' +
-  FACTS.Glarus.high + ' m). Die Glarner Seite endet an der Kantonsgrenze auf rund 1300 m; ' +
-  'Urnerboden, Passhöhe und der ganze Abstieg nach Altdorf gehören zu Uri — deshalb ist die ' +
-  'Urner Seite so viel länger. Balkenlänge = Zahl der Unfälle, beide Seiten im gleichen ' +
-  'Massstab. Quellen: Bundesamt für Strassen ASTRA, Strassenverkehrsunfallorte; ' +
-  'Strassenzuordnung und Höhenmodell: swisstopo. Grafik: Südostschweiz';
+  'Unfälle mit Personenschaden auf der Klausenstrasse, 2011–2025: <b>' + FACTS.Uri.n +
+  '</b> auf Urner Gebiet, <b>' + FACTS.Glarus.n + '</b> auf Glarner. Die Glarner Seite ' +
+  'beginnt erst an der Kantonsgrenze auf rund 1300 m — Urnerboden, Passhöhe und der ganze ' +
+  'Abstieg nach Altdorf gehören zu Uri. Die Punkte sitzen an der Stelle der Strasse, an der ' +
+  'der Unfall passiert ist; wo mehrere nahe beieinanderliegen, stapeln sie sich nach oben. ' +
+  'Höchster Punkt der Strasse: ' + FACTS.peak[1] + ' m. ' +
+  'Quellen: Bundesamt für Strassen ASTRA, Strassenverkehrsunfallorte; Streckenverlauf: ' +
+  'OpenStreetMap; Höhenmodell: swisstopo. Grafik: Südostschweiz';
 
 (function(){
-  let h = '<tr><th>H&ouml;he</th><th>UR Unf&auml;lle</th><th>UR Motorrad</th>' +
-          '<th>GL Unf&auml;lle</th><th>GL Motorrad</th></tr>';
-  ROWS.forEach(function(r){
-    h += '<tr><td>' + r.from + '–' + r.to + ' m</td><td>' + r.Uri.n + '</td><td>' + r.Uri.moto +
-         '</td><td>' + r.Glarus.n + '</td><td>' + r.Glarus.moto + '</td></tr>';
+  let h = '<tr><th>Abschnitt</th><th>Unf&auml;lle</th><th>mit Motorrad</th>' +
+          '<th>schwer/t&ouml;dlich</th><th>mit Get&ouml;teten</th></tr>';
+  [['Urner Seite','Uri'],['Glarner Seite','Glarus'],
+   ['unter 1000 m ü. M.','low'],['ab 1000 m ü. M.','high'],
+   ['ganze Strecke','total']].forEach(function(r){
+    const d = FACTS[r[1]];
+    h += '<tr><td>' + r[0] + '</td><td>' + d.n + '</td><td>' + d.moto + '</td><td>' +
+         d.severe + '</td><td>' + d.dead + '</td></tr>';
   });
-  h += '<tr><td><b>Total</b></td><td><b>' + FACTS.Uri.n + '</b></td><td><b>' + FACTS.Uri.moto +
-       '</b></td><td><b>' + FACTS.Glarus.n + '</b></td><td><b>' + FACTS.Glarus.moto + '</b></td></tr>';
   document.getElementById('tbl').innerHTML = h;
 })();
 </script>

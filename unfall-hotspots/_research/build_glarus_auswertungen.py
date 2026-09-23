@@ -412,53 +412,38 @@ def g7_entwicklung(acc):
 
 # The Klausen road crosses the cantonal border: Linthal to about 1300 m is
 # Glarus, the Urnerboden, the pass itself and the whole descent to Altdorf
-# are Uri. Uri accidents and the elevation of every point are cached
-# separately — see cache/ur_klausenstrasse.json and cache/klausen_hoehen.json.
-BAND = 200          # metres per elevation band
-PASS_HEIGHT = 1948  # Klausenpass
+# are Uri. The profile (224 elevation samples along the 46 km route), every
+# accident projected onto it, and the place markers are cached — built once
+# from OpenStreetMap geometry plus the swisstopo elevation model.
+CANTON_BORDER_KM = 35500   # between the last Uri and the first Glarus accident
 
 
 def g8_klausen_hoehe(acc, streets):
-    ur = json.load(open(os.path.join(CACHE, "ur_klausenstrasse.json"), encoding="utf-8"))
-    hoehen = json.load(open(os.path.join(CACHE, "klausen_hoehen.json"), encoding="utf-8"))
-    ur_street = ur["streets"]
-    side = {
-        "Uri": [a for a in ur["acc"]
-                if (ur_street.get(a["AccidentUID"]) or [None])[0] == "Klausenstrasse"],
-        "Glarus": [a for a in acc if street_of(a, streets) == "Klausenstrasse"],
+    profil = json.load(open(os.path.join(CACHE, "klausen_profil.json"), encoding="utf-8"))
+    punkte = json.load(open(os.path.join(CACHE, "klausen_punkte.json"), encoding="utf-8"))
+    orte = json.load(open(os.path.join(CACHE, "klausen_orte.json"), encoding="utf-8"))
+
+    def block(rows):
+        return {"n": len(rows),
+                "moto": sum(r["moto"] for r in rows),
+                "severe": sum(1 for r in rows if r["sev"] in SEVERE),
+                "dead": sum(1 for r in rows if r["sev"] == "as1")}
+
+    facts = {
+        "total": block(punkte),
+        "Uri": block([r for r in punkte if r["side"] == "Uri"]),
+        "Glarus": block([r for r in punkte if r["side"] == "Glarus"]),
+        # the same threshold on both halves — comparing "Uri below" against
+        # "both sides above" mixes two populations and overstates the gap
+        "low": block([r for r in punkte if r["h"] < 1000]),
+        "high": block([r for r in punkte if r["h"] >= 1000]),
+        "lowUri": block([r for r in punkte if r["h"] < 1000 and r["side"] == "Uri"]),
+        "border_km": CANTON_BORDER_KM,
+        "peak": max(profil, key=lambda p: p[1]),
+        "len_km": round(profil[-1][0] / 1000, 1),
     }
-
-    def band_of(a):
-        h = hoehen.get(a["AccidentUID"])
-        return None if h is None else int(h // BAND) * BAND
-
-    bands = sorted({band_of(a) for rows in side.values() for a in rows if band_of(a)},
-                   reverse=True)
-    rows = []
-    for b in bands:
-        row = {"from": b, "to": b + BAND - 1}
-        for name, accs in side.items():
-            here = [a for a in accs if band_of(a) == b]
-            row[name] = {
-                "n": len(here),
-                "moto": sum(1 for a in here if a["AccidentInvolvingMotorcycle"] == "true"),
-                "severe": severe(here),
-            }
-        rows.append(row)
-
-    facts = {"pass": PASS_HEIGHT, "band": BAND}
-    for name, accs in side.items():
-        hs = [hoehen[a["AccidentUID"]] for a in accs if hoehen.get(a["AccidentUID"])]
-        facts[name] = {
-            "n": len(accs),
-            "moto": sum(1 for a in accs if a["AccidentInvolvingMotorcycle"] == "true"),
-            "severe": severe(accs),
-            "dead": sum(1 for a in accs if a["AccidentSeverityCategory"] == "as1"),
-            "low": round(min(hs)), "high": round(max(hs)),
-        }
-    facts["total"] = {k: facts["Uri"][k] + facts["Glarus"][k]
-                      for k in ("n", "moto", "severe", "dead")}
-    return js("ROWS", rows) + "\n" + js("FACTS", facts)
+    return (js("PROFIL", profil) + "\n" + js("PUNKTE", punkte) + "\n"
+            + js("ORTE", orte) + "\n" + js("FACTS", facts))
 
 
 # --------------------------------------------------------------------------
