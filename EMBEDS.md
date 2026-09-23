@@ -27,7 +27,7 @@ nachführen.
 | # | Embed | Was es zeigt | Direkt-Link |
 |---|---|---|---|
 | T1 | `tankrechner/tankrechner-glarus.html` | Vollversion: Ziel-Presets, Wechselkurs, Fazit, Kurve, Tabelle | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html) |
-| T2 | `tankrechner/tankrechner-einfach.html` | Kurzversion: zwei Preise, Umweg, Tankfüllung, Verbrauch – Fazit und Grenzwert | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html) |
+| T2 | `tankrechner/tankrechner-einfach.html` | Kurzversion: zwei Preise, Umweg, Tankfüllung, Verbrauch – Fazit, Grenzwert und Kurve | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html) |
 
 Beide stehen für sich; T2 ist nicht abhängig von T1. Unterschied in der Distanzlogik: T1 fragt
 die einfache Strecke und verdoppelt sie bei einer Extrafahrt, T2 fragt direkt den gesamten
@@ -82,10 +82,10 @@ braucht dafür nichts Besonderes.
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html"
   title="Lohnt sich der Umweg zur günstigeren Tankstelle?"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:1050px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:1400px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 730 px ab 700 px Breite, 945 px bei 500 px, rund 1050 px auf dem Handy.
+Gemessene Inhaltshöhen: 1067 px ab 700 px Breite, 1271 px bei 500 px, rund 1350 px auf dem Handy.
 
 ---
 
