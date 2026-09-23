@@ -179,6 +179,25 @@ let t; addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(dr
   });
   document.getElementById('tbl').innerHTML = h;
 })();
+
+/* ---- report our height to the embedding page -------------------------
+   The host sets the iframe height from this; see the embed code in
+   _research/artikel-geruest.md. Harmless when nobody listens. */
+(function(){
+  let last = 0;
+  function report(){
+    const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    if (h === last) return;                    // don't spam identical values
+    last = h;
+    try { parent.postMessage({ type: 'sos-embed-height', height: h }, '*'); }
+    catch (e) { /* cross-origin parents may refuse; nothing we can do */ }
+  }
+  addEventListener('load', report);
+  addEventListener('resize', report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  document.addEventListener('toggle', report, true);   // <details> open/close
+  report();
+})();
 </script>
 </body>
 </html>

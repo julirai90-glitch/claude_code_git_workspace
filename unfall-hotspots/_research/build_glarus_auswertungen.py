@@ -378,7 +378,10 @@ def g6_talalpstrasse(acc, streets, orte, min_n=12):
         "km": 8.31,
         "label": ROUTE_LABEL,
     }
-    return js("FACTS", facts) + "\n" + js("RANK", rank[:8]) + "\n" + js("MIN_N", min_n)
+    # five rows carry the finding; the rest lives in the table view, which
+    # keeps the embed from running to 2000 px in a narrow column
+    return (js("FACTS", facts) + "\n" + js("RANK", rank[:5]) + "\n"
+            + js("RANK_FULL", rank) + "\n" + js("MIN_N", min_n))
 
 
 def g7_entwicklung(acc):
