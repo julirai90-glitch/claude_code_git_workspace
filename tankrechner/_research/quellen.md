@@ -75,8 +75,35 @@ Stationen. Der Landesdurchschnitt lag mit EUR 1,925 praktisch gleichauf.
 
 ## Liechtenstein
 
-Keine offizielle Preisstatistik gefunden. Der Startwert entspricht deshalb dem Schweizer Wert –
-das ist eine **markierte Annahme**, kein erhobener Preis. Im Embed entsprechend deklariert.
+**Kein steuerlicher Preisvorteil.** Liechtenstein bildet mit der Schweiz ein gemeinsames
+Zollgebiet (Zollvertrag von 1923). Die Erhebung der Mineralölsteuer ist Zollvertragsmaterie;
+Liechtenstein kann sie nicht eigenständig erhöhen oder senken. Die Steuern und Abgaben von
+rund 77 Rappen je Liter Benzin sind damit dieselben wie in der Schweiz. Unterschiede an der
+Säule entstehen nur über die Marge der einzelnen Tankstelle, nicht systematisch.
+Belege: vu-online.li (Partei Vaterländische Union) zur Zollvertragsmaterie;
+Avenergy Suisse zur Zusammensetzung des Benzinpreises
+(`https://www.avenergy.ch/de/preise-statistiken/wie-setzt-sich-der-benzinpreis-zusammen`);
+liechtensteinisches Mineralölsteuergesetz LGBl. 1993 Nr. 5.
+*Sekundärquellen – der Zollvertragstext selbst wurde nicht eingesehen.*
+
+**Keine Preisstatistik.** Für Liechtenstein existiert keine offizielle Preiserhebung
+(Gegenstück zu TCS oder E-Control). Nur kommerzielle Portale führen Preise. Der Startwert im
+Rechner entspricht deshalb dem Schweizer Wert – eine **markierte Annahme**, kein erhobener
+Preis.
+
+**Nächste Tankstellen, abgefragt am 23.09.2026** über die Overpass-API von OpenStreetMap
+(`node[amenity=fuel]` in `area["ISO3166-1"="LI"]`), Luftlinie ab Glarus:
+
+| Tankstelle | Ort | Luftlinie ab Glarus |
+|---|---|---|
+| Coop Pronto | Balzers | 33,9 km |
+| AVIA | Triesen | 36,5 km |
+| Eni | Vaduz | 36,9 km |
+| Socar | Vaduz | 36,9 km |
+
+Zum Vergleich dieselbe Abfrage ohne Landesfilter: Die Schweizer Tankstellen in Trübbach
+(Ruedi Rüssel 32,9 km, Migrol 33,1 km) liegen minimal **näher** als die erste liechtensteinische.
+Wer nach Balzers fährt, passiert sie unterwegs.
 
 ## Wechselkurs
 

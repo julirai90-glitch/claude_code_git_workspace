@@ -697,7 +697,8 @@ function zielWechsel(){
 
   document.getElementById("zielHint").textContent = at
     ? "Gerechnet wird bis Feldkirch, der nächstgelegenen Stadt in Vorarlberg."
-    : (fl ? "Gerechnet wird bis Balzers, der ersten Ortschaft hinter der Grenze."
+    : (fl ? "Gerechnet wird bis Balzers – die erste Tankstelle hinter der Grenze steht dort. "
+          + "Kurz davor, in Trübbach, liegen allerdings schon Schweizer Tankstellen."
           : "Für den Umweg zu einer günstigeren Tankstelle im Kanton oder in der Nachbarschaft.");
 
   preisfeldSetzen();
@@ -723,8 +724,9 @@ function preisfeldSetzen(){
     S.pzChf = S.ziel === "fl" ? REF.ch[S.fuel] : Math.max(0, REF.ch[S.fuel] - 0.10);
     pz.step = "0.01"; pz.value = S.pzChf.toFixed(2);
     document.getElementById("pzHint").textContent = S.ziel === "fl"
-      ? "Für Liechtenstein gibt es keine offizielle Preisstatistik. Voreingestellt ist deshalb "
-        + "der Schweizer Wert – tragen Sie den Preis ein, den Sie kennen."
+      ? "Liechtenstein gehört zum Schweizer Zollgebiet, die Mineralölsteuer ist dieselbe – ein "
+        + "systematischer Preisvorteil ist deshalb nicht zu erwarten. Voreingestellt ist der "
+        + "Schweizer Wert; tragen Sie ein, was die Tankstelle verlangt."
       : "Annahme: 10 Rappen günstiger als der Schweizer Durchschnitt. Bitte anpassen.";
   }
   document.getElementById("pchHint").textContent =
