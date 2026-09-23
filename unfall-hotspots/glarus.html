@@ -858,7 +858,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div><span class="legendDot" style="background:var(--rot)"></span> Get&ouml;tete (Gewicht 2)</div>
       <div><span class="legendDot" style="background:var(--orange)"></span> Schwerverletzte (Gewicht 2)</div>
       <div><span class="legendDot" style="background:var(--gelb)"></span> Leichtverletzte (Gewicht 1)</div>
-      <div class="legendNote" style="margin-top:6px; font-size:11px; color:var(--muted);">Cluster-Gr&ouml;sse &amp; Farbe &#8776; Hotspot-Score</div>
+      <div class="legendNote" style="margin-top:6px; font-size:11px; color:var(--muted);">Kreisfarbe &#8776; Hotspot-Score, Kreisgr&ouml;sse &#8776; Zahl der Unf&auml;lle</div>
       <div id="extentNote" style="display:none; margin-top:4px; font-size:11px; color:var(--muted);">Gestrichelt = der Kreis zeigt jetzt den tats&auml;chlichen Suchradius</div>
     </div>
   </div>
@@ -874,14 +874,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <b>Enthalten sind ausschliesslich Unf&auml;lle mit Personenschaden</b> &ndash; also mit Get&ouml;teten,
       Schwer- oder Leichtverletzten. Unf&auml;lle mit reinem Sachschaden (&laquo;Blechschaden&raquo;) werden im
       ver&ouml;ffentlichten ASTRA-Datensatz nicht ausgewiesen und fehlen hier vollst&auml;ndig. Die
-      Hotspots wurden in Anlehnung an das ASTRA Black Spot Management (BSM) ermittelt. Der Suchradius von 50 m und
-      die Schwelle von 5 Punkten entsprechen dem Verfahren; abweichend davon ist der Zeitraum frei w&auml;hlbar
-      statt auf drei Jahre festgelegt (siehe Schritt 5), und die Cluster werden anders gebildet (Schritt 4). Dabei werden Orte identifiziert, an denen sich innerhalb eines definierten Zeitraums
-      besonders viele bzw. besonders schwere Unf&auml;lle im gew&auml;hlten Umkreis ereignen.</p>
+      Hotspots wurden in Anlehnung an das ASTRA Black Spot Management (BSM) ermittelt: Es werden Orte gesucht, an
+      denen sich innerhalb eines Zeitraums besonders viele bzw. besonders schwere Unf&auml;lle im 50-m-Umkreis
+      ereignen. Suchradius und Schwellenwert entsprechen dem Verfahren, zwei Punkte weichen bewusst ab &ndash; der
+      Zeitraum ist frei w&auml;hlbar statt auf drei Jahre festgelegt (Schritt 5), und die Cluster werden anders
+      gebildet (Schritt 4).</p>
       <p>Damit ein Ort als Hotspot gilt, muss der gewichtete Score aller Unf&auml;lle in seinem 50-m-Umkreis
       mindestens 5 Punkte erreichen. Get&ouml;tete und Schwerverletzte z&auml;hlen doppelt, Leichtverletzte einfach.
-      Der ausgewertete Zeitraum ist frei w&auml;hlbar; das ASTRA-Verfahren ist allerdings auf drei aufeinanderfolgende
-      Jahre ausgelegt (siehe Schritt 5). Die Karte deckt 2011&ndash;2025 ab und kann wahlweise auf alle
+      Die Karte deckt 2011&ndash;2025 ab und kann wahlweise auf alle
       Unf&auml;lle oder auf Velo-, Fussg&auml;nger- bzw. Motorrad-Unf&auml;lle beschr&auml;nkt werden.</p>
 
       <h3>Grundparameter</h3>
@@ -910,7 +910,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
       damit zu genau einem Hotspot. Der angezeigte Score ist die Gewichtssumme dieses Hotspots.</p>
       <p>Die ASTRA-Beschreibung verkettet stattdessen benachbarte Kandidaten: Liegt A nahe bei B und B nahe bei C,
       wird alles ein Hotspot. Das kann Cluster erzeugen, die sich &uuml;ber mehrere hundert Meter ziehen. Das hier
-      verwendete Verfahren h&auml;lt sie kompakt und z&auml;hlt gleich wie die begleitenden Grafiken.</p>
+      verwendete Verfahren h&auml;lt die Hotspots kompakt: &uuml;ber den ganzen Zeitraum liegen zwischen dem
+      &auml;ussersten und dem entferntesten Unfall eines Hotspots nie mehr als rund 200 Meter.</p>
 
       <h3>Schritt 5 &ndash; Wahl des Zeitraums</h3>
       <p>Die Analyse wird f&uuml;r den im Panel gew&auml;hlten Zeitraum durchgef&uuml;hrt, getrennt f&uuml;r alle
