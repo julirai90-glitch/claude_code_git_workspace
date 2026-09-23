@@ -760,7 +760,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
     * { box-sizing:border-box; }
     #map {
       position:relative; top:0; left:0; right:0;
-      height:280px; width:100%;
+      width:100%; height:440px;
+    }
+    /* The canton is 21 km wide and 32 km tall — a squarish map wastes its
+       width on Uri and St. Gallen. Portrait format follows the valley. */
+    @supports (aspect-ratio: 3 / 4) {
+      #map { height:auto; aspect-ratio: 3 / 4; max-height:68vh; }
     }
     #panel {
       position:static; width:auto; max-height:none; overflow:visible;
@@ -1082,6 +1087,18 @@ function currentCategory() {
 }
 
 map.on('zoomend', sizeClusterMarkers);
+
+/* the map box is sized by aspect ratio, so turning the phone changes its
+   height — Leaflet needs to hear about that and re-fit the current view */
+let resizeTimer;
+addEventListener('resize', function(){
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function(){
+    map.invalidateSize();
+    const active = document.querySelector('.viewBtn.active');
+    if (active) map.fitBounds(VIEWS[active.dataset.view]);
+  }, 180);
+});
 
 function render() {
   const [y1, y2] = currentRange();
