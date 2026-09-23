@@ -80,6 +80,15 @@ const REGION_ORTE = {
 };
 const REGIONEN = ['Graubünden', 'Glarus', 'Sarganserland', 'Linth'];
 
+// Abgestellte Regionen: keine Mail mehr, die Zuordnung laeuft aber weiter.
+// Julian am 23.09.2026: Sarganserland aus, alle anderen unveraendert.
+// Die Region bleibt bewusst in REGIONEN stehen. Naehme man sie heraus, fielen
+// Meldungen aus Walenstadt oder Bad Ragaz auf die naechste passende Ortsliste
+// und landeten bei einer fremden Redaktion - so werden sie weiterhin sauber
+// dem Sarganserland zugeordnet und danach verworfen.
+const REGIONEN_AUS = ['Sarganserland'];
+const mailAus = r => REGIONEN_AUS.includes(r);
+
 function regionVonSite(id) {
   for (const r in REGION_SITES) if (REGION_SITES[r].includes(id)) return r;
   return 'Graubünden';
@@ -98,6 +107,34 @@ function regionVonText(text) {
   }
   return null;   // keiner Region zuzuordnen -> nicht zustellen
 }
+
+
+// ---- Sofort oder sammeln? ---------------------------------------------------
+// Ein beginnender Stau ist eine Nachricht und geht sofort raus. Was danach auf
+// derselben Achse folgt - der Stau wandert, ASTRA stuft um - ist Lagebild und
+// wartet auf die Sammelmail. Ohne diese Trennung kamen am 20.09.2026 sechzehn
+// Mails an einem Tag, fuenf davon fuer eine einzige wandernde Kolonne am Walensee.
+const SAMMEL_STUNDEN = 2;        // Takt der Sammelmail je Region
+const LAGE_ENDE_MIN   = 30;      // so lange muss eine Meldung fehlen, bis sie als beendet gilt
+const LAGE_NEU_STUNDEN = 3;
+const ENDE_MAX_WARTEN  = 6;      // so lange darf eine Entwarnung auf eine Sendung warten      // danach gilt dieselbe Achse wieder als neuer Beginn
+
+// Achse = Strassennummer, bewusst ohne Fahrtrichtung und ohne Abschnitt. Sonst
+// zaehlt jede Verschiebung der Kolonne als neuer Beginn.
+function achseVon(m) {
+  const t = (m.ort || '') + ' ' + (m.strasse || '');
+  const g = t.match(/\b(A\d+[a-c]?|H\d+[a-c]?)\b/);
+  return g ? g[1] : (m.strasse || t.split(/[,|]/)[0] || '?').trim();
+}
+// Stufen statt Wortlaut: ASTRA nennt dieselbe Lage mal stockend, mal Stau.
+function stufeVon(m) {
+  const t = ((m.sachlage || '') + ' ' + (m.zustand || '') + ' ' + (m.art || '')).toLowerCase();
+  if (/gesperrt|sperrung|geschlossen|unfall/.test(t)) return 3;
+  if (/\bstau\b/.test(t)) return 2;
+  if (/stockend|z[äa]hfl|verkehrsbehinderung|überlastung/.test(t)) return 1;
+  return 0;
+}
+const istSperrung = m => stufeVon(m) === 3;
 
 // ---- Zeit ------------------------------------------------------------------
 function swissParts(d) {
@@ -137,6 +174,13 @@ if (!latest.sites.length) throw new Error('Quelle «Latest» lieferte 0 Zählste
 const S = $getWorkflowStaticData('global');
 if (!S.seen) S.seen = {};            // key -> {erst, zuletzt} (ISO)
 if (!S.alarmiert) S.alarmiert = {};  // siteId|dir -> YYYY-MM-DD (Entprellung)
+if (!S.offen) S.offen = {};          // region|achse -> {seit, stufe, ort}
+if (!S.wartend) S.wartend = {};      // region -> [Eintraege fuer die naechste Sammelmail]
+if (!S.letzteSammel) S.letzteSammel = {};   // region -> ISO der letzten Sammelmail
+// Altlast abgestellter Regionen wegraeumen: was dort noch wartet, wird nie mehr
+// versendet und wuerde staticData sonst dauerhaft mittragen.
+for (const r of REGIONEN_AUS) { delete S.wartend[r]; delete S.letzteSammel[r]; }
+for (const schl in S.offen) if (mailAus(schl.split('|')[0])) delete S.offen[schl];
 // Beim allerersten Lauf ist jede laufende Meldung formal "neu" – die
 // Brienzerstrasse ist seit November 2024 gesperrt. Dann nur den Stand merken
 // und schweigen, sonst kommt zum Start eine Mail mit der ganzen Altlast.
@@ -308,6 +352,9 @@ const alarmeZaehler = [];
 for (const s of sites) {
   if (EXCLUDE_SITES.includes(s.id)) continue;
   if (!istHauptachse(s)) continue;
+  // Abgestellte Region: kein eigener Alarm. Die Stelle bleibt trotzdem in "lage"
+  // und zaehlt als "weitere Stelle" fuer die Wellenerkennung der Nachbarregionen.
+  if (mailAus(regionVonSite(s.id))) continue;
   for (const dir of ['positive', 'negative']) {
     const key = s.id + '|' + dir;
     const L = lage[key];
@@ -315,6 +362,7 @@ for (const s of sites) {
     if (L.dauer == null || L.dauer < MIN_DAUER_MIN) continue;
     if (S.alarmiert[key] === heute) continue;        // max. 1 pro Standort und Tag
     if (!seeding) S.alarmiert[key] = heute;
+    if (seeding) continue;   // wie ASTRA/TBA: waehrend seeding nur Stand merken, nicht alarmieren
 
     // Einkreisung: Nachbarstellen derselben Achse, beidseitig.
     // Bewusst ohne Aussage ueber die Fahrtrichtung – was "positive" geografisch
@@ -373,7 +421,7 @@ for (const m of (astra.meldungen || [])) {
     if (vorlauf > ASTRA_VORLAUF_H) continue;
   }
   const rA = regionVonText((m.ort || '') + ' ' + (m.sachlage || ''));
-  if (!rA) continue;   // keiner Redaktion zuzuordnen
+  if (!rA || mailAus(rA)) continue;   // keiner Redaktion zuzuordnen oder abgestellt
   alarmeAstra.push({ ...m, _quelle: 'astra', _region: rA });
 }
 
@@ -388,6 +436,7 @@ for (const m of (tba.meldungen || [])) {
   // Der Absender ist das Tiefbauamt Graubünden - seine Meldungen betreffen
   // definitionsgemäss Bündner Strassen, auch wenn der Ortsname nicht in der
   // Liste steht (Nebentäler, Nebenstrassen).
+  if (mailAus('Graubünden')) continue;
   alarmeTba.push({ ...m, _quelle: 'tba', _region: 'Graubünden' });
 }
 
@@ -421,8 +470,67 @@ if (kaputt.length) {
     + JSON.stringify(kaputt[0]).slice(0, 200));
 }
 
-// Je Region ein Item - n8n verschickt daraus eine eigene Mail pro Redaktion.
-// Regionen ohne Alarme erzeugen kein Item und damit keine Mail.
+// ---- Einordnen: sofort, sammeln oder beendet --------------------------------
+const sofort = [];
+const gesehenAchsen = new Set();
+
+for (const a of alarme) {
+  // Zaehlstellen-Alarme gehen immer sofort: sie entstehen nur, wenn die Regel aus
+  // dem Alarm-Konzept greift, und sind damit ohnehin selten.
+  if (a._quelle === 'zaehlstelle') { sofort.push(a); continue; }
+
+  const achse = achseVon(a);
+  const schl = a._region + '|' + achse;
+  gesehenAchsen.add(schl);
+  const stufe = stufeVon(a);
+  const bisher = S.offen[schl];
+
+  if (!bisher || (jetzt - Date.parse(bisher.seit)) > LAGE_NEU_STUNDEN * 3600000) {
+    // Beginn - das ist die Nachricht.
+    S.offen[schl] = { seit: jetzt.toISOString(), stufe, ort: a.ort || a.strasse || achse };
+    sofort.push({ ...a, _anlass: 'beginn', _achse: achse });
+  } else if (stufe > bisher.stufe && istSperrung(a)) {
+    // Verschaerfung bis zur Sperrung durchbricht die Sammlung, eine Umstufung von
+    // stockend auf Stau nicht - sonst meldet jede Neubewertung derselben Kolonne.
+    S.offen[schl] = { ...bisher, stufe };
+    sofort.push({ ...a, _anlass: 'sperrung', _achse: achse });
+  } else {
+    S.offen[schl] = { ...bisher, stufe: Math.max(stufe, bisher.stufe) };
+    (S.wartend[a._region] = S.wartend[a._region] || []).push({ ...a, _anlass: 'verlauf', _achse: achse });
+  }
+}
+
+// ---- Beendete Lagen ---------------------------------------------------------
+// Eine Meldung, die nicht mehr im Feed steht, ist aufgehoben. Der Parser des
+// Meldungs-Workflows verwirft die Aufhebungsmeldungen von ASTRA, also erkennen
+// wir das Ende am Verschwinden - erst nach LAGE_ENDE_MIN, damit ein einzelner
+// Aussetzer nicht als Entwarnung durchgeht.
+const nochImFeed = new Set();
+for (const m of (astra.meldungen || [])) nochImFeed.add(m._region ? m._region + '|' + achseVon(m) : null);
+for (const a of alarmeAstra.concat(alarmeTba)) nochImFeed.add(a._region + '|' + achseVon(a));
+for (const m of (astra.meldungen || [])) {
+  const r = regionVonText((m.ort || '') + ' ' + (m.sachlage || ''));
+  if (r) nochImFeed.add(r + '|' + achseVon(m));
+}
+for (const m of (tba.meldungen || [])) nochImFeed.add('Graubünden|' + achseVon(m));
+
+for (const schl in S.offen) {
+  if (nochImFeed.has(schl)) { S.offen[schl].zuletzt = jetzt.toISOString(); continue; }
+  const o = S.offen[schl];
+  const weg = jetzt - Date.parse(o.zuletzt || o.seit);
+  if (weg < LAGE_ENDE_MIN * 60000) continue;
+  const region = schl.split('|')[0];
+  const dauer = Math.round((Date.parse(o.zuletzt || o.seit) - Date.parse(o.seit)) / 60000);
+  (S.wartend[region] = S.wartend[region] || []).push({
+    _quelle: 'ende', _region: region, _anlass: 'ende', _achse: schl.split('|')[1],
+    _wartetSeit: jetzt.toISOString(),
+    ort: o.ort, seit: o.seit, dauer_min: dauer
+  });
+  delete S.offen[schl];
+}
+
+// ---- Wann geht was raus? ----------------------------------------------------
+const items = [];
 const gemeinsam = {
   stand: swissTime(jetzt) + ' Uhr, ' + heute.split('-').reverse().join('.'),
   quellen: {
@@ -430,13 +538,39 @@ const gemeinsam = {
     baselineTage: nDays, bewertet: Object.keys(lage).length
   }
 };
-const items = [];
+
 for (const r of REGIONEN) {
-  const eigene = alarme.filter(a => a._region === r);
-  if (!eigene.length) continue;
-  items.push({ json: { region: r, anzahl: eigene.length, seeding, alarme: eigene, ...gemeinsam } });
+  if (seeding) continue;
+  if (mailAus(r)) continue;   // abgestellte Region: keine Sendung
+  const warten = S.wartend[r] || [];
+  const enden = warten.filter(a => a._quelle === 'ende');
+  const verlauf = warten.filter(a => a._quelle !== 'ende');
+  const eigene = sofort.filter(a => a._region === r);
+
+  if (eigene.length) {
+    // Eine Entwarnung rechtfertigt keine eigene Mail - sie faehrt mit. Sonst kam
+    // fuer jedes "A3 wieder frei" eine Sendung, die niemand gebraucht hat.
+    items.push({ json: { region: r, art: 'sofort', anzahl: eigene.length + enden.length,
+                         seeding, alarme: eigene.concat(enden), ...gemeinsam } });
+    S.wartend[r] = verlauf;
+    continue;
+  }
+
+  // Sammelmail nur, wenn ein echter Verlauf wartet. Reine Entwarnungen warten auf
+  // die naechste Sendung - laenger als ENDE_MAX_WARTEN aber nicht, sonst kommt die
+  // Entwarnung womoeglich erst Tage spaeter.
+  const letzte = S.letzteSammel[r] ? Date.parse(S.letzteSammel[r]) : 0;
+  const faellig = (jetzt - letzte) >= SAMMEL_STUNDEN * 3600000;
+  const endeUeberfaellig = enden.some(a =>
+    (jetzt - Date.parse(a._wartetSeit || jetzt.toISOString())) >= ENDE_MAX_WARTEN * 3600000);
+  if (faellig && (verlauf.length || endeUeberfaellig)) {
+    items.push({ json: { region: r, art: 'sammel', anzahl: warten.length,
+                         seeding, alarme: warten, ...gemeinsam } });
+    S.wartend[r] = [];
+    S.letzteSammel[r] = jetzt.toISOString();
+  }
 }
 if (!items.length) {
-  items.push({ json: { region: null, anzahl: 0, seeding, alarme: [], ...gemeinsam } });
+  items.push({ json: { region: null, art: null, anzahl: 0, seeding, alarme: [], ...gemeinsam } });
 }
 return items;

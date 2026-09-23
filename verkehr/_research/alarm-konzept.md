@@ -200,6 +200,12 @@ Glarus, Sarganserland, Linth**. Zählstellen werden über ihre Id zugeordnet, Me
 über Ortslisten je Region, TBA-Meldungen immer Graubünden (kantonales Amt, Nebentäler
 stehen in keiner Ortsliste).
 
+Nachtrag 23.09.2026: **Sarganserland abgestellt** (`REGIONEN_AUS` in
+`n8n_alarm_detect.js`). Die Region bleibt in `REGIONEN` und in den Ortslisten – würde
+man sie dort streichen, fielen Meldungen aus Walenstadt oder Bad Ragaz auf die nächste
+passende Liste und landeten bei einer fremden Redaktion. Ihre Zählstellen bleiben in
+der Lagebewertung und zählen weiter als «weitere Stelle» für die Wellenerkennung.
+
 Zwei Fehler, die dabei sichtbar wurden:
 
 - **«Wangen» ohne Kanton** fing am 17.09. eine A15-Meldung von Dübendorf ein. Die

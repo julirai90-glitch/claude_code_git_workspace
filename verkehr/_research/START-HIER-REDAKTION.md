@@ -29,6 +29,12 @@ an die Redaktionsadresse. Drei Quellen: Zählstellen (gefiltert), ASTRA-Meldunge
 und TBA-Meldungen (beide ungefiltert). Code versioniert in `n8n_alarm_detect.js` und
 `n8n_alarm_mail.js`, ausführliche Begründung in `alarm-konzept.md`.
 
+**Sarganserland ist seit 23.09.2026 abgestellt** (Wunsch Julian): Die Zuordnung läuft
+weiter, es geht nur keine Mail mehr raus – Zählstellen der Region zählen weiterhin als
+«weitere Stelle» für die Wellenerkennung der Nachbarregionen. Schalter ist
+`REGIONEN_AUS` in `n8n_alarm_detect.js`; Region aus der Liste nehmen, und der Versand
+läuft wieder.
+
 ## Die drei Regeln, die man kennen muss
 
 1. **Sprachregel:** Zählstellen sagen «deutlich langsamer als üblich» oder
