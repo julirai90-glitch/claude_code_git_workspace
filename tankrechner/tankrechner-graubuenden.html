@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lohnt sich die Fahrt zur günstigeren Tankstelle?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4; --s2:#ee7733;
+  --gut:#009988; --schlecht:#b5001e;
+  --gut-bg:#e6f4f2; --schlecht-bg:#fbeaec;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px; max-width:696px; margin:0 auto}
+.intro{margin:0 0 14px; font-size:15px; color:var(--ink-2)}
+fieldset{border:0; margin:0; padding:0}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:12px 18px}
+.full{grid-column:1 / -1}
+.f > label{display:block; font-size:13px; font-weight:600; color:var(--ink-2); margin-bottom:4px}
+.row{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+input[type=number]{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--rule);
+  border-radius:3px; padding:6px 7px; background:#fff; width:92px; flex:none;
+  font-variant-numeric:tabular-nums}
+input[type=range]{flex:1 1 130px; min-width:130px; accent-color:var(--s1)}
+.unit{font-size:13px; color:var(--ink-3); flex:none}
+.check{display:flex; align-items:flex-start; gap:8px; font-size:14px; color:var(--ink);
+  margin-top:2px}
+.check input{margin-top:4px; accent-color:var(--s1); flex:none}
+.res{margin:18px 0 0; border-radius:4px; padding:14px 16px}
+.res.gut{background:var(--gut-bg); border-left:4px solid var(--gut)}
+.res.schlecht{background:var(--schlecht-bg); border-left:4px solid var(--schlecht)}
+.res .head{font-size:19px; font-weight:700; line-height:1.3; margin:0}
+.res.gut .head{color:#00695f}
+.res.schlecht .head{color:var(--schlecht)}
+.split{margin:11px 0 0; width:100%; border-collapse:collapse; font-size:14px}
+.split td{padding:3px 0; border-bottom:1px solid rgba(20,32,42,.09)}
+.split td:last-child{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+.split tr:last-child td{border-bottom:0; font-weight:700; padding-top:6px}
+.split .neg{color:var(--schlecht)}
+.grenze{margin:14px 0 0; padding-top:10px; border-top:2px solid var(--rule); font-size:15px;
+  color:var(--ink-2)}
+.grenze b{color:var(--ink); font-size:17px; font-variant-numeric:tabular-nums}
+h2{font-size:15px; margin:22px 0 2px; color:var(--ink)}
+.chart-sub{font-size:13px; color:var(--ink-3); margin:0 0 8px}
+svg{display:block; max-width:100%; height:auto}
+.tick{font-size:11px; fill:var(--ink-3)}
+.grid-l{stroke:var(--rule-soft); stroke-width:1}
+.axis{stroke:var(--rule); stroke-width:1}
+.alab{font-size:12px; fill:var(--ink-2)}
+.legend{display:flex; gap:16px; flex-wrap:wrap; margin:8px 0 0}
+.lg{display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--ink-2)}
+.lg i{width:18px; height:3px; flex:none; border-radius:2px}
+.hint{font-size:12px; color:var(--ink-3); margin-top:3px; line-height:1.35}
+.hint b{color:var(--ink-2); font-variant-numeric:tabular-nums}
+select{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--rule); border-radius:3px; padding:6px 7px; background:#fff; width:100%}
+.folgen{margin:10px 0 0; border:1px solid var(--rule); border-left:4px solid var(--ink-3);
+  border-radius:4px; padding:12px 16px}
+.folgen h3{margin:0 0 7px; font-size:14px; font-weight:700; color:var(--ink)}
+.folgen table{width:100%; border-collapse:collapse; font-size:14px}
+.folgen td{padding:3px 0; border-bottom:1px solid var(--rule-soft); color:var(--ink-2)}
+.folgen td:last-child{text-align:right; font-weight:700; color:var(--ink);
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+.folgen tr:last-child td{border-bottom:0}
+.folgen .rel{margin:8px 0 0; font-size:13px; color:var(--ink-3); line-height:1.45}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:16px 0 0; line-height:1.5}
+@media (max-width:560px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body data-palette="#ee7733,#0068a4">
+<div class="wrap">
+
+<p class="intro">Eine Tankstelle im Nachbarort ist günstiger – lohnt sich die Fahrt dorthin?</p>
+
+<fieldset>
+<div class="grid">
+
+  <div class="f">
+    <label for="start">Von wo fahren Sie los?</label>
+    <select id="start"></select>
+  </div>
+
+  <div class="f">
+    <label for="ziel">Wo wollen Sie tanken?</label>
+    <select id="ziel"></select>
+  </div>
+
+  <div class="f">
+    <label for="pa" id="paLab">Preis am Startort</label>
+    <div class="row">
+      <input type="number" id="pa" min="0" max="5" step="0.01" value="2.10">
+      <span class="unit">CHF/l</span>
+    </div>
+  </div>
+
+  <div class="f">
+    <label for="pb" id="pbLab">Preis am Zielort</label>
+    <div class="row">
+      <input type="number" id="pb" min="0" max="5" step="0.01" value="2.00">
+      <span class="unit">CHF/l</span>
+    </div>
+  </div>
+
+  <div class="f">
+    <label for="dist">Strecke einfach</label>
+    <div class="row">
+      <input type="number" id="dist" min="0" max="300" step="1">
+      <span class="unit">km</span>
+      <input type="range" id="distR" min="0" max="150" step="1" aria-label="Strecke">
+    </div>
+    <p class="hint" id="distHint"></p>
+  </div>
+
+  <div class="f">
+    <label for="menge">Tankfüllung</label>
+    <div class="row">
+      <input type="number" id="menge" min="5" max="120" step="1" value="45">
+      <span class="unit">Liter</span>
+      <input type="range" id="mengeR" min="10" max="90" step="1" aria-label="Tankfüllung">
+    </div>
+  </div>
+
+  <div class="f">
+    <label for="verb">Verbrauch</label>
+    <div class="row">
+      <input type="number" id="verb" min="2" max="20" step="0.1" value="6.5">
+      <span class="unit">l/100 km</span>
+      <input type="range" id="verbR" min="3" max="15" step="0.1" aria-label="Verbrauch">
+    </div>
+  </div>
+
+  <div class="f full">
+    <label class="check">
+      <input type="checkbox" id="fzk" checked>
+      <span>Fahrzeugkosten mitrechnen – jeder Kilometer kostet neben dem Sprit rund
+      19 Rappen an Wertminderung, Reifen und Reparaturen.</span>
+    </label>
+  </div>
+
+</div>
+</fieldset>
+
+<div class="res" id="res" role="status" aria-live="polite">
+  <p class="head" id="resHead"></p>
+  <table class="split" id="split"></table>
+</div>
+
+<div class="folgen" id="folgen" hidden>
+  <h3>Was die Fahrt sonst noch kostet</h3>
+  <table><tbody id="folgenBody"></tbody></table>
+  <p class="rel" id="folgenRel"></p>
+</div>
+
+<p class="grenze" id="grenze"></p>
+
+<h2>Wie viel günstiger muss der Sprit sein, damit sich die Fahrt lohnt?</h2>
+<p class="chart-sub" id="chartSub"></p>
+<svg id="chart" role="img" aria-labelledby="chartTitle"></svg>
+<div class="legend">
+  <span class="lg"><i style="background:var(--s1)"></i>mit Fahrzeugkosten</span>
+  <span class="lg"><i style="background:var(--s2)"></i>nur Spritkosten</span>
+  <span class="lg" style="color:var(--ink-3)">Punkt: Ihre Einstellung</span>
+</div>
+
+<p class="src">CO₂: 2,32 kg je Liter Benzin, beim Verbrennen (Bundesamt für Umwelt,
+Emissionsfaktoren des Treibhausgasinventars, Januar 2026). Förderung, Raffinerie und Transport
+sind nicht eingerechnet. Vergleichswert: 3,5 Tonnen CO₂ pro Kopf und Jahr, also 9,6 Kilogramm
+pro Tag (BAFU, Treibhausgasinventar 2024, Emissionen im Inland).<br>
+Fahrzeugkosten: eigene Berechnung auf Basis der TCS-Kilometerkosten 2026
+(Medienmitteilung vom 6. Januar 2026). Von den 27,5 Rappen variablen Kosten je Kilometer
+entfallen 8,6 Rappen auf den Treibstoff – bleiben rund 19 Rappen für Wertminderung, Reifen und
+Reparaturen. Die oft genannten 74 Rappen enthalten auch Fixkosten, die ohnehin anfallen.</p>
+
+</div>
+
+<script>
+/* DATA-START */
+/* Orte in Graubünden, alphabetisch. Fahrdistanz (km) und Fahrzeit (Minuten) für die
+   einfache Strecke, aus einer OSRM-Matrixabfrage vom 23.09.2026; Koordinaten über
+   Nominatim. Zeile = Startort, Spalte = Ziel. Siehe _research/distanzen-gr.md */
+const ORTE = ["Arosa", "Bonaduz", "Chur", "Davos", "Disentis", "Domat/Ems", "Flims", "Ilanz", "Klosters", "Landquart", "Lenzerheide", "Maienfeld", "Mesocco", "Poschiavo", "Roveredo", "Samedan", "Savognin", "Scuol", "Splügen", "St. Moritz", "Thusis", "Vals", "Zernez"];
+const DIST = [
+  [  0, 43, 31, 90, 90, 37, 49, 61, 78, 46, 47, 50,112,150,135,114, 76,134, 80,115, 55, 81,126],
+  [ 43,  0, 15, 58, 53,  6, 13, 24, 60, 29, 30, 33, 72,110, 95, 74, 36,116, 40, 75, 15, 44, 94],
+  [ 30, 14,  0, 60, 61,  8, 21, 32, 47, 16, 19, 20, 83,121,106, 86, 48,103, 51, 87, 26, 52, 96],
+  [ 90, 57, 61,  0,110, 62, 69, 81, 14, 46, 42, 51,100, 99,123, 63, 40, 50, 68, 69, 44,101, 43],
+  [ 90, 53, 62,110,  0, 54, 41, 30,107, 76, 77, 80,110,162, 88,126, 88,163, 92,127, 67, 50,146],
+  [ 36,  7,  8, 62, 54,  0, 13, 25, 54, 23, 23, 27, 76,114, 99, 78, 40,110, 44, 79, 19, 45, 98],
+  [ 49, 13, 21, 69, 41, 13,  0, 12, 66, 35, 36, 39, 84,121,106, 86, 48,122, 51, 87, 27, 32,105],
+  [ 61, 24, 32, 81, 30, 25, 12,  0, 78, 46, 48, 50, 95,133,118, 97, 59,134, 63, 98, 38, 20,117],
+  [ 77, 60, 48, 13,107, 55, 67, 78,  0, 33, 55, 39,113,106,136, 70, 53, 57, 81, 75, 57, 98, 49],
+  [ 46, 29, 16, 45, 76, 23, 35, 47, 33,  0, 37,  6, 98,136,121,100, 62, 89, 66,101, 41, 67, 81],
+  [ 47, 29, 19, 42, 77, 23, 36, 48, 55, 36,  0, 40, 79, 94,102, 58, 20, 92, 47, 59, 23, 68, 78],
+  [ 50, 32, 20, 51, 80, 27, 39, 51, 39,  6, 41,  0,102,140,125,104, 66, 95, 70,105, 45, 71, 88],
+  [112, 71, 83,100,109, 76, 84, 95,114, 98, 79,102,  0,152, 23,116, 79,150, 33,118, 59,115,136],
+  [150,109,121, 99,162,114,122,133,106,135, 94,139,152,  0,175, 37, 77, 91,120, 38, 96,153, 71],
+  [135, 94,107,123, 87, 99,107,118,137,121,102,125, 23,175,  0,140,102,173, 56,141, 82,138,159],
+  [114, 73, 86, 63,126, 78, 86, 97, 71,100, 58,104,117, 37,140,  0, 45, 55, 84,  6, 61,117, 35],
+  [ 76, 36, 48, 40, 88, 40, 48, 59, 53, 62, 20, 66, 79, 77,102, 45,  0, 90, 46, 39, 23, 79, 76],
+  [133,116,104, 50,163,111,123,134, 58, 89, 92, 95,150, 91,173, 55, 90,  0,118, 60, 94,154, 34],
+  [ 80, 39, 51, 68, 92, 44, 51, 63, 82, 65, 47, 69, 32,120, 55, 84, 46,118,  0, 85, 26, 83,104],
+  [115, 74, 86, 68,127, 79, 87, 98, 76,101, 59,105,118, 38,140,  7, 39, 60, 85,  0, 62,118, 40],
+  [ 55, 14, 27, 44, 67, 19, 27, 38, 58, 41, 23, 45, 59, 97, 81, 61, 23, 94, 26, 62,  0, 58, 80],
+  [ 81, 44, 52,101, 50, 45, 32, 20, 98, 67, 68, 70,115,153,138,117, 79,154, 83,118, 58,  0,137],
+  [125, 93, 96, 42,146, 98,105,117, 50, 81, 78, 87,136, 71,159, 35, 76, 34,104, 40, 80,137,  0]
+];
+const ZEIT = [
+  [  0, 45, 35, 90, 92, 42, 52, 64, 81, 47, 54, 50,103,147,122,113, 74,134, 75,115, 54, 86,126],
+  [ 46,  0, 16, 61, 58, 10, 18, 30, 57, 23, 33, 26, 66,110, 85, 76, 37,109, 38, 78, 18, 52, 97],
+  [ 35, 15,  0, 57, 62, 12, 22, 34, 48, 14, 24, 17, 73,117, 92, 83, 44,100, 45, 85, 25, 56, 93],
+  [ 91, 60, 58,  0,110, 62, 70, 82, 19, 48, 46, 53, 95, 98,114, 65, 43, 53, 68, 70, 47,104, 46],
+  [ 93, 57, 62,111,  0, 56, 46, 31,104, 69, 79, 73,101,159, 87,125, 87,156, 88,127, 67, 52,146],
+  [ 42,  9, 12, 62, 56,  0, 15, 28, 55, 20, 29, 24, 67,111, 86, 77, 38,107, 39, 79, 19, 49, 98],
+  [ 52, 17, 22, 70, 46, 15,  0, 18, 63, 29, 38, 32, 75,118, 94, 85, 46,115, 47, 87, 26, 40,105],
+  [ 65, 29, 34, 83, 31, 28, 18,  0, 76, 41, 51, 45, 88,131,106, 97, 59,128, 60, 99, 39, 23,118],
+  [ 81, 57, 48, 17,103, 54, 63, 75,  0, 38, 63, 43,112,105,131, 72, 60, 60, 85, 77, 64, 97, 53],
+  [ 47, 23, 14, 47, 69, 20, 29, 41, 38,  0, 35,  8, 80,124, 99, 90, 52, 90, 53, 92, 32, 63, 83],
+  [ 54, 33, 24, 47, 79, 29, 39, 51, 64, 35,  0, 38, 73, 95, 92, 61, 23, 98, 46, 63, 25, 73, 82],
+  [ 50, 26, 18, 52, 73, 24, 32, 45, 43,  8, 39,  0, 84,128,103, 94, 55, 95, 56, 96, 35, 66, 88],
+  [104, 65, 73, 96,100, 68, 75, 88,113, 80, 73, 84,  0,144, 19,111, 72,147, 29,112, 53,109,131],
+  [147,108,117, 97,159,111,119,131,106,124, 95,127,144,  0,163, 36, 77, 90,117, 37, 96,153, 71],
+  [122, 84, 92,115, 86, 86, 94,107,132, 99, 92,102, 19,163,  0,129, 91,166, 47,131, 71,128,150],
+  [114, 75, 83, 64,126, 77, 85, 98, 72, 90, 61, 94,111, 36,129,  0, 47, 57, 83,  7, 62,119, 37],
+  [ 75, 36, 44, 43, 87, 39, 46, 59, 60, 51, 22, 55, 72, 77, 91, 47,  0, 94, 44, 41, 24, 80, 78],
+  [133,109,100, 52,156,107,115,128, 61, 90, 98, 95,148, 91,166, 57, 95,  0,120, 62, 99,149, 38],
+  [ 76, 37, 45, 68, 88, 40, 48, 60, 85, 53, 45, 56, 28,116, 47, 83, 44,120,  0, 85, 25, 81,103],
+  [115, 76, 85, 69,127, 79, 87, 99, 77, 92, 63, 95,112, 37,131,  7, 41, 62, 85,  0, 64,121, 42],
+  [ 55, 16, 25, 48, 67, 19, 27, 39, 64, 32, 25, 35, 52, 96, 71, 62, 23, 99, 25, 64,  0, 61, 83],
+  [ 86, 51, 56,104, 52, 50, 40, 23, 97, 63, 73, 66,109,153,128,119, 80,149, 81,121, 60,  0,140],
+  [125, 96, 93, 45,146, 98,106,118, 53, 83, 82, 87,132, 71,150, 37, 79, 38,104, 42, 83,140,  0]
+];
+
+const FZK = 19;     /* Rappen pro km neben dem Sprit, hergeleitet aus TCS 2026 */
+/* CO2 beim Verbrennen von Benzin, kg je Liter. BAFU, Emissionsfaktoren des
+   schweizerischen Treibhausgasinventars, Januar 2026. Diesel läge bei 2.62. */
+const CO2 = 2.32;
+/* 3,5 t CO2 pro Kopf und Jahr (BAFU, Treibhausgasinventar 2024) – 9,6 kg pro Tag */
+const PRO_KOPF_TAG = 3500 / 365;
+/* DATA-END */
+
+const fr = n => (n<0?"−":"") + Math.abs(n).toFixed(2);
+const de = (n,d=0) => n.toFixed(d).replace(".", ",");
+/* Eine Nachkommastelle nur, wenn sie etwas aussagt: 7,5 aber 7 statt 7,0 */
+const zahl = n => n >= 10 ? de(n) : de(n,1).replace(/,0$/, "");
+/* Minuten in eine lesbare Dauer: "40 Minuten", "1 Stunde", "2 Stunden 20 Minuten" */
+function dauer(min){
+  min = Math.round(min / 5) * 5;
+  const h = Math.floor(min / 60), m = min % 60;
+  if (h === 0) return m + " Minuten";
+  const std = h === 1 ? "1 Stunde" : h + " Stunden";
+  return m === 0 ? std : std + " " + m + " Minuten";
+}
+
+/* Wie lange eine Person im Schnitt braucht, um so viel CO2 zu verursachen */
+function proKopfZeit(kg){
+  const tage = kg / PRO_KOPF_TAG;
+  if (tage >= 1)  return de(tage,1).replace(/,0$/,"") + " Tagen";
+  const std = tage * 24;
+  return std >= 1 ? (Math.round(std) === 1 ? "einer Stunde" : Math.round(std) + " Stunden")
+                  : Math.round(std * 60) + " Minuten";
+}
+
+/* Startwerte: Bleifrei 95 im Landesdurchschnitt 2.10 CHF/l (Erhebung des TCS, Stand
+   18. September 2026), die zweite Tankstelle 10 Rappen günstiger. */
+const S = { start:2, ziel:9, pa:2.10, pb:2.00, dist:16, menge:45, verb:6.5, fzk:true };
+
+/* Gerechnet wird die Fahrt zur Tankstelle und zurück */
+const FAKTOR = 2;
+
+/* Der Rechenkern. km ist der gesamte Mehrweg, Rückweg also bereits enthalten.
+   Der Sprit für den Umweg wird zum Mittel aus beiden Preisen gerechnet: hin noch
+   mit dem teureren, zurück bereits mit dem günstigeren. */
+function calc(o){
+  o = o || {};
+  const km = FAKTOR * (o.dist !== undefined ? o.dist : S.dist);
+  const c  = S.fzk ? FZK/100 : 0;
+  const diff = S.pa - S.pb;
+  const pM   = (S.pa + S.pb) / 2;
+
+  const ersparnis = S.menge * diff;
+  const sprit     = km * (S.verb/100) * pM;
+  const fahrzeug  = km * c;
+  const netto     = ersparnis - sprit - fahrzeug;
+  const proKm     = (S.verb/100) * pM + c;
+  /* dStar ist die einfache Strecke, gefahren wird das Doppelte */
+  const dStar     = proKm > 0 ? ersparnis / (FAKTOR * proKm) : Infinity;
+
+  return {diff, ersparnis, sprit, fahrzeug, netto, dStar};
+}
+
+/* Nötiger Preisvorteil in Rappen je Liter, damit sich ein Umweg gerade noch lohnt.
+   Auflösung von "Ersparnis = Kosten" nach dem Preisunterschied; der mittlere Preis
+   hängt selbst davon ab, deshalb steht er auf beiden Seiten. */
+function noetigerVorteil(km, mitFzk){
+  const c = mitFzk ? FZK/100 : 0;
+  const nenner = S.menge + FAKTOR*km*S.verb/200;
+  if (nenner <= 0) return Infinity;
+  return (FAKTOR * km * ((S.verb/100)*S.pa + c) / nenner) * 100;
+}
+
+function niceMax(v, km){
+  if (km){
+    const st = v>200?50 : v>80?25 : v>30?10 : 5;
+    return Math.max(st, Math.ceil(v/st)*st);
+  }
+  /* Die y-Achse wird in 5 Schritte geteilt: einen Schritt wählen, der glatte
+     Beschriftungen ergibt (sonst stehen dort 2,8 / 5,6 / 8,4 …). */
+  for (const st of [1,2,3,4,5,6,8,10,15,20,25,30,40,50,60,80,100])
+    if (st*5 >= v) return st*5;
+  return Math.ceil(v/250)*250;
+}
+
+function drawChart(r){
+  /* Auf schmalen Displays ein engerer Zeichenbereich, sonst wird die Schrift unlesbar */
+  const schmal = window.innerWidth < 560;
+  const W = schmal?380:660, H = schmal?250:300;
+  const l = schmal?38:52, rr = schmal?12:14, t = 26, b = schmal?36:40;
+  const iw=W-l-rr, ih=H-t-b;
+
+  const xMax = niceMax(Math.max(S.dist * 1.5, 15), true);
+  const yMax = niceMax(Math.min(
+      Math.max(noetigerVorteil(xMax, S.fzk), r.diff*100*1.2, 10), 250));
+
+  const X = km => l + (km/xMax)*iw;
+  const Y = v  => t + ih - Math.min(Math.max(v,0)/yMax,1)*ih;
+
+  /* clamp=true für die Fläche, clamp=false für die Linien: Eine Linie, die am oberen
+     Rand flach weiterliefe, würde ein Plateau vortäuschen, das es nicht gibt. */
+  const pfad = (mitFzk, clamp) => {
+    let p = "", offen = false;
+    for (let i=0;i<=160;i++){
+      const km = xMax * (i/160);
+      let y = noetigerVorteil(km, mitFzk);
+      if (y > yMax){
+        if (!clamp){ offen = false; continue; }
+        y = yMax;
+      }
+      p += (offen ? "L" : "M") + X(km).toFixed(1) + " " + Y(y).toFixed(1);
+      offen = true;
+    }
+    return p;
+  };
+
+  let g = "";
+  for (let i=0;i<=5;i++){
+    const val = yMax*i/5, y = Y(val);
+    g += `<line class="grid-l" x1="${l}" y1="${y.toFixed(1)}" x2="${W-rr}" y2="${y.toFixed(1)}"/>`;
+    g += `<text class="tick" x="${l-7}" y="${(y+4).toFixed(1)}" text-anchor="end">${Math.round(val)}</text>`;
+  }
+  const step = (xMax<=30 ? 5 : xMax<=80 ? 10 : xMax<=200 ? 25 : 50) * (schmal ? 2 : 1);
+  for (let v=0; v<=xMax; v+=step){
+    g += `<text class="tick" x="${X(v).toFixed(1)}" y="${t+ih+16}" text-anchor="middle">${v}</text>`;
+  }
+  g += `<line class="axis" x1="${l}" y1="${t+ih}" x2="${W-rr}" y2="${t+ih}"/>`;
+  g += `<text class="alab" x="${l}" y="${H-6}">Strecke einfach in Kilometern</text>`;
+  g += `<text class="alab" x="${l-34}" y="${t-11}">Rappen je Liter</text>`;
+
+  const aktiv = S.fzk;
+  g += `<path d="${pfad(aktiv, true)} L ${X(xMax)} ${Y(yMax)} L ${X(0)} ${Y(yMax)} Z" fill="var(--s1)" opacity=".07"/>`;
+  g += `<path d="${pfad(false, false)}" fill="none" stroke="var(--s2)" stroke-width="${aktiv?2:3}" stroke-dasharray="${aktiv?"5 4":""}" stroke-linecap="round"/>`;
+  g += `<path d="${pfad(true, false)}"  fill="none" stroke="var(--s1)" stroke-width="${aktiv?3:2}" stroke-dasharray="${aktiv?"":"5 4"}" stroke-linecap="round"/>`;
+
+  const px = X(Math.min(S.dist, xMax));
+  const py = Y(Math.min(Math.max(r.diff*100, 0), yMax));
+  const lohnt = r.netto > 0;
+  g += `<line x1="${px.toFixed(1)}" y1="${t}" x2="${px.toFixed(1)}" y2="${t+ih}" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="2 3"/>`;
+  g += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="${lohnt?"var(--gut)":"var(--schlecht)"}" stroke="#fff" stroke-width="2"/>`;
+  const anchor = px > W*0.62 ? "end" : "start";
+  const dx = anchor==="end" ? -11 : 11;
+  /* Weisser Halo, damit die Beschriftung auch auf einer Linie lesbar bleibt */
+  g += `<text class="alab" x="${(px+dx).toFixed(1)}" y="${(py-11).toFixed(1)}" text-anchor="${anchor}" font-weight="700" stroke="#fff" stroke-width="3.5" paint-order="stroke" fill="${lohnt?"#00695f":"var(--schlecht)"}">Ihre Fahrt</text>`;
+
+  const svg = document.getElementById("chart");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = `<title id="chartTitle">Nötiger Preisvorteil je Liter in Abhängigkeit von der `
+    + `Länge des Umwegs, mit und ohne Fahrzeugkosten</title>` + g;
+}
+
+function render(){
+  const r = calc();
+  const lohnt = r.netto > 0;
+
+  document.getElementById("res").className = "res " + (lohnt ? "gut" : "schlecht");
+  document.getElementById("resHead").textContent = lohnt
+      ? "Ja – Sie sparen " + fr(r.netto) + " Franken"
+      : (r.netto === 0 ? "Genau die Null"
+                       : "Nein – Sie zahlen " + fr(-r.netto) + " Franken drauf");
+
+  const rows = [
+    [r.ersparnis >= 0 ? "Ersparnis an der Säule" : "Mehrkosten an der Säule", r.ersparnis],
+    ["Treibstoff für " + de(FAKTOR * S.dist) + " Zusatzkilometer", -r.sprit]
+  ];
+  if (S.fzk) rows.push(["Fahrzeugkosten für " + de(FAKTOR * S.dist) + " km", -r.fahrzeug]);
+  rows.push(["Unter dem Strich", r.netto]);
+  document.getElementById("split").innerHTML = rows.map(([k,v]) =>
+     "<tr><td>" + k + "</td><td class='" + (v<0?"neg":"") + "'>"
+     + (v>0?"+":"") + fr(v) + "</td></tr>").join("");
+
+  document.getElementById("paLab").textContent = "Preis in " + ORTE[S.start];
+  document.getElementById("pbLab").textContent = "Preis in " + ORTE[S.ziel];
+
+  document.getElementById("distHint").innerHTML = S.dist > 0
+      ? "Gerechnet werden <b>" + de(FAKTOR * S.dist) + " km</b> – Hin- und Rückweg."
+      : "Keine Fahrt, keine Zusatzkilometer.";
+
+  document.getElementById("grenze").innerHTML = r.diff > 0
+     ? "Bei " + de(Math.round(r.diff*100)) + " Rappen Unterschied lohnt sich eine Fahrt über "
+       + "<b>bis " + de(r.dStar) + " km</b>."
+     : (r.diff < 0
+        ? "Tankstelle B ist teurer – jeder Umweg dorthin kostet Sie Geld."
+        : "Beide Tankstellen sind gleich teuer – zu holen gibt es nichts.");
+
+  /* Eigener, neutraler Block: Die Ergebniskachel darüber ist grün oder rot nach Geld –
+     stünde das CO2 darin, läse sich Grün als "gut". */
+  const folgen = document.getElementById("folgen");
+  if (S.dist > 0){
+    const km    = FAKTOR * S.dist;
+    const liter = km * S.verb / 100;
+    const co2   = liter * CO2;
+    const anteil = (S.menge > 0 && liter <= S.menge)
+        ? " (" + de(liter / S.menge * 100) + " % der Tankfüllung)" : "";
+    /* Die Fahrzeit skaliert mit der Strecke, damit sie auch bei einer von Hand
+       geänderten Distanz stehen bleibt */
+    const refKm = DIST[S.start][S.ziel], refMin = ZEIT[S.start][S.ziel];
+    const minuten = refKm > 0 ? S.dist / refKm * refMin : 0;
+    document.getElementById("folgenBody").innerHTML =
+        (minuten > 0 ? "<tr><td>Sie sind unterwegs</td><td>" + dauer(FAKTOR*minuten) + "</td></tr>" : "")
+      + "<tr><td>Zusätzlicher Treibstoff</td><td>" + zahl(liter) + " Liter" + anteil + "</td></tr>"
+      + "<tr><td>Zusätzlicher CO\u2082-Ausstoss</td><td>" + zahl(co2) + " kg</td></tr>";
+    document.getElementById("folgenRel").textContent =
+        "So viel CO\u2082 verursacht eine Person in der Schweiz im Schnitt in "
+        + proKopfZeit(co2) + ".";
+    folgen.hidden = false;
+  } else { folgen.hidden = true; }
+
+  document.getElementById("chartSub").textContent =
+      "Bei " + de(S.menge) + " Litern Tankfüllung und " + S.verb.toFixed(1).replace(".", ",")
+      + " l/100 km Verbrauch, Hin- und Rückfahrt. Oberhalb der Linie lohnt sich die Fahrt.";
+  drawChart(r);
+
+  hoeheMelden();
+}
+
+let hoeheT;
+function hoeheMelden(){
+  if (!window.parentIFrame) return;
+  clearTimeout(hoeheT);
+  hoeheT = setTimeout(() => window.parentIFrame.size(), 60);
+}
+
+/* Zahlenfeld und Schieberegler laufen synchron */
+function num(id, key){
+  const a = document.getElementById(id), b = document.getElementById(id+"R");
+  const set = (v, from) => {
+    v = parseFloat(v);
+    if (isNaN(v)) return;
+    v = Math.max(parseFloat(a.min), Math.min(parseFloat(a.max), v));
+    S[key] = v;
+    if (from !== "a") a.value = v;
+    if (b && from !== "b") b.value = Math.max(parseFloat(b.min), Math.min(parseFloat(b.max), v));
+    render();
+  };
+  a.addEventListener("input", () => set(a.value, "a"));
+  a.addEventListener("blur",  () => { a.value = S[key]; });
+  if (b){ b.value = S[key]; b.addEventListener("input", () => set(b.value, "b")); }
+}
+
+(function init(){
+  const optionen = (sel, wert) => {
+    sel.innerHTML = ORTE.map((o,i) => `<option value="${i}">${o}</option>`).join("");
+    sel.value = wert;
+  };
+  const startSel = document.getElementById("start"), zielSel = document.getElementById("ziel");
+  optionen(startSel, S.start);
+  optionen(zielSel,  S.ziel);
+  const strecke = () => {
+    S.dist = DIST[S.start][S.ziel];
+    document.getElementById("dist").value  = S.dist;
+    document.getElementById("distR").value = Math.min(S.dist, 150);
+    render();
+  };
+  startSel.addEventListener("change", () => { S.start = +startSel.value; strecke(); });
+  zielSel .addEventListener("change", () => { S.ziel  = +zielSel.value;  strecke(); });
+  document.getElementById("dist").value  = S.dist;
+  document.getElementById("distR").value = Math.min(S.dist, 150);
+
+  ["pa","pb","dist","menge","verb"].forEach(k => num(k, k));
+  const fzk = document.getElementById("fzk");
+  fzk.addEventListener("change", () => { S.fzk = fzk.checked; render(); });
+  render();
+
+  /* Der Zeichenbereich hängt von der Fensterbreite ab */
+  let t0;
+  window.addEventListener("resize", () => { clearTimeout(t0); t0 = setTimeout(render, 150); });
+})();
+</script>
+</body>
+</html>
