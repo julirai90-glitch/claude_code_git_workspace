@@ -47,6 +47,29 @@ Zeile = Startort, Spalte = Ziel.
 Kleine Asymmetrien (Glarus→Netstal 4 km, Netstal→Glarus 3 km) stammen aus Einbahnregelungen
 und der gewählten Route.
 
+## Matrix: Fahrzeit einfach in Minuten
+
+Gleiche Abfrage (`annotations=duration`), gleiche Zeilen und Spalten. Im Embed wird die
+verdoppelte Zeit genannt, auf fünf Minuten gerundet, und nur dann, wenn die Strecke nicht von
+Hand verändert wurde.
+
+| von \ nach | Bilten | Nieder­urnen | Näfels | Netstal | Glarus | Schwanden | Linthal | Elm | Balzers | Feldkirch |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Bilten | 0 | 6 | 9 | 15 | 22 | 27 | 40 | 41 | 37 | 58 |
+| Niederurnen | 6 | 0 | 5 | 11 | 18 | 23 | 36 | 37 | 36 | 57 |
+| Näfels | 10 | 5 | 0 | 6 | 13 | 18 | 31 | 32 | 36 | 57 |
+| Netstal | 16 | 11 | 6 | 0 | 7 | 12 | 25 | 26 | 42 | 63 |
+| Glarus | 23 | 19 | 14 | 8 | 0 | 12 | 25 | 26 | 50 | 71 |
+| Schwanden | 28 | 23 | 18 | 12 | 12 | 0 | 15 | 17 | 54 | 75 |
+| Linthal | 41 | 36 | 31 | 25 | 25 | 15 | 0 | 30 | 67 | 88 |
+| Elm | 41 | 37 | 32 | 26 | 26 | 17 | 30 | 0 | 68 | 89 |
+
+Die Zeit wird **nicht in Franken umgerechnet.** Ein Stundenansatz wäre frei gewählt und
+angreifbar; was jemandem seine Zeit wert ist, entscheidet er selbst. Der Hinweis kam aus dem
+Overlord-Review vom 23.09.2026 (Perspektive Methodenkritiker), der die Fahrzeit als fehlende
+Grösse benannte – dort mit 1,5 bis 2 Stunden veranschlagt, tatsächlich sind es für die
+Rundfahrt Glarus–Feldkirch rund 2 Stunden 20 Minuten.
+
 ## Tankstellen als Zielorte
 
 Alle acht Ortschaften kommen als Tankziel infrage: Eine Overpass-Abfrage
