@@ -272,12 +272,13 @@ Grenze liegt.</p>
   und Garage, die auch ohne die Fahrt anfallen. Nur die variablen Kosten von 4135 Franken im
   Jahr hängen an den gefahrenen Kilometern – bei rund 15 000 Kilometern Jahresleistung sind das
   27,5 Rappen pro Kilometer. Zieht man den Treibstoff des TCS-Musterautos ab (5 Liter auf
-  100 Kilometer zu 1.71 Franken, also 8,6 Rappen), bleiben rund 19 Rappen für Wertminderung,
-  Reifen und Reparaturen.</p>
-  <p><b>Die Voreinstellungen stammen aus verschiedenen Zeitpunkten</b> – der Schweizer Preis aus
-  der Statistik des Bundes, der österreichische aus der wöchentlichen Erhebung des dortigen
-  Fachverbands. Für Ihre eigene Rechnung tragen Sie am besten die Preise ein, die Sie
-  tatsächlich vor sich sehen.</p>
+  100 Kilometer zum Ansatz von 1.71 Franken, mit dem der TCS für 2026 gerechnet hat, also
+  8,6 Rappen), bleiben rund 19 Rappen für Wertminderung, Reifen und Reparaturen. Dieser Rest
+  hängt nicht am Spritpreis und gilt deshalb auch jetzt, wo der Liter mehr kostet.</p>
+  <p><b>Die Voreinstellungen sind Landesdurchschnitte</b> – für die Schweiz aus der Erhebung des
+  TCS, für Österreich aus der wöchentlichen Erhebung des dortigen Fachverbands. An einzelnen
+  Tankstellen liegen die Preise deutlich darüber oder darunter; für Ihre eigene Rechnung tragen
+  Sie am besten ein, was Sie tatsächlich vor sich sehen.</p>
   <p><b>Nicht berücksichtigt:</b> Ihre Zeit, Parkgebühren und der Umstand, dass viele die Fahrt
   ohnehin mit einem Einkauf verbinden.</p>
 </details>
@@ -303,8 +304,8 @@ const ORTE = [
 
 /* Referenzpreise, siehe _research/quellen.md */
 const REF = {
-  ch:   {benzin:1.72, diesel:1.80, stand:"Mai 2025", q:"BFS"},
-  at:   {benzin:1.925, diesel:2.238, stand:"21.9.2026", q:"FVEK/WKO"},   /* in EUR */
+  ch:   {benzin:2.10, diesel:2.41, stand:"18. September 2026", q:"TCS"},
+  at:   {benzin:1.925, diesel:2.238, stand:"21. September 2026", q:"FVEK/WKO"},   /* in EUR */
   kurs: {wert:0.9363, stand:"August 2026", q:"SNB"},
   fzk:  19,          /* Rappen pro km, hergeleitet aus TCS 2026 */
   vignette: 12.80    /* EUR, 10-Tages-Vignette Pkw, ASFINAG, gültig ab 1.12.2025 */
@@ -503,7 +504,8 @@ function drawChart(r){
   s += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="${lohnt?"var(--gut)":"var(--schlecht)"}" stroke="#fff" stroke-width="2"/>`;
   const anchor = px > W*0.62 ? "end" : "start";
   const dx = anchor==="end" ? -11 : 11;
-  s += `<text class="alab" x="${(px+dx).toFixed(1)}" y="${(py-11).toFixed(1)}" text-anchor="${anchor}" font-weight="700" fill="${lohnt?"#00695f":"var(--schlecht)"}">Ihre Fahrt</text>`;
+  /* Weisser Halo, damit die Beschriftung auch auf einer Linie lesbar bleibt */
+  s += `<text class="alab" x="${(px+dx).toFixed(1)}" y="${(py-11).toFixed(1)}" text-anchor="${anchor}" font-weight="700" stroke="#fff" stroke-width="3.5" paint-order="stroke" fill="${lohnt?"#00695f":"var(--schlecht)"}">Ihre Fahrt</text>`;
 
   const svg = document.getElementById("chart");
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
@@ -540,8 +542,8 @@ function drawTable(){
 /* ---------- Quellenzeile ---------- */
 function drawSrc(){
   const q = [];
-  q.push("Voreingestellte Preise: Schweiz " + fr(REF.ch[S.fuel]) + " CHF/l (Bundesamt für "
-       + "Statistik, Durchschnittspreise Treibstoffe, Stand " + REF.ch.stand + ")");
+  q.push("Voreingestellte Preise: Schweiz " + fr(REF.ch[S.fuel]) + " CHF/l (Erhebung des TCS, "
+       + "Stand " + REF.ch.stand + ")");
   q.push("Österreich " + de(REF.at[S.fuel],3) + " EUR/l (Fachverband der Energierohstoff- und "
        + "Kraftstoffindustrie, Erhebung " + REF.at.stand + ")");
   q.push("Wechselkurs: Schweizerische Nationalbank, Monatsmittel " + REF.kurs.stand);
@@ -642,8 +644,8 @@ function preisfeldSetzen(){
       : "Annahme: 10 Rappen günstiger als der Schweizer Durchschnitt. Bitte anpassen.";
   }
   document.getElementById("pchHint").textContent =
-      "Durchschnitt Schweiz, Stand " + REF.ch.stand + " (Bundesamt für Statistik). Tragen Sie "
-      + "den Preis ein, den Sie zahlen.";
+      "Landesdurchschnitt, Stand " + REF.ch.stand + " (TCS). Tragen Sie den Preis ein, den Sie "
+      + "zahlen.";
   document.getElementById("kursHint").textContent = "Monatsmittel " + REF.kurs.stand + " (SNB).";
   document.getElementById("vignetteBtn").textContent =
       "Vignette für 10 Tage einrechnen (" + de(REF.vignette,2) + " EUR)";

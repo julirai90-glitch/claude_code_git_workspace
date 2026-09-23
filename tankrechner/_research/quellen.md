@@ -6,16 +6,29 @@ Alle im Embed sichtbaren Zahlen, mit Quelle und Abrufdatum. Abruf jeweils 23.09.
 
 | Wert | Quelle | Stand |
 |---|---|---|
-| Bleifrei 95: CHF 1.72/l | BFS, LIK Durchschnittspreise für Energie und Treibstoffe (Tabelle 900030), Asset 35952436 | Mai 2025 |
-| Diesel: CHF 1.80/l | dieselbe Tabelle, Spalte «Diesel», 1 l | Mai 2025 |
+| Bleifrei 95: CHF 2.10/l | Erhebung des TCS | 18.09.2026 |
+| Diesel: CHF 2.41/l | Erhebung des TCS | 18.09.2026 |
 
-Download: `https://dam-api.bfs.admin.ch/hub/api/dam/assets/35952436/master`
-Detailseite: `https://www.bfs.admin.ch/bfs/de/home/statistiken/preise/landesindex-konsumentenpreise.assetdetail.35952436.html`
-Nutzungsbedingung laut BFS: «Freie Nutzung – Quellenangabe ist Pflicht».
+Der TCS erhebt die Treibstoffpreise wöchentlich und gibt sie per Communiqué bekannt.
 
-**Einschränkung:** Dies ist die jüngste Version der Tabelle, die über die BFS-Asset-API
-abrufbar war; sie endet im Mai 2025. Gegenprobe: Der TCS rechnet für 2026 mit CHF 1.71/l für
-Bleifrei 95 (Medienmitteilung 06.01.2026) – die beiden Werte stützen sich gegenseitig.
+**Einschränkung: Sekundärquellen.** Das TCS-Communiqué selbst wurde nicht eingesehen; die Zahlen
+stammen aus Medienmeldungen, die es wiedergeben:
+- plattformj.ch, 18.09.2026: Bleifrei 95 CHF 2.10, Diesel CHF 2.41, «am Freitag in einem
+  Communiqué» des TCS (`https://www.plattformj.ch/artikel/246824/`)
+- moneycab.com und radiocentral.ch, beide 16.09.2026, übereinstimmend: Bleifrei 95 CHF 2.10,
+  Bleifrei 98 CHF 2.21, Diesel CHF 2.38, Quelle TCS
+- swissinfo.ch (SDA), 09.09.2026: Bleifrei 95 CHF 2.05, Bleifrei 98 CHF 2.16, Diesel CHF 2.30
+
+Die Reihe ist in sich konsistent: rund 5 Rappen Anstieg pro Woche. Laut den Meldungen haben sich
+Benzin und Diesel seit Jahresbeginn um 27 bis 33 Prozent verteuert und nähern sich den
+Rekordwerten von 2022 (damals bis CHF 2.31 für Bleifrei 95).
+
+**Verworfen: BFS.** Die amtliche Tabelle «LIK, Durchschnittspreise für Energie und Treibstoffe»
+(Tabelle 900030, Asset 35952436) wäre die bessere Quelle, endet aber im Mai 2025 mit CHF 1.72
+für Bleifrei 95 und CHF 1.80 für Diesel. Diese Werte waren zwischenzeitlich im Rechner
+voreingestellt und lagen rund 40 Rappen zu tief – ein aktuellerer Stand war über die
+Asset-API nicht abrufbar. Avenergy Suisse liefert seine Monatsmittel nur über ein
+Infogram-Widget, das nicht mehr erreichbar ist.
 
 ## Referenzpreise Österreich
 
@@ -84,8 +97,15 @@ ASFINAG, `https://www.asfinag.at/maut-vignette/vignette/`
 10-Tages-Vignette Pkw: EUR 12,80. Jahresvignette Pkw: EUR 106,80. 1-Tages-Vignette Pkw:
 EUR 9,60. «Tarife in EUR, inkl. 20% Ust., gültig ab 1. Dezember 2025.»
 
-## Offener Punkt vor Publikation
+## Stand der Voreinstellungen
 
-Die Voreinstellungen haben **unterschiedliche Stichtage** (CH: Mai 2025, AT: 21.09.2026). Für
-eine belastbare Aussage im Artikeltext müssen beide Preise auf denselben Stichtag gebracht
-werden. Der Rechner weist den Stand jedes Werts sichtbar aus und fordert zum Überschreiben auf.
+Die Stichtage liegen jetzt drei Tage auseinander (CH 18.09.2026, AT 21.09.2026), die Werte sind
+damit vergleichbar. Weil die Preise derzeit wöchentlich um rund 5 Rappen steigen, veralten sie
+aber schnell – der Rechner weist den Stand jedes Werts sichtbar aus und fordert zum
+Überschreiben auf.
+
+**Inhaltliche Folge des Updates:** Mit den alten, zu tiefen Schweizer Werten erschien
+Österreich als das teurere Land. Tatsächlich ist der Sprit dort derzeit rund 30 Rappen je Liter
+günstiger (Benzin: CHF 2.10 gegenüber EUR 1,925 = CHF 1.80). Die Fahrt ab Glarus lohnt sich
+trotzdem nicht: Bei 80 Kilometern einfacher Strecke bleibt ein Minus von rund 37 Franken, weil
+die Grenze bei etwa 21 Kilometern liegt.
