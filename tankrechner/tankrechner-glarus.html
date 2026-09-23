@@ -242,7 +242,7 @@ Grenze liegt.</p>
   </div>
 </div>
 
-<h2>Ab welchem Preisvorteil lohnen sich wie viele Kilometer?</h2>
+<h2>Wie viel günstiger muss der Sprit sein, damit sich die Strecke lohnt?</h2>
 <p class="chart-sub" id="chartSub"></p>
 <svg id="chart" role="img" aria-labelledby="chartTitle"></svg>
 <div class="legend">
@@ -361,14 +361,14 @@ function calc(o){
   return {diff, pZ, pM, km, ersparnis, sprit, fahrzeug, einmalig:e, netto, dStar, diffStar, f};
 }
 
-/* Maximal lohnende Strecke bei gegebenem Preisvorteil – für die Kurve */
-function dMax(diff, mitFzk){
-  const c  = mitFzk ? S.satz/100 : 0;
-  const pM = S.pch - diff/2;
-  const f  = S.modus === "extra" ? 2 : 1;
-  const proKm = (S.verb/100) * pM + c;
-  if (proKm <= 0) return 0;
-  return Math.max(0, (S.menge * diff - S.einmalig) / (f * proKm));
+/* Nötiger Preisvorteil in Rappen je Liter, damit sich eine Strecke gerade noch lohnt.
+   Dieselbe Auflösung wie diffStar im Rechenkern, nur mit frei wählbarer Strecke. */
+function noetigerVorteil(km, mitFzk){
+  const c = mitFzk ? S.satz/100 : 0;
+  const f = S.modus === "extra" ? 2 : 1;
+  const nenner = S.menge + f*km*S.verb/200;
+  if (nenner <= 0) return Infinity;
+  return ((f * km * ((S.verb/100)*S.pch + c) + S.einmalig) / nenner) * 100;
 }
 
 /* ---------- Ausgabe ---------- */
@@ -421,7 +421,7 @@ function render(){
   document.getElementById("chartSub").textContent =
       "Bei " + de(S.menge,0) + " Litern Tankmenge, " + de(S.verb,1)
       + " l/100 km Verbrauch und " + (S.modus==="extra" ? "Hin- und Rückfahrt" : "reinem Umweg")
-      + ". Unterhalb der Linie lohnt sich die Fahrt.";
+      + ". Oberhalb der Linie lohnt sich die Fahrt.";
 
   drawChart(r);
   drawTable();
@@ -447,26 +447,27 @@ function drawChart(r){
   const l = schmal?38:52, rr = schmal?12:14, t = 26, b = schmal?36:40;
   const iw=W-l-rr, ih=H-t-b;
 
-  /* Achsen so skalieren, dass die eigene Situation immer sichtbar bleibt */
-  const xMax = Math.max(60, Math.ceil(Math.max(r.diff*100, 0)/10)*10 + 10);
-  let yCand = Math.max(dMax(xMax/100, true), S.dist*1.15, 10);
-  const yMax = niceMax(Math.min(yCand, 400));
+  /* x: Strecke. So skalieren, dass die eigene Fahrt gut im Bild liegt. */
+  const xMax = niceMax(Math.max(S.dist * 1.5, 15), true);
+  /* y: nötiger Preisvorteil. Die eigene Preisdifferenz muss sichtbar bleiben. */
+  const yMax = niceMax(Math.min(
+      Math.max(noetigerVorteil(xMax, S.fzk), r.diff*100*1.2, 15), 250));
 
-  const X = v => l + (v/xMax)*iw;
-  const Y = v => t + ih - Math.min(v/yMax,1)*ih;
+  const X = km => l + (km/xMax)*iw;
+  const Y = v  => t + ih - Math.min(Math.max(v,0)/yMax,1)*ih;
 
   /* clamp=true für die Fläche, clamp=false für die Linien: Eine Linie, die am oberen Rand
      flach weiterliefe, würde ein Plateau vortäuschen, das es nicht gibt. */
   const pfad = (mitFzk, clamp) => {
     let p = "", offen = false;
     for (let i=0;i<=160;i++){
-      const dd = (xMax/100) * (i/160);
-      let y = dMax(dd, mitFzk);
+      const km = xMax * (i/160);
+      let y = noetigerVorteil(km, mitFzk);
       if (y > yMax){
         if (!clamp){ offen = false; continue; }
         y = yMax;
       }
-      p += (offen ? "L" : "M") + X(dd*100).toFixed(1) + " " + Y(y).toFixed(1);
+      p += (offen ? "L" : "M") + X(km).toFixed(1) + " " + Y(y).toFixed(1);
       offen = true;
     }
     return p;
@@ -474,29 +475,29 @@ function drawChart(r){
 
   let s = "";
   /* Gitter und Achsenbeschriftung */
-  const yTicks = schmal ? 4 : 5;
+  const yTicks = 5;   /* 5 Teilungen ergeben glatte Werte, 4 fuehrt zu 37,5 und 112,5 */
   for (let i=0;i<=yTicks;i++){
     const val = yMax*i/yTicks, y = Y(val);
     s += `<line class="grid-l" x1="${l}" y1="${y.toFixed(1)}" x2="${W-rr}" y2="${y.toFixed(1)}"/>`;
     s += `<text class="tick" x="${l-7}" y="${(y+4).toFixed(1)}" text-anchor="end">${Math.round(val)}</text>`;
   }
-  const step = (xMax<=60 ? 10 : 20) * (schmal ? 2 : 1);
+  const step = (xMax<=30 ? 5 : xMax<=80 ? 10 : xMax<=200 ? 25 : 50) * (schmal ? 2 : 1);
   for (let v=0; v<=xMax; v+=step){
     s += `<text class="tick" x="${X(v).toFixed(1)}" y="${t+ih+16}" text-anchor="middle">${v}</text>`;
   }
   s += `<line class="axis" x1="${l}" y1="${t+ih}" x2="${W-rr}" y2="${t+ih}"/>`;
-  s += `<text class="alab" x="${l}" y="${H-6}">Preisvorteil in Rappen je Liter</text>`;
-  s += `<text class="alab" x="${l-34}" y="${t-11}">Kilometer</text>`;
+  s += `<text class="alab" x="${l}" y="${H-6}">${S.modus==="extra" ? "Strecke einfach" : "Mehrweg"} in Kilometern</text>`;
+  s += `<text class="alab" x="${l-34}" y="${t-11}">Rappen je Liter</text>`;
 
-  /* Fläche unter der aktiven Linie: hier lohnt es sich */
+  /* Fläche oberhalb der aktiven Linie: hier lohnt es sich */
   const aktiv = S.fzk;
-  s += `<path d="${pfad(aktiv, true)} L ${X(xMax)} ${Y(0)} L ${X(0)} ${Y(0)} Z" fill="var(--s1)" opacity=".07"/>`;
+  s += `<path d="${pfad(aktiv, true)} L ${X(xMax)} ${Y(yMax)} L ${X(0)} ${Y(yMax)} Z" fill="var(--s1)" opacity=".07"/>`;
   s += `<path d="${pfad(false, false)}" fill="none" stroke="var(--s2)" stroke-width="${aktiv?2:3}" stroke-dasharray="${aktiv?"5 4":""}" stroke-linecap="round"/>`;
   s += `<path d="${pfad(true, false)}"  fill="none" stroke="var(--s1)" stroke-width="${aktiv?3:2}" stroke-dasharray="${aktiv?"":"5 4"}" stroke-linecap="round"/>`;
 
   /* Die eigene Situation */
-  const px = X(Math.max(0, Math.min(r.diff*100, xMax)));
-  const py = Y(Math.min(S.dist, yMax));
+  const px = X(Math.min(S.dist, xMax));
+  const py = Y(Math.min(Math.max(r.diff*100, 0), yMax));
   const lohnt = r.netto > 0;
   s += `<line x1="${px.toFixed(1)}" y1="${t}" x2="${px.toFixed(1)}" y2="${t+ih}" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="2 3"/>`;
   s += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="6" fill="${lohnt?"var(--gut)":"var(--schlecht)"}" stroke="#fff" stroke-width="2"/>`;
@@ -506,12 +507,13 @@ function drawChart(r){
 
   const svg = document.getElementById("chart");
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  svg.innerHTML = `<title id="chartTitle">Maximal lohnende Fahrstrecke je nach Preisvorteil pro Liter, `
-    + `mit und ohne Fahrzeugkosten</title>` + s;
+  svg.innerHTML = `<title id="chartTitle">Nötiger Preisvorteil je Liter in Abhängigkeit von der `
+    + `gefahrenen Strecke, mit und ohne Fahrzeugkosten</title>` + s;
 }
 
-function niceMax(v){
-  const st = v>200?50 : v>100?25 : v>40?10 : v>20?5 : 2;
+function niceMax(v, km){
+  const st = km ? (v>200?50 : v>80?25 : v>30?10 : 5)
+                : (v>200?50 : v>100?25 : v>40?10 : v>20?5 : 2);
   return Math.max(st, Math.ceil(v/st)*st);
 }
 
