@@ -112,29 +112,24 @@ Grenze liegt.</p>
 <div class="grid">
 
   <div class="f">
-    <label for="ziel">Wohin zum Tanken?</label>
-    <select id="ziel">
-      <option value="at">Vorarlberg (A)</option>
-      <option value="fl">Liechtenstein</option>
-      <option value="ch">Tankstelle in der Region</option>
-    </select>
-    <p class="hint" id="zielHint"></p>
-  </div>
-
-  <div class="f" id="startWrap">
-    <label for="start">Startort</label>
+    <label for="start">Von wo fahren Sie los?</label>
     <select id="start"></select>
-    <p class="hint" id="startHint"></p>
   </div>
 
   <div class="f">
-    <label for="dist" id="distLab">Strecke einfach</label>
+    <label for="ziel">Wo wollen Sie tanken?</label>
+    <select id="ziel"></select>
+    <p class="hint" id="zielHint"></p>
+  </div>
+
+  <div class="f">
+    <label for="dist">Strecke einfach</label>
     <div class="row">
       <input type="number" id="dist" min="0" max="300" step="1">
       <span class="unit">km</span>
       <input type="range" id="distR" min="0" max="120" step="1" aria-label="Strecke">
     </div>
-    <p class="hint" id="distHint"></p>
+    <p class="hint">Fahrstrecke laut Routenberechnung. Hin- und Rückweg werden gerechnet, also das Doppelte.</p>
   </div>
 
 
@@ -288,17 +283,31 @@ Grenze liegt.</p>
 
 <script>
 /* DATA-START */
-/* Distanzen: Nominatim-Geocoding + OSRM-Routing, ermittelt 23.09.2026, einfache Strecke in km.
-   Siehe _research/distanzen.md */
+/* Orte und Fahrdistanzen: Nominatim-Geocoding und OSRM-Routing (Matrix-Abfrage),
+   ermittelt 23.09.2026, einfache Strecke in Kilometern. Siehe _research/distanzen.md.
+   typ: "gl" = im Kanton, "fl" = Liechtenstein, "at" = Österreich. */
 const ORTE = [
-  {n:"Bilten",       at:73, fl:47},
-  {n:"Niederurnen",  at:70, fl:44},
-  {n:"Näfels",       at:72, fl:46},
-  {n:"Netstal",      at:76, fl:50},
-  {n:"Glarus",       at:80, fl:54},
-  {n:"Schwanden",    at:85, fl:59},
-  {n:"Linthal",      at:96, fl:70},
-  {n:"Elm",          at:99, fl:73}
+  {n:"Bilten",        typ:"gl"},
+  {n:"Niederurnen",   typ:"gl"},
+  {n:"Näfels",        typ:"gl"},
+  {n:"Netstal",       typ:"gl"},
+  {n:"Glarus",        typ:"gl"},
+  {n:"Schwanden",     typ:"gl"},
+  {n:"Linthal",       typ:"gl"},
+  {n:"Elm",           typ:"gl"},
+  {n:"Balzers",       typ:"fl"},
+  {n:"Feldkirch",     typ:"at"}
+];
+/* Zeile = Startort (die acht Glarner), Spalte = Ziel (alle zehn) */
+const DIST = [
+  [ 0,  4,  9, 14, 17, 23, 33, 36, 47, 73],
+  [ 4,  0,  3,  8, 11, 17, 27, 30, 44, 70],
+  [ 9,  3,  0,  5,  8, 13, 24, 27, 46, 72],
+  [14,  8,  5,  0,  3,  9, 20, 22, 50, 76],
+  [17, 12,  8,  4,  0,  7, 18, 21, 54, 80],
+  [22, 17, 14,  9,  7,  0, 11, 15, 59, 85],
+  [33, 28, 24, 20, 18, 11,  0, 26, 70, 96],
+  [36, 30, 27, 22, 21, 15, 26,  0, 73, 99]
 ];
 
 /* Suchpunkt für die Tankstellenabfrage: Feldkirch, das Ziel des Vorarlberg-Presets */
@@ -324,14 +333,17 @@ const rp  = n => Math.abs(n) >= 1
 
 /* ---------- Zustand ---------- */
 const S = {
-  ziel:"at", start:4, dist:80, modus:"extra", fuel:"benzin",
+  ziel:9, start:4, dist:80, fuel:"benzin",
   verb:6.5, menge:45, pch:REF.ch.benzin, pzEur:REF.at.benzin, pzChf:null,
   kurs:REF.kurs.wert, einmalig:0, fzk:true, satz:REF.fzk
 };
 
+/* Gerechnet wird immer die Fahrt zur Tankstelle und zurück. */
+const FAKTOR = 2;
+
 /* Preis am Ziel in Franken – bei Österreich über den Wechselkurs */
 function zielPreis(){
-  return S.ziel==="at" ? S.pzEur * S.kurs : S.pzChf;
+  return zielTyp()==="at" ? S.pzEur * S.kurs : S.pzChf;
 }
 
 /* ---------- Der Rechenkern ---------- */
@@ -343,7 +355,7 @@ function calc(o){
   const pCh = o.pch    !== undefined ? o.pch    : S.pch;
   const d   = o.dist   !== undefined ? o.dist   : S.dist;
   const e   = o.einmalig !== undefined ? o.einmalig : S.einmalig;
-  const f   = (o.modus || S.modus) === "extra" ? 2 : 1;
+  const f   = FAKTOR;
   /* Preisvorteil: entweder direkt vorgegeben (für Kurve und Tabelle) oder aus den Preisen */
   const diff = o.diff !== undefined ? o.diff : (pCh - zielPreis());
   const pZ   = pCh - diff;
@@ -368,7 +380,7 @@ function calc(o){
    Dieselbe Auflösung wie diffStar im Rechenkern, nur mit frei wählbarer Strecke. */
 function noetigerVorteil(km, mitFzk){
   const c = mitFzk ? S.satz/100 : 0;
-  const f = S.modus === "extra" ? 2 : 1;
+  const f = FAKTOR;
   const nenner = S.menge + f*km*S.verb/200;
   if (nenner <= 0) return Infinity;
   return ((f * km * ((S.verb/100)*S.pch + c) + S.einmalig) / nenner) * 100;
@@ -378,7 +390,7 @@ function noetigerVorteil(km, mitFzk){
 function render(){
   const r = calc();
   const lohnt = r.netto > 0;
-  const strecke = S.modus === "extra" ? "einfache Strecke" : "Umweg";
+  const strecke = "einfache Strecke";
 
   /* Fazit */
   const res = document.getElementById("res");
@@ -423,8 +435,7 @@ function render(){
 
   document.getElementById("chartSub").textContent =
       "Bei " + de(S.menge,0) + " Litern Tankmenge, " + de(S.verb,1)
-      + " l/100 km Verbrauch und " + (S.modus==="extra" ? "Hin- und Rückfahrt" : "reinem Umweg")
-      + ". Oberhalb der Linie lohnt sich die Fahrt.";
+      + " l/100 km Verbrauch, Hin- und Rückfahrt. Oberhalb der Linie lohnt sich die Fahrt.";
 
   drawChart(r);
   drawTable();
@@ -489,7 +500,7 @@ function drawChart(r){
     s += `<text class="tick" x="${X(v).toFixed(1)}" y="${t+ih+16}" text-anchor="middle">${v}</text>`;
   }
   s += `<line class="axis" x1="${l}" y1="${t+ih}" x2="${W-rr}" y2="${t+ih}"/>`;
-  s += `<text class="alab" x="${l}" y="${H-6}">${S.modus==="extra" ? "Strecke einfach" : "Umweg"} in Kilometern</text>`;
+  s += `<text class="alab" x="${l}" y="${H-6}">Strecke einfach in Kilometern</text>`;
   s += `<text class="alab" x="${l-34}" y="${t-11}">Rappen je Liter</text>`;
 
   /* Fläche oberhalb der aktiven Linie: hier lohnt es sich */
@@ -535,9 +546,9 @@ function drawTable(){
   document.getElementById("tblHint").textContent =
     "Gewinn oder Verlust in Franken bei " + de(S.menge,0) + " Litern, " + de(S.verb,1)
     + " l/100 km, " + (S.fzk ? de(S.satz,0) + " Rp./km Fahrzeugkosten" : "ohne Fahrzeugkosten")
-    + ", " + (S.modus==="extra" ? "Hin- und Rückfahrt" : "reiner Umweg") + ".";
+    + ", Hin- und Rückfahrt.";
 
-  let h = "<tr><th>" + (S.modus==="extra" ? "Strecke einfach" : "Umweg") + "</th>"
+  let h = "<tr><th>Strecke einfach</th>"
         + T_DIFF.map(d => "<th>" + d + " Rp.</th>").join("") + "</tr>";
   h += T_DIST.map(dist =>
       "<tr><td>" + dist + " km</td>" + T_DIFF.map(diff => {
@@ -675,43 +686,36 @@ function num(id, key, after){
   if (b) b.value = S[key];
 }
 
-/* Ziel gewechselt: Distanz, Preisfeld und Hinweise nachführen */
+function zielTyp(){ return ORTE[S.ziel].typ; }
+
+/* Ziel oder Startort gewechselt: Distanz aus der Matrix, Felder und Hinweise nachführen */
 function zielWechsel(){
-  const at = S.ziel === "at", fl = S.ziel === "fl", ch = S.ziel === "ch";
-  document.getElementById("startWrap").hidden = ch;
-  document.getElementById("kursWrap").hidden  = !at;
+  const typ = zielTyp(), at = typ === "at", fl = typ === "fl";
+  document.getElementById("kursWrap").hidden    = !at;
   document.getElementById("vignetteBtn").hidden = !at;
   document.getElementById("stationWrap").hidden = !at;
 
-  if (!ch){
-    S.dist = ORTE[S.start][at ? "at" : "fl"];
-    S.modus = "extra";
-  } else {
-    S.dist = 10;
-    S.modus = "umweg";
-    S.einmalig = 0;
-    document.getElementById("einmalig").value = 0;
-  }
+  S.dist = DIST[S.start][S.ziel];
   document.getElementById("dist").value  = S.dist;
   document.getElementById("distR").value = Math.min(S.dist, 120);
 
   document.getElementById("zielHint").textContent = at
-    ? "Gerechnet wird bis Feldkirch, der nächstgelegenen Stadt in Vorarlberg."
-    : (fl ? "Gerechnet wird bis Balzers – die erste Tankstelle hinter der Grenze steht dort. "
-          + "Kurz davor, in Trübbach, liegen allerdings schon Schweizer Tankstellen."
-          : "Für den Umweg zu einer günstigeren Tankstelle im Kanton oder in der Nachbarschaft.");
+    ? "In Feldkirch steht die nächste Tankstelle in Vorarlberg."
+    : (fl ? "Liechtenstein gehört zum Schweizer Zollgebiet – die Mineralölsteuer ist dieselbe. "
+          + "Kurz vor der Grenze, in Trübbach, stehen schon Schweizer Tankstellen."
+          : (S.ziel === S.start
+             ? "Ihr eigener Ort: keine Zusatzkilometer, der Preisunterschied bleibt Ihnen ganz."
+             : "Tanken in einer anderen Glarner Ortschaft."));
 
   preisfeldSetzen();
-  modusTexte();
   if (at) ladeStationen();
 }
 
 function preisfeldSetzen(){
-  const at = S.ziel === "at";
+  const at = zielTyp() === "at";
   const pz = document.getElementById("pz");
   document.getElementById("pzUnit").textContent = at ? "EUR/l" : "CHF/l";
-  document.getElementById("pzLab").textContent =
-      at ? "Preis in Österreich" : (S.ziel==="fl" ? "Preis in Liechtenstein" : "Preis am Ziel");
+  document.getElementById("pzLab").textContent = "Preis in " + ORTE[S.ziel].n;
 
   if (at){
     S.pzEur = REF.at[S.fuel];
@@ -720,14 +724,13 @@ function preisfeldSetzen(){
         "Landesdurchschnitt, Stand " + REF.at.stand + " – entspricht "
         + fr(S.pzEur*S.kurs) + " CHF/l.";
   } else {
-    /* Für Liechtenstein gibt es keine Preisstatistik: Startwert = Schweizer Preis */
-    S.pzChf = S.ziel === "fl" ? REF.ch[S.fuel] : Math.max(0, REF.ch[S.fuel] - 0.10);
+    /* Weder für Liechtenstein noch für einzelne Schweizer Tankstellen gibt es eine
+       offizielle Preisquelle – Startwert ist deshalb der Landesdurchschnitt. */
+    S.pzChf = REF.ch[S.fuel];
     pz.step = "0.01"; pz.value = S.pzChf.toFixed(2);
-    document.getElementById("pzHint").textContent = S.ziel === "fl"
-      ? "Liechtenstein gehört zum Schweizer Zollgebiet, die Mineralölsteuer ist dieselbe – ein "
-        + "systematischer Preisvorteil ist deshalb nicht zu erwarten. Voreingestellt ist der "
-        + "Schweizer Wert; tragen Sie ein, was die Tankstelle verlangt."
-      : "Annahme: 10 Rappen günstiger als der Schweizer Durchschnitt. Bitte anpassen.";
+    document.getElementById("pzHint").textContent =
+        "Voreingestellt ist der Landesdurchschnitt – tragen Sie ein, was die Tankstelle "
+        + "tatsächlich verlangt.";
   }
   document.getElementById("pchHint").textContent =
       "Landesdurchschnitt, Stand " + REF.ch.stand + " (TCS). Tragen Sie den Preis ein, den Sie "
@@ -735,20 +738,9 @@ function preisfeldSetzen(){
   document.getElementById("kursHint").textContent = "Monatsmittel " + REF.kurs.stand + " (SNB).";
   document.getElementById("vignetteBtn").textContent =
       "Vignette für 10 Tage einrechnen (" + de(REF.vignette,2) + " EUR)";
-}
-
-/* Die Bedeutung der Distanz hängt am Ziel, nicht an einem eigenen Schalter:
-   Zu einer Tankstelle im Ausland fährt man hin und zurück; in der Region geht es um
-   den Umweg, den man zusätzlich zur ohnehin gefahrenen Strecke macht. */
-function modusTexte(){
-  const extra = S.modus === "extra";
-  document.getElementById("distLab").textContent = extra ? "Strecke einfach" : "Umweg hin und zurück";
-  document.getElementById("distHint").textContent = extra
-    ? "Hin- und Rückweg werden gerechnet, also das Doppelte."
-    : "Alle zusätzlichen Kilometer zusammen, Rückweg inbegriffen.";
-  document.getElementById("einmaligHint").textContent = S.ziel === "at"
-    ? "Etwa die Vignette, wenn Sie die Autobahn benutzen."
-    : "Etwa Parkgebühren.";
+  document.getElementById("einmaligHint").textContent = at
+      ? "Etwa die Vignette, wenn Sie die Autobahn benutzen."
+      : "Etwa Parkgebühren.";
 }
 
 /* Treibstoff gewechselt: beide Referenzpreise neu setzen */
@@ -756,27 +748,29 @@ function fuelWechsel(){
   S.pch = REF.ch[S.fuel];
   document.getElementById("pch").value = S.pch.toFixed(2);
   preisfeldSetzen();
-  if (S.ziel === "at") ladeStationen();
+  if (zielTyp() === "at") ladeStationen();
 }
 
 /* ---------- Start ---------- */
 (function init(){
-  const sel = document.getElementById("start");
-  sel.innerHTML = ORTE.map((o,i) => `<option value="${i}">${o.n}</option>`).join("");
-  sel.value = S.start;
-  sel.addEventListener("change", () => {
-    S.start = +sel.value;
-    S.dist = ORTE[S.start][S.ziel === "at" ? "at" : "fl"];
-    document.getElementById("dist").value = S.dist;
-    document.getElementById("distR").value = Math.min(S.dist, 120);
-    render();
+  const startSel = document.getElementById("start");
+  startSel.innerHTML = ORTE.filter(o => o.typ === "gl")
+      .map((o,i) => `<option value="${i}">${o.n}</option>`).join("");
+  startSel.value = S.start;
+  startSel.addEventListener("change", () => {
+    S.start = +startSel.value; zielWechsel(); render();
   });
-  document.getElementById("startHint").textContent =
-      "Fahrstrecke laut Routenberechnung, gerundet.";
 
+  /* Ziele: erst die Ortschaften im Kanton, dann die beiden jenseits der Grenze */
   const zielSel = document.getElementById("ziel");
+  const grp = (titel, von, bis) => `<optgroup label="${titel}">`
+      + ORTE.slice(von, bis).map((o,i) =>
+          `<option value="${von+i}">${o.n}</option>`).join("") + "</optgroup>";
+  zielSel.innerHTML = grp("Im Kanton Glarus", 0, 8) + grp("Über die Grenze", 8, 10);
   zielSel.value = S.ziel;
-  zielSel.addEventListener("change", () => { S.ziel = zielSel.value; zielWechsel(); render(); });
+  zielSel.addEventListener("change", () => {
+    S.ziel = +zielSel.value; pzManuell = false; zielWechsel(); render();
+  });
 
   seg("segFuel", "fuel", fuelWechsel);
 
@@ -804,7 +798,7 @@ function fuelWechsel(){
     pzManuell = true;
     const v = parseFloat(pz.value);
     if (isNaN(v) || v < 0) return;
-    if (S.ziel === "at"){
+    if (zielTyp() === "at"){
       S.pzEur = v;
       document.getElementById("pzHint").textContent =
           "Entspricht " + fr(v*S.kurs) + " CHF/l beim eingestellten Wechselkurs.";
