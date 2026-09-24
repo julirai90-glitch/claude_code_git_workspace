@@ -150,7 +150,9 @@ if (astra.length) {
     if (a.tmc) inner += '<div style="font:11px/1.5 Helvetica,Arial,sans-serif;color:'
       + GRAU + ';">TMC ' + esc(a.tmc) + '</div>';
     inner += links([
-      linkBtn(dashLink('meldungen'), 'Dashboard'),
+      // Ganze Seite statt Meldungs-Embed: von hier aus sollen alle Zaehlstellen
+      // sichtbar sein (von Julian so verlangt am 24.09.2026).
+      linkBtn(DASH, 'Dashboard'),
       linkBtn(TCS_LAGE, 'Gegencheck TCS')
     ]);
     html += box(inner, ORANGE);
