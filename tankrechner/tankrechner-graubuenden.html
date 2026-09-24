@@ -33,6 +33,12 @@ input[type=number]{font:inherit; font-size:15px; color:var(--ink); border:1px so
   font-variant-numeric:tabular-nums}
 input[type=range]{flex:1 1 130px; min-width:130px; accent-color:var(--s1)}
 .unit{font-size:13px; color:var(--ink-3); flex:none}
+.seg{display:flex; border:1px solid var(--rule); border-radius:3px; overflow:hidden}
+.seg button{flex:1; appearance:none; border:0; background:#fff; padding:7px 4px;
+  font:inherit; font-size:14px; color:var(--ink-2); cursor:pointer; border-right:1px solid var(--rule)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--s1); color:#fff; font-weight:600}
+.lab{display:block; font-size:13px; font-weight:600; color:var(--ink-2); margin-bottom:4px}
 .check{display:flex; align-items:flex-start; gap:8px; font-size:14px; color:var(--ink);
   margin-top:2px}
 .check input{margin-top:4px; accent-color:var(--s1); flex:none}
@@ -139,6 +145,14 @@ select{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--ru
     </div>
   </div>
 
+  <div class="f">
+    <span class="lab">Treibstoff</span>
+    <div class="seg" id="segFuel" role="group" aria-label="Treibstoff">
+      <button type="button" data-v="benzin" aria-pressed="true">Benzin 95</button>
+      <button type="button" data-v="diesel" aria-pressed="false">Diesel</button>
+    </div>
+  </div>
+
   <div class="f full">
     <label class="check">
       <input type="checkbox" id="fzk" checked>
@@ -172,9 +186,9 @@ select{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--ru
   <span class="lg" style="color:var(--ink-3)">Punkt: Ihre Einstellung</span>
 </div>
 
-<p class="src">CO₂: 2,32 kg je Liter Benzin, beim Verbrennen (Bundesamt für Umwelt,
-Emissionsfaktoren des Treibhausgasinventars, Januar 2026). Förderung, Raffinerie und Transport
-sind nicht eingerechnet. Vergleichswert: 3,5 Tonnen CO₂ pro Kopf und Jahr, also 9,6 Kilogramm
+<p class="src">CO₂ beim Verbrennen: 2,32 kg je Liter Benzin, 2,62 je Liter Diesel (Bundesamt
+für Umwelt, Emissionsfaktoren des Treibhausgasinventars, Januar 2026). Förderung, Raffinerie
+und Transport sind nicht eingerechnet. Vergleichswert: 3,5 Tonnen CO₂ pro Kopf und Jahr, also 9,6 Kilogramm
 pro Tag (BAFU, Treibhausgasinventar 2024, Emissionen im Inland).<br>
 Fahrzeugkosten: eigene Berechnung auf Basis der TCS-Kilometerkosten 2026
 (Medienmitteilung vom 6. Januar 2026). Von den 27,5 Rappen variablen Kosten je Kilometer
@@ -241,9 +255,9 @@ const ZEIT = [
 ];
 
 const FZK = 19;     /* Rappen pro km neben dem Sprit, hergeleitet aus TCS 2026 */
-/* CO2 beim Verbrennen von Benzin, kg je Liter. BAFU, Emissionsfaktoren des
-   schweizerischen Treibhausgasinventars, Januar 2026. Diesel läge bei 2.62. */
-const CO2 = 2.32;
+/* CO2 beim Verbrennen, kg je Liter. BAFU, Emissionsfaktoren des schweizerischen
+   Treibhausgasinventars, Januar 2026. Nur die Verbrennung, ohne Vorketten. */
+const CO2 = {benzin:2.32, diesel:2.62};
 /* 3,5 t CO2 pro Kopf und Jahr (BAFU, Treibhausgasinventar 2024) – 9,6 kg pro Tag */
 const PRO_KOPF_TAG = 3500 / 365;
 /* DATA-END */
@@ -272,7 +286,7 @@ function proKopfZeit(kg){
 
 /* Startwerte: Bleifrei 95 im Landesdurchschnitt 2.14 CHF/l (TCS, gültig seit
    19. September 2026), die zweite Tankstelle 10 Rappen günstiger. */
-const S = { start:2, ziel:9, pa:2.14, pb:2.04, dist:16, menge:45, verb:6.5, fzk:true };
+const S = { start:2, ziel:9, pa:2.14, pb:2.04, dist:16, menge:45, verb:6.5, fzk:true, fuel:"benzin" };
 
 /* Gerechnet wird die Fahrt zur Tankstelle und zurück */
 const FAKTOR = 2;
@@ -426,7 +440,7 @@ function render(){
   if (S.dist > 0){
     const km    = FAKTOR * S.dist;
     const liter = km * S.verb / 100;
-    const co2   = liter * CO2;
+    const co2   = liter * CO2[S.fuel];
     const anteil = (S.menge > 0 && liter <= S.menge)
         ? " (" + de(liter / S.menge * 100) + " % der Tankfüllung)" : "";
     /* Die Fahrzeit skaliert mit der Strecke, damit sie auch bei einer von Hand
@@ -495,6 +509,17 @@ function num(id, key){
   document.getElementById("distR").value = Math.min(S.dist, 150);
 
   ["pa","pb","dist","menge","verb"].forEach(k => num(k, k));
+
+  /* Treibstoff bestimmt nur den CO2-Faktor – die Preise gibt der Nutzer selbst ein */
+  document.querySelectorAll("#segFuel button").forEach(b => {
+    b.addEventListener("click", () => {
+      S.fuel = b.dataset.v;
+      document.querySelectorAll("#segFuel button").forEach(x =>
+        x.setAttribute("aria-pressed", String(x.dataset.v === S.fuel)));
+      render();
+    });
+  });
+
   const fzk = document.getElementById("fzk");
   fzk.addEventListener("change", () => { S.fzk = fzk.checked; render(); });
   render();

@@ -185,7 +185,8 @@ deshalb nicht zu einer einzelnen Autofahrt.
 Landwirtschaft. Der Vergleich beantwortet die Frage «ist das viel?» mit einer Zeitspanne, setzt
 aber eine Einzelhandlung zu einem Gesamtdurchschnitt ins Verhältnis.
 
-**Grenze:** Elektroautos bildet der Rechner nicht ab, er fragt nach Litern. Im Embed vermerkt.
+**Treibstoffwahl:** Alle drei Rechner haben einen Umschalter Benzin/Diesel; er wirkt allein auf
+den CO2-Faktor, die Preise gibt der Nutzer selbst ein.
 
 ## Zollregeln für Treibstoff
 
