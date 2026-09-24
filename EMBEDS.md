@@ -61,9 +61,12 @@ Mehrweg inklusive Rückweg.
   style="width:0; min-width:100%; border:none; min-height:3000px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 1931 px ab 700 px Breite, 2566 px bei 500 px, rund 2650 px auf dem
-Handy – der Rechner wird dort einspaltig. Variante B braucht deshalb 2400 px Mindesthöhe und
-lässt am Desktop viel Leerraum. Wo immer möglich Variante A verwenden.
+Gemessene Inhaltshöhen (320 bis 900 px geprüft, kein Überlauf): 1871 px ab 640 px Breite,
+2559 px bei 500 px, rund 2880 px bei 320 px – der Rechner wird dort einspaltig.
+
+**Aufgeklappt** («Zahlen als Tabelle» und «So wird gerechnet») wächst der Inhalt auf bis zu
+4500 px. Variante B mit 3000 px deckt deshalb nur den zugeklappten Zustand; klappt jemand auf,
+wird abgeschnitten. Bei diesem Embed lohnt sich Variante A besonders.
 
 Das Embed gibt die Messmethode selbst vor (`documentElementScroll`) und meldet die Höhe neu,
 sobald jemand «Zahlen als Tabelle» oder «So wird gerechnet» aufklappt. Der Einbettungscode
