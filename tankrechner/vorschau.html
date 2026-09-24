@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tankrechner – Vorschau im Artikel-Layout</title>
+<style>
+/* Ahmt eine Artikelspalte nach: 696 px Inhaltsbreite, wie in der Datenstory-Serie */
+body{margin:0; background:#f4f6f8; font-family:"Source Sans 3",system-ui,-apple-system,sans-serif;
+  color:#14202a}
+.seite{max-width:696px; margin:0 auto; background:#fff; padding:28px 24px 40px;
+  box-shadow:0 1px 4px rgba(20,32,42,.12)}
+h1{font-size:26px; line-height:1.25; margin:0 0 6px}
+.lead{font-size:17px; color:#4a5b68; margin:0 0 20px}
+p.text{font-size:17px; line-height:1.6; margin:0 0 18px}
+h2.zw{font-size:19px; margin:30px 0 10px}
+.rahmen{border:1px dashed #cc3311; margin:8px 0 26px}
+.rahmen::before{content:attr(data-titel); display:block; font-size:11px; color:#cc3311;
+  padding:3px 6px; background:#fbeaec}
+iframe{width:0; min-width:100%; border:none; display:block}
+.hinweis{font-size:13px; color:#71838f; border-top:1px solid #eef2f5; padding-top:10px}
+</style>
+</head>
+<body>
+<div class="seite">
+  <h1>Vorschau: die drei Tankrechner in einer 696-Pixel-Spalte</h1>
+  <p class="lead">Diese Seite dient nur der Kontrolle. Der rote Rahmen zeigt, wo das iframe
+  beginnt und endet – wird darin etwas abgeschnitten, sieht man es hier.</p>
+
+  <p class="text">Etwas Fliesstext davor, damit der Abstand zum Artikel stimmt. Die Spalte ist
+  696 Pixel breit, wie in der Datenstory-Serie üblich.</p>
+
+  <h2 class="zw">T1 – Vollversion Glarus</h2>
+  <div class="rahmen" data-titel="iframe T1">
+    <iframe id="t1" src="tankrechner-glarus.html" title="Tankrechner Glarus"
+      loading="lazy" scrolling="no"></iframe>
+  </div>
+
+  <h2 class="zw">T2 – Kurzversion</h2>
+  <div class="rahmen" data-titel="iframe T2">
+    <iframe id="t2" src="tankrechner-einfach.html" title="Tankrechner Kurzversion"
+      loading="lazy" scrolling="no"></iframe>
+  </div>
+
+  <h2 class="zw">T3 – Graubünden</h2>
+  <div class="rahmen" data-titel="iframe T3">
+    <iframe id="t3" src="tankrechner-graubuenden.html" title="Tankrechner Graubünden"
+      loading="lazy" scrolling="no"></iframe>
+  </div>
+
+  <p class="text">Text danach. Schliesst er direkt an den Rahmen an, stimmt die gemeldete Höhe.</p>
+  <p class="hinweis">Eingebunden wie Variante A aus EMBEDS.md, mit iframe-resizer. Fenster
+  schmaler ziehen, um die Darstellung auf dem Handy zu prüfen.</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin:false, heightCalculationMethod:'lowestElement' }, '#t1, #t2, #t3');</script>
+</body>
+</html>

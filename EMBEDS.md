@@ -5,6 +5,11 @@ Alle Embeds liegen unter `https://julirai90-glitch.github.io/claude_code_git_wor
 Container-Breite: 696 px (Konvention Datenstory-Serie).
 Höhen-Sync: jeder Embed hat das iframe-resizer/contentWindow-Script — die responsive Variante (Code A) passt sich automatisch an, die einfache (Code B) nutzt eine feste Mindesthöhe.
 
+**Achtung bei mehreren Embeds auf einer Seite:** `iFrameResize(opt, '#a', '#b', '#c')` mit mehreren Selektor-Argumenten funktioniert **nicht** – die Bibliothek verarbeitet nur den ersten, die übrigen iframes bleiben auf ihrer Anfangshöhe stehen (gemessen: 150 px statt 1310). Getestet am 24.09.2026 mit iframe-resizer 4.3.9. Richtig ist **ein** Selektor-String mit Kommas oder je ein Aufruf pro iframe:
+```js
+iFrameResize({ checkOrigin:false, heightCalculationMethod:'lowestElement' }, '#a, #b, #c');
+```
+
 **Achtung bei `<details>`:** Chrome liefert für Elemente in einem zugeklappten `<details>` ein veraltetes Bounding-Rect. Die Standardmethode `lowestElement` zählt diese unsichtbaren Elemente mit und meldet eine zu grosse Höhe — beim Tankrechner waren es 2342 statt 1809 px, also rund 590 px Leerraum. Embeds mit Aufklapp-Elementen setzen deshalb im Kind-Dokument vor dem Resizer-Script:
 ```html
 <script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
@@ -53,7 +58,7 @@ Mehrweg inklusive Rückweg.
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html"
   title="Tankstellen-Rechner: Lohnt sich die Fahrt zum günstigeren Sprit?"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:2650px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:3000px; display:block;"></iframe>
 ```
 
 Gemessene Inhaltshöhen: 1931 px ab 700 px Breite, 2566 px bei 500 px, rund 2650 px auf dem
@@ -88,10 +93,10 @@ das auch – der Einbettungscode braucht keine Sonderbehandlung.
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html"
   title="Lohnt sich der Umweg zur günstigeren Tankstelle?"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:1700px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:1950px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 1323 px ab 700 px Breite, 1619 px bei 500 px, rund 1700 px auf dem Handy.
+Gemessene Inhaltshöhen: 1310 px ab 640 px Breite, 1536 px bei 560 px, 1923 px bei 320 px.
 
 ### T3. Tankstellen-Rechner Graubünden
 
@@ -116,10 +121,10 @@ Streckenfeld bleibt editierbar. Kein Ausland, keine Wechselkurse, keine Tankstel
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-graubuenden.html"
   title="Lohnt sich die Fahrt zur günstigeren Tankstelle?"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:1950px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:2250px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 1456 px ab 700 px Breite, 1848 px bei 500 px, rund 1920 px auf dem Handy.
+Gemessene Inhaltshöhen: 1443 px ab 640 px Breite, 1742 px bei 560 px, 2176 px bei 320 px.
 
 ---
 
@@ -542,7 +547,7 @@ Wenn du z.B. den Atlas und das Kanton-Embed auf derselben WordPress-Seite zeigen
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
 <script>
   iFrameResize({ checkOrigin: false, heightCalculationMethod: 'lowestElement' },
-    '#zwg-atlas', '#zwg-kanton');
+    '#zwg-atlas, #zwg-kanton');   // ein Selektor-String, nicht mehrere Argumente
 </script>
 ```
 

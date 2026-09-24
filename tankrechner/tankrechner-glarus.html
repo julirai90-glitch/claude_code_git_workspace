@@ -944,6 +944,14 @@ function fuelWechsel(){
   let t0;
   window.addEventListener("resize", () => { clearTimeout(t0); t0 = setTimeout(render, 150); });
 })();
+
+/* Absicherung: hoeheMelden() läuft ins Leere, solange der Resizer im Elternfenster
+   noch nicht bereit ist. Ohne weiteres Rendern bliebe dann dessen Anfangshöhe stehen.
+   Deshalb nach dem Laden nachfragen, bis er da ist. */
+(function meldeSobaldBereit(versuche){
+  if (window.parentIFrame){ window.parentIFrame.size(); return; }
+  if (versuche > 0) setTimeout(() => meldeSobaldBereit(versuche - 1), 200);
+})(20);
 </script>
 </body>
 </html>
