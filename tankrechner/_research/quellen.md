@@ -213,9 +213,16 @@ Der Schweizer Wert gilt seit dem 19.09.2026, die österreichischen Tankstellenpr
 live. Weil die Schweizer Preise derzeit wöchentlich um 5 bis 11 Rappen steigen, veralten sie
 schnell – der Rechner weist den Stand sichtbar aus und fordert zum Überschreiben auf.
 
-**Automatisierung möglich:** Die TCS-Seite lässt sich mit headless Chromium auslesen (siehe
-oben). Ein wöchentlicher Job könnte den `REF`-Block nachführen. Ohne das muss der Wert von
-Hand gepflegt werden.
+**Keine automatische Pflege – bewusster Entscheid (Julian, 24.09.2026).** Technisch wäre sie
+machbar: Die TCS-Seite lässt sich mit headless Chromium auslesen, ein wöchentlicher Cron-Job
+könnte die Werte nachführen. Dagegen spricht, dass die Embeds dann an einer fremden Seite
+hängen, deren Layout sich ändern kann. Die Rechner sollen schlank und unabhängig bleiben.
+
+**Was daraus folgt:** Die Startwerte veralten und werden es auch. Alle drei Rechner weisen
+deshalb aus, von wann sie stammen, und fordern zum Überschreiben auf – in der Vollversion beim
+Preisfeld, in den beiden schlanken Versionen in der Fussnote. Wer die Werte von Hand
+aktualisieren will, ändert `REF.ch` (Vollversion) beziehungsweise die Startwerte in `S` und die
+`value`-Attribute der Preisfelder (schlanke Versionen), dazu das Datum in der Fussnote.
 
 **Inhaltliche Folge des Updates:** Mit den alten, zu tiefen Schweizer Werten erschien
 Österreich als das teurere Land. Tatsächlich ist der Sprit dort derzeit rund 30 Rappen je Liter

@@ -88,10 +88,10 @@ das auch – der Einbettungscode braucht keine Sonderbehandlung.
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html"
   title="Lohnt sich der Umweg zur günstigeren Tankstelle?"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:1650px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:1700px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 1269 px ab 700 px Breite, 1565 px bei 500 px, rund 1650 px auf dem Handy.
+Gemessene Inhaltshöhen: 1323 px ab 700 px Breite, 1619 px bei 500 px, rund 1700 px auf dem Handy.
 
 ### T3. Tankstellen-Rechner Graubünden
 
@@ -116,10 +116,10 @@ Streckenfeld bleibt editierbar. Kein Ausland, keine Wechselkurse, keine Tankstel
   src="https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-graubuenden.html"
   title="Lohnt sich die Fahrt zur günstigeren Tankstelle?"
   loading="lazy" scrolling="no"
-  style="width:0; min-width:100%; border:none; min-height:1900px; display:block;"></iframe>
+  style="width:0; min-width:100%; border:none; min-height:1950px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 1402 px ab 700 px Breite, 1794 px bei 500 px, rund 1870 px auf dem Handy.
+Gemessene Inhaltshöhen: 1456 px ab 700 px Breite, 1848 px bei 500 px, rund 1920 px auf dem Handy.
 
 ---
 
