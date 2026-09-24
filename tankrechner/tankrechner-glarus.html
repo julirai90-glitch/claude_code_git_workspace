@@ -75,6 +75,16 @@ input[type=range]{flex:1 1 130px; min-width:130px; accent-color:var(--s1)}
   font-variant-numeric:tabular-nums; white-space:nowrap}
 .folgen tr:last-child td{border-bottom:0}
 .folgen .rel{margin:8px 0 0; font-size:13px; color:var(--ink-3); line-height:1.45}
+
+/* Schmale Darstellung: Label und Wert untereinander statt nebeneinander. Sonst bricht
+   «Zusätzlicher Treibstoff» auf zwei Zeilen und der Wert steht mittig daneben. */
+@media (max-width:520px){
+  .folgen td{display:block; text-align:left; border-bottom:0; padding:0}
+  .folgen td:first-child{padding-top:6px}
+  .folgen td:last-child{text-align:left; padding-bottom:6px;
+    border-bottom:1px solid var(--rule-soft)}
+  .folgen tr:last-child td:last-child{border-bottom:0; padding-bottom:0}
+}
 .be{display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; margin:16px 0 0}
 .be .k{border-top:2px solid var(--rule); padding-top:8px}
 .be .kv{font-size:22px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.15}
