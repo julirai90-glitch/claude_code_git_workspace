@@ -33,7 +33,7 @@ nachführen.
 |---|---|---|---|
 | T1 | `tankrechner/tankrechner-glarus.html` | Vollversion: Start und Ziel als Auswahl (acht Glarner Ortschaften, Balzers, Feldkirch), Distanz automatisch, Live-Tankstellenpreise aus Vorarlberg, Fazit, CO₂-Angabe, Kurve, Tabelle | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-glarus.html) |
 | T2 | `tankrechner/tankrechner-einfach.html` | Kurzversion: zwei Preise, Umweg, Tankfüllung, Verbrauch – Fazit, Grenzwert, Folgen-Box und Kurve | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-einfach.html) |
-| T3 | `tankrechner/tankrechner-graubuenden.html` | Graubünden: 23 Orte als Start und Ziel (Chur voreingestellt), Distanz automatisch, sonst wie T2 | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-graubuenden.html) |
+| T3 | `tankrechner/tankrechner-graubuenden.html` | Graubünden: 24 Orte als Start und Ziel (Chur voreingestellt, Samnaun dabei), Distanz automatisch, sonst wie T2 | [öffnen](https://julirai90-glitch.github.io/claude_code_git_workspace/tankrechner/tankrechner-graubuenden.html) |
 
 Beide stehen für sich; T2 ist nicht abhängig von T1. Unterschied in der Distanzlogik: T1 fragt
 die einfache Strecke und verdoppelt sie bei einer Extrafahrt, T2 fragt direkt den gesamten
@@ -104,7 +104,7 @@ Gemessene Inhaltshöhen: 1310 px ab 640 px Breite, 1536 px bei 560 px, 1923 px b
 ### T3. Tankstellen-Rechner Graubünden
 
 Gleicher Aufbau wie T2, aber mit Ortsauswahl statt freier Kilometerangabe: 23 Orte von Arosa
-bis Zernez, Chur ist voreingestellt. Strecke und Fahrzeit kommen aus einer Routing-Matrix, das
+bis Zernez, Chur ist voreingestellt. Samnaun ist dabei; bei diesem Ziel erscheint ein Hinweis, dass dort als Zollausschlussgebiet keine Mineralölsteuer anfällt. Strecke und Fahrzeit kommen aus einer Routing-Matrix, das
 Streckenfeld bleibt editierbar. Kein Ausland, keine Wechselkurse, keine Tankstellenabfrage.
 
 **A — responsive (empfohlen):**
@@ -127,7 +127,7 @@ Streckenfeld bleibt editierbar. Kein Ausland, keine Wechselkurse, keine Tankstel
   style="width:0; min-width:100%; border:none; min-height:2250px; display:block;"></iframe>
 ```
 
-Gemessene Inhaltshöhen: 1443 px ab 640 px Breite, 1742 px bei 560 px, 2176 px bei 320 px.
+Gemessene Inhaltshöhen: 1468 px ab 640 px Breite, 1937 px bei 500 px, rund 2200 px bei 320 px.
 
 ---
 
