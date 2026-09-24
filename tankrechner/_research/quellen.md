@@ -6,29 +6,33 @@ Alle im Embed sichtbaren Zahlen, mit Quelle und Abrufdatum. Abruf jeweils 23.09.
 
 | Wert | Quelle | Stand |
 |---|---|---|
-| Bleifrei 95: CHF 2.10/l | Erhebung des TCS | 18.09.2026 |
-| Diesel: CHF 2.41/l | Erhebung des TCS | 18.09.2026 |
+| Bleifrei 95: CHF 2.14/l | TCS, Seite «Benzinpreis heute in der Schweiz und in Europa» | gültig seit 19.09.2026 |
+| Diesel: CHF 2.46/l | dieselbe Quelle | gültig seit 19.09.2026 |
 
-Der TCS erhebt die Treibstoffpreise wöchentlich und gibt sie per Communiqué bekannt.
+`https://www.tcs.ch/de/camping-reisen/reiseinformationen/wissenswertes/fahrkosten-gebuehren/benzinpreise.php`
 
-**Einschränkung: Sekundärquellen.** Das TCS-Communiqué selbst wurde nicht eingesehen; die Zahlen
-stammen aus Medienmeldungen, die es wiedergeben:
-- plattformj.ch, 18.09.2026: Bleifrei 95 CHF 2.10, Diesel CHF 2.41, «am Freitag in einem
-  Communiqué» des TCS (`https://www.plattformj.ch/artikel/246824/`)
-- moneycab.com und radiocentral.ch, beide 16.09.2026, übereinstimmend: Bleifrei 95 CHF 2.10,
-  Bleifrei 98 CHF 2.21, Diesel CHF 2.38, Quelle TCS
-- swissinfo.ch (SDA), 09.09.2026: Bleifrei 95 CHF 2.05, Bleifrei 98 CHF 2.16, Diesel CHF 2.30
+**Achtung, die Seite lädt die Werte per JavaScript nach.** Ein einfacher Abruf liefert sie
+nicht; die Tabelle erscheint erst im gerenderten Zustand. Ausgelesen am 24.09.2026 mit
+headless Chromium:
 
-Die Reihe ist in sich konsistent: rund 5 Rappen Anstieg pro Woche. Laut den Meldungen haben sich
-Benzin und Diesel seit Jahresbeginn um 27 bis 33 Prozent verteuert und nähern sich den
-Rekordwerten von 2022 (damals bis CHF 2.31 für Bleifrei 95).
+```
+chromium --headless --dump-dom "<URL>" | grep -oP 'Schweiz\s+[\d.]+\s+[\d.]+\s+[\d.]+'
+```
 
-**Verworfen: BFS.** Die amtliche Tabelle «LIK, Durchschnittspreise für Energie und Treibstoffe»
-(Tabelle 900030, Asset 35952436) wäre die bessere Quelle, endet aber im Mai 2025 mit CHF 1.72
-für Bleifrei 95 und CHF 1.80 für Diesel. Diese Werte waren zwischenzeitlich im Rechner
-voreingestellt und lagen rund 40 Rappen zu tief – ein aktuellerer Stand war über die
-Asset-API nicht abrufbar. Avenergy Suisse liefert seine Monatsmittel nur über ein
-Infogram-Widget, das nicht mehr erreichbar ist.
+Die Seite nennt neben Bleifrei 95 und Diesel auch Bleifrei 98 (2.25) und für Nachbarländer
+eigene Werte – für Österreich allerdings mit Stand 11.09.2026 und ohne Ortsbezug. Die
+E-Control-Abfrage im Embed ist dem vorzuziehen: tagesaktuell und je Tankstelle.
+
+**Vorgeschichte, weil daraus eine Lehre folgt:** Am 23.09.2026 standen hier CHF 2.10 und 2.41,
+entnommen aus Medienmeldungen über das TCS-Communiqué vom 18.09. Eine Woche später waren sie
+überholt. Zuvor, ebenfalls am 23.09., waren es CHF 1.72 und 1.80 aus der BFS-Tabelle – Stand
+Mai 2025 und damit rund 40 Rappen zu tief. Die Preise sind derzeit so beweglich (zuletzt
++5 Rappen Benzin und +11 Rappen Diesel in einer Woche), dass jeder hinterlegte Wert nur
+Tage hält.
+
+**Verworfen: BFS.** Die amtliche Tabelle «LIK, Durchschnittspreise für Energie und
+Treibstoffe» (Tabelle 900030) endet im Mai 2025. Avenergy Suisse liefert seine Monatsmittel
+nur über ein Infogram-Widget, das nicht mehr erreichbar ist.
 
 ## Referenzpreise Österreich
 
@@ -204,10 +208,13 @@ EUR 9,60. «Tarife in EUR, inkl. 20% Ust., gültig ab 1. Dezember 2025.»
 
 ## Stand der Voreinstellungen
 
-Die Stichtage liegen jetzt drei Tage auseinander (CH 18.09.2026, AT 21.09.2026), die Werte sind
-damit vergleichbar. Weil die Preise derzeit wöchentlich um rund 5 Rappen steigen, veralten sie
-aber schnell – der Rechner weist den Stand jedes Werts sichtbar aus und fordert zum
-Überschreiben auf.
+Der Schweizer Wert gilt seit dem 19.09.2026, die österreichischen Tankstellenpreise kommen
+live. Weil die Schweizer Preise derzeit wöchentlich um 5 bis 11 Rappen steigen, veralten sie
+schnell – der Rechner weist den Stand sichtbar aus und fordert zum Überschreiben auf.
+
+**Automatisierung möglich:** Die TCS-Seite lässt sich mit headless Chromium auslesen (siehe
+oben). Ein wöchentlicher Job könnte den `REF`-Block nachführen. Ohne das muss der Wert von
+Hand gepflegt werden.
 
 **Inhaltliche Folge des Updates:** Mit den alten, zu tiefen Schweizer Werten erschien
 Österreich als das teurere Land. Tatsächlich ist der Sprit dort derzeit rund 30 Rappen je Liter

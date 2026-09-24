@@ -85,7 +85,7 @@ svg{display:block; max-width:100%; height:auto}
   <div class="f">
     <label for="pa">Preis Tankstelle A</label>
     <div class="row">
-      <input type="number" id="pa" min="0" max="5" step="0.01" value="2.10">
+      <input type="number" id="pa" min="0" max="5" step="0.01" value="2.14">
       <span class="unit">CHF/l</span>
     </div>
   </div>
@@ -93,7 +93,7 @@ svg{display:block; max-width:100%; height:auto}
   <div class="f">
     <label for="pb">Preis Tankstelle B</label>
     <div class="row">
-      <input type="number" id="pb" min="0" max="5" step="0.01" value="2.00">
+      <input type="number" id="pb" min="0" max="5" step="0.01" value="2.04">
       <span class="unit">CHF/l</span>
     </div>
   </div>
@@ -192,9 +192,9 @@ function proKopfZeit(kg){
                   : Math.round(std * 60) + " Minuten";
 }
 
-/* Startwerte: Bleifrei 95 im Landesdurchschnitt 2.10 CHF/l (Erhebung des TCS, Stand
-   18. September 2026), die zweite Tankstelle 10 Rappen günstiger. */
-const S = { pa:2.10, pb:2.00, dist:10, menge:45, verb:6.5, fzk:true };
+/* Startwerte: Bleifrei 95 im Landesdurchschnitt 2.14 CHF/l (TCS, gültig seit
+   19. September 2026), die zweite Tankstelle 10 Rappen günstiger. */
+const S = { pa:2.14, pb:2.04, dist:10, menge:45, verb:6.5, fzk:true };
 
 /* Der Rechenkern. km ist der gesamte Mehrweg, Rückweg also bereits enthalten.
    Der Sprit für den Umweg wird zum Mittel aus beiden Preisen gerechnet: hin noch

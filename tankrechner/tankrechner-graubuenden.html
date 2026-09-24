@@ -98,7 +98,7 @@ select{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--ru
   <div class="f">
     <label for="pa" id="paLab">Preis am Startort</label>
     <div class="row">
-      <input type="number" id="pa" min="0" max="5" step="0.01" value="2.10">
+      <input type="number" id="pa" min="0" max="5" step="0.01" value="2.14">
       <span class="unit">CHF/l</span>
     </div>
   </div>
@@ -106,7 +106,7 @@ select{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--ru
   <div class="f">
     <label for="pb" id="pbLab">Preis am Zielort</label>
     <div class="row">
-      <input type="number" id="pb" min="0" max="5" step="0.01" value="2.00">
+      <input type="number" id="pb" min="0" max="5" step="0.01" value="2.04">
       <span class="unit">CHF/l</span>
     </div>
   </div>
@@ -270,9 +270,9 @@ function proKopfZeit(kg){
                   : Math.round(std * 60) + " Minuten";
 }
 
-/* Startwerte: Bleifrei 95 im Landesdurchschnitt 2.10 CHF/l (Erhebung des TCS, Stand
-   18. September 2026), die zweite Tankstelle 10 Rappen günstiger. */
-const S = { start:2, ziel:9, pa:2.10, pb:2.00, dist:16, menge:45, verb:6.5, fzk:true };
+/* Startwerte: Bleifrei 95 im Landesdurchschnitt 2.14 CHF/l (TCS, gültig seit
+   19. September 2026), die zweite Tankstelle 10 Rappen günstiger. */
+const S = { start:2, ziel:9, pa:2.14, pb:2.04, dist:16, menge:45, verb:6.5, fzk:true };
 
 /* Gerechnet wird die Fahrt zur Tankstelle und zurück */
 const FAKTOR = 2;
