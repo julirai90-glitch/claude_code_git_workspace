@@ -308,7 +308,7 @@ function drawChart(r){
   }
   g += `<line class="axis" x1="${l}" y1="${t+ih}" x2="${W-rr}" y2="${t+ih}"/>`;
   g += `<text class="alab" x="${l}" y="${H-6}">Umweg in Kilometern</text>`;
-  g += `<text class="alab" x="${l-34}" y="${t-11}">Rappen je Liter</text>`;
+  g += `<text class="alab" x="${l-34}" y="${t-11}">Preisvorteil in Rappen je Liter</text>`;
 
   const aktiv = S.fzk;
   g += `<path d="${pfad(aktiv, true)} L ${X(xMax)} ${Y(yMax)} L ${X(0)} ${Y(yMax)} Z" fill="var(--s1)" opacity=".07"/>`;
