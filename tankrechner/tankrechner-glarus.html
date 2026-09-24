@@ -666,9 +666,11 @@ function drawSrc(){
          + "Kraftstoffindustrie, Erhebung " + REF.at.stand + ")");
   q.push("Wechselkurs: Schweizerische Nationalbank, Monatsmittel " + REF.kurs.stand);
   q.push("Fahrzeugkosten hergeleitet aus der TCS-Kilometerkostenrechnung vom 6. Januar 2026");
-  q.push("CO\u2082: " + de(CO2[S.fuel],2) + " kg je Liter " + (S.fuel==="diesel"?"Diesel":"Benzin")
-       + " (BAFU, Emissionsfaktoren des Treibhausgasinventars, Januar 2026); Vergleichswert "
-       + "3,5 Tonnen pro Kopf und Jahr (BAFU, Treibhausgasinventar 2024)");
+  /* Beide Faktoren nennen, nicht nur den gewählten – sonst steht der Dieselwert nirgends */
+  q.push("CO\u2082 beim Verbrennen: " + de(CO2.benzin,2) + " kg je Liter Benzin, "
+       + de(CO2.diesel,2) + " je Liter Diesel (BAFU, Emissionsfaktoren des "
+       + "Treibhausgasinventars, Januar 2026); Vergleichswert 3,5 Tonnen pro Kopf und Jahr "
+       + "(BAFU, Treibhausgasinventar 2024)");
   document.getElementById("src").innerHTML =
       "Quellen: " + q.join(" · ") + ".<br>"
     + "Zoll: Der Treibstoff im Tank ist bei der Einreise in die Schweiz abgabenfrei, dazu bis "
