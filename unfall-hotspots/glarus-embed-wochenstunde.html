@@ -133,7 +133,7 @@ function colorOf(v){
 }
 
 function draw(){
-  const narrow = document.body.clientWidth < 420;
+  const narrow = window.innerWidth < 420;
   const mx = document.getElementById('mx');
   mx.style.setProperty('--labw', narrow ? '24px' : '58px');
   mx.style.setProperty('--cellh', narrow ? '19px' : '22px');

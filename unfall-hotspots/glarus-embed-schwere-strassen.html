@@ -122,7 +122,7 @@ document.addEventListener('pointerdown', function(e){
 }, true);
 
 function draw(){
-  const narrow = document.body.clientWidth < 560;
+  const narrow = window.innerWidth < 560;
   const host = document.getElementById('rows');
   const labw = narrow ? '124px' : '210px', valw = narrow ? '50px' : '86px';
   [host, document.getElementById('axis')].forEach(function(n){

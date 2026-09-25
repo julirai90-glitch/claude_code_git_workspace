@@ -178,7 +178,7 @@ function draw(){
   });
 
   /* the five-year blocks below, on a 0–40 % scale */
-  const narrowB = document.body.clientWidth < 460;
+  const narrowB = window.innerWidth < 460;
   const host = document.getElementById('blocks');
   host.style.setProperty('--blabw', narrowB ? '74px' : '96px');
   host.style.setProperty('--bvalw', narrowB ? '92px' : '130px');

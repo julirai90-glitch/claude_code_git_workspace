@@ -100,7 +100,7 @@ function pct(v, n){ return 100 * v / n; }
 function de(x){ return String(x).replace('.', ','); }
 
 function draw(){
-  const narrow = document.body.clientWidth < 460;
+  const narrow = window.innerWidth < 460;
   const host = document.getElementById('rows');
   host.textContent = '';
 

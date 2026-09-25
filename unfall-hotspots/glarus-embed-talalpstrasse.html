@@ -132,7 +132,7 @@ document.getElementById('pairs').innerHTML =
 
 /* the ranking is what turns one road into a finding: it leads the canton */
 (function(){
-  const narrow = document.body.clientWidth < 520;
+  const narrow = window.innerWidth < 520;
   document.getElementById('rank').style.setProperty('--rlabw', narrow ? '116px' : '190px');
   let h = '<h3>Anteil Unfälle ohne zweite Partei — Strassen mit mindestens ' + MIN_N +
           ' Unfällen — die drei höchsten</h3>';

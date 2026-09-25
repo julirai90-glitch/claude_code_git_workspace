@@ -114,7 +114,7 @@ function colorOf(v){
 }
 
 function draw(){
-  const W = document.body.clientWidth;
+  const W = window.innerWidth;
   const narrow = W < 560;
   const mx = document.getElementById('mx');
   mx.style.setProperty('--labw', narrow ? '104px' : '230px');

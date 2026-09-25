@@ -24,6 +24,8 @@ body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
 table{border-collapse:collapse; width:100%; table-layout:fixed;
   font-variant-numeric:tabular-nums}
 col.lab{width:43%} col.val{width:19%}
+/* narrow: the label column can give up space, the street names need it */
+@media (max-width:420px){ col.lab{width:31%} col.val{width:23%} }
 th,td{padding:7px 4px; text-align:right; border-bottom:1px solid var(--rule-soft)}
 th:first-child,td:first-child{text-align:left; font-variant-numeric:normal}
 /* the head carries rank, place and streets — three lines, no wrapping games */
@@ -40,13 +42,15 @@ tr.total td{font-weight:600}
 .dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px;
   vertical-align:baseline}
 .zero{color:var(--ink-3)}
+.where{margin:10px 0 0; font-size:12px; color:var(--ink-3); line-height:1.45}
+.where b{color:var(--ink-2); font-weight:600}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
      padding-top:10px; margin:14px 0 0}
 @media (max-width:420px){
   .wrap{padding:10px 10px 12px}
   th,td{padding:6px 2px; font-size:14px}
   .place{font-size:13px}
-  .street{font-size:10px}
+  .street{font-size:9.5px; line-height:1.2; hyphens:auto}
   tbody th{font-size:12.5px; line-height:1.25}
   tr.score td{font-size:19px}
 }
@@ -55,6 +59,7 @@ tr.total td{font-weight:600}
 <body data-palette="#b5001e,#ee7733,#f2b84b">
 <div class="wrap">
   <table id="tbl"><colgroup><col class="lab"><col class="val"><col class="val"><col class="val"></colgroup></table>
+  <p class="where" id="where"></p>
   <p class="src" id="src"></p>
 </div>
 <script>
@@ -69,15 +74,10 @@ function cell(v, cls){
 
 (function(){
   const ORD = ['1.', '2.', '3.'];
-  const tight = document.body.clientWidth < 420;
   let h = '<thead><tr><th></th>';
   ROWS.forEach(function(r, i){
-    /* two street names break mid-word in a 55 px column — one is enough,
-       the full location is in the source note */
-    const street = tight ? r.streets[0] : r.streets.join('/');
     h += '<th><span class="rank">' + ORD[i] + '</span>' +
-         '<span class="place">' + r.place + '</span>' +
-         '<span class="street">' + street + '</span></th>';
+         '<span class="place">' + r.place + '</span></th>';
   });
   h += '</tr></thead><tbody>';
 
@@ -87,7 +87,7 @@ function cell(v, cls){
        ROWS.map(r => cell(r.n)).join('') + '</tr>';
 
   /* severity in the same three colours the map and the other charts use */
-  [['as1','rot', tight ? 'mit Getöteten' : 'Unfälle mit Getöteten'],
+  [['as1','rot','Unfälle mit Getöteten'],
    ['as2','orange','mit Schwerverletzten'],
    ['as3','gelb','mit Leichtverletzten']].forEach(function(s){
     h += '<tr><th><span class="dot" style="background:var(--' + s[1] + ')"></span>' +
@@ -97,6 +97,9 @@ function cell(v, cls){
   const tbl = document.getElementById('tbl');
   tbl.insertAdjacentHTML('beforeend', h + '</tbody>');
 })();
+
+document.getElementById('where').innerHTML =
+  ROWS.map(r => '<b>' + r.place + ':</b> ' + r.streets.join('/')).join(' &middot; ');
 
 document.getElementById('src').innerHTML =
   'Die drei höchstbewerteten von ' + FACTS.total + ' Unfallschwerpunkten im Kanton Glarus, ' +
