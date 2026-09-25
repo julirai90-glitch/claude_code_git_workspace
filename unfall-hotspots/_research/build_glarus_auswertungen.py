@@ -514,6 +514,12 @@ def g9_top3(acc, streets, orte, top=3):
             "velo": sum(1 for a in A if a["AccidentInvolvingBicycle"] == "true"),
             "fuss": sum(1 for a in A if a["AccidentInvolvingPedestrian"] == "true"),
             "moto": sum(1 for a in A if a["AccidentInvolvingMotorcycle"] == "true"),
+            # ASTRA has no field for cars; an accident with none of the three
+            # flags simply had no bicycle, motorcycle or pedestrian in it
+            "keine": sum(1 for a in A
+                         if a["AccidentInvolvingBicycle"] != "true"
+                         and a["AccidentInvolvingMotorcycle"] != "true"
+                         and a["AccidentInvolvingPedestrian"] != "true"),
             "e": round(c["e"]), "n_": round(c["n"]),
         })
     facts = {"total": len(hotspots(acc)), "years": [YEARS[0], YEARS[-1]],

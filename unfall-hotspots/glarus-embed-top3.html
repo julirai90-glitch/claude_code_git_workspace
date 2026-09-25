@@ -40,6 +40,7 @@ tr.total td{font-weight:600}
 .dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px;
   vertical-align:baseline}
 .zero{color:var(--ink-3)}
+tr.rest th,tr.rest td{color:var(--ink-3)}
 .note{margin:16px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
   font-size:14px; color:var(--ink-2)}
 .note b{color:var(--ink); font-variant-numeric:tabular-nums}
@@ -63,7 +64,7 @@ tr.total td{font-weight:600}
 </div>
 <script>
 /* DATA-START */
-const ROWS = [{"place":"Glarus","streets":["Kirchweg","Bahnhofstrasse"],"score":18,"n":13,"as1":0,"as2":5,"as3":8,"velo":2,"fuss":5,"moto":1,"e":2723955,"n_":1211134},{"place":"Bilten","streets":["Schäniserstrasse","Nationalstrasse"],"score":16,"n":15,"as1":0,"as2":1,"as3":14,"velo":1,"fuss":0,"moto":2,"e":2720872,"n_":1223701},{"place":"Näfels","streets":["Altweg","Oberdorf"],"score":15,"n":15,"as1":0,"as2":0,"as3":15,"velo":5,"fuss":2,"moto":1,"e":2723120,"n_":1217159}];
+const ROWS = [{"place":"Glarus","streets":["Kirchweg","Bahnhofstrasse"],"score":18,"n":13,"as1":0,"as2":5,"as3":8,"velo":2,"fuss":5,"moto":1,"keine":5,"e":2723955,"n_":1211134},{"place":"Bilten","streets":["Schäniserstrasse","Nationalstrasse"],"score":16,"n":15,"as1":0,"as2":1,"as3":14,"velo":1,"fuss":0,"moto":2,"keine":12,"e":2720872,"n_":1223701},{"place":"Näfels","streets":["Altweg","Oberdorf"],"score":15,"n":15,"as1":0,"as2":0,"as3":15,"velo":5,"fuss":2,"moto":1,"keine":7,"e":2723120,"n_":1217159}];
 const FACTS = {"total":75,"years":[2011,2025],"radius":50};
 /* DATA-END */
 
@@ -101,8 +102,10 @@ function cell(v, cls){
 
   [['velo', narrow ? 'Velo' : 'Velo beteiligt'],
    ['fuss', narrow ? 'Fussgänger' : 'Fussgänger beteiligt'],
-   ['moto', narrow ? 'Motorrad' : 'Motorrad beteiligt']].forEach(function(s){
-    h += '<tr><th>' + s[1] + '</th>' + ROWS.map(r => cell(r[s[0]])).join('') + '</tr>';
+   ['moto', narrow ? 'Motorrad' : 'Motorrad beteiligt'],
+   ['keine', narrow ? 'keines davon' : 'keines davon beteiligt']].forEach(function(s){
+    h += '<tr' + (s[0] === 'keine' ? ' class="rest"' : '') + '><th>' + s[1] + '</th>' +
+         ROWS.map(r => cell(r[s[0]])).join('') + '</tr>';
   });
   const tbl = document.getElementById('tbl');
   tbl.insertAdjacentHTML('beforeend', h + '</tbody>');
@@ -123,8 +126,14 @@ document.getElementById('src').innerHTML =
   'Die drei höchstbewerteten von ' + FACTS.total + ' Unfallschwerpunkten im Kanton Glarus, ' +
   FACTS.years[0] + '–' + FACTS.years[1] + '. Ein Schwerpunkt umfasst alle Unfälle mit ' +
   'Personenschaden im Umkreis von ' + FACTS.radius + '&nbsp;m. Die Ortsangaben nennen die ' +
-  'Ortschaft und die Strassen, denen die Unfälle am nächsten liegen. Quelle: Bundesamt für ' +
-  'Strassen ASTRA, Strassenverkehrsunfallorte; Ortsnamen: swisstopo. Grafik: Südostschweiz';
+  'Ortschaft und die Strassen, denen die Unfälle am nächsten liegen. ' +
+  '<b>Autos werden nicht ausgewiesen:</b> Die Unfallstatistik vermerkt nur, ob ein Velo, ' +
+  'ein Motorrad oder eine Person zu Fuss beteiligt war. «Keines davon» heisst deshalb, ' +
+  'dass keine dieser drei Gruppen im Unfall vorkam — meist eine Kollision zwischen ' +
+  'Motorfahrzeugen, belegt ist das aber nicht. Die drei Zeilen können sich überschneiden, ' +
+  'etwa wenn ein Velo eine Person zu Fuss anfährt. ' +
+  'Quelle: Bundesamt für Strassen ASTRA, Strassenverkehrsunfallorte; Ortsnamen: swisstopo. ' +
+  'Grafik: Südostschweiz';
 
 /* ---- report our height to the embedding page ---------------------- */
 (function(){
