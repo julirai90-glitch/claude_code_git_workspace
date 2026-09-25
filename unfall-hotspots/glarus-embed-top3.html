@@ -40,7 +40,6 @@ tr.total td{font-weight:600}
 .dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px;
   vertical-align:baseline}
 .zero{color:var(--ink-3)}
-tr.rest th,tr.rest td{color:var(--ink-3)}
 .note{margin:16px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
   font-size:14px; color:var(--ink-2)}
 .note b{color:var(--ink); font-variant-numeric:tabular-nums}
@@ -92,48 +91,36 @@ function cell(v, cls){
        ROWS.map(r => cell(r.n)).join('') + '</tr>';
 
   /* severity in the same three colours the map and the other charts use */
-  const narrow = document.body.clientWidth < 420;
-  [['as1','rot', narrow ? 'mit Getöteten' : 'Unfälle mit Getöteten'],
+  [['as1','rot', tight ? 'mit Getöteten' : 'Unfälle mit Getöteten'],
    ['as2','orange','mit Schwerverletzten'],
    ['as3','gelb','mit Leichtverletzten']].forEach(function(s){
     h += '<tr><th><span class="dot" style="background:var(--' + s[1] + ')"></span>' +
          s[2] + '</th>' + ROWS.map(r => cell(r[s[0]])).join('') + '</tr>';
   });
 
-  [['velo', narrow ? 'Velo' : 'Velo beteiligt'],
-   ['fuss', narrow ? 'Fussgänger' : 'Fussgänger beteiligt'],
-   ['moto', narrow ? 'Motorrad' : 'Motorrad beteiligt'],
-   ['keine', narrow ? 'keines davon' : 'keines davon beteiligt']].forEach(function(s){
-    h += '<tr' + (s[0] === 'keine' ? ' class="rest"' : '') + '><th>' + s[1] + '</th>' +
-         ROWS.map(r => cell(r[s[0]])).join('') + '</tr>';
-  });
   const tbl = document.getElementById('tbl');
   tbl.insertAdjacentHTML('beforeend', h + '</tbody>');
 })();
 
-/* the table explains the score if you read it — say it once out loud */
+/* with only the severity rows left the score is literally computable from
+   the table — say so, it beats any explanation of the method */
 (function(){
   const a = ROWS[0], c = ROWS[ROWS.length-1];
   document.getElementById('note').innerHTML =
-    'Der Spitzenreiter hat die <b>wenigsten</b> Unfälle der drei. Getötete und ' +
-    'Schwerverletzte zählen doppelt: ' + a.place + ' kommt mit <b>' + a.n +
-    '</b> Unfällen und <b>' + a.as2 + '</b> Schwerverletzten auf <b>' + a.score +
-    '</b> Punkte, ' + c.place + ' mit <b>' + c.n + '</b> Unfällen und keinem einzigen ' +
-    'Schwerverletzten auf <b>' + c.score + '</b>.';
+    'Der Spitzenreiter hat die <b>wenigsten</b> Unfälle der drei. Das liegt an der ' +
+    'Gewichtung: Getötete und Schwerverletzte zählen doppelt, Leichtverletzte einfach. ' +
+    'Für ' + a.place + ' ergibt das ' + a.as2 + '&nbsp;×&nbsp;2 + ' + a.as3 +
+    '&nbsp;×&nbsp;1 = <b>' + a.score + '</b> Punkte, für ' + c.place + ' bei lauter ' +
+    'Leichtverletzten <b>' + c.score + '</b>.';
 })();
 
 document.getElementById('src').innerHTML =
   'Die drei höchstbewerteten von ' + FACTS.total + ' Unfallschwerpunkten im Kanton Glarus, ' +
   FACTS.years[0] + '–' + FACTS.years[1] + '. Ein Schwerpunkt umfasst alle Unfälle mit ' +
-  'Personenschaden im Umkreis von ' + FACTS.radius + '&nbsp;m. Die Ortsangaben nennen die ' +
-  'Ortschaft und die Strassen, denen die Unfälle am nächsten liegen. ' +
-  '<b>Autos werden nicht ausgewiesen:</b> Die Unfallstatistik vermerkt nur, ob ein Velo, ' +
-  'ein Motorrad oder eine Person zu Fuss beteiligt war. «Keines davon» heisst deshalb, ' +
-  'dass keine dieser drei Gruppen im Unfall vorkam — meist eine Kollision zwischen ' +
-  'Motorfahrzeugen, belegt ist das aber nicht. Die drei Zeilen können sich überschneiden, ' +
-  'etwa wenn ein Velo eine Person zu Fuss anfährt. ' +
-  'Quelle: Bundesamt für Strassen ASTRA, Strassenverkehrsunfallorte; Ortsnamen: swisstopo. ' +
-  'Grafik: Südostschweiz';
+  'Personenschaden im Umkreis von ' + FACTS.radius + '&nbsp;m; gezählt wird je Unfall der ' +
+  'schwerste Personenschaden. Die Ortsangaben nennen die Ortschaft und die Strassen, denen ' +
+  'die Unfälle am nächsten liegen. Quelle: Bundesamt für Strassen ASTRA, ' +
+  'Strassenverkehrsunfallorte; Ortsnamen: swisstopo. Grafik: Südostschweiz';
 
 /* ---- report our height to the embedding page ---------------------- */
 (function(){
