@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die drei grössten Unfallschwerpunkte im Vergleich</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4; --s2:#ee7733;
+  --rot:#b5001e; --orange:#ee7733; --gelb:#f2b84b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px}
+/* fixed layout: without it the head cells push the table wider than the
+   column and the last two hotspots disappear off the edge */
+table{border-collapse:collapse; width:100%; table-layout:fixed;
+  font-variant-numeric:tabular-nums}
+col.lab{width:43%} col.val{width:19%}
+th,td{padding:7px 4px; text-align:right; border-bottom:1px solid var(--rule-soft)}
+th:first-child,td:first-child{text-align:left; font-variant-numeric:normal}
+/* the head carries rank, place and streets — three lines, no wrapping games */
+thead th{vertical-align:bottom; border-bottom:1px solid var(--rule); padding-bottom:9px}
+.rank{display:block; font-size:11px; color:var(--ink-3); font-weight:400}
+.place{display:block; font-size:15px; font-weight:700; line-height:1.2}
+.street{display:block; font-size:11px; color:var(--ink-3); font-weight:400;
+  line-height:1.25; margin-top:2px}
+tbody th{font-weight:400; color:var(--ink-2); font-size:14px}
+tr.score td, tr.score th{border-bottom:1px solid var(--rule); padding-top:9px; padding-bottom:9px}
+tr.score td{font-size:22px; font-weight:700}
+tr.score th{font-weight:600; color:var(--ink)}
+tr.total td{font-weight:600}
+.dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px;
+  vertical-align:baseline}
+.zero{color:var(--ink-3)}
+.note{margin:16px 0 0; padding-top:14px; border-top:1px solid var(--rule-soft);
+  font-size:14px; color:var(--ink-2)}
+.note b{color:var(--ink); font-variant-numeric:tabular-nums}
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+     padding-top:10px; margin:14px 0 0}
+@media (max-width:420px){
+  .wrap{padding:10px 10px 12px}
+  th,td{padding:6px 2px; font-size:14px}
+  .place{font-size:13px}
+  .street{font-size:10px}
+  tbody th{font-size:12.5px; line-height:1.25}
+  tr.score td{font-size:19px}
+}
+</style>
+</head>
+<body data-palette="#b5001e,#ee7733,#f2b84b">
+<div class="wrap">
+  <table id="tbl"><colgroup><col class="lab"><col class="val"><col class="val"><col class="val"></colgroup></table>
+  <p class="note" id="note"></p>
+  <p class="src" id="src"></p>
+</div>
+<script>
+/* DATA-START */
+const ROWS = [{"place":"Glarus","streets":["Kirchweg","Bahnhofstrasse"],"score":18,"n":13,"as1":0,"as2":5,"as3":8,"velo":2,"fuss":5,"moto":1,"e":2723955,"n_":1211134},{"place":"Bilten","streets":["Schäniserstrasse","Nationalstrasse"],"score":16,"n":15,"as1":0,"as2":1,"as3":14,"velo":1,"fuss":0,"moto":2,"e":2720872,"n_":1223701},{"place":"Näfels","streets":["Altweg","Oberdorf"],"score":15,"n":15,"as1":0,"as2":0,"as3":15,"velo":5,"fuss":2,"moto":1,"e":2723120,"n_":1217159}];
+const FACTS = {"total":75,"years":[2011,2025],"radius":50};
+/* DATA-END */
+
+function cell(v, cls){
+  return '<td' + (v === 0 ? ' class="zero"' : (cls ? ' class="' + cls + '"' : '')) + '>' + v + '</td>';
+}
+
+(function(){
+  const ORD = ['1.', '2.', '3.'];
+  const tight = document.body.clientWidth < 420;
+  let h = '<thead><tr><th></th>';
+  ROWS.forEach(function(r, i){
+    /* two street names break mid-word in a 55 px column — one is enough,
+       the full location is in the source note */
+    const street = tight ? r.streets[0] : r.streets.join('/');
+    h += '<th><span class="rank">' + ORD[i] + '</span>' +
+         '<span class="place">' + r.place + '</span>' +
+         '<span class="street">' + street + '</span></th>';
+  });
+  h += '</tr></thead><tbody>';
+
+  h += '<tr class="score"><th>Hotspot-Score</th>' +
+       ROWS.map(r => '<td>' + r.score + '</td>').join('') + '</tr>';
+  h += '<tr class="total"><th>Unfälle</th>' +
+       ROWS.map(r => cell(r.n)).join('') + '</tr>';
+
+  /* severity in the same three colours the map and the other charts use */
+  const narrow = document.body.clientWidth < 420;
+  [['as1','rot', narrow ? 'mit Getöteten' : 'Unfälle mit Getöteten'],
+   ['as2','orange','mit Schwerverletzten'],
+   ['as3','gelb','mit Leichtverletzten']].forEach(function(s){
+    h += '<tr><th><span class="dot" style="background:var(--' + s[1] + ')"></span>' +
+         s[2] + '</th>' + ROWS.map(r => cell(r[s[0]])).join('') + '</tr>';
+  });
+
+  [['velo', narrow ? 'Velo' : 'Velo beteiligt'],
+   ['fuss', narrow ? 'Fussgänger' : 'Fussgänger beteiligt'],
+   ['moto', narrow ? 'Motorrad' : 'Motorrad beteiligt']].forEach(function(s){
+    h += '<tr><th>' + s[1] + '</th>' + ROWS.map(r => cell(r[s[0]])).join('') + '</tr>';
+  });
+  const tbl = document.getElementById('tbl');
+  tbl.insertAdjacentHTML('beforeend', h + '</tbody>');
+})();
+
+/* the table explains the score if you read it — say it once out loud */
+(function(){
+  const a = ROWS[0], c = ROWS[ROWS.length-1];
+  document.getElementById('note').innerHTML =
+    'Der Spitzenreiter hat die <b>wenigsten</b> Unfälle der drei. Getötete und ' +
+    'Schwerverletzte zählen doppelt: ' + a.place + ' kommt mit <b>' + a.n +
+    '</b> Unfällen und <b>' + a.as2 + '</b> Schwerverletzten auf <b>' + a.score +
+    '</b> Punkte, ' + c.place + ' mit <b>' + c.n + '</b> Unfällen und keinem einzigen ' +
+    'Schwerverletzten auf <b>' + c.score + '</b>.';
+})();
+
+document.getElementById('src').innerHTML =
+  'Die drei höchstbewerteten von ' + FACTS.total + ' Unfallschwerpunkten im Kanton Glarus, ' +
+  FACTS.years[0] + '–' + FACTS.years[1] + '. Ein Schwerpunkt umfasst alle Unfälle mit ' +
+  'Personenschaden im Umkreis von ' + FACTS.radius + '&nbsp;m. Die Ortsangaben nennen die ' +
+  'Ortschaft und die Strassen, denen die Unfälle am nächsten liegen. Quelle: Bundesamt für ' +
+  'Strassen ASTRA, Strassenverkehrsunfallorte; Ortsnamen: swisstopo. Grafik: Südostschweiz';
+
+/* ---- report our height to the embedding page ---------------------- */
+(function(){
+  let last = 0;
+  function report(){
+    const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    if (h === last) return;
+    last = h;
+    try { parent.postMessage({ type: 'sos-embed-height', height: h }, '*'); }
+    catch (e) { /* cross-origin parents may refuse */ }
+  }
+  addEventListener('load', report);
+  addEventListener('resize', report);
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.body);
+  report();
+})();
+</script>
+</body>
+</html>

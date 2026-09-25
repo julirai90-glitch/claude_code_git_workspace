@@ -11,6 +11,7 @@ The map answers "where"; these five answer "what is unusual about it":
   glarus-embed-talalpstrasse.html the Talalpstrasse case: single-vehicle crashes
   glarus-embed-entwicklung.html  fifteen years: flat count, severity drifting up
   glarus-embed-klausen-hoehe.html the whole Klausen road by elevation, GL + UR
+  glarus-embed-top3.html         the three highest-scoring hotspots compared
 
 Each page keeps its data between /* DATA-START */ and /* DATA-END */; this
 script recomputes those blocks so the numbers can never drift from the source.
@@ -450,6 +451,77 @@ def g8_klausen_hoehe(acc, streets):
 
 
 # --------------------------------------------------------------------------
+# The map's own hotspot logic, reproduced here so the table cannot drift from
+# what the map shows: 50 m radius, severity weighted 2/2/1, threshold 5, and
+# the densest point opens a hotspot and takes everything inside its radius.
+# Coordinates go the same detour as in the map (LV95 -> rounded WGS84 -> LV95),
+# otherwise a pair on the 50 m boundary lands in a different hotspot.
+HOTSPOT_RADIUS = 50
+HOTSPOT_MIN_SCORE = 5
+
+
+def _map_xy(a):
+    e, n = a["AccidentLocation_CHLV95_E"], a["AccidentLocation_CHLV95_N"]
+    y, x = (e - 2600000) / 1e6, (n - 1200000) / 1e6
+    lon = round((2.6779094 + 4.728982*y + 0.791484*y*x + 0.1306*y*x*x - 0.0436*y**3) * 100/36, 6)
+    lat = round((16.9023892 + 3.238272*x - 0.270978*y*y - 0.002528*x*x
+                 - 0.0447*y*y*x - 0.0140*x**3) * 100/36, 6)
+    p, l = (lat*3600 - 169028.66) / 10000, (lon*3600 - 26782.5) / 10000
+    return (600072.37 + 211455.93*l - 10938.51*l*p - 0.36*l*p*p - 44.54*l**3 + 2000000,
+            200147.07 + 308807.95*p + 3745.25*l*l + 76.63*p*p - 194.56*l*l*p + 119.79*p**3 + 1000000)
+
+
+def hotspots(acc):
+    xy = [_map_xy(a) for a in acc]
+    w = [1 if a["AccidentSeverityCategory"] == "as3" else 2 for a in acc]
+    n = len(acc)
+    nb = [[] for _ in range(n)]
+    for i in range(n):
+        for j in range(i, n):
+            if (xy[i][0]-xy[j][0])**2 + (xy[i][1]-xy[j][1])**2 <= HOTSPOT_RADIUS**2:
+                nb[i].append(j)
+                if j != i:
+                    nb[j].append(i)
+    score = [sum(w[j] for j in lst) for lst in nb]
+    taken, out = set(), []
+    for seed in sorted(range(n), key=lambda i: -score[i]):
+        if score[seed] < HOTSPOT_MIN_SCORE or seed in taken:
+            continue
+        members = [j for j in nb[seed] if j not in taken]
+        s = sum(w[j] for j in members)
+        if s < HOTSPOT_MIN_SCORE:
+            continue
+        taken.update(members)
+        out.append({"score": s, "acc": [acc[j] for j in members],
+                    "e": xy[seed][0], "n": xy[seed][1]})
+    out.sort(key=lambda c: (-c["score"], -len(c["acc"])))
+    return out
+
+
+def g9_top3(acc, streets, orte, top=3):
+    """The three highest-scoring hotspots, every category side by side."""
+    rows = []
+    for c in hotspots(acc)[:top]:
+        A = c["acc"]
+        place = collections.Counter(place_of(a, orte) for a in A).most_common(1)[0][0]
+        names = [s for s, _ in collections.Counter(
+            street_of(a, streets) for a in A).most_common() if s][:2]
+        rows.append({
+            "place": place, "streets": names, "score": c["score"], "n": len(A),
+            "as1": sum(1 for a in A if a["AccidentSeverityCategory"] == "as1"),
+            "as2": sum(1 for a in A if a["AccidentSeverityCategory"] == "as2"),
+            "as3": sum(1 for a in A if a["AccidentSeverityCategory"] == "as3"),
+            "velo": sum(1 for a in A if a["AccidentInvolvingBicycle"] == "true"),
+            "fuss": sum(1 for a in A if a["AccidentInvolvingPedestrian"] == "true"),
+            "moto": sum(1 for a in A if a["AccidentInvolvingMotorcycle"] == "true"),
+            "e": round(c["e"]), "n_": round(c["n"]),
+        })
+    facts = {"total": len(hotspots(acc)), "years": [YEARS[0], YEARS[-1]],
+             "radius": HOTSPOT_RADIUS}
+    return js("ROWS", rows) + "\n" + js("FACTS", facts)
+
+
+# --------------------------------------------------------------------------
 def main():
     acc = load_accidents()
     acc = [a for a in acc if YEARS[0] <= a["AccidentYear"] <= YEARS[-1]]
@@ -467,6 +539,7 @@ def main():
     patch("glarus-embed-talalpstrasse.html", g6_talalpstrasse(acc, streets, orte))
     patch("glarus-embed-entwicklung.html", g7_entwicklung(acc))
     patch("glarus-embed-klausen-hoehe.html", g8_klausen_hoehe(acc, streets))
+    patch("glarus-embed-top3.html", g9_top3(acc, streets, orte))
 
 
 if __name__ == "__main__":
