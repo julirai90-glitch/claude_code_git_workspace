@@ -498,6 +498,20 @@ def hotspots(acc):
     return out
 
 
+# Local names for the spots people actually use, keyed by the hotspot's own
+# coordinates. The derived street names are a fallback: at a junction where
+# eight streets meet, "Kirchweg/Bahnhofstrasse" tells a reader nothing.
+# Verified against OpenStreetMap (Gemeindehaus / Migros and roundabout).
+HOTSPOT_NAMES = {
+    (2723955, 1211134): "Gemeindehausplatz",
+    (2723120, 1217159): "Kreisel Migros",
+}
+
+
+def hotspot_name(e, n, streets):
+    return HOTSPOT_NAMES.get((round(e), round(n))) or "/".join(streets)
+
+
 def g9_top3(acc, streets, orte, top=3):
     """The three highest-scoring hotspots, every category side by side."""
     rows = []
@@ -507,7 +521,9 @@ def g9_top3(acc, streets, orte, top=3):
         names = [s for s, _ in collections.Counter(
             street_of(a, streets) for a in A).most_common() if s][:2]
         rows.append({
-            "place": place, "streets": names, "score": c["score"], "n": len(A),
+            "place": place, "streets": names,
+            "name": hotspot_name(c["e"], c["n"], names),
+            "score": c["score"], "n": len(A),
             "as1": sum(1 for a in A if a["AccidentSeverityCategory"] == "as1"),
             "as2": sum(1 for a in A if a["AccidentSeverityCategory"] == "as2"),
             "as3": sum(1 for a in A if a["AccidentSeverityCategory"] == "as3"),

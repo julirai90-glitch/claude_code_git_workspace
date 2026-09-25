@@ -64,7 +64,7 @@ tr.total td{font-weight:600}
 </div>
 <script>
 /* DATA-START */
-const ROWS = [{"place":"Glarus","streets":["Kirchweg","Bahnhofstrasse"],"score":18,"n":13,"as1":0,"as2":5,"as3":8,"velo":2,"fuss":5,"moto":1,"keine":5,"e":2723955,"n_":1211134},{"place":"Bilten","streets":["Schäniserstrasse","Nationalstrasse"],"score":16,"n":15,"as1":0,"as2":1,"as3":14,"velo":1,"fuss":0,"moto":2,"keine":12,"e":2720872,"n_":1223701},{"place":"Näfels","streets":["Altweg","Oberdorf"],"score":15,"n":15,"as1":0,"as2":0,"as3":15,"velo":5,"fuss":2,"moto":1,"keine":7,"e":2723120,"n_":1217159}];
+const ROWS = [{"place":"Glarus","streets":["Kirchweg","Bahnhofstrasse"],"name":"Gemeindehausplatz","score":18,"n":13,"as1":0,"as2":5,"as3":8,"velo":2,"fuss":5,"moto":1,"keine":5,"e":2723955,"n_":1211134},{"place":"Bilten","streets":["Schäniserstrasse","Nationalstrasse"],"name":"Schäniserstrasse/Nationalstrasse","score":16,"n":15,"as1":0,"as2":1,"as3":14,"velo":1,"fuss":0,"moto":2,"keine":12,"e":2720872,"n_":1223701},{"place":"Näfels","streets":["Altweg","Oberdorf"],"name":"Kreisel Migros","score":15,"n":15,"as1":0,"as2":0,"as3":15,"velo":5,"fuss":2,"moto":1,"keine":7,"e":2723120,"n_":1217159}];
 const FACTS = {"total":75,"years":[2011,2025],"radius":50};
 /* DATA-END */
 
@@ -99,14 +99,15 @@ function cell(v, cls){
 })();
 
 document.getElementById('where').innerHTML =
-  ROWS.map(r => '<b>' + r.place + ':</b> ' + r.streets.join('/')).join(' &middot; ');
+  ROWS.map(r => '<b>' + r.place + ':</b> ' + r.name).join(' &middot; ');
 
 document.getElementById('src').innerHTML =
   'Die drei höchstbewerteten von ' + FACTS.total + ' Unfallschwerpunkten im Kanton Glarus, ' +
   FACTS.years[0] + '–' + FACTS.years[1] + '. Ein Schwerpunkt umfasst alle Unfälle mit ' +
   'Personenschaden im Umkreis von ' + FACTS.radius + '&nbsp;m; gezählt wird je Unfall der ' +
   'schwerste Personenschaden. Die Ortsangaben nennen die Ortschaft und die Strassen, denen ' +
-  'die Unfälle am nächsten liegen. Quelle: Bundesamt für Strassen ASTRA, ' +
+  'die Unfälle am nächsten liegen, oder den ortsüblichen Namen der Stelle. ' +
+  'Quelle: Bundesamt für Strassen ASTRA, ' +
   'Strassenverkehrsunfallorte; Ortsnamen: swisstopo. Grafik: Südostschweiz';
 
 /* ---- report our height to the embedding page ---------------------- */
