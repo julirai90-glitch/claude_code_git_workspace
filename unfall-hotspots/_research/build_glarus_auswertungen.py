@@ -1,7 +1,8 @@
 """
-Build the five Glarus follow-up graphics that accompany glarus.html.
+Build the Glarus follow-up graphics that accompany glarus.html.
 
-The map answers "where"; these five answer "what is unusual about it":
+The map answers "where"; these answer "what is unusual about it".
+Overview, data source and the traps: see ../README.md
 
   glarus-embed-hotspots.html      chronic locations — place x year matrix
   glarus-embed-klausenstrasse.html  the Klausenstrasse is a motorcycle road
