@@ -13,7 +13,7 @@
   --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
   --s1:#0068a4;
   /* severity ramp, the same three steps the hotspot map uses: dark to light */
-  --rot:#b5001e; --orange:#ee7733; --gelb:#f2b84b;
+  --tot:#111111; --schwer:#f2472b; --leicht:#ffd21f;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--surface)}
@@ -36,7 +36,7 @@ h3 + .sub{font-size:13px; color:var(--ink-2); margin:0 0 12px}
   align-items:center; margin-bottom:8px}
 .blab{font-size:13px; text-align:right; color:var(--ink-2); font-variant-numeric:tabular-nums}
 .btrack{position:relative; height:24px; background:var(--rule-soft); border-radius:3px}
-.bfill{position:absolute; left:0; top:0; bottom:0; border-radius:3px; background:var(--orange)}
+.bfill{position:absolute; left:0; top:0; bottom:0; border-radius:3px; background:var(--schwer)}
 .bval{font-size:14px; font-variant-numeric:tabular-nums; color:var(--ink-2)}
 .bval b{color:var(--ink); font-size:16px}
 .src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
@@ -62,12 +62,12 @@ summary{cursor:pointer; color:var(--s1)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
-<body data-palette="#b5001e,#ee7733,#f2b84b">
+<body data-palette="#111111,#f2472b,#ffd21f">
 <div class="wrap">
   <div class="legend">
-    <span class="lg"><span class="sw" style="background:var(--rot)"></span>Unfall mit Get&ouml;teten</span>
-    <span class="lg"><span class="sw" style="background:var(--orange)"></span>mit Schwerverletzten</span>
-    <span class="lg"><span class="sw" style="background:var(--gelb)"></span>mit Leichtverletzten</span>
+    <span class="lg"><span class="sw" style="background:var(--tot)"></span>Unfall mit Get&ouml;teten</span>
+    <span class="lg"><span class="sw" style="background:var(--schwer)"></span>mit Schwerverletzten</span>
+    <span class="lg"><span class="sw" style="background:var(--leicht)"></span>mit Leichtverletzten</span>
   </div>
   <div class="chart"><svg id="c" role="img" aria-label="Gestapelte S&auml;ulen: Unf&auml;lle im Kanton Glarus je Jahr von 2011 bis 2025, nach Schwere"></svg></div>
 
@@ -141,7 +141,7 @@ function draw(){
   YEARS_D.forEach(function(d,i){
     /* killed and severely injured sit on the baseline, so their thickness can
        be compared across years without measuring from a moving edge */
-    const stack = [['as1','var(--rot)'], ['as2','var(--orange)'], ['as3','var(--gelb)']];
+    const stack = [['as1','var(--tot)'], ['as2','var(--schwer)'], ['as3','var(--leicht)']];
     let below = 0;
     stack.forEach(function(seg, k){
       const v = d[seg[0]];
@@ -165,9 +165,9 @@ function draw(){
       showTip(e,
         '<span class="t-m">' + d.y + '</span>' +
         '<table class="t-tbl">' +
-          '<tr><td><i style="background:var(--rot)"></i>mit Getöteten</td><td>'+d.as1+'</td></tr>' +
-          '<tr><td><i style="background:var(--orange)"></i>mit Schwerverletzten</td><td>'+d.as2+'</td></tr>' +
-          '<tr><td><i style="background:var(--gelb)"></i>mit Leichtverletzten</td><td>'+d.as3+'</td></tr>' +
+          '<tr><td><i style="background:var(--tot)"></i>mit Getöteten</td><td>'+d.as1+'</td></tr>' +
+          '<tr><td><i style="background:var(--schwer)"></i>mit Schwerverletzten</td><td>'+d.as2+'</td></tr>' +
+          '<tr><td><i style="background:var(--leicht)"></i>mit Leichtverletzten</td><td>'+d.as3+'</td></tr>' +
           '<tr class="t-sum"><td>Total</td><td>'+d.n+'</td></tr>' +
         '</table>');
     }

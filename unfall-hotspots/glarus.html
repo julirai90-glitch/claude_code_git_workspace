@@ -672,9 +672,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
   :root {
     --blau: #0068A4;
     --blau-dark: #00507d;
-    --orange: #EE7733;
-    --rot: #B5001E;
-    --gelb: #F2B84B;
+    --tot: #111111;
+    --schwer: #F2472B;
+    --leicht: #FFD21F;
     --accent: var(--blau);
     --accent-dark: var(--blau-dark);
     --bg: #ffffff;
@@ -724,7 +724,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .stat .num { font-size:20px; font-weight:700; }
   .stat .lbl { font-size:10px; color:var(--muted); text-transform:uppercase; }
   .toggleBtn { width:100%; text-align:center; }
-  .legendDot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .legendDot { width:10px; height:10px; border-radius:50%; display:inline-block; box-shadow:0 0 0 1px #fff, 0 0 0 2px rgba(0,0,0,.15); }
   #infoBtn { display:flex; align-items:center; gap:6px; }
   #infoModal {
     display:none; position:absolute; inset:0; background:rgba(20,18,15,0.55); z-index:2000;
@@ -850,10 +850,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
     <div class="row" id="legend">
       <h2>Legende</h2>
-      <div><span class="legendDot" style="background:var(--rot)"></span> Get&ouml;tete (Gewicht 2)</div>
-      <div><span class="legendDot" style="background:var(--orange)"></span> Schwerverletzte (Gewicht 2)</div>
-      <div><span class="legendDot" style="background:var(--gelb)"></span> Leichtverletzte (Gewicht 1)</div>
-      <div class="legendNote" style="margin-top:6px; font-size:11px; color:var(--muted);">Kreisfarbe &#8776; Hotspot-Score, Kreisgr&ouml;sse &#8776; Zahl der Unf&auml;lle</div>
+      <div><span class="legendDot" style="background:var(--tot)"></span> Get&ouml;tete (Gewicht 2)</div>
+      <div><span class="legendDot" style="background:var(--schwer)"></span> Schwerverletzte (Gewicht 2)</div>
+      <div><span class="legendDot" style="background:var(--leicht)"></span> Leichtverletzte (Gewicht 1)</div>
+      <div class="legendNote" style="margin-top:6px; font-size:11px; color:var(--muted);">Blauer Ring = Hotspot, Ringgr&ouml;sse &#8776; Zahl der Unf&auml;lle. Score beim Antippen.</div>
       <div id="extentNote" style="display:none; margin-top:4px; font-size:11px; color:var(--muted);">Gestrichelt = der Kreis zeigt jetzt den tats&auml;chlichen Suchradius</div>
     </div>
   </div>
@@ -982,8 +982,8 @@ function sizeClusterMarkers() {
     const truePx = metresToPixels(c.lat, c.lon, RADIUS);
     const isTrue = truePx >= symbolRadius(c);
     marker.setRadius(Math.max(symbolRadius(c), truePx));
-    marker.setStyle(isTrue ? { dashArray: '4 4', fillOpacity: 0.18 }
-                           : { dashArray: null, fillOpacity: 0.45 });
+    marker.setStyle(isTrue ? { dashArray: '4 4', fillOpacity: 0.04 }
+                           : { dashArray: null, fillOpacity: 0.10 });
     if (isTrue) anyTrue = true;
   });
   const note = document.getElementById('extentNote');
@@ -991,7 +991,12 @@ function sizeClusterMarkers() {
 }
 let pointLayer = L.layerGroup();
 
-const sevColor = { 1: '#B5001E', 2: '#EE7733', 3: '#F2B84B' };
+/* Severity steps differ in lightness (yellow, red, black), so they stay apart
+   for colour-blind readers too. Hotspots use a separate colour. */
+const sevColor = { 1: '#111111', 2: '#F2472B', 3: '#FFD21F' };
+const HOTSPOT_COLOR = '#0068A4';
+/* Black dots sit on a map full of black houses: fatal ones get a thick white
+   halo, are a bit larger and are drawn last so nothing covers them. */
 
 /* Hotspot analysis (ASTRA Black Spot Management), computed in the browser so
    that any period can be chosen. Reproduces the numbers that used to be
@@ -1067,16 +1072,6 @@ function analyse(y1, y2, cat) {
   return (analysisCache[ck] = { n_total_accidents: n, n_clusters: clusters.length, clusters });
 }
 
-function scoreColor(score, maxScore) {
-  const t = Math.max(0, Math.min(1, (score - 5) / Math.max(1, (maxScore - 5))));
-  // interpolate orange (#EE7733, Score nahe 5) -> rot (#B5001E, hoher Score)
-  const c1 = [238,119,51], c2 = [181,0,30];
-  const r = Math.round(c1[0] + (c2[0]-c1[0])*t);
-  const g = Math.round(c1[1] + (c2[1]-c1[1])*t);
-  const b = Math.round(c1[2] + (c2[2]-c1[2])*t);
-  return `rgb(${r},${g},${b})`;
-}
-
 function currentRange() {
   const from = parseInt(document.getElementById('yearFrom').value, 10);
   const to   = parseInt(document.getElementById('yearTo').value, 10);
@@ -1115,15 +1110,14 @@ function render() {
 
   clusterLayer.clearLayers();
   clusterMarkers.length = 0;
-  const maxScore = data.clusters.length ? Math.max(...data.clusters.map(c => c.score)) : 5;
   data.clusters.forEach(c => {
     const radius = 6 + Math.sqrt(c.n_accidents) * 3.2;
     const marker = L.circleMarker([c.lat, c.lon], {
       radius: radius,
-      color: scoreColor(c.score, maxScore),
-      weight: 2,
-      fillColor: scoreColor(c.score, maxScore),
-      fillOpacity: 0.45
+      color: HOTSPOT_COLOR,
+      weight: 2.5,
+      fillColor: HOTSPOT_COLOR,
+      fillOpacity: 0.10
     });
     marker.bindPopup(
       `<b>Hotspot-Score: ${c.score}</b><br>` +
@@ -1168,7 +1162,8 @@ function renderPoints(range, cat) {
   }
   // only draw what is on screen; the full set is ~1400 markers
   const view = map.getBounds().pad(0.2);
-  list.forEach(a => {
+  // light first, fatal last, so the most severe dots end up on top
+  list.slice().sort((a, b) => b[3] - a[3]).forEach(a => {
     const [lat, lon, , sev] = a;
     if (!view.contains([lat, lon])) return;
     const parts = [];
@@ -1176,7 +1171,8 @@ function renderPoints(range, cat) {
     if (a[5]) parts.push('Fussgänger');
     if (a[6]) parts.push('Motorrad');
     L.circleMarker([lat, lon], {
-      radius: 4, color: sevColor[sev], weight: 0, fillColor: sevColor[sev], fillOpacity: 0.75
+      radius: sev === 1 ? 6 : 4.5, color: '#ffffff', weight: sev === 1 ? 2 : 1,
+      fillColor: sevColor[sev], fillOpacity: sev === 1 ? 1 : 0.9
     }).bindPopup(
       '<b>' + (ACC_TYPES[a[7]] || 'Unfall') + '</b><br>' +
       ACC_MONTHS[a[8] - 1] + ' ' + a[2] + '<br>' +
