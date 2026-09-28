@@ -982,8 +982,8 @@ function sizeClusterMarkers() {
     const truePx = metresToPixels(c.lat, c.lon, RADIUS);
     const isTrue = truePx >= symbolRadius(c);
     marker.setRadius(Math.max(symbolRadius(c), truePx));
-    marker.setStyle(isTrue ? { dashArray: '4 4', fillOpacity: 0.04 }
-                           : { dashArray: null, fillOpacity: 0.10 });
+    marker.setStyle(isTrue ? { dashArray: '6 4', fillOpacity: 0.10 }
+                           : { dashArray: null, fillOpacity: 0.28 });
     if (isTrue) anyTrue = true;
   });
   const note = document.getElementById('extentNote');
@@ -1115,9 +1115,9 @@ function render() {
     const marker = L.circleMarker([c.lat, c.lon], {
       radius: radius,
       color: HOTSPOT_COLOR,
-      weight: 2.5,
+      weight: 3.5,
       fillColor: HOTSPOT_COLOR,
-      fillOpacity: 0.10
+      fillOpacity: 0.28
     });
     marker.bindPopup(
       `<b>Hotspot-Score: ${c.score}</b><br>` +
