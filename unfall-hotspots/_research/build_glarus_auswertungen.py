@@ -502,10 +502,11 @@ def hotspots(acc):
 # Local names for the spots people actually use, keyed by the hotspot's own
 # coordinates. The derived street names are a fallback: at a junction where
 # eight streets meet, "Kirchweg/Bahnhofstrasse" tells a reader nothing.
-# Verified against OpenStreetMap (Gemeindehaus / Migros and roundabout).
+# Verified against OpenStreetMap (Gemeindehaus, roundabout); "Oberdorf-Kreisel"
+# is the local name for the Näfels roundabout, supplied by the newsroom.
 HOTSPOT_NAMES = {
     (2723955, 1211134): "Gemeindehausplatz",
-    (2723120, 1217159): "Kreisel Migros",
+    (2723120, 1217159): "Oberdorf-Kreisel",
 }
 
 

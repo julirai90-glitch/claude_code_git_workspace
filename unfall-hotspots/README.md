@@ -111,7 +111,7 @@ sich, als wäre der halbe Kanton ein Hotspot.
   nächstgelegenen Strasse. Beim grössten Hotspot laufen acht Strassen zusammen —
   «Kirchweg/Bahnhofstrasse» sagt dort nichts. Lokal übliche Namen liegen in
   `HOTSPOT_NAMES` in `build_glarus_auswertungen.py`, bisher zwei (Gemeindehausplatz
-  Glarus, Kreisel Migros Näfels). **Jede namentlich genannte Stelle vor der
+  Glarus, Oberdorf-Kreisel Näfels). **Jede namentlich genannte Stelle vor der
   Publikation auf der Karte gegenprüfen.**
 * **`tolerance` der swisstopo-API zählt Bildpunkte, nicht Meter.** Wie viele Meter
   das sind, hängt von `mapExtent` und `imageDisplay` ab. Für Meter: `mapExtent`
