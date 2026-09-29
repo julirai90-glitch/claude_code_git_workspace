@@ -1,0 +1,3 @@
+raw/*
+!raw/README.md
+__pycache__/

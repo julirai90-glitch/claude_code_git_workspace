@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Was kostet Ihre Krankenkasse?</title>
+<meta name="description" content="Prämienvergleich der Grundversicherung für Graubünden und Glarus, aus den Prämiendaten des Bundesamts für Gesundheit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<style>
+/* Tokens wie die Tankrechner: Südostschweiz-Blau #0068a4, Orange #ee7733 als Akzent.
+   Einspaltig für die 696-px-Artikelspalte; Resultate als Liste statt Tabelle, damit
+   auch 320 px ohne horizontales Scrollen gehen. */
+:root{
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5; --fill:#f6f8fa;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --s1:#0068a4; --s1-bg:#e6f0f6; --s2:#ee7733; --s2-bg:#fdf1e9; --s2-ink:#a8480f;
+  --gut:#009988; --gut-bg:#e6f4f2; --gut-ink:#00695f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.55}
+.wrap{padding:12px 16px 16px; max-width:696px; margin:0 auto}
+.intro{margin:0 0 14px; font-size:15px; color:var(--ink-2)}
+
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:12px 18px}
+.full{grid-column:1 / -1}
+.lab{display:block; font-size:13px; font-weight:600; color:var(--ink-2); margin-bottom:4px}
+select,input[type=number]{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--rule);
+  border-radius:3px; padding:6px 7px; background:#fff; width:100%; font-variant-numeric:tabular-nums}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--s1); outline-offset:1px}
+.hint{font-size:12px; color:var(--ink-3); margin-top:3px; line-height:1.35}
+
+.seg{display:flex; flex-wrap:wrap; border:1px solid var(--rule); border-radius:3px; overflow:hidden}
+.seg button{flex:1 1 auto; appearance:none; border:0; background:#fff; padding:7px 8px;
+  font:inherit; font-size:14px; color:var(--ink-2); cursor:pointer; border-right:1px solid var(--rule)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--s1); color:#fff; font-weight:600}
+
+.pers{border:1px solid var(--rule); border-radius:4px; background:var(--fill); padding:10px 12px; margin-bottom:8px}
+.pers-top{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:6px}
+.pers-nr{font-size:13px; font-weight:700; color:var(--ink)}
+.pers-akl{font-size:13px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+.pers .grid{grid-template-columns:1fr 1fr 1fr; gap:8px 10px}
+.lnk{appearance:none; background:none; border:0; padding:0; color:var(--s1); cursor:pointer;
+  font:inherit; font-size:14px; font-weight:600; text-decoration:underline; text-underline-offset:2px}
+.lnk.klein{font-size:13px; font-weight:400; color:var(--ink-3)}
+
+.res{margin:18px 0 0; border-radius:4px; padding:14px 16px; background:var(--gut-bg); border-left:4px solid var(--gut)}
+.res .head{font-size:19px; font-weight:700; line-height:1.3; margin:0; color:var(--gut-ink)}
+.res .sub{margin:4px 0 0; font-size:14px; color:var(--ink-2)}
+.res.ist{background:var(--s2-bg); border-left-color:var(--s2)}
+.res.ist .head{color:var(--s2-ink)}
+.kz{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:12px 0 0}
+.kz div{border-top:2px solid var(--rule); padding-top:6px}
+.kz .k{font-size:12px; color:var(--ink-3); line-height:1.3}
+.kz .v{font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.3}
+
+h2{font-size:15px; margin:22px 0 2px; color:var(--ink)}
+.chart-sub{font-size:13px; color:var(--ink-3); margin:0 0 8px}
+.liste{list-style:none; margin:0; padding:0; border-top:2px solid var(--rule)}
+.liste li{display:grid; grid-template-columns:28px 1fr auto; gap:2px 10px; align-items:baseline;
+  padding:8px 4px; border-bottom:1px solid var(--rule-soft)}
+.liste li.ist{background:var(--s2-bg); box-shadow:inset 3px 0 0 var(--s2)}
+.rang{font-size:13px; color:var(--ink-3); font-variant-numeric:tabular-nums; text-align:right}
+.kasse{font-weight:600; line-height:1.3}
+.mod{font-size:13px; color:var(--ink-2); line-height:1.35}
+.preis{text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums}
+.preis b{font-size:16px}
+.preis .d{display:block; font-size:12px; color:var(--ink-3)}
+.pill{display:inline-block; margin-left:6px; padding:1px 6px; border-radius:2px; font-size:11px;
+  font-weight:700; letter-spacing:.03em; text-transform:uppercase; vertical-align:1px}
+.pill.g{background:var(--gut-bg); color:var(--gut-ink)}
+.pill.a{background:var(--s2); color:#fff}
+.mehr{margin:10px 0 0}
+.leer{padding:18px 4px; color:var(--ink-2)}
+
+.src{font-size:12px; color:var(--ink-3); border-top:1px solid var(--rule-soft);
+  padding-top:10px; margin:16px 0 0; line-height:1.5}
+.src a{color:var(--ink-2)}
+@media (max-width:560px){
+  .grid{grid-template-columns:1fr}
+  .pers .grid{grid-template-columns:1fr 1fr}
+  .pers .grid .unfw{grid-column:1 / -1}
+  .kz{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="intro">Wählen Sie Ihre Gemeinde und erfassen Sie alle Personen im Haushalt. Der Rechner zeigt,
+was die Grundversicherung bei jeder zugelassenen Kasse kostet – vom günstigsten bis zum teuersten Angebot.</p>
+
+<div class="grid">
+  <div>
+    <label class="lab" for="ort">Wohngemeinde</label>
+    <select id="ort"></select>
+    <div class="hint" id="ortinfo">&nbsp;</div>
+  </div>
+  <div>
+    <label class="lab" for="istkasse">Ihre heutige Kasse <span style="font-weight:400">(freiwillig)</span></label>
+    <select id="istkasse"><option value="">keine Angabe</option></select>
+    <div class="hint">Zeigt, wie viel Sie mit einem Wechsel sparen könnten.</div>
+  </div>
+
+  <div class="full">
+    <span class="lab">Personen im Haushalt</span>
+    <div id="personen"></div>
+    <button class="lnk" id="addpers" type="button">+ Person hinzufügen</button>
+  </div>
+
+  <div class="full">
+    <span class="lab" id="modlab">Versicherungsmodelle</span>
+    <div class="seg" id="modelle" role="group" aria-labelledby="modlab"></div>
+    <div class="hint">Hausarzt, HMO und Telmed («Andere») sind günstiger, schränken aber die freie Arztwahl ein.</div>
+  </div>
+</div>
+
+<div id="ergebnis" aria-live="polite"></div>
+
+<p class="src" id="quelle">Quelle: Bundesamt für Gesundheit, Datensatz «Krankenversicherungsprämien» auf
+<a href="https://opendata.swiss/de/dataset/health-insurance-premiums" target="_blank" rel="noopener">opendata.swiss</a>,
+Prämienjahr <span class="jahr">2026</span>. Prämienregionen nach Anhang 1 der
+<a href="https://www.fedlex.admin.ch/eli/cc/2022/184/de" target="_blank" rel="noopener">Verordnung des EDI über die Prämienregionen</a> (SR 832.106).<br>
+Die Altersklasse ergibt sich aus dem Geburtsjahr: Kinder bis 18, junge Erwachsene 19 bis 25 Jahre.
+Bei Kassen mit gestaffelten Kinderprämien gilt die Grundstufe; Rabatte ab dem zweiten oder dritten Kind
+sind nicht eingerechnet. Keine Beratung, keine Vermittlung – verbindlich ist die Offerte der Kasse.
+Vollständiger Bundesvergleich: <a href="https://www.priminfo.admin.ch" target="_blank" rel="noopener">priminfo.admin.ch</a>.</p>
+</div>
+
+<script>
+const DATEI = 'praemien-2026.json';
+const FR_ERW = [300,500,1000,1500,2000,2500], FR_KIN = [0,100,200,300,400,500,600];
+const MODELLE = ['Standard','Hausarzt','HMO','Andere'];
+const ERSTE = 10;                       // so viele Angebote sind sichtbar, bevor man aufklappt
+let D = null, aktiv = new Set(MODELLE), alle = false, pid = 0;
+const el = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const chf = n => n.toLocaleString('de-CH', {minimumFractionDigits:2, maximumFractionDigits:2});
+const chf0 = n => Math.round(n).toLocaleString('de-CH');
+
+function aklVon(gj){ const a = D.jahr - gj; return a <= 18 ? 'K' : a <= 25 ? 'J' : 'E'; }
+
+function persRow(gj, fr, unf){
+  const id = ++pid, d = document.createElement('div');
+  d.className = 'pers';
+  d.innerHTML = `<div class="pers-top"><span><span class="pers-nr"></span> <span class="pers-akl"></span></span>
+      <button class="lnk klein rm" type="button">entfernen</button></div>
+    <div class="grid">
+      <div><label class="lab" for="gj${id}">Geburtsjahr</label>
+        <input type="number" id="gj${id}" class="gj" inputmode="numeric" min="1900" max="${D.jahr}" step="1" value="${gj}"></div>
+      <div><label class="lab" for="fr${id}">Franchise</label><select id="fr${id}" class="fr"></select></div>
+      <div class="unfw"><label class="lab" for="unf${id}">Unfalldeckung</label>
+        <select id="unf${id}" class="unf"><option value="1">mit Unfall</option><option value="0">ohne Unfall (angestellt)</option></select></div>
+    </div>`;
+  el('personen').appendChild(d);
+  const gjI = d.querySelector('.gj'), frI = d.querySelector('.fr'), unfI = d.querySelector('.unf');
+  unfI.value = String(unf);
+  const jahr = () => { const v = parseInt(gjI.value, 10); return v >= 1900 && v <= D.jahr ? v : null; };
+  const syncFr = () => {
+    const gj = jahr(), k = aklVon(gj || D.jahr - 40), list = k === 'K' ? FR_KIN : FR_ERW, alt = +frI.value;
+    frI.innerHTML = list.map(f => `<option value="${f}">${f.toLocaleString('de-CH')} Fr.</option>`).join('');
+    frI.value = String(list.includes(alt) ? alt : list.includes(fr) ? fr : k === 'K' ? 0 : 300);
+    d.querySelector('.pers-akl').textContent = gj
+      ? '· ' + {K:'Kind', J:'junge erwachsene Person', E:'erwachsen'}[k] + ', ' + (D.jahr - gj) + ' Jahre im ' + D.jahr
+      : '· Geburtsjahr prüfen';
+  };
+  gjI.addEventListener('input', () => { syncFr(); rechne(); });
+  gjI.addEventListener('blur', () => { if (!jahr()) { gjI.value = D.jahr - 40; syncFr(); rechne(); } });
+  frI.addEventListener('change', rechne);
+  unfI.addEventListener('change', rechne);
+  d.querySelector('.rm').addEventListener('click', () => { d.remove(); renumber(); rechne(); });
+  syncFr(); renumber();
+}
+function renumber(){
+  const p = [...el('personen').children];
+  p.forEach((d, i) => { d.querySelector('.pers-nr').textContent = 'Person ' + (i + 1);
+    d.querySelector('.rm').hidden = p.length < 2; });
+}
+
+function rechne(){
+  const g = D.gemeinden[+el('ort').value];
+  el('ortinfo').textContent = D.regionLabel[g[1]];
+  const rows = D.regionen[g[1]], P = D.pool;
+  const personen = [...el('personen').children].map(d => {
+    const gj = parseInt(d.querySelector('.gj').value, 10);
+    return { akl: aklVon(gj >= 1900 && gj <= D.jahr ? gj : D.jahr - 40),
+             fr: +d.querySelector('.fr').value, unf: +d.querySelector('.unf').value };
+  });
+
+  // Pro Kasse und Tarif die Prämien aller Personen zusammenzählen
+  const kombi = new Map();
+  rows.forEach(r => {
+    const [vi, ai, ui, unf, ti, bi, fr, rp] = r;
+    if (!aktiv.has(P.tt[ti])) return;
+    const ug = P.ug[ui]; if (ug !== '' && ug !== 'K1') return;   // Grundstufe der Kinderprämie
+    const k = vi + '|' + bi + '|' + ti;
+    let e = kombi.get(k); if (!e) { e = {vi, bi, ti, pro: new Map()}; kombi.set(k, e); }
+    e.pro.set(P.akl[ai] + '/' + fr + '/' + unf, rp);
+  });
+  const res = [];
+  for (const e of kombi.values()) {
+    let s = 0, ok = true;
+    for (const p of personen) {
+      const v = e.pro.get(p.akl + '/' + p.fr + '/' + p.unf);
+      if (v === undefined) { ok = false; break; } s += v;
+    }
+    if (ok) res.push({...e, total: s / 100});        // Rappen → Franken erst am Schluss
+  }
+  if (!res.length) return leer('Keine Kasse bietet diese Kombination an. Franchise oder Modelle anpassen.');
+  res.sort((a, b) => a.total - b.total || D.kassen[P.vers[a.vi]].localeCompare(D.kassen[P.vers[b.vi]], 'de'));
+  zeige(res, P, g);
+}
+
+function leer(msg){ el('ergebnis').innerHTML = `<p class="leer">${esc(msg)}</p>`; hoeheMelden(); }
+
+function zeige(res, P, g){
+  const min = res[0].total, max = res[res.length - 1].total;
+  const ist = el('istkasse').value;
+  const istBest = ist ? res.find(r => P.vers[r.vi] === ist) : null;
+  const name = r => D.kassen[P.vers[r.vi]] || P.vers[r.vi];
+  const n = el('personen').children.length, wer = n > 1 ? 'spart Ihr Haushalt' : 'sparen Sie';
+  const nKassen = new Set(res.map(r => r.vi)).size;
+
+  let box;
+  if (ist && !istBest) {
+    box = `<div class="res ist"><p class="head">${esc(D.kassen[ist])} bietet in dieser Auswahl nichts an.</p>
+      <p class="sub">Prüfen Sie Franchise und Versicherungsmodelle.</p></div>`;
+  } else if (istBest) {
+    const spar = (istBest.total - min) * 12;
+    box = spar < 1
+      ? `<div class="res"><p class="head">Sie sind bereits beim günstigsten Angebot.</p>
+          <p class="sub">${esc(name(istBest))}, ${esc(P.bez[istBest.bi])}: ${chf(istBest.total)} Franken im Monat.</p></div>`
+      : `<div class="res ist"><p class="head">Mit einem Wechsel ${wer} bis zu ${chf0(spar)} Franken im Jahr.</p>
+          <p class="sub">Günstigstes Modell Ihrer Kasse: ${chf(istBest.total)} Franken im Monat.
+          Günstigstes Angebot insgesamt: ${esc(name(res[0]))}, ${chf(min)} Franken.</p></div>`;
+  } else {
+    box = `<div class="res"><p class="head">Am günstigsten: ${esc(name(res[0]))} mit ${chf(min)} Franken im Monat.</p>
+      <p class="sub">Das teuerste Angebot kostet ${chf0((max - min) * 12)} Franken mehr im Jahr.</p></div>`;
+  }
+  box += `<div class="kz">
+      <div><div class="k">Günstigste Prämie pro Monat</div><div class="v">${chf(min)}</div></div>
+      <div><div class="k">Teuerste Prämie pro Monat</div><div class="v">${chf(max)}</div></div>
+      <div><div class="k">Angebote</div><div class="v">${res.length} <span style="font-size:13px;font-weight:400;color:var(--ink-3)">von ${nKassen} Kassen</span></div></div>
+    </div>`;
+
+  // Die eigene Kasse bleibt sichtbar, auch wenn sie ausserhalb der ersten zehn liegt
+  const zeig = alle ? res : res.filter((r, i) => i < ERSTE || (ist && P.vers[r.vi] === ist));
+  const li = zeig.map(r => {
+    const i = res.indexOf(r), d = r.total - min, istZ = ist && P.vers[r.vi] === ist;
+    return `<li${istZ ? ' class="ist"' : ''}><span class="rang">${i + 1}</span>
+      <div><div class="kasse">${esc(name(r))}${istZ ? '<span class="pill a">Ihre Kasse</span>' : ''}${i === 0 ? '<span class="pill g">günstigste</span>' : ''}</div>
+        <div class="mod">${esc(P.bez[r.bi])} · ${esc(P.tt[r.ti])}</div></div>
+      <div class="preis"><b>${chf(r.total)}</b><span class="d">${d < 0.005 ? chf0(r.total * 12) + ' im Jahr' : '+' + chf0(d * 12) + ' im Jahr'}</span></div></li>`;
+  }).join('');
+  const knopf = res.length > ERSTE
+    ? `<p class="mehr"><button class="lnk" id="alle" type="button">${alle ? 'Nur die ersten ' + ERSTE + ' zeigen' : 'Alle ' + res.length + ' Angebote zeigen'}</button></p>` : '';
+
+  el('ergebnis').innerHTML = box +
+    `<h2>Alle Angebote in ${esc(g[0])}</h2>
+     <p class="chart-sub">Monatsprämie in Franken, ${n > 1 ? 'Summe für ' + n + ' Personen, ' : ''}sortiert nach Preis. Darunter der Aufpreis gegenüber dem günstigsten Angebot.</p>
+     <ol class="liste">${li}</ol>${knopf}`;
+  if (knopf) el('alle').addEventListener('click', () => { alle = !alle; rechne(); });
+  hoeheMelden();
+}
+
+let hoeheT;
+function hoeheMelden(){
+  if (!window.parentIFrame) return;
+  clearTimeout(hoeheT);
+  hoeheT = setTimeout(() => window.parentIFrame.size(), 60);
+}
+
+fetch(DATEI).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(d => {
+  D = d;
+  document.querySelectorAll('.jahr').forEach(x => x.textContent = D.jahr);
+  const opt = kt => D.gemeinden.map((g, i) => [g, i]).filter(([g]) => g[1].startsWith(kt))
+    .map(([g, i]) => `<option value="${i}">${esc(g[0])}</option>`).join('');
+  el('ort').innerHTML = `<optgroup label="Graubünden">${opt('GR')}</optgroup><optgroup label="Glarus">${opt('GL')}</optgroup>`;
+  el('ort').value = String(D.gemeinden.findIndex(g => g[0] === 'Chur'));
+  el('ort').addEventListener('change', () => { alle = false; rechne(); });
+
+  el('modelle').innerHTML = MODELLE.map(m => `<button type="button" aria-pressed="true" data-m="${m}">${m}</button>`).join('');
+  el('modelle').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const an = b.getAttribute('aria-pressed') === 'true';
+    if (an && aktiv.size === 1) return;               // mindestens ein Modell bleibt aktiv
+    b.setAttribute('aria-pressed', String(!an));
+    an ? aktiv.delete(b.dataset.m) : aktiv.add(b.dataset.m);
+    rechne();
+  });
+
+  const kl = Object.entries(D.kassen).sort((a, b) => a[1].localeCompare(b[1], 'de'));
+  el('istkasse').innerHTML = '<option value="">keine Angabe</option>' + kl.map(([id, n]) => `<option value="${id}">${esc(n)}</option>`).join('');
+  el('istkasse').addEventListener('change', rechne);
+  el('addpers').addEventListener('click', () => { persRow(D.jahr - 10, 0, 1); rechne(); });
+
+  persRow(D.jahr - 40, 300, 1);
+  rechne();
+}).catch(() => leer('Die Prämiendaten konnten nicht geladen werden. Bitte Seite neu laden.'));
+
+/* Absicherung: hoeheMelden() läuft ins Leere, solange der Resizer im Elternfenster
+   noch nicht bereit ist. Deshalb nach dem Laden nachfragen, bis er da ist. */
+(function meldeSobaldBereit(versuche){
+  if (window.parentIFrame){ window.parentIFrame.size(); return; }
+  if (versuche > 0) setTimeout(() => meldeSobaldBereit(versuche - 1), 200);
+})(20);
+</script>
+</body>
+</html>
