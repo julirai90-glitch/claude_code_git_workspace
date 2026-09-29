@@ -36,7 +36,7 @@ Dropbox (`/praemienrechner-suedostschweiz`) – Layout und Farben an die Tankrec
 Geprüft am 29.09.2026 in headless Chromium mit einer Testseite (Resizer 4.3.9): iframe-Höhe =
 Dokumenthöhe bei 320, 375 und 696 px (2265 / 2070 / 1474 px), auch nach Person hinzufügen,
 Kasse wählen, «alle zeigen» (9173 px) und Gemeindewechsel. Kein horizontales Scrollen, keine
-JS-Fehler. `min-height:1490px` ≈ kleinste gemessene Höhe (696 px Breite).
+JS-Fehler. Nach der Umstellung auf 2027 erneut gemessen: 2422 / 2144 / 1490 px; `min-height:1490px` = kleinste gemessene Höhe (696 px Breite).
 
 ## Daten aktualisieren (nächstes Prämienjahr)
 
