@@ -188,6 +188,12 @@ aber eine Einzelhandlung zu einem Gesamtdurchschnitt ins Verhältnis.
 **Treibstoffwahl:** Alle drei Rechner haben einen Umschalter Benzin/Diesel; er wirkt allein auf
 den CO2-Faktor, die Preise gibt der Nutzer selbst ein.
 
+*Ausnahme seit 29.09.2026: Graubünden (T3).* Dort setzt der Umschalter auch die Startpreise
+auf den TCS-Schnitt des gewählten Treibstoffs (Diesel 2.46/2.36, Benzin 2.14/2.04) – aber nur,
+solange niemand einen Preis selbst eingetippt hat. Grund: Wer auf Diesel umstellte, rechnete
+sonst mit Benzinpreisen weiter (Voreinstellung Chur–Landquart: −5.93 statt −6.59 Franken).
+T1 und T2 vorerst unverändert.
+
 ## Zollregeln für Treibstoff
 
 Bundesamt für Zoll und Grenzsicherheit (BAZG), «Treibstoff und Fahrzeugreparaturen»,

@@ -197,9 +197,9 @@ select{font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--ru
   <span class="lg" style="color:var(--ink-3)">Punkt: Ihre Einstellung</span>
 </div>
 
-<p class="src">Voreingestellt sind 2.14 Franken für den Liter Bleifrei 95 (Landesdurchschnitt
-laut TCS, gültig seit 19. September 2026) und ein um 10 Rappen günstigerer Preis am zweiten
-Ort. Die Werte werden nicht laufend nachgeführt – tragen Sie ein, was Sie tatsächlich zahlen.<br>
+<p class="src">Voreingestellt sind 2.14 Franken für den Liter Bleifrei 95 und 2.46 Franken für
+den Liter Diesel (Landesdurchschnitte laut TCS, gültig seit 19. September 2026), am zweiten
+Ort jeweils 10 Rappen weniger. Die Werte werden nicht laufend nachgeführt – tragen Sie ein, was Sie tatsächlich zahlen.<br>
 CO₂ beim Verbrennen: 2,32 kg je Liter Benzin, 2,62 je Liter Diesel (Bundesamt
 für Umwelt, Emissionsfaktoren des Treibhausgasinventars, Januar 2026). Förderung, Raffinerie
 und Transport sind nicht eingerechnet. Vergleichswert: 3,5 Tonnen CO₂ pro Kopf und Jahr, also 9,6 Kilogramm
@@ -220,56 +220,56 @@ Reparaturen. Die oft genannten 74 Rappen enthalten auch Fixkosten, die ohnehin a
    Nominatim. Zeile = Startort, Spalte = Ziel. Siehe _research/distanzen-gr.md */
 const ORTE = ["Arosa", "Bonaduz", "Chur", "Davos", "Disentis", "Domat/Ems", "Flims", "Ilanz", "Klosters", "Landquart", "Lenzerheide", "Maienfeld", "Mesocco", "Poschiavo", "Roveredo", "Samedan", "Samnaun", "Savognin", "Scuol", "Splügen", "St. Moritz", "Thusis", "Vals", "Zernez"];
 const DIST = [
-  [  0, 43, 31, 90, 90, 37, 49, 61, 78, 46, 47, 50,112,150,135,114,167, 76,134, 80,115, 55, 81,126],
-  [ 43,  0, 15, 58, 53,  6, 13, 24, 60, 29, 30, 33, 72,110, 95, 74,149, 36,116, 40, 75, 15, 44, 94],
-  [ 30, 14,  0, 60, 61,  8, 21, 32, 47, 16, 19, 20, 83,121,106, 86,137, 48,103, 51, 87, 26, 52, 96],
-  [ 90, 57, 61,  0,110, 62, 69, 81, 14, 46, 42, 51,100, 99,123, 63, 84, 40, 50, 68, 69, 44,101, 43],
-  [ 90, 53, 62,110,  0, 54, 41, 30,107, 76, 77, 80,110,162, 88,126,196, 88,163, 92,127, 67, 50,146],
-  [ 36,  7,  8, 62, 54,  0, 13, 25, 54, 23, 23, 27, 76,114, 99, 78,144, 40,110, 44, 79, 19, 45, 98],
-  [ 49, 13, 21, 69, 41, 13,  0, 12, 66, 35, 36, 39, 84,121,106, 86,156, 48,122, 51, 87, 27, 32,105],
-  [ 61, 24, 32, 81, 30, 25, 12,  0, 78, 46, 48, 50, 95,133,118, 97,167, 59,134, 63, 98, 38, 20,117],
-  [ 77, 60, 48, 13,107, 55, 67, 78,  0, 33, 55, 39,113,106,136, 70, 90, 53, 57, 81, 75, 57, 98, 49],
-  [ 46, 29, 16, 45, 76, 23, 35, 47, 33,  0, 37,  6, 98,136,121,100,122, 62, 89, 66,101, 41, 67, 81],
-  [ 47, 29, 19, 42, 77, 23, 36, 48, 55, 36,  0, 40, 79, 94,102, 58,125, 20, 92, 47, 59, 23, 68, 78],
-  [ 50, 32, 20, 51, 80, 27, 39, 51, 39,  6, 41,  0,102,140,125,104,128, 66, 95, 70,105, 45, 71, 88],
-  [112, 71, 83,100,109, 76, 84, 95,114, 98, 79,102,  0,152, 23,116,183, 79,150, 33,118, 59,115,136],
-  [150,109,121, 99,162,114,122,133,106,135, 94,139,152,  0,175, 37,124, 77, 91,120, 38, 96,153, 71],
-  [135, 94,107,123, 87, 99,107,118,137,121,102,125, 23,175,  0,140,206,102,173, 56,141, 82,138,159],
-  [114, 73, 86, 63,126, 78, 86, 97, 71,100, 58,104,117, 37,140,  0, 88, 45, 55, 84,  6, 61,117, 35],
-  [166,149,137, 83,197,144,156,167, 91,122,125,128,183,124,206, 88,  0,123, 34,151, 93,127,187, 68],
-  [ 76, 36, 48, 40, 88, 40, 48, 59, 53, 62, 20, 66, 79, 77,102, 45,123,  0, 90, 46, 39, 23, 79, 76],
-  [133,116,104, 50,163,111,123,134, 58, 89, 92, 95,150, 91,173, 55, 34, 90,  0,118, 60, 94,154, 34],
-  [ 80, 39, 51, 68, 92, 44, 51, 63, 82, 65, 47, 69, 32,120, 55, 84,151, 46,118,  0, 85, 26, 83,104],
-  [115, 74, 86, 68,127, 79, 87, 98, 76,101, 59,105,118, 38,140,  7, 93, 39, 60, 85,  0, 62,118, 40],
-  [ 55, 14, 27, 44, 67, 19, 27, 38, 58, 41, 23, 45, 59, 97, 81, 61,127, 23, 94, 26, 62,  0, 58, 80],
-  [ 81, 44, 52,101, 50, 45, 32, 20, 98, 67, 68, 70,115,153,138,117,187, 79,154, 83,118, 58,  0,137],
-  [125, 93, 96, 42,146, 98,105,117, 50, 81, 78, 87,136, 71,159, 35, 68, 76, 34,104, 40, 80,137,  0]
+  [  0, 43, 31, 90, 90, 37, 49, 61, 78, 46, 47, 50,112,150,135,114,167, 76,134, 80,115, 55, 81,118],
+  [ 43,  0, 15, 58, 53,  6, 13, 24, 60, 29, 30, 33, 72,110, 95, 74,149, 36,116, 40, 75, 15, 44, 86],
+  [ 30, 14,  0, 60, 61,  8, 21, 32, 47, 16, 19, 20, 83,121,106, 86,137, 48,103, 51, 87, 26, 52, 90],
+  [ 90, 57, 61,  0,110, 62, 69, 81, 14, 46, 42, 51,100, 99,123, 63, 84, 40, 50, 68, 69, 44,101, 36],
+  [ 90, 53, 62,110,  0, 54, 41, 30,107, 76, 77, 80,110,162, 88,126,196, 88,163, 92,127, 67, 50,139],
+  [ 36,  7,  8, 62, 54,  0, 13, 25, 54, 23, 23, 27, 76,114, 99, 78,144, 40,110, 44, 79, 19, 45, 91],
+  [ 49, 13, 21, 69, 41, 13,  0, 12, 66, 35, 36, 39, 84,121,106, 86,156, 48,122, 51, 87, 27, 32, 99],
+  [ 61, 24, 32, 81, 30, 25, 12,  0, 78, 46, 48, 50, 95,133,118, 97,167, 59,134, 63, 98, 38, 20,109],
+  [ 77, 60, 48, 13,107, 55, 67, 78,  0, 33, 55, 39,113,106,136, 70, 90, 53, 57, 81, 75, 57, 98, 44],
+  [ 46, 29, 16, 45, 76, 23, 35, 47, 33,  0, 37,  6, 98,136,121,100,122, 62, 89, 66,101, 41, 67, 74],
+  [ 47, 29, 19, 42, 77, 23, 36, 48, 55, 36,  0, 40, 79, 94,102, 58,125, 20, 92, 47, 59, 23, 68, 71],
+  [ 50, 32, 20, 51, 80, 27, 39, 51, 39,  6, 41,  0,102,140,125,104,128, 66, 95, 70,105, 45, 71, 80],
+  [112, 71, 83,100,109, 76, 84, 95,114, 98, 79,102,  0,152, 23,116,183, 79,150, 33,118, 59,115,130],
+  [150,109,121, 99,162,114,122,133,106,135, 94,139,152,  0,175, 37,124, 77, 91,120, 38, 96,153, 65],
+  [135, 94,107,123, 87, 99,107,118,137,121,102,125, 23,175,  0,140,206,102,173, 56,141, 82,138,152],
+  [114, 73, 86, 63,126, 78, 86, 97, 71,100, 58,104,117, 37,140,  0, 88, 45, 55, 84,  6, 61,117, 28],
+  [166,149,137, 83,197,144,156,167, 91,122,125,128,183,124,206, 88,  0,123, 34,151, 93,127,187, 61],
+  [ 76, 36, 48, 40, 88, 40, 48, 59, 53, 62, 20, 66, 79, 77,102, 45,123,  0, 90, 46, 39, 23, 79, 68],
+  [133,116,104, 50,163,111,123,134, 58, 89, 92, 95,150, 91,173, 55, 34, 90,  0,118, 60, 94,154, 27],
+  [ 80, 39, 51, 68, 92, 44, 51, 63, 82, 65, 47, 69, 32,120, 55, 84,151, 46,118,  0, 85, 26, 83, 97],
+  [115, 74, 86, 68,127, 79, 87, 98, 76,101, 59,105,118, 38,140,  7, 93, 39, 60, 85,  0, 62,118, 34],
+  [ 55, 14, 27, 44, 67, 19, 27, 38, 58, 41, 23, 45, 59, 97, 81, 61,127, 23, 94, 26, 62,  0, 58, 73],
+  [ 81, 44, 52,101, 50, 45, 32, 20, 98, 67, 68, 70,115,153,138,117,187, 79,154, 83,118, 58,  0,129],
+  [118, 86, 90, 35,139, 90, 99,109, 45, 74, 71, 80,131, 65,152, 28, 61, 69, 27, 97, 34, 73,129,  0]
 ];
 const ZEIT = [
-  [  0, 45, 35, 90, 92, 42, 52, 64, 81, 47, 54, 50,103,147,122,113,163, 74,134, 75,115, 54, 86,126],
-  [ 46,  0, 16, 61, 58, 10, 18, 30, 57, 23, 33, 26, 66,110, 85, 76,139, 37,109, 38, 78, 18, 52, 97],
-  [ 35, 15,  0, 57, 62, 12, 22, 34, 48, 14, 24, 17, 73,117, 92, 83,130, 44,100, 45, 85, 25, 56, 93],
-  [ 91, 60, 58,  0,110, 62, 70, 82, 19, 48, 46, 53, 95, 98,114, 65, 83, 43, 53, 68, 70, 47,104, 46],
-  [ 93, 57, 62,111,  0, 56, 46, 31,104, 69, 79, 73,101,159, 87,125,185, 87,156, 88,127, 67, 52,146],
-  [ 42,  9, 12, 62, 56,  0, 15, 28, 55, 20, 29, 24, 67,111, 86, 77,136, 38,107, 39, 79, 19, 49, 98],
-  [ 52, 17, 22, 70, 46, 15,  0, 18, 63, 29, 38, 32, 75,118, 94, 85,145, 46,115, 47, 87, 26, 40,105],
-  [ 65, 29, 34, 83, 31, 28, 18,  0, 76, 41, 51, 45, 88,131,106, 97,157, 59,128, 60, 99, 39, 23,118],
-  [ 81, 57, 48, 17,103, 54, 63, 75,  0, 38, 63, 43,112,105,131, 72, 90, 60, 60, 85, 77, 64, 97, 53],
-  [ 47, 23, 14, 47, 69, 20, 29, 41, 38,  0, 35,  8, 80,124, 99, 90,120, 52, 90, 53, 92, 32, 63, 83],
-  [ 54, 33, 24, 47, 79, 29, 39, 51, 64, 35,  0, 38, 73, 95, 92, 61,128, 23, 98, 46, 63, 25, 73, 82],
-  [ 50, 26, 18, 52, 73, 24, 32, 45, 43,  8, 39,  0, 84,128,103, 94,125, 55, 95, 56, 96, 35, 66, 88],
-  [104, 65, 73, 96,100, 68, 75, 88,113, 80, 73, 84,  0,144, 19,111,177, 72,147, 29,113, 53,109,131],
-  [147,108,117, 97,159,111,119,131,106,124, 95,127,144,  0,163, 36,120, 77, 90,117, 37, 96,153, 71],
-  [122, 84, 92,115, 86, 86, 94,107,132, 99, 92,102, 19,163,  0,129,196, 91,166, 47,131, 71,128,150],
-  [114, 75, 83, 64,126, 77, 85, 98, 72, 90, 61, 94,111, 36,129,  0, 86, 47, 57, 83,  7, 62,119, 37],
-  [162,139,130, 82,185,136,145,157, 90,120,128,124,177,120,196, 86,  0,124, 35,149, 91,129,179, 67],
-  [ 75, 36, 44, 43, 87, 39, 46, 59, 60, 51, 22, 55, 72, 77, 91, 47,124,  0, 94, 44, 41, 24, 80, 78],
-  [133,109,100, 52,156,107,115,128, 61, 90, 98, 95,148, 91,166, 57, 36, 95,  0,120, 62, 99,149, 38],
-  [ 76, 37, 45, 68, 88, 40, 48, 60, 85, 53, 45, 56, 28,116, 47, 83,149, 44,120,  0, 85, 25, 81,103],
-  [115, 76, 85, 69,127, 79, 87, 99, 77, 92, 63, 95,112, 37,131,  7, 91, 41, 62, 85,  0, 64,121, 42],
-  [ 55, 16, 25, 48, 67, 19, 27, 39, 64, 32, 25, 35, 52, 96, 71, 62,129, 23, 99, 25, 64,  0, 61, 83],
-  [ 86, 51, 56,104, 52, 50, 40, 23, 97, 63, 73, 66,109,153,128,119,179, 80,149, 81,121, 60,  0,140],
-  [125, 96, 93, 45,146, 98,106,118, 53, 83, 82, 87,132, 71,150, 37, 67, 79, 38,104, 42, 83,140,  0]
+  [  0, 45, 35, 90, 92, 42, 52, 64, 81, 47, 54, 50,103,147,122,113,163, 74,134, 75,115, 54, 86,116],
+  [ 46,  0, 16, 61, 58, 10, 18, 30, 57, 23, 33, 26, 66,110, 85, 76,139, 37,109, 38, 78, 18, 52, 87],
+  [ 35, 15,  0, 57, 62, 12, 22, 34, 48, 14, 24, 17, 73,117, 92, 83,130, 44,100, 45, 85, 25, 56, 86],
+  [ 91, 60, 58,  0,110, 62, 70, 82, 19, 48, 46, 53, 95, 98,114, 65, 83, 43, 53, 68, 70, 47,104, 38],
+  [ 93, 57, 62,111,  0, 56, 46, 31,104, 69, 79, 73,101,159, 87,125,185, 87,156, 88,127, 67, 52,138],
+  [ 42,  9, 12, 62, 56,  0, 15, 28, 55, 20, 29, 24, 67,111, 86, 77,136, 38,107, 39, 79, 19, 49, 89],
+  [ 52, 17, 22, 70, 46, 15,  0, 18, 63, 29, 38, 32, 75,118, 94, 85,145, 46,115, 47, 87, 26, 40, 98],
+  [ 65, 29, 34, 83, 31, 28, 18,  0, 76, 41, 51, 45, 88,131,106, 97,157, 59,128, 60, 99, 39, 23,109],
+  [ 81, 57, 48, 17,103, 54, 63, 75,  0, 38, 63, 43,112,105,131, 72, 90, 60, 60, 85, 77, 64, 97, 50],
+  [ 47, 23, 14, 47, 69, 20, 29, 41, 38,  0, 35,  8, 80,124, 99, 90,120, 52, 90, 53, 92, 32, 63, 75],
+  [ 54, 33, 24, 47, 79, 29, 39, 51, 64, 35,  0, 38, 73, 95, 92, 61,128, 23, 98, 46, 63, 25, 73, 73],
+  [ 50, 26, 18, 52, 73, 24, 32, 45, 43,  8, 39,  0, 84,128,103, 94,125, 55, 95, 56, 96, 35, 66, 79],
+  [104, 65, 73, 96,100, 68, 75, 88,113, 80, 73, 84,  0,144, 19,111,177, 72,147, 29,113, 53,109,124],
+  [147,108,117, 97,159,111,119,131,106,124, 95,127,144,  0,163, 36,120, 77, 90,117, 37, 96,153, 63],
+  [122, 84, 92,115, 86, 86, 94,107,132, 99, 92,102, 19,163,  0,129,196, 91,166, 47,131, 71,128,142],
+  [114, 75, 83, 64,126, 77, 85, 98, 72, 90, 61, 94,111, 36,129,  0, 86, 47, 57, 83,  7, 62,119, 29],
+  [162,139,130, 82,185,136,145,157, 90,120,128,124,177,120,196, 86,  0,124, 35,149, 91,129,179, 61],
+  [ 75, 36, 44, 43, 87, 39, 46, 59, 60, 51, 22, 55, 72, 77, 91, 47,124,  0, 94, 44, 41, 24, 80, 70],
+  [133,109,100, 52,156,107,115,128, 61, 90, 98, 95,148, 91,166, 57, 36, 95,  0,120, 62, 99,149, 28],
+  [ 76, 37, 45, 68, 88, 40, 48, 60, 85, 53, 45, 56, 28,116, 47, 83,149, 44,120,  0, 85, 25, 81, 94],
+  [115, 76, 85, 69,127, 79, 87, 99, 77, 92, 63, 95,112, 37,131,  7, 91, 41, 62, 85,  0, 64,121, 35],
+  [ 55, 16, 25, 48, 67, 19, 27, 39, 64, 32, 25, 35, 52, 96, 71, 62,129, 23, 99, 25, 64,  0, 61, 74],
+  [ 86, 51, 56,104, 52, 50, 40, 23, 97, 63, 73, 66,109,153,128,119,179, 80,149, 81,121, 60,  0,131],
+  [115, 87, 86, 37,139, 89, 99,109, 50, 75, 73, 78,124, 64,142, 29, 60, 70, 28, 95, 35, 74,131,  0]
 ];
 
 const FZK = 19;     /* Rappen pro km neben dem Sprit, hergeleitet aus TCS 2026 */
@@ -302,9 +302,11 @@ function proKopfZeit(kg){
                   : Math.round(std * 60) + " Minuten";
 }
 
-/* Startwerte: Bleifrei 95 im Landesdurchschnitt 2.14 CHF/l (TCS, gültig seit
-   19. September 2026), die zweite Tankstelle 10 Rappen günstiger. */
-const S = { start:2, ziel:9, pa:2.14, pb:2.04, dist:16, menge:45, verb:6.5, fzk:true, fuel:"benzin" };
+/* Startpreise: Landesdurchschnitt laut TCS, gültig seit 19. September 2026.
+   Die zweite Tankstelle ist jeweils 10 Rappen günstiger. */
+const PREIS = {benzin:2.14, diesel:2.46};
+const ABSTAND = 0.10;
+const S = { start:2, ziel:9, pa:PREIS.benzin, pb:PREIS.benzin - ABSTAND, dist:16, menge:45, verb:6.5, fzk:true, fuel:"benzin" };
 
 /* Gerechnet wird die Fahrt zur Tankstelle und zurück */
 const FAKTOR = 2;
@@ -420,12 +422,14 @@ function drawChart(r){
 
 function render(){
   const r = calc();
-  const lohnt = r.netto > 0;
+  /* Auf Rappen gerundet entscheiden, sonst stünde bei −0,004 «Sie zahlen 0.00 drauf» */
+  const netto = Math.round(r.netto * 100) / 100;
+  const lohnt = netto > 0;
 
   document.getElementById("res").className = "res " + (lohnt ? "gut" : "schlecht");
   document.getElementById("resHead").textContent = lohnt
       ? "Ja – Sie sparen " + fr(r.netto) + " Franken"
-      : (r.netto === 0 ? "Genau die Null"
+      : (netto === 0 ? "Genau die Null"
                        : "Nein – Sie zahlen " + fr(-r.netto) + " Franken drauf");
 
   const rows = [
@@ -438,23 +442,32 @@ function render(){
      "<tr><td>" + k + "</td><td class='" + (v<0?"neg":"") + "'>"
      + (v>0?"+":"") + fr(v) + "</td></tr>").join("");
 
-  document.getElementById("paLab").textContent = "Preis in " + ORTE[S.start];
-  document.getElementById("pbLab").textContent = "Preis in " + ORTE[S.ziel];
-  /* Samnaun liegt ausserhalb des Schweizer Zollgebiets, dort fällt keine Mineralölsteuer an */
-  document.getElementById("pbHint").textContent = ORTE[S.ziel] === "Samnaun"
+  /* Gleicher Ort: zwei Tankstellen im selben Dorf, ohne Umweg */
+  const gleich = S.start === S.ziel;
+  document.getElementById("paLab").textContent = gleich
+      ? "Preis an der ersten Tankstelle" : "Preis in " + ORTE[S.start];
+  document.getElementById("pbLab").textContent = gleich
+      ? "Preis an der zweiten Tankstelle" : "Preis in " + ORTE[S.ziel];
+  /* Samnaun liegt ausserhalb des Schweizer Zollgebiets, dort fällt keine Mineralölsteuer an.
+     Der Hinweis gilt auch, wenn Samnaun der Startort ist. */
+  document.getElementById("pbHint").textContent =
+      (ORTE[S.ziel] === "Samnaun" || ORTE[S.start] === "Samnaun") && !gleich
       ? "Samnaun liegt ausserhalb des Zollgebiets, die Mineralölsteuer entfällt – der Preis "
-        + "liegt deutlich tiefer. Tragen Sie ein, was die Tankstelle verlangt."
+        + "liegt dort deutlich tiefer. Tragen Sie ein, was die Tankstelle verlangt."
       : "";
 
   document.getElementById("distHint").innerHTML = S.dist > 0
       ? "Gerechnet werden <b>" + de(FAKTOR * S.dist) + " km</b> – Hin- und Rückweg."
       : "Keine Fahrt, keine Zusatzkilometer.";
 
+  /* Ganze Kilometer genügen; unter einem Kilometer stünde sonst «bis zu 0 km» */
   document.getElementById("grenze").innerHTML = r.diff > 0
-     ? "Bei " + de(Math.round(r.diff*100)) + " Rappen Unterschied lohnt sich eine Fahrt über "
-       + "<b>bis " + de(r.dStar) + " km</b>."
+     ? "Bei " + zahl(r.diff*100) + " Rappen Unterschied lohnt sich die Fahrt "
+       + (r.dStar < 1 ? "<b>nicht einmal über 1 km</b>."
+                      : "bis zu <b>" + de(r.dStar) + " km</b> einfache Strecke.")
      : (r.diff < 0
-        ? "Tankstelle B ist teurer – jeder Umweg dorthin kostet Sie Geld."
+        ? (gleich ? "Die zweite Tankstelle" : "Die Tankstelle in " + ORTE[S.ziel])
+          + " ist teurer – jeder Umweg dorthin kostet Sie Geld."
         : "Beide Tankstellen sind gleich teuer – zu holen gibt es nichts.");
 
   /* Eigener, neutraler Block: Die Ergebniskachel darüber ist grün oder rot nach Geld –
@@ -533,10 +546,22 @@ function num(id, key){
 
   ["pa","pb","dist","menge","verb"].forEach(k => num(k, k));
 
-  /* Treibstoff bestimmt nur den CO2-Faktor – die Preise gibt der Nutzer selbst ein */
+  /* Hat jemand einen Preis selbst eingetippt, fasst der Treibstoff-Umschalter ihn nicht an */
+  let eigenePreise = false;
+  ["pa","pb"].forEach(id => document.getElementById(id)
+    .addEventListener("input", () => { eigenePreise = true; }));
+
+  /* Treibstoff bestimmt den CO2-Faktor und, solange die Preise unverändert sind,
+     auch die Startpreise */
   document.querySelectorAll("#segFuel button").forEach(b => {
     b.addEventListener("click", () => {
       S.fuel = b.dataset.v;
+      if (!eigenePreise){
+        S.pa = PREIS[S.fuel];
+        S.pb = Math.round((S.pa - ABSTAND) * 100) / 100;
+        document.getElementById("pa").value = S.pa.toFixed(2);
+        document.getElementById("pb").value = S.pb.toFixed(2);
+      }
       document.querySelectorAll("#segFuel button").forEach(x =>
         x.setAttribute("aria-pressed", String(x.dataset.v === S.fuel)));
       render();

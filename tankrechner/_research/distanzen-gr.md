@@ -17,11 +17,27 @@ die Fahrzeit skaliert dann proportional mit.
 
 24 Orte, die alle Talschaften abdecken: Arosa, Bonaduz, Chur, Davos, Disentis, Domat/Ems, Flims, Ilanz, Klosters, Landquart, Lenzerheide, Maienfeld, Mesocco, Poschiavo, Roveredo, Samedan, Samnaun, Savognin, Scuol, Splügen, St. Moritz, Thusis, Vals, Zernez.
 
-**Nicht automatisch geprüft:** Ob an jedem Ort eine Tankstelle steht. Die Overpass-API
-antwortete am 23.09.2026 auf drei Anläufe (Hauptserver und Mirror) mit Timeouts. Bei
-regionalen Zentren dieser Grösse ist eine Tankstelle eine sichere Annahme, für die
-Glarner Version wurde dieselbe Prüfung erfolgreich durchgeführt (siehe `distanzen.md`).
-Die Prüfung liesse sich nachholen.
+**Tankstellen an allen 24 Orten: geprüft am 29.09.2026.** Overpass-Abfrage
+`nwr["amenity"="fuel"](area["ISO3166-2"="CH-GR"])` über den Mirror
+`maps.mail.ru/osm/tools/overpass/api/interpreter` (die Hauptserver liefen wie am 23.09. in
+Timeouts): 169 Tankstellen im Kanton. Jeder der 24 Orte hat mindestens eine innerhalb von
+1 km vom Ortszentrum (Arosa, Mesocco, Savognin, Splügen je genau eine). Stand OpenStreetMap,
+nicht amtlich – ob eine Tankstelle öffentlich und rund um die Uhr zugänglich ist, sagt die
+Abfrage nicht.
+
+## Korrektur Zernez (29.09.2026)
+
+Alle Distanzen von und nach Zernez waren rund 7 km zu lang (Samedan–Zernez 35 statt 28 km,
+Scuol–Zernez 34 statt 27 km). Ursache: Das Geocoding über die Postleitzahl 7530 lieferte den
+Mittelpunkt des PLZ-Gebiets, das bis weit in den Nationalpark reicht – der Punkt lag rund
+5 km vom Dorf entfernt an der Ofenpassstrasse. Neu gerechnet mit dem Dorfzentrum
+(46.6980, 10.0943, Nominatim) und derselben OSRM-Methode; ersetzt wurden nur Zeile und
+Spalte Zernez in beiden Matrizen.
+
+Gegenprobe für die übrigen 23 Orte mit neu geocodierten Ortszentren: Median der Abweichung
+0 bis 1 km, keine systematische Verschiebung. Ausnahme ist Klosters, wo die neue Abfrage
+einen anderen Ortsteil traf (Klosters–Davos neu 15 statt 13 km); dort ist der alte Wert der
+plausiblere und blieb stehen.
 
 ## Samnaun
 
@@ -68,7 +84,7 @@ Kilometer. Ab Scuol (34 km) bleiben dagegen gut 3 Franken übrig.
 | St. Moritz | 87 | 85 min |
 | Thusis | 26 | 25 min |
 | Vals | 52 | 56 min |
-| Zernez | 96 | 93 min |
+| Zernez | 90 | 86 min |
 
 Die vollständige Matrix (24 × 24, beide Richtungen) steht im Datenblock des Embeds
 zwischen `DATA-START` und `DATA-END`.

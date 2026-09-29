@@ -24,7 +24,8 @@ Break-even-Formel gescheitert (meldete 13,9 statt 7,0 km).
 - `_research/quellen.md` – **jede sichtbare Zahl** mit Quelle und Datum: Treibstoffpreise,
   Wechselkurs, CO2-Faktoren, die Herleitung der 19 Rp./km, Zollregeln, Liechtenstein
 - `_research/distanzen.md` – Glarner Ortschaften, Distanz- und Fahrzeitmatrix, Methode
-- `_research/distanzen-gr.md` – dasselbe für Graubünden, plus Samnaun und sein Zollstatus
+- `_research/distanzen-gr.md` – dasselbe für Graubünden, plus Samnaun und sein Zollstatus,
+  die Tankstellenprüfung und die Zernez-Korrektur vom 29.09.2026
 - `_research/overlord-review-2026-09-23.md` – Multi-Modell-Review mit Verifikationsstatus je
   Befund; zwei der fünf technischen Befunde hielten der Prüfung nicht stand
 
@@ -34,7 +35,8 @@ Break-even-Formel gescheitert (meldete 13,9 statt 7,0 km).
   sich mit headless Chromium auslesen –, aber die Embeds sollen eigenständig bleiben und nicht
   an einer fremden Seite hängen. Folge: Die Startwerte veralten. Alle drei weisen deshalb aus,
   von wann sie stammen. Nachführen von Hand: `REF.ch` in T1, `S` plus die `value`-Attribute in
-  T2 und T3, dazu das Datum in der Fussnote.
+  T2, `PREIS` (Benzin und Diesel) plus die `value`-Attribute in T3, dazu das Datum in der
+  Fussnote.
 - **CO2 nur als Verbrennung** (tank-to-wheel), ohne Förderung und Raffinerie. Amtlich belegt und
   eindeutig definiert; mit Vorketten läge der Wert rund ein Fünftel höher.
 - **Zeit wird genannt, nicht bepreist.** Ein Stundenansatz wäre frei gewählt.
@@ -76,6 +78,4 @@ von der Grenze, Chur und Glarus 55 bis 60. Der Rechner sagt nicht «lohnt sich n
 
 - **Redaktionell:** Rappengenaue Ausgaben bei groben Annahmen (Scheingenauigkeit); und ob die
   Voreinstellung Vorarlberg in T1 bleiben soll, obwohl sie die eigene Leitfrage sofort verneint.
-- **Ungeprüft:** Ob an allen 24 Orten in Graubünden eine Tankstelle steht – die Overpass-API
-  antwortete über vier Anläufe mit Timeouts. Für Glarus ist es geprüft.
 - **Nicht abgebildet:** Verbundfahrten in T1 und T3 (Einkauf plus Tanken). Dafür ist T2 da.
