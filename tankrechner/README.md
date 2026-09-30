@@ -29,6 +29,15 @@ Break-even-Formel gescheitert (meldete 13,9 statt 7,0 km).
 - `_research/overlord-review-2026-09-23.md` – Multi-Modell-Review mit Verifikationsstatus je
   Befund; zwei der fünf technischen Befunde hielten der Prüfung nicht stand
 
+## Social-Video
+
+`_video/tankrechner-graubuenden-social-v2.mp4` (1080×1920, 24 s, ohne Ton) – Teaser für Social
+Media, Ziel Aktivierung. Quelle ist `_video/social-v2.html`: eine Animation mit fester Zeitachse
+(alle Zeiten im Objekt `ZEIT`), die den echten Rechner als iframe einbettet und steuert. Neu
+rendern mit `_video/render-social.js` (Aufruf im Dateikopf); weil das iframe gesteuert wird, muss
+die Seite über einen lokalen Webserver laufen, der aus `tankrechner/` ausliefert. Referenzbeispiel
+für den Skill `artikel-video`.
+
 ## Getroffene Entscheidungen
 
 - **Keine automatische Preispflege** (24.09.2026). Technisch machbar – die TCS-Preisseite lässt
