@@ -482,13 +482,27 @@ for (const a of alarme) {
   const achse = achseVon(a);
   const schl = a._region + '|' + achse;
   gesehenAchsen.add(schl);
-  const stufe = stufeVon(a);
+  // Eine Baustellen-Sperrung zaehlt fuer die Eskalation hoechstens als Stufe 2.
+  // Am 01.10.2026 stand die A3 ab 07:00 auf Stufe 3 wegen einer naechtlichen
+  // Baustellensperrung Weesen-Murg; die Tunnelsperrung nach Unfall um 08:18 konnte
+  // darum nichts mehr verschaerfen und wartete als "Verlauf" auf die Sammelmail.
+  const stufe = a.baustelle ? Math.min(stufeVon(a), 2) : stufeVon(a);
   const bisher = S.offen[schl];
+  // Ein Unfall ist immer eine eigene Nachricht. Eine ASTRA-Situation liefert dazu
+  // mehrere Records (Tunnel gesperrt, Stau davor ...) mit demselben "seit" - darum
+  // je Achse nur einmal pro Situation.
+  const unfall = /unfall/i.test((a.sachlage || '') + ' ' + (a.ursache || '')) && !/vorausgegangen/i.test(a.ursache || '');
+  const unfallId = unfall ? (a.seit || a.ort) : null;
 
   if (!bisher || (jetzt - Date.parse(bisher.seit)) > LAGE_NEU_STUNDEN * 3600000) {
     // Beginn - das ist die Nachricht.
-    S.offen[schl] = { seit: jetzt.toISOString(), stufe, ort: a.ort || a.strasse || achse };
+    S.offen[schl] = { seit: jetzt.toISOString(), stufe, ort: a.ort || a.strasse || achse,
+                      unfaelle: unfallId ? [unfallId] : [] };
     sofort.push({ ...a, _anlass: 'beginn', _achse: achse });
+  } else if (unfallId && !(bisher.unfaelle || []).includes(unfallId)) {
+    S.offen[schl] = { ...bisher, stufe: Math.max(stufe, bisher.stufe),
+                      unfaelle: (bisher.unfaelle || []).concat(unfallId) };
+    sofort.push({ ...a, _anlass: 'unfall', _achse: achse });
   } else if (stufe > bisher.stufe && istSperrung(a)) {
     // Verschaerfung bis zur Sperrung durchbricht die Sammlung, eine Umstufung von
     // stockend auf Stau nicht - sonst meldet jede Neubewertung derselben Kolonne.
@@ -560,7 +574,9 @@ for (const r of REGIONEN) {
   // die naechste Sendung - laenger als ENDE_MAX_WARTEN aber nicht, sonst kommt die
   // Entwarnung womoeglich erst Tage spaeter.
   const letzte = S.letzteSammel[r] ? Date.parse(S.letzteSammel[r]) : 0;
-  const faellig = (jetzt - letzte) >= SAMMEL_STUNDEN * 3600000;
+  // Eine Minute Spielraum: Der Lauf startet nie auf die Millisekunde gleich. Am
+  // 01.10.2026 fehlten 113 ms, die Sammelmail kam dadurch 15 Minuten spaeter.
+  const faellig = (jetzt - letzte) >= SAMMEL_STUNDEN * 3600000 - 60000;
   const endeUeberfaellig = enden.some(a =>
     (jetzt - Date.parse(a._wartetSeit || jetzt.toISOString())) >= ENDE_MAX_WARTEN * 3600000);
   if (faellig && (verlauf.length || endeUeberfaellig)) {
