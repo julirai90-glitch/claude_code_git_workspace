@@ -201,6 +201,31 @@ out.sort((a,b) => (rank[a.art] - rank[b.art]) || (Date.parse(b.aktualisiert) - D
 const payload = { generated: new Date().toISOString().replace(/\.\d+Z$/,'Z'), quelle: 'ASTRA / opentransportdata.swiss (DATEX II)', meldungen: out, roh_eintraege: recs.length, geparst: nParsed };
 const sd = $getWorkflowStaticData('global');
 
+// Diagnose (seit 04.10.2026): Am 01.10.2026 kamen drei Meldungen, die ASTRA um
+// 16:11, 16:35 und 16:38 erfasst hatte, erst um 17:15 im Alarm an - und es liess
+// sich nachtraeglich nicht klaeren, ob die Quelle oder unser Abruf hing. Darum
+// merkt sich jeder Lauf (a) wann er abrief, wie viele Records kamen und wie alt
+// die juengste VersionTime im Feed war, und (b) je Meldung, wann wir sie zum
+// ersten Mal gesehen haben. Rollierend 24 h, liegt nur in staticData (per n8n-API
+// lesbar), nicht im Webhook.
+{
+  const jetztIso = new Date().toISOString().replace(/\.\d+Z$/,'Z');
+  const grenze = Date.now() - 24 * 3600000;
+  const vts = (xml.match(/situationRecordVersionTime[^>]*>([^<]+)</g) || [])
+    .map(x => Date.parse(x.replace(/^[^>]*>/, '').replace(/<$/, ''))).filter(Boolean);
+  const neueste = vts.length ? Math.max(...vts) : null;
+  const diag = sd.diag || { abrufe: [], ersteSicht: {} };
+  diag.abrufe.push({ t: jetztIso, roh: recs.length, geparst: nParsed, regional: out.length,
+                     neuesteVersion: neueste ? new Date(neueste).toISOString().replace(/\.\d+Z$/,'Z') : null });
+  diag.abrufe = diag.abrufe.filter(a => Date.parse(a.t) >= grenze);
+  for (const m of out) {
+    const k = m.ort + '|' + m.sachlage + '|' + m.seit;
+    if (!diag.ersteSicht[k]) diag.ersteSicht[k] = { seit: m.seit, gesehen: jetztIso };
+  }
+  for (const k in diag.ersteSicht) if (Date.parse(diag.ersteSicht[k].gesehen) < grenze) delete diag.ersteSicht[k];
+  sd.diag = diag;
+}
+
 // Ausfallschutz, korrigiert 19.09.2026: "defekt" heisst, dass der Parser aus KEINEM
 // einzigen Record ueberhaupt Klartext extrahieren konnte (nParsed === 0) - gemessen
 // VOR dem Regions- und Akut-Filter. Die erste Fassung mass das erst NACH diesen

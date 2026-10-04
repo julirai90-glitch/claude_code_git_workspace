@@ -13,7 +13,7 @@ Vier n8n-Workflows, alle aktiv:
 | `nT9K4coxFicfvl1U` | Verkehr GR – Fetch (latest) | Zählstellen, alle 5 Min |
 | `R7spzjHnnljtjsiR` | Verkehr GR – Verkehrsmeldungen (ASTRA) | amtliche Meldungen |
 | `qWNsUBgHtJLT48pX` | Verkehr GR – Strassenzustand (TBA GR) | Kantonsstrassen, Pässe |
-| `zbVshbyGJuFYBWeK` | **Verkehr GR – Alarm (Mail)** | seit 15.09., alle 15 Min |
+| `zbVshbyGJuFYBWeK` | **Verkehr GR – Alarm (Mail)** | seit 15.09., alle 5 Min (seit 04.10., vorher 15) |
 
 Dazu das Dashboard in `verkehr/verkehr-dashboard-kacheln.html` (GitHub Pages).
 
@@ -23,7 +23,7 @@ Dazu das Dashboard in `verkehr/verkehr-dashboard-kacheln.html` (GitHub Pages).
 
 ## Der Alarm in einem Absatz
 
-Alle 15 Minuten, rund um die Uhr. Vier Regionen – **Graubünden, Glarus,
+Alle 5 Minuten, rund um die Uhr. Vier Regionen – **Graubünden, Glarus,
 Sarganserland, Linth** – je eine eigene Mail mit der Region im Betreff, aktuell alle
 an die Redaktionsadresse. Drei Quellen: Zählstellen (gefiltert), ASTRA-Meldungen
 und TBA-Meldungen (beide ungefiltert). Code versioniert in `n8n_alarm_detect.js` und

@@ -77,11 +77,11 @@ der Stau um 17 Uhr stehen wird – und am Abend ein Rückblick aus dem Archiv ba
 
 ## Umsetzung (15.09.2026)
 
-Workflow `zbVshbyGJuFYBWeK` «Verkehr GR – Alarm (Mail)», aktiv, alle 15 Minuten,
+Workflow `zbVshbyGJuFYBWeK` «Verkehr GR – Alarm (Mail)», aktiv, alle 5 Minuten (seit 04.10.2026, vorher 15),
 rund um die Uhr, Mail an die Redaktionsadresse über das Gmail-Credential
 «Gmail account terra» (Empfänger steht im Gmail-Node, bewusst nicht hier – dieses
 Repo ist öffentlich). Von Julian gewählte Einstellungen: alle drei Quellen,
-Bündelung auf 15 Minuten, 24/7.
+Bündelung auf 5 Minuten, 24/7.
 
 **Bewusst ein vierter, eigener Workflow.** Er liest die drei bestehenden nur über
 ihre Webhooks (`f=latest`, `f=baseline`, `f=today`, `verkehr-meldungen`,
