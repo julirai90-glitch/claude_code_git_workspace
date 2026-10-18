@@ -322,8 +322,8 @@ Promise.all([
     +'Eine über Wochen anhaltende Verlangsamung (Dauerbaustelle) wandert mit der Zeit in die Vergleichswerte und '
     +'wird dann als normal gelesen; dasselbe gilt für jahreszeitliche Wechsel, weil der Vergleich nur sechs Wochen '
     +'zurückreicht. Der <b>Balken</b> zeigt die Menge (im Verhältnis zum ortsüblichen Wert, bzw. zum heutigen '
-    +'Höchstwert, solange zu wenige Vergleichstage vorliegen). Richtungen sind teils nur geometrisch hergeleitet '
-    +'(<i>provisorisch</i> markiert). Defekt wirkende Messungen und Zählstellen, deren letzte Messung älter als '
+    +'Höchstwert, solange zu wenige Vergleichstage vorliegen). '
+    +'Defekt wirkende Messungen und Zählstellen, deren letzte Messung älter als '
     +'15 Minuten ist, werden ausgeblendet. Kantonale Strassen sind nicht erfasst – läuft eine Umleitung über sie, '
     +'bleibt sie für uns unsichtbar.<br>'
     +'<b>Amtliche Meldungen:</b> Der Kasten unter dem Staumelder stammt aus einer zweiten, unabhängigen '
@@ -1084,7 +1084,7 @@ function musterSatz(key,cat){
 function chartCard(s,dir,prov){
   const dd=s.dirs[dir];
   const card=d3.select("#charts").append("div").attr("class","card");
-  card.append("h3").html(dd.label+(prov?' <span class="prov" title="Richtung noch nicht empirisch bestätigt">⚠ provisorisch</span>':''));
+  card.append("h3").html(dd.label);
   const k0=s.id+"|"+dir;
   const archivDay=archivDate?ARCHIV_CACHE[archivDate]:null;
   if(archivDay){
