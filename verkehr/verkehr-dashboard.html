@@ -267,7 +267,7 @@ Promise.all([
     +'<b>Grenzen:</b> Die Auswertung kennt nur die '
     +'Zählstellen, nicht die Strecke dazwischen – die Stau<i>länge</i> lässt sich daraus nicht ableiten. Wochenlange '
     +'Verlangsamungen (z.B. Dauerbaustellen) erkennt sie nicht zuverlässig, weil sich die Vergleichswerte '
-    +'selbst mitverschieben. Richtungen sind teils nur geometrisch hergeleitet (<i>provisorisch</i> markiert). '
+    +'selbst mitverschieben. '
     +'Defekt wirkende Messungen (eine Richtung 0, während die andere klar fährt) werden ausgeblendet. '
     +'Kantonale Strassen sind nicht erfasst.<br>'
     +'Datenquelle: opentransportdata.swiss (ASTRA, DATEX II «pullMeasuredData»); Standorte/Namen amtlich '
@@ -1182,7 +1182,7 @@ function musterSatz(key,cat){
 function chartCard(s,dir,prov){
   const dd=s.dirs[dir];
   const card=d3.select("#charts").append("div").attr("class","card");
-  card.append("h3").html(dd.label+(prov?' <span class="prov" title="Richtung noch nicht empirisch bestätigt">⚠ provisorisch</span>':''));
+  card.append("h3").html(dd.label);
   const k0=s.id+"|"+dir;
   const archivDay=archivDate?ARCHIV_CACHE[archivDate]:null;
   if(archivDay){
