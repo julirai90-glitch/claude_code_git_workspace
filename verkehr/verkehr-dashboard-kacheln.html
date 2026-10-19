@@ -129,6 +129,10 @@
   .dhead{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4em;margin:.1em 0 .6em}
   .dtitle{font-size:.96rem;font-weight:600;color:var(--ink)}
   .charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .charts.one{grid-template-columns:1fr}
+  .dirtoggle{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;font-size:.78rem}
+  .dirtoggle button{border:0;background:#fff;padding:.28em .7em;cursor:pointer;color:var(--muted)}
+  .dirtoggle button.on{background:var(--blau);color:#fff}
   @media(max-width:560px){.charts{grid-template-columns:1fr}}
   .card{border:1px solid var(--line);border-radius:8px;padding:8px 8px 4px;background:#fff}
   .card h3{font-size:.86rem;margin:.1em 0 .1em;font-weight:600}
@@ -260,6 +264,11 @@ const PUBLIC_URL = "https://julirai90-glitch.github.io/claude_code_git_workspace
 const Q = new URLSearchParams(location.search);
 const EMBED_VIEW = ["voll","tile","chart","stau","meldungen"].includes(Q.get("view")) ? Q.get("view") : null;
 const EMBED_SITE = Q.get("site");
+// Im Embed mit Tagesverlauf nur eine Richtung zeigen, umschaltbar: Zwei Grafiken
+// nebeneinander stapeln sich auf dem Handy und verdoppeln die Hoehe des iframes.
+// ?dir=negative waehlt die Gegenrichtung als Start.
+const EMBED_ONE = EMBED_VIEW==="chart" || EMBED_VIEW==="voll";
+let EMBED_DIR = Q.get("dir")==="negative" ? "negative" : "positive";
 if(EMBED_VIEW) document.body.classList.add("embed","embed-"+EMBED_VIEW);
 function embedBase(){
   return /github\.io/.test(location.host) ? location.href.split(/[?#]/)[0] : PUBLIC_URL;
@@ -843,6 +852,13 @@ function renderEmbedView(){
     +' Uhr · Grafik: Julian Reich');
 }
 
+if(EMBED_ONE){
+  let rw=window.innerWidth, rt;
+  window.addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(()=>{
+    if(window.innerWidth!==rw && typeof LATEST!=="undefined" && LATEST){ rw=window.innerWidth; renderBoard(); }
+  },150); });
+}
+
 function renderBoard(){
   if(EMBED_VIEW){ renderEmbedView(); return; }
   const allRows=sortRows();
@@ -981,8 +997,13 @@ function renderExpand(container, s){
     // Kein Fahrzeuge/Tempo-Umschalter mehr an dieser Stelle: Der Tagesverlauf zeigt
     // beides zusammen. Der Schalter steuert nur die Balken in der Kachel-Uebersicht
     // und steht deshalb dort bei den uebrigen Kachel-Filtern.
+    +(EMBED_ONE?'<span class="dirtoggle">'+["positive","negative"].map(d=>
+        '<button data-dir="'+d+'" class="'+(d===EMBED_DIR?'on':'')+'">'+s.dirs[d].label+'</button>').join('')+'</span>':'')
     +archivSelectHtml()+'</span></div>'
-    +'<div class="charts" id="charts"></div>');
+    +'<div class="charts'+(EMBED_ONE?' one':'')+'" id="charts"></div>');
+  container.selectAll(".dirtoggle button").on("click",function(){
+    EMBED_DIR=this.getAttribute("data-dir"); renderExpand(container,s);
+  });
   container.select(".archivsel").on("change",function(){
     const v=this.value;
     if(!v){ archivDate=null; renderBoard(); return; }
@@ -991,7 +1012,7 @@ function renderExpand(container, s){
     d3.json(ASSET_BASE+"/archiv/"+v+".json").then(day=>{ARCHIV_CACHE[v]=day; renderBoard();})
       .catch(()=>{archivDate=null; renderBoard();});
   });
-  ["positive","negative"].forEach(dir=>chartCard(s,dir,prov));
+  (EMBED_ONE?[EMBED_DIR]:["positive","negative"]).forEach(dir=>chartCard(s,dir,prov));
 }
 
 // Dropdown fuer vergangene Tage. ARCHIV_INDEX kann beim allerersten Render noch
@@ -1131,7 +1152,10 @@ function chartCard(s,dir,prov){
   // normalem Tempo heisst bloss wenig Verkehr.
   const cat=archivDay?archivDay.dt:dayType();
   card.append("p").attr("class","muster").text(musterSatz(k0,cat));
-  const W=330,H=250,m={t:8,r:8,b:18,l:34};
+  // Einzelne Richtung im Embed: Breite der Karte uebernehmen statt hochzuskalieren,
+  // damit Schrift und Hoehe auf jedem Bildschirm gleich bleiben.
+  const W=EMBED_ONE?Math.max(300,Math.min(760,Math.round(card.node().getBoundingClientRect().width-18))):330,
+    H=250,m={t:8,r:8,b:18,l:34};
   // SPLIT = Unterkante Tempo-Panel, BAND_T = Oberkante Mengenband. Die Grafik ist
   // hoeher als das Tempo-Panel braucht: Jeder Zuwachs der Gesamthoehe geht ganz an
   // die Balken, damit der Mengenverlauf lesbar wird. 36 px -> 58 -> jetzt 94.
