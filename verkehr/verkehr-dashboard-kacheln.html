@@ -1130,7 +1130,7 @@ function chartCard(s,dir,prov){
       if(med0) pctTxt=' <span style="font-weight:400;color:var(--muted)">('+Math.round(rs/med0*100)+'% vom üblichen)</span>';
     }
     let headline='Tempo: <b>'+(rs!=null?'ca. '+rs+' km/h':'–')+'</b>'+pctTxt
-      +' · letzte Stunde: <b>'+(lh!=null?'ca. '+lh.toLocaleString('de-CH')+' Fz':'–')+'</b>';
+      +' · letzte Stunde: <b>'+(lh!=null?'ca. '+lh.toLocaleString('de-CH')+' Fahrzeuge':'–')+'</b>';
     let tword="";
     if(hasVal){
       const tr=trend(k0,'speed');
