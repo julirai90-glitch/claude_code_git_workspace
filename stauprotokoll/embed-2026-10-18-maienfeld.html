@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Tempo bei Maienfeld Richtung Norden, Sonntag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{--surface:#fff;--rule:#dde4e9;--rule-soft:#eef2f5;--ink:#14202a;--ink-2:#4a5b68;--ink-3:#71838f;
+  --s1:#0068a4;--s2:#ee7733;--grau:#8c9aa5}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-size:16px;line-height:1.5}
+.wrap{padding:12px 16px 16px}
+.legend{display:flex;gap:6px 18px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.lg{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2)}
+.sw{width:12px;height:12px;border-radius:2px;flex:none}
+.sw.line{height:3px;border-radius:0}
+.sw.dash{height:0;border-top:2px dashed var(--grau);background:none!important}
+.sw.band{background:var(--s2);opacity:.22}
+.sw.tick{height:3px;background:var(--ink);opacity:.6}
+.panel{margin:0 0 14px}
+.ptitle{font-size:14px;font-weight:700;margin:0 0 2px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tick-t{font-size:12px;fill:var(--ink-3)}
+.lab{font-size:13px;fill:var(--ink)}
+.lab-s{font-size:12px;fill:var(--ink-2)}
+.grid{stroke:var(--rule-soft);stroke-width:1}
+.axis{stroke:var(--rule);stroke-width:1}
+.src{font-size:12px;color:var(--ink-3);border-top:1px solid var(--rule-soft);padding-top:10px;margin:12px 0 0}
+.tip{position:fixed;pointer-events:none;z-index:9;opacity:0;transform:translate(-50%,-100%);background:#fff;color:var(--ink);
+  border:1px solid var(--rule);border-radius:3px;box-shadow:0 4px 14px rgba(20,32,42,.15);padding:7px 10px;font-size:13px;
+  line-height:1.4;white-space:nowrap;transition:opacity .09s}
+.tip b{font-variant-numeric:tabular-nums}
+.hit{cursor:crosshair}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="legend" id="legend"></div>
+  <div id="chart"></div>
+  <p class="src">Tempo in km/h Richtung Sargans, Zählstelle Maienfeld (A13), je Viertelstunde. Band: Astra-Meldung «stockender Verkehr» zwischen Landquart und Verzweigung Sarganserland. «Üblich»: Median der sechs Sonntage davor. Quelle: Bundesamt für Strassen (Astra), Zählstellen und Verkehrsmeldungen, opentransportdata.swiss. Grafik: Südostschweiz</p>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<script>
+const D = {"typ": "tempo", "ymax": 120, "ystep": 20, "vergleich": "Sonntage", "menge": true, "panels": [{"s": [{"i": 44, "v": 118, "u": 116, "f": 2540}, {"i": 45, "v": 115, "u": 116, "f": 2680}, {"i": 46, "v": 113, "u": 115, "f": 2440}, {"i": 47, "v": 116, "u": 116, "f": 2520}, {"i": 48, "v": 115, "u": 116, "f": 2800}, {"i": 49, "v": 108, "u": 114, "f": 3440}, {"i": 50, "v": 109, "u": 116, "f": 3540}, {"i": 51, "v": 114, "u": 115, "f": 2800}, {"i": 52, "v": 114, "u": 115, "f": 2760}, {"i": 53, "v": 113, "u": 112, "f": 2660}, {"i": 54, "v": 111, "u": 108, "f": 2940}, {"i": 55, "v": 111, "u": 110, "f": 3080}, {"i": 56, "v": 110, "u": 110, "f": 3260}, {"i": 57, "v": 107, "u": 107, "f": 3360}, {"i": 58, "v": 106, "u": 102, "f": 3380}, {"i": 59, "v": 108, "u": 106, "f": 3080}, {"i": 60, "v": 61, "u": 64, "f": 3580}, {"i": 61, "v": 46, "u": 48, "f": 3560}, {"i": 62, "v": 35, "u": 49, "f": 2900}, {"i": 63, "v": 48, "u": 75, "f": 3440}, {"i": 64, "v": 40, "u": 76, "f": 2920}, {"i": 65, "v": 33, "u": 70, "f": 2940}, {"i": 66, "v": 34, "u": 68, "f": 3100}, {"i": 67, "v": 32, "u": 65, "f": 2880}, {"i": 68, "v": 33, "u": 72, "f": 2780}, {"i": 69, "v": 35, "u": 64, "f": 3040}, {"i": 70, "v": 80, "u": 64, "f": 2960}, {"i": 71, "v": 113, "u": 68, "f": 2700}, {"i": 72, "v": 117, "u": 76, "f": 2560}, {"i": 73, "v": 117, "u": 72, "f": 1860}, {"i": 74, "v": 115, "u": 76, "f": 1940}, {"i": 75, "v": 113, "u": 77, "f": 1820}, {"i": 76, "v": 116, "u": 80, "f": 1820}, {"i": 77, "v": 113, "u": 101, "f": 1840}, {"i": 78, "v": 118, "u": 113, "f": 1700}, {"i": 79, "v": 114, "u": 113, "f": 1480}, {"i": 80, "v": 117, "u": 113, "f": 1020}, {"i": 81, "v": 117, "u": 116, "f": 860}, {"i": 82, "v": 115, "u": 117, "f": 1140}, {"i": 83, "v": 117, "u": 116, "f": 1000}, {"i": 84, "v": 120, "u": 118, "f": 900}], "band": [[60.06666666666667, 71.4]], "tief": {"i": 67, "txt": "32 km/h um 16.45 Uhr"}, "aria": "Tempo bei Maienfeld Richtung Norden, Sonntag"}], "legende": [["line", "background:var(--s1)", "gemessenes Tempo"], ["dash", "", "übliches Tempo"], ["band", "", "Astra meldet Stau oder stockenden Verkehr"]]};
+const NS = 'http://www.w3.org/2000/svg';
+function el(n, a, txt){ const x = document.createElementNS(NS, n); for (const k in (a||{})) x.setAttribute(k, a[k]); if (txt != null) x.textContent = txt; return x; }
+const tip = document.getElementById('tip');
+function showTip(e, html){
+  tip.innerHTML = html; tip.style.opacity = '1';
+  const half = tip.offsetWidth / 2, vw = window.innerWidth;
+  tip.style.left = Math.max(half + 6, Math.min(vw - half - 6, e.clientX)) + 'px';
+  tip.style.top = Math.max(tip.offsetHeight + 8, e.clientY - 12) + 'px';
+}
+function hideTip(){ tip.style.opacity = '0'; }
+document.addEventListener('pointerdown', e => { if (!e.target.classList || !e.target.classList.contains('hit')) hideTip(); }, true);
+const uhr = i => String(Math.floor(i / 4)).padStart(2, '0') + '.' + String(i % 4 * 15).padStart(2, '0');
+const tsd = n => Math.round(n).toLocaleString('de-CH').replace(/[’']/g, ' ');
+function hit(svg, x, y, w, h, html){
+  const r = el('rect', {x, y, width: Math.max(w, 1), height: h, fill: 'transparent', class: 'hit'});
+  r.addEventListener('pointermove', e => showTip(e, html));
+  r.addEventListener('pointerdown', e => showTip(e, html));
+  r.addEventListener('pointerleave', hideTip);
+  svg.appendChild(r);
+}
+function legend(items){
+  document.getElementById('legend').innerHTML = items.map(([cls, style, txt]) =>
+    `<span class="lg"><span class="sw ${cls}" style="${style}"></span>${txt}</span>`).join('');
+}
+
+/* Tempo-Linien: gemessen (blau) gegen ueblich (grau gestrichelt), Astra-Meldung als Band */
+function tempoPanel(box, p, W){
+  const narrow = W < 480, H = narrow ? 170 : 210, l = 30, r = 8, t = 8, b = 22;
+  const svg = el('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': p.aria});
+  const i0 = p.s[0].i, i1 = p.s[p.s.length - 1].i;
+  const xs = i => l + (i - i0) / (i1 - i0) * (W - l - r), ys = v => t + (1 - v / D.ymax) * (H - t - b);
+  (p.band || []).forEach(([a, z]) => {
+    const x0 = xs(Math.max(a, i0)), x1 = xs(Math.min(z, i1));
+    svg.appendChild(el('rect', {x: x0, y: t, width: x1 - x0, height: H - t - b, fill: 'var(--s2)', opacity: .16}));
+  });
+  for (let v = 0; v <= D.ymax; v += D.ystep){
+    svg.appendChild(el('line', {x1: l, x2: W - r, y1: ys(v), y2: ys(v), class: v ? 'grid' : 'axis'}));
+    svg.appendChild(el('text', {x: l - 6, y: ys(v) + 4, class: 'tick-t', 'text-anchor': 'end'}, v));
+  }
+  const step = narrow ? 8 : 4;
+  for (let i = Math.ceil(i0 / 4) * 4; i <= i1; i += step)
+    svg.appendChild(el('text', {x: xs(i), y: H - 5, class: 'tick-t', 'text-anchor': 'middle'}, (i / 4) + (i + step > i1 ? ' Uhr' : '')));
+  const path = (k, attrs) => {
+    let d = '', pen = false;
+    p.s.forEach(q => { if (q[k] == null){ pen = false; return; } d += (pen ? 'L' : 'M') + xs(q.i).toFixed(1) + ',' + ys(q[k]).toFixed(1); pen = true; });
+    svg.appendChild(el('path', Object.assign({d, fill: 'none', 'stroke-linejoin': 'round', 'stroke-linecap': 'round'}, attrs)));
+  };
+  path('u', {stroke: 'var(--grau)', 'stroke-width': 2, 'stroke-dasharray': '5 4'});
+  path('v', {stroke: 'var(--s1)', 'stroke-width': 2.5});
+  if (p.tief){
+    const q = p.s.find(q => q.i === p.tief.i), cx = xs(q.i), cy = ys(q.v);
+    svg.appendChild(el('circle', {cx, cy, r: 4.5, fill: 'var(--s1)', stroke: '#fff', 'stroke-width': 2}));
+    const anchor = cx > W - 90 ? 'end' : (cx < l + 60 ? 'start' : 'middle');
+    svg.appendChild(el('text', {x: cx, y: Math.min(cy + 20, H - b - 4), class: 'lab', 'text-anchor': anchor, 'font-weight': 600}, p.tief.txt));
+  }
+  const sw = (W - l - r) / (i1 - i0);
+  p.s.forEach(q => hit(svg, xs(q.i) - sw / 2, t, sw, H - t - b,
+    `<b>${uhr(q.i)} Uhr</b><br>gemessen: <b>${q.v ?? '–'} km/h</b><br>übliche ${D.vergleich}: ${q.u ?? '–'} km/h` +
+    (q.f != null && D.menge ? `<br>Fahrzeuge (hochgerechnet): ${tsd(q.f)} pro Stunde` : '')));
+  if (p.titel){ const h = document.createElement('p'); h.className = 'ptitle'; h.textContent = p.titel; box.appendChild(h); }
+  box.appendChild(svg);
+}
+
+/* Stundenbalken mit Strich fuer den ueblichen Wert */
+function balken(box, W){
+  const narrow = W < 480, H = narrow ? 220 : 260, l = 40, r = 6, t = 10, b = 22;
+  const svg = el('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': D.aria});
+  const n = D.h.length, bw = (W - l - r) / n, ys = v => t + (1 - v / D.ymax) * (H - t - b);
+  for (let v = 0; v <= D.ymax; v += D.ystep){
+    svg.appendChild(el('line', {x1: l, x2: W - r, y1: ys(v), y2: ys(v), class: v ? 'grid' : 'axis'}));
+    svg.appendChild(el('text', {x: l - 6, y: ys(v) + 4, class: 'tick-t', 'text-anchor': 'end'}, tsd(v)));
+  }
+  D.h.forEach((q, k) => {
+    const x = l + k * bw, gap = Math.min(4, bw * .18), y = ys(q.f), y0 = ys(0), rr = Math.min(3, (bw - gap) / 2);
+    svg.appendChild(el('path', {d: `M${x + gap / 2},${y0} V${y + rr} q0,-${rr} ${rr},-${rr} H${x + bw - gap / 2 - rr} q${rr},0 ${rr},${rr} V${y0} Z`, fill: 'var(--s1)'}));
+    if (q.u != null){ const u = ys(q.u); svg.appendChild(el('line', {x1: x, x2: x + bw, y1: u, y2: u, stroke: 'var(--ink)', 'stroke-width': 2.5, opacity: .6})); }
+    if (q.h % (narrow ? 4 : 2) === 0) svg.appendChild(el('text', {x: x + bw / 2, y: H - 5, class: 'tick-t', 'text-anchor': 'middle'}, q.h));
+    hit(svg, x, t, bw, H - t - b, `<b>${q.h}–${q.h + 1} Uhr</b><br>${D.label}: <b>${tsd(q.f)}</b> Fahrzeuge<br>übliche ${D.vergleich}: ${tsd(q.u)}`);
+  });
+  box.appendChild(svg);
+}
+
+/* Abweichung der Tagesmenge vom Ueblichen, je Zaehlstelle beide Richtungen */
+function abweichung(box, W){
+  const narrow = W < 480, rows = D.z, rh = 22, gh = narrow ? 30 : 12;
+  const lw = narrow ? 0 : 150, l = lw + 8, r = 44, top = 18;
+  const H = top + rows.length * (2 * rh + gh) + 4;
+  const svg = el('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': D.aria});
+  const xs = p => l + (p - D.min) / (D.max - D.min) * (W - l - r);
+  for (let p = D.min; p <= D.max; p += 20){
+    svg.appendChild(el('line', {x1: xs(p), x2: xs(p), y1: top - 4, y2: H, class: p ? 'grid' : 'axis'}));
+    svg.appendChild(el('text', {x: xs(p), y: 11, class: 'tick-t', 'text-anchor': 'middle'}, (p > 0 ? '+' : '') + p + ' %'));
+  }
+  rows.forEach((z, k) => {
+    let y = top + k * (2 * rh + gh);
+    if (narrow){ svg.appendChild(el('text', {x: 0, y: y + 14, class: 'lab', 'font-weight': 600}, z.ort)); y += 18; }
+    else svg.appendChild(el('text', {x: lw, y: y + rh + 4, class: 'lab', 'text-anchor': 'end', 'font-weight': 600}, z.ort));
+    [['nord', 'Richtung Norden'], ['sued', 'Richtung Süden']].forEach(([d, txt], j) => {
+      const q = z[d]; if (!q) return;
+      const p = (q.fz / q.u - 1) * 100, yy = y + j * rh, x0 = Math.min(xs(0), xs(p)), x1 = Math.max(xs(0), xs(p));
+      svg.appendChild(el('rect', {x: x0, y: yy + 4, width: Math.max(x1 - x0, 1.5), height: rh - 8, rx: 2, fill: d === 'nord' ? 'var(--s1)' : 'var(--s2)'}));
+      const pr = Math.round(p), tx = p >= 0 ? xs(p) + 5 : xs(p) - 5;
+      svg.appendChild(el('text', {x: tx, y: yy + rh / 2 + 4, class: 'lab-s', 'text-anchor': p >= 0 ? 'start' : 'end'}, (pr > 0 ? '+' : pr < 0 ? '−' : '') + Math.abs(pr) + ' %'));
+      hit(svg, 0, yy, W, rh, `<b>${z.ort}, ${txt}</b><br>${tsd(q.fz)} Fahrzeuge (hochgerechnet)<br>übliche ${D.vergleich}: ${tsd(q.u)}`);
+    });
+  });
+  box.appendChild(svg);
+}
+
+/* Tagesprofil Werktag gegen Sonntag */
+function profil(box, W){
+  const narrow = W < 480, H = narrow ? 200 : 250, l = 30, r = 8, t = 8, b = 22, i0 = 24, i1 = 88;
+  const svg = el('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': D.aria});
+  const xs = i => l + (i - i0) / (i1 - i0) * (W - l - r), ys = v => t + (1 - v / 100) * (H - t - b);
+  for (let v = 0; v <= 100; v += 20){
+    svg.appendChild(el('line', {x1: l, x2: W - r, y1: ys(v), y2: ys(v), class: v ? 'grid' : 'axis'}));
+    svg.appendChild(el('text', {x: l - 6, y: ys(v) + 4, class: 'tick-t', 'text-anchor': 'end'}, v));
+  }
+  for (let i = i0; i <= i1; i += narrow ? 16 : 8)
+    svg.appendChild(el('text', {x: xs(i), y: H - 5, class: 'tick-t', 'text-anchor': 'middle'}, (i / 4) + (i + (narrow ? 16 : 8) > i1 ? ' Uhr' : '')));
+  [['werk', 'var(--grau)', 2.25], ['so', 'var(--s1)', 3]].forEach(([g, c, w]) => {
+    let d = ''; D[g].med.forEach((v, k) => { if (v != null) d += (d ? 'L' : 'M') + xs(i0 + k).toFixed(1) + ',' + ys(v).toFixed(1); });
+    svg.appendChild(el('path', {d, fill: 'none', stroke: c, 'stroke-width': w, 'stroke-linejoin': 'round'}));
+  });
+  const sw = (W - l - r) / (i1 - i0);
+  for (let k = 0; k <= i1 - i0; k++)
+    hit(svg, xs(i0 + k) - sw / 2, t, sw, H - t - b, `<b>${uhr(i0 + k)} Uhr</b><br>Sonntag: <b>${D.so.med[k] ?? '–'} km/h</b><br>Werktag: ${D.werk.med[k] ?? '–'} km/h`);
+  box.appendChild(svg);
+}
+
+let lastW = 0;
+function draw(){
+  const box = document.getElementById('chart'), W = Math.round(box.getBoundingClientRect().width);
+  if (W === lastW) return; lastW = W; box.innerHTML = '';
+  if (D.typ === 'tempo') D.panels.forEach(p => { const d = document.createElement('div'); d.className = 'panel'; box.appendChild(d); tempoPanel(d, p, W); });
+  if (D.typ === 'balken') balken(box, W);
+  if (D.typ === 'abweichung') abweichung(box, W);
+  if (D.typ === 'profil') profil(box, W);
+}
+legend(D.legende);
+draw();
+let tm; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(draw, 120); });
+</script>
+</body>
+</html>
