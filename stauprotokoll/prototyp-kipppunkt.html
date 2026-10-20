@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="de-CH"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Im Stau kommen weniger Autos durch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{--surface:#fff;--rule:#dde4e9;--rule-soft:#eef2f5;--ink:#14202a;--ink-2:#4a5b68;--ink-3:#71838f;
+  --s1:#0068a4;--s2:#ee7733;--grau:#8c9aa5}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-size:16px;line-height:1.5}
+.wrap{padding:12px 16px 16px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tick-t{font-size:12px;fill:var(--ink-3)}
+.lab{font-size:13px;fill:var(--ink)}
+.grid{stroke:var(--rule-soft);stroke-width:1}
+.axis{stroke:var(--rule);stroke-width:1}
+.src{font-size:12px;color:var(--ink-3);border-top:1px solid var(--rule-soft);padding-top:10px;margin:12px 0 0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</head><body>
+
+<style>
+.leg{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2);margin-bottom:10px}
+.leg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.kern{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.kz{background:#f3f6f8;border-radius:4px;padding:10px 12px}
+.kz .z{font-size:30px;font-weight:700;line-height:1.1;white-space:nowrap}
+@media(max-width:420px){.kz .z{font-size:24px}}
+.kz .t{font-size:14px;color:var(--ink-2)}
+.ylab{font-size:13px;color:var(--ink-2);margin:4px 0 6px}
+</style>
+<div class="wrap">
+  <div class="kern">
+    <div class="kz"><div class="z" style="color:var(--grau)" id="k1"></div><div class="t">Fahrzeuge pro Stunde, <b>kurz bevor</b> der Verkehr einbricht</div></div>
+    <div class="kz"><div class="z" style="color:var(--s2)" id="k2"></div><div class="t">Fahrzeuge pro Stunde, <b>sobald</b> er im Schritttempo läuft</div></div>
+  </div>
+  <p class="ylab">Jeder Sonntag seit Juli, an dem das Tempo unter 30&nbsp;km/h fiel:</p>
+  <div class="leg"><span><i style="background:var(--grau)"></i>kurz davor</span><span><i style="background:var(--s2)"></i>im Schritttempo</span><span>Achse: Fahrzeuge pro Stunde</span></div>
+  <div id="chart"></div>
+  <p class="src">Fahrzeuge pro Stunde Richtung Chur, Zählstelle Rothenbrunnen/Isla Bella (A13), hochgerechnet und gerundet.
+  «Kurz davor»: verkehrsreichste Stunde in der Stunde vor dem ersten Einbruch unter 30&nbsp;km/h. «Im Schritttempo»: Mittel aller
+  Viertelstunden des Tages unter 30&nbsp;km/h. Oben: Median aller Sonntage. Quelle: Bundesamt für Strassen (Astra), opentransportdata.swiss. Grafik: Südostschweiz</p>
+</div>
+<script>
+const D = [{"d": "12. Juli", "vor": 1170.0, "im": 720.0, "um": "13:15"}, {"d": "19. Juli", "vor": 1200.0, "im": 730.0, "um": "13:45"}, {"d": "26. Juli", "vor": 1210.0, "im": 800.0, "um": "12:30"}, {"d": "2. August", "vor": 1250.0, "im": 750.0, "um": "11:30"}, {"d": "9. August", "vor": 1440.0, "im": 720, "um": "12:15"}, {"d": "16. August", "vor": 1240.0, "im": 670, "um": "13:45"}, {"d": "23. August", "vor": 1340.0, "im": 710.0, "um": "13:15"}, {"d": "30. August", "vor": 1150.0, "im": 740, "um": "13:30"}, {"d": "6. September", "vor": 1240.0, "im": 730.0, "um": "12:30"}, {"d": "13. September", "vor": 1170.0, "im": 810, "um": "12:45"}, {"d": "20. September", "vor": 1180.0, "im": 760.0, "um": "14:00"}, {"d": "27. September", "vor": 1380.0, "im": 820.0, "um": "13:00"}, {"d": "4. Oktober", "vor": 1220.0, "im": 900, "um": "17:00"}, {"d": "11. Oktober", "vor": 1320.0, "im": 800, "um": "13:15"}, {"d": "18. Oktober", "vor": 1350.0, "im": 770, "um": "13:30"}];
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a, t) => { const x = document.createElementNS(NS, n); for (const k in a) x.setAttribute(k, a[k]); if (t != null) x.textContent = t; return x; };
+const tsd = n => Math.round(n).toLocaleString('de-CH').replace(/[’']/g, ' ');
+const med = a => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+document.getElementById('k1').textContent = 'rund ' + tsd(Math.round(med(D.map(r => r.vor)) / 10) * 10);
+document.getElementById('k2').textContent = 'rund ' + tsd(Math.round(med(D.map(r => r.im)) / 10) * 10);
+let lastW = 0;
+function draw(){
+  const box = document.getElementById('chart'), Wd = Math.round(box.getBoundingClientRect().width);
+  if (Wd === lastW) return; lastW = Wd;
+  const lw = 78, l = lw + 6, r = 40, rh = 24, top = 18, H = top + D.length * rh + 4, x0 = 400, x1 = 1600;
+  const xs = v => l + (v - x0) / (x1 - x0) * (Wd - l - r);
+  const svg = el('svg', {viewBox: `0 0 ${Wd} ${H}`, role: 'img', 'aria-label': 'Fahrzeuge pro Stunde kurz vor dem Einbruch und im Schritttempo, je Sonntag'});
+  for (let v = 400; v <= 1600; v += (Wd < 480 ? 400 : 200)){
+    svg.appendChild(el('line', {x1: xs(v), x2: xs(v), y1: top - 4, y2: H, class: 'grid'}));
+    svg.appendChild(el('text', {x: xs(v), y: 11, class: 'tick-t', 'text-anchor': 'middle'}, tsd(v)));
+  }
+  D.forEach((d, k) => {
+    const y = top + k * rh + rh / 2;
+    svg.appendChild(el('text', {x: lw, y: y + 4, class: 'lab', 'text-anchor': 'end'}, d.d));
+    svg.appendChild(el('line', {x1: xs(d.im), x2: xs(d.vor), y1: y, y2: y, stroke: '#c9d3da', 'stroke-width': 3}));
+    svg.appendChild(el('circle', {cx: xs(d.vor), cy: y, r: 5.5, fill: 'var(--grau)'}));
+    svg.appendChild(el('circle', {cx: xs(d.im), cy: y, r: 5.5, fill: 'var(--s2)'}));
+    const p = Math.round((d.im / d.vor - 1) * 100);
+    svg.appendChild(el('text', {x: xs(d.vor) + 9, y: y + 4, class: 'tick-t'}, '−' + Math.abs(p) + ' %'));
+    const t = el('title', {}, `${d.d}: kurz davor ${tsd(d.vor)}, im Schritttempo ${tsd(d.im)} Fahrzeuge pro Stunde (Einbruch um ${d.um.replace(':', '.')} Uhr)`);
+    const hit = el('rect', {x: 0, y: y - rh / 2, width: Wd, height: rh, fill: 'transparent'}); hit.appendChild(t); svg.appendChild(hit);
+  });
+  box.innerHTML = ''; box.appendChild(svg);
+}
+draw();
+let tm; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(draw, 120); });
+</script>
+</body></html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="de-CH"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Wann komme ich bei Isla Bella durch?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{--surface:#fff;--rule:#dde4e9;--rule-soft:#eef2f5;--ink:#14202a;--ink-2:#4a5b68;--ink-3:#71838f;
+  --s1:#0068a4;--s2:#ee7733;--grau:#8c9aa5}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-size:16px;line-height:1.5}
+.wrap{padding:12px 16px 16px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tick-t{font-size:12px;fill:var(--ink-3)}
+.lab{font-size:13px;fill:var(--ink)}
+.grid{stroke:var(--rule-soft);stroke-width:1}
+.axis{stroke:var(--rule);stroke-width:1}
+.src{font-size:12px;color:var(--ink-3);border-top:1px solid var(--rule-soft);padding-top:10px;margin:12px 0 0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</head><body>
+
+<style>
+.ctl{display:flex;flex-wrap:wrap;gap:8px 14px;margin-bottom:12px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.seg button{font:inherit;font-size:14px;border:0;background:#fff;color:var(--ink-2);padding:6px 11px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button.on{background:var(--s1);color:#fff;font-weight:600}
+.fazit{font-size:17px;line-height:1.45;margin:0 0 10px}
+.fazit b{font-weight:700}
+.ylab{font-size:13px;color:var(--ink-2);margin:0 0 4px}
+.detail{min-height:2.9em;font-size:15px;background:#f3f6f8;border-radius:4px;padding:8px 10px;margin-top:8px}
+.leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--ink-2);margin-top:8px}
+.leg i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.bar{cursor:pointer}
+</style>
+<div class="wrap">
+  <div class="ctl">
+    <div class="seg" id="dir"></div>
+    <div class="seg" id="typ"></div>
+  </div>
+  <p class="fazit" id="fazit"></p>
+  <p class="ylab">An wie vielen Tagen war es um diese Zeit zäh?</p>
+  <div id="chart"></div>
+  <div class="leg" id="leg"></div>
+  <div class="detail" id="detail" aria-live="polite"></div>
+  <p class="src">Zählstelle Rothenbrunnen/Isla Bella (A13), je halbe Stunde. «Zäh»: mittleres Tempo unter 40&nbsp;km/h.
+  Die Grafik zeigt, wie es an den bisherigen Tagen war – keine Vorhersage. Grundlage: <span id="basis"></span>, ohne Tage mit Messausfall.
+  Quelle: Bundesamt für Strassen (Astra), opentransportdata.swiss. Grafik: Südostschweiz</p>
+</div>
+<script>
+const D = {"positive": {"label": "nach Chur", "typen": {"fr": {"n": 17, "von": "2026-06-26", "bis": "2026-10-16", "mehrz": "Freitagen", "slots": [{"t": "06:00", "z": 0, "n": 17, "m": 80}, {"t": "06:30", "z": 0, "n": 17, "m": 79}, {"t": "07:00", "z": 0, "n": 17, "m": 79}, {"t": "07:30", "z": 0, "n": 17, "m": 80}, {"t": "08:00", "z": 0, "n": 17, "m": 78}, {"t": "08:30", "z": 0, "n": 17, "m": 79}, {"t": "09:00", "z": 0, "n": 17, "m": 78}, {"t": "09:30", "z": 0, "n": 17, "m": 78}, {"t": "10:00", "z": 0, "n": 17, "m": 78}, {"t": "10:30", "z": 0, "n": 17, "m": 76}, {"t": "11:00", "z": 0, "n": 17, "m": 76}, {"t": "11:30", "z": 0, "n": 17, "m": 74}, {"t": "12:00", "z": 1, "n": 17, "m": 74}, {"t": "12:30", "z": 3, "n": 17, "m": 74}, {"t": "13:00", "z": 3, "n": 17, "m": 72}, {"t": "13:30", "z": 5, "n": 17, "m": 50}, {"t": "14:00", "z": 9, "n": 17, "m": 38}, {"t": "14:30", "z": 9, "n": 17, "m": 38}, {"t": "15:00", "z": 9, "n": 17, "m": 38}, {"t": "15:30", "z": 9, "n": 17, "m": 38}, {"t": "16:00", "z": 7, "n": 17, "m": 49}, {"t": "16:30", "z": 6, "n": 17, "m": 54}, {"t": "17:00", "z": 6, "n": 17, "m": 72}, {"t": "17:30", "z": 4, "n": 17, "m": 68}, {"t": "18:00", "z": 3, "n": 17, "m": 78}, {"t": "18:30", "z": 1, "n": 17, "m": 78}, {"t": "19:00", "z": 0, "n": 17, "m": 79}, {"t": "19:30", "z": 0, "n": 17, "m": 79}, {"t": "20:00", "z": 0, "n": 17, "m": 80}, {"t": "20:30", "z": 0, "n": 17, "m": 80}, {"t": "21:00", "z": 0, "n": 17, "m": 80}, {"t": "21:30", "z": 0, "n": 17, "m": 82}]}, "sa": {"n": 16, "von": "2026-07-04", "bis": "2026-10-17", "mehrz": "Samstagen", "slots": [{"t": "06:00", "z": 0, "n": 16, "m": 82}, {"t": "06:30", "z": 0, "n": 16, "m": 82}, {"t": "07:00", "z": 0, "n": 16, "m": 80}, {"t": "07:30", "z": 0, "n": 16, "m": 80}, {"t": "08:00", "z": 0, "n": 16, "m": 80}, {"t": "08:30", "z": 0, "n": 16, "m": 79}, {"t": "09:00", "z": 0, "n": 16, "m": 77}, {"t": "09:30", "z": 0, "n": 16, "m": 76}, {"t": "10:00", "z": 0, "n": 16, "m": 76}, {"t": "10:30", "z": 0, "n": 16, "m": 74}, {"t": "11:00", "z": 0, "n": 16, "m": 74}, {"t": "11:30", "z": 1, "n": 16, "m": 72}, {"t": "12:00", "z": 3, "n": 16, "m": 71}, {"t": "12:30", "z": 2, "n": 16, "m": 70}, {"t": "13:00", "z": 4, "n": 15, "m": 54}, {"t": "13:30", "z": 6, "n": 15, "m": 46}, {"t": "14:00", "z": 8, "n": 16, "m": 39}, {"t": "14:30", "z": 7, "n": 16, "m": 51}, {"t": "15:00", "z": 5, "n": 16, "m": 47}, {"t": "15:30", "z": 4, "n": 16, "m": 60}, {"t": "16:00", "z": 5, "n": 16, "m": 59}, {"t": "16:30", "z": 4, "n": 16, "m": 60}, {"t": "17:00", "z": 3, "n": 16, "m": 69}, {"t": "17:30", "z": 3, "n": 16, "m": 76}, {"t": "18:00", "z": 2, "n": 16, "m": 77}, {"t": "18:30", "z": 1, "n": 16, "m": 78}, {"t": "19:00", "z": 1, "n": 16, "m": 78}, {"t": "19:30", "z": 0, "n": 16, "m": 78}, {"t": "20:00", "z": 0, "n": 16, "m": 80}, {"t": "20:30", "z": 0, "n": 16, "m": 80}, {"t": "21:00", "z": 0, "n": 16, "m": 80}, {"t": "21:30", "z": 0, "n": 16, "m": 81}]}, "so": {"n": 16, "von": "2026-07-05", "bis": "2026-10-18", "mehrz": "Sonntagen", "slots": [{"t": "06:00", "z": 0, "n": 16, "m": 82}, {"t": "06:30", "z": 0, "n": 16, "m": 81}, {"t": "07:00", "z": 0, "n": 16, "m": 82}, {"t": "07:30", "z": 0, "n": 16, "m": 82}, {"t": "08:00", "z": 0, "n": 16, "m": 80}, {"t": "08:30", "z": 0, "n": 16, "m": 80}, {"t": "09:00", "z": 0, "n": 16, "m": 78}, {"t": "09:30", "z": 0, "n": 16, "m": 78}, {"t": "10:00", "z": 0, "n": 16, "m": 78}, {"t": "10:30", "z": 0, "n": 16, "m": 76}, {"t": "11:00", "z": 0, "n": 16, "m": 75}, {"t": "11:30", "z": 1, "n": 16, "m": 68}, {"t": "12:00", "z": 3, "n": 16, "m": 66}, {"t": "12:30", "z": 5, "n": 16, "m": 49}, {"t": "13:00", "z": 8, "n": 16, "m": 39}, {"t": "13:30", "z": 12, "n": 16, "m": 33}, {"t": "14:00", "z": 14, "n": 16, "m": 27}, {"t": "14:30", "z": 13, "n": 16, "m": 27}, {"t": "15:00", "z": 14, "n": 16, "m": 26}, {"t": "15:30", "z": 14, "n": 16, "m": 25}, {"t": "16:00", "z": 9, "n": 15, "m": 32}, {"t": "16:30", "z": 11, "n": 16, "m": 32}, {"t": "17:00", "z": 11, "n": 16, "m": 30}, {"t": "17:30", "z": 8, "n": 16, "m": 40}, {"t": "18:00", "z": 7, "n": 16, "m": 52}, {"t": "18:30", "z": 4, "n": 16, "m": 70}, {"t": "19:00", "z": 1, "n": 16, "m": 74}, {"t": "19:30", "z": 1, "n": 16, "m": 78}, {"t": "20:00", "z": 1, "n": 16, "m": 78}, {"t": "20:30", "z": 0, "n": 16, "m": 79}, {"t": "21:00", "z": 1, "n": 16, "m": 80}, {"t": "21:30", "z": 0, "n": 16, "m": 81}]}, "werk": {"n": 64, "von": "2026-06-29", "bis": "2026-10-15", "mehrz": "Werktagen (Mo–Do)", "slots": [{"t": "06:00", "z": 0, "n": 64, "m": 80}, {"t": "06:30", "z": 0, "n": 64, "m": 79}, {"t": "07:00", "z": 0, "n": 64, "m": 78}, {"t": "07:30", "z": 0, "n": 64, "m": 79}, {"t": "08:00", "z": 0, "n": 64, "m": 79}, {"t": "08:30", "z": 0, "n": 64, "m": 79}, {"t": "09:00", "z": 0, "n": 64, "m": 78}, {"t": "09:30", "z": 0, "n": 64, "m": 78}, {"t": "10:00", "z": 0, "n": 64, "m": 78}, {"t": "10:30", "z": 0, "n": 64, "m": 77}, {"t": "11:00", "z": 0, "n": 64, "m": 77}, {"t": "11:30", "z": 0, "n": 64, "m": 76}, {"t": "12:00", "z": 0, "n": 64, "m": 76}, {"t": "12:30", "z": 0, "n": 64, "m": 76}, {"t": "13:00", "z": 1, "n": 64, "m": 74}, {"t": "13:30", "z": 3, "n": 64, "m": 74}, {"t": "14:00", "z": 4, "n": 64, "m": 74}, {"t": "14:30", "z": 4, "n": 64, "m": 74}, {"t": "15:00", "z": 5, "n": 63, "m": 74}, {"t": "15:30", "z": 6, "n": 64, "m": 74}, {"t": "16:00", "z": 5, "n": 64, "m": 73}, {"t": "16:30", "z": 4, "n": 64, "m": 74}, {"t": "17:00", "z": 5, "n": 64, "m": 74}, {"t": "17:30", "z": 4, "n": 64, "m": 76}, {"t": "18:00", "z": 0, "n": 64, "m": 78}, {"t": "18:30", "z": 1, "n": 64, "m": 79}, {"t": "19:00", "z": 0, "n": 64, "m": 80}, {"t": "19:30", "z": 0, "n": 64, "m": 80}, {"t": "20:00", "z": 0, "n": 64, "m": 80}, {"t": "20:30", "z": 0, "n": 64, "m": 82}, {"t": "21:00", "z": 0, "n": 64, "m": 82}, {"t": "21:30", "z": 0, "n": 64, "m": 82}]}}}, "negative": {"label": "nach San Bernardino", "typen": {"fr": {"n": 17, "von": "2026-06-26", "bis": "2026-10-16", "mehrz": "Freitagen", "slots": [{"t": "06:00", "z": 0, "n": 17, "m": 82}, {"t": "06:30", "z": 0, "n": 17, "m": 82}, {"t": "07:00", "z": 0, "n": 17, "m": 81}, {"t": "07:30", "z": 0, "n": 17, "m": 82}, {"t": "08:00", "z": 0, "n": 17, "m": 82}, {"t": "08:30", "z": 0, "n": 17, "m": 81}, {"t": "09:00", "z": 0, "n": 17, "m": 81}, {"t": "09:30", "z": 0, "n": 17, "m": 82}, {"t": "10:00", "z": 0, "n": 17, "m": 81}, {"t": "10:30", "z": 0, "n": 17, "m": 81}, {"t": "11:00", "z": 0, "n": 17, "m": 80}, {"t": "11:30", "z": 0, "n": 17, "m": 81}, {"t": "12:00", "z": 0, "n": 17, "m": 80}, {"t": "12:30", "z": 0, "n": 17, "m": 80}, {"t": "13:00", "z": 0, "n": 17, "m": 79}, {"t": "13:30", "z": 0, "n": 17, "m": 80}, {"t": "14:00", "z": 0, "n": 17, "m": 80}, {"t": "14:30", "z": 0, "n": 17, "m": 79}, {"t": "15:00", "z": 0, "n": 17, "m": 79}, {"t": "15:30", "z": 0, "n": 17, "m": 80}, {"t": "16:00", "z": 0, "n": 17, "m": 78}, {"t": "16:30", "z": 0, "n": 17, "m": 80}, {"t": "17:00", "z": 0, "n": 17, "m": 79}, {"t": "17:30", "z": 0, "n": 17, "m": 80}, {"t": "18:00", "z": 0, "n": 17, "m": 80}, {"t": "18:30", "z": 0, "n": 17, "m": 81}, {"t": "19:00", "z": 0, "n": 17, "m": 82}, {"t": "19:30", "z": 0, "n": 17, "m": 82}, {"t": "20:00", "z": 0, "n": 17, "m": 82}, {"t": "20:30", "z": 0, "n": 17, "m": 82}, {"t": "21:00", "z": 0, "n": 17, "m": 82}, {"t": "21:30", "z": 0, "n": 17, "m": 82}]}, "sa": {"n": 16, "von": "2026-07-04", "bis": "2026-10-17", "mehrz": "Samstagen", "slots": [{"t": "06:00", "z": 0, "n": 16, "m": 82}, {"t": "06:30", "z": 0, "n": 16, "m": 82}, {"t": "07:00", "z": 0, "n": 16, "m": 82}, {"t": "07:30", "z": 0, "n": 16, "m": 82}, {"t": "08:00", "z": 0, "n": 16, "m": 82}, {"t": "08:30", "z": 0, "n": 16, "m": 81}, {"t": "09:00", "z": 0, "n": 16, "m": 80}, {"t": "09:30", "z": 0, "n": 16, "m": 80}, {"t": "10:00", "z": 0, "n": 16, "m": 80}, {"t": "10:30", "z": 0, "n": 16, "m": 80}, {"t": "11:00", "z": 0, "n": 16, "m": 79}, {"t": "11:30", "z": 0, "n": 16, "m": 79}, {"t": "12:00", "z": 0, "n": 16, "m": 79}, {"t": "12:30", "z": 0, "n": 16, "m": 79}, {"t": "13:00", "z": 0, "n": 16, "m": 78}, {"t": "13:30", "z": 0, "n": 15, "m": 78}, {"t": "14:00", "z": 0, "n": 16, "m": 78}, {"t": "14:30", "z": 0, "n": 16, "m": 80}, {"t": "15:00", "z": 0, "n": 16, "m": 80}, {"t": "15:30", "z": 0, "n": 16, "m": 81}, {"t": "16:00", "z": 0, "n": 16, "m": 81}, {"t": "16:30", "z": 0, "n": 16, "m": 80}, {"t": "17:00", "z": 0, "n": 16, "m": 80}, {"t": "17:30", "z": 0, "n": 16, "m": 82}, {"t": "18:00", "z": 0, "n": 16, "m": 82}, {"t": "18:30", "z": 0, "n": 16, "m": 82}, {"t": "19:00", "z": 0, "n": 16, "m": 82}, {"t": "19:30", "z": 0, "n": 16, "m": 82}, {"t": "20:00", "z": 0, "n": 16, "m": 83}, {"t": "20:30", "z": 0, "n": 16, "m": 82}, {"t": "21:00", "z": 0, "n": 16, "m": 82}, {"t": "21:30", "z": 0, "n": 16, "m": 82}]}, "so": {"n": 16, "von": "2026-07-05", "bis": "2026-10-18", "mehrz": "Sonntagen", "slots": [{"t": "06:00", "z": 0, "n": 16, "m": 82}, {"t": "06:30", "z": 0, "n": 16, "m": 82}, {"t": "07:00", "z": 0, "n": 16, "m": 82}, {"t": "07:30", "z": 0, "n": 16, "m": 82}, {"t": "08:00", "z": 0, "n": 16, "m": 82}, {"t": "08:30", "z": 0, "n": 16, "m": 82}, {"t": "09:00", "z": 0, "n": 16, "m": 82}, {"t": "09:30", "z": 0, "n": 16, "m": 82}, {"t": "10:00", "z": 0, "n": 16, "m": 81}, {"t": "10:30", "z": 0, "n": 16, "m": 81}, {"t": "11:00", "z": 0, "n": 16, "m": 80}, {"t": "11:30", "z": 0, "n": 16, "m": 80}, {"t": "12:00", "z": 0, "n": 16, "m": 79}, {"t": "12:30", "z": 0, "n": 16, "m": 80}, {"t": "13:00", "z": 0, "n": 16, "m": 79}, {"t": "13:30", "z": 0, "n": 16, "m": 78}, {"t": "14:00", "z": 0, "n": 16, "m": 80}, {"t": "14:30", "z": 0, "n": 16, "m": 80}, {"t": "15:00", "z": 0, "n": 16, "m": 79}, {"t": "15:30", "z": 0, "n": 16, "m": 80}, {"t": "16:00", "z": 0, "n": 16, "m": 81}, {"t": "16:30", "z": 0, "n": 16, "m": 80}, {"t": "17:00", "z": 0, "n": 16, "m": 80}, {"t": "17:30", "z": 0, "n": 16, "m": 81}, {"t": "18:00", "z": 0, "n": 16, "m": 81}, {"t": "18:30", "z": 0, "n": 16, "m": 82}, {"t": "19:00", "z": 0, "n": 16, "m": 82}, {"t": "19:30", "z": 0, "n": 16, "m": 82}, {"t": "20:00", "z": 0, "n": 16, "m": 82}, {"t": "20:30", "z": 0, "n": 16, "m": 82}, {"t": "21:00", "z": 0, "n": 16, "m": 82}, {"t": "21:30", "z": 0, "n": 16, "m": 82}]}, "werk": {"n": 64, "von": "2026-06-29", "bis": "2026-10-15", "mehrz": "Werktagen (Mo–Do)", "slots": [{"t": "06:00", "z": 0, "n": 64, "m": 82}, {"t": "06:30", "z": 0, "n": 64, "m": 82}, {"t": "07:00", "z": 0, "n": 64, "m": 82}, {"t": "07:30", "z": 0, "n": 64, "m": 82}, {"t": "08:00", "z": 0, "n": 64, "m": 82}, {"t": "08:30", "z": 0, "n": 64, "m": 82}, {"t": "09:00", "z": 0, "n": 64, "m": 82}, {"t": "09:30", "z": 0, "n": 64, "m": 81}, {"t": "10:00", "z": 0, "n": 64, "m": 81}, {"t": "10:30", "z": 0, "n": 64, "m": 80}, {"t": "11:00", "z": 0, "n": 64, "m": 80}, {"t": "11:30", "z": 0, "n": 64, "m": 81}, {"t": "12:00", "z": 0, "n": 64, "m": 80}, {"t": "12:30", "z": 0, "n": 64, "m": 80}, {"t": "13:00", "z": 0, "n": 64, "m": 81}, {"t": "13:30", "z": 0, "n": 64, "m": 80}, {"t": "14:00", "z": 0, "n": 64, "m": 80}, {"t": "14:30", "z": 0, "n": 64, "m": 80}, {"t": "15:00", "z": 0, "n": 63, "m": 80}, {"t": "15:30", "z": 0, "n": 64, "m": 81}, {"t": "16:00", "z": 0, "n": 64, "m": 81}, {"t": "16:30", "z": 0, "n": 64, "m": 80}, {"t": "17:00", "z": 0, "n": 64, "m": 80}, {"t": "17:30", "z": 0, "n": 64, "m": 80}, {"t": "18:00", "z": 0, "n": 64, "m": 81}, {"t": "18:30", "z": 0, "n": 64, "m": 82}, {"t": "19:00", "z": 0, "n": 64, "m": 82}, {"t": "19:30", "z": 0, "n": 64, "m": 82}, {"t": "20:00", "z": 0, "n": 63, "m": 82}, {"t": "20:30", "z": 0, "n": 64, "m": 82}, {"t": "21:00", "z": 0, "n": 64, "m": 82}, {"t": "21:30", "z": 0, "n": 64, "m": 82}]}}}};
+const TYP = {fr:'Freitag', sa:'Samstag', so:'Sonntag', werk:'Mo–Do'};
+let dir = 'positive', typ = 'so', sel = null;
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a, t) => { const x = document.createElementNS(NS, n); for (const k in a) x.setAttribute(k, a[k]); if (t != null) x.textContent = t; return x; };
+const uhr = t => t.replace(':', '.');
+const bis = t => { const [h, m] = t.split(':').map(Number), x = h * 60 + m + 30; return String(Math.floor(x / 60)).padStart(2, '0') + '.' + String(x % 60).padStart(2, '0'); };
+const FARBEN = [[0, '#dde4e9', 'nie'], [1, '#f8d3b6', 'unter 25 %'], [.25, '#f3a56e', '25–49 %'], [.5, '#ee7733', '50–74 %'], [.75, '#a8481a', '75 % und mehr']];
+const farbe = p => { let c = FARBEN[0][1]; FARBEN.forEach(([g, f]) => { if (g === 1 ? p > 0 : p >= g) c = f; }); return c; };
+function seg(id, opts, cur, cb){
+  const box = document.getElementById(id);
+  box.innerHTML = opts.map(([k, l]) => `<button data-k="${k}" class="${k === cur ? 'on' : ''}">${l}</button>`).join('');
+  box.querySelectorAll('button').forEach(b => b.onclick = () => cb(b.dataset.k));
+}
+function jetztSlot(){
+  const p = new Intl.DateTimeFormat('de-CH', {timeZone: 'Europe/Zurich', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false}).formatToParts(new Date());
+  const g = k => p.find(x => x.type === k).value, wd = g('weekday'), h = +g('hour'), m = +g('minute');
+  const t = {Fr: 'fr', Sa: 'sa', So: 'so', Mo: 'werk', Di: 'werk', Mi: 'werk', Do: 'werk'}[wd.replace('.', '')];
+  return {typ: t, x: h + m / 60};
+}
+function fazit(T){
+  const s = T.slots, z = s.map(x => x.n ? x.z / x.n : 0);
+  const erst = z.findIndex(p => p > 0), letzt = z.length - 1 - [...z].reverse().findIndex(p => p > 0);
+  const mx = s.reduce((a, x, i) => (x.n && x.z / x.n > (s[a].n ? s[a].z / s[a].n : -1)) ? i : a, 0);
+  const plur = T.mehrz;
+  if (erst < 0) return `Zwischen 6 und 22 Uhr war es an keinem der ${T.n} ${plur} zäh.`;
+  let t = `Am häufigsten zäh war es von <b>${uhr(s[mx].t)} bis ${bis(s[mx].t)} Uhr</b>: an ${s[mx].z} von ${s[mx].n} ${plur}. `;
+  t += `Flüssig durch kam man an allen ${plur} <b>bis ${uhr(s[erst].t)} Uhr</b>`;
+  t += letzt < s.length - 1 ? ` und <b>ab ${bis(s[letzt].t)} Uhr</b>.` : '.';
+  return t;
+}
+function detail(T, i){
+  const x = T.slots[i], dEl = document.getElementById('detail');
+  if (!x.n){ dEl.textContent = `${uhr(x.t)}–${bis(x.t)} Uhr: keine Messwerte.`; return; }
+  dEl.innerHTML = `<b>${uhr(x.t)}–${bis(x.t)} Uhr:</b> zäh an ${x.z} von ${x.n} ${T.mehrz}. Mittleres Tempo: ${x.m} km/h.`;
+}
+let lastW = 0;
+function draw(force){
+  const box = document.getElementById('chart'), Wd = Math.round(box.getBoundingClientRect().width);
+  if (!force && Wd === lastW) return; lastW = Wd;
+  const T = D[dir].typen[typ], s = T.slots, narrow = Wd < 480;
+  const H = narrow ? 170 : 200, l = 34, r = 4, t = 14, b = 22, n = s.length, bw = (Wd - l - r) / n;
+  const ys = p => t + (1 - p) * (H - t - b);
+  const svg = el('svg', {viewBox: `0 0 ${Wd} ${H}`, role: 'img', 'aria-label': `Anteil zäher ${T.mehrz} je halbe Stunde`});
+  [0, .25, .5, .75, 1].forEach(p => {
+    svg.appendChild(el('line', {x1: l, x2: Wd - r, y1: ys(p), y2: ys(p), class: p ? 'grid' : 'axis'}));
+    svg.appendChild(el('text', {x: l - 6, y: ys(p) + 4, class: 'tick-t', 'text-anchor': 'end'}, Math.round(p * 100) + '%'));
+  });
+  s.forEach((x, i) => {
+    const p = x.n ? x.z / x.n : 0, X = l + i * bw, g = Math.min(2, bw * .15);
+    const y = p > 0 ? ys(p) : ys(0) - 2;
+    svg.appendChild(el('rect', {x: X + g / 2, y, width: bw - g, height: ys(0) - y, rx: 1.5, fill: farbe(p), stroke: i === sel ? 'var(--ink)' : 'none', 'stroke-width': 1.5}));
+    const h = +x.t.slice(0, 2);
+    if (x.t.endsWith(':00') && h % (narrow ? 4 : 2) === 0)
+      svg.appendChild(el('text', {x: X, y: H - 5, class: 'tick-t', 'text-anchor': 'middle'}, h + (h >= 20 ? ' Uhr' : '')));
+    const hit = el('rect', {x: X, y: t, width: bw, height: H - t - b + 2, fill: 'transparent', class: 'bar'});
+    const go = () => { sel = i; detail(T, i); draw(true); };
+    hit.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { sel = i; detail(T, i); } });
+    hit.addEventListener('click', go);
+    svg.appendChild(hit);
+  });
+  const j = jetztSlot();
+  if (j.typ === typ && j.x >= 6 && j.x <= 22){
+    const X = l + (j.x - 6) * 2 * bw;
+    svg.appendChild(el('line', {x1: X, x2: X, y1: t - 10, y2: ys(0), stroke: 'var(--s1)', 'stroke-width': 1.5, 'stroke-dasharray': '3 3'}));
+    svg.appendChild(el('text', {x: X + 4, y: t - 2, class: 'lab', fill: 'var(--s1)', 'font-weight': 600}, 'jetzt'));
+  }
+  box.innerHTML = ''; box.appendChild(svg);
+}
+function render(){
+  const T = D[dir].typen[typ];
+  seg('dir', Object.entries(D).map(([k, v]) => [k, v.label]), dir, k => { dir = k; sel = null; render(); });
+  seg('typ', Object.entries(TYP), typ, k => { typ = k; sel = null; render(); });
+  document.getElementById('fazit').innerHTML = fazit(T);
+  const z = T.slots.map(x => x.n ? x.z / x.n : 0);
+  if (sel == null) sel = z.indexOf(Math.max(...z));
+  detail(T, sel);
+  const fmt = iso => { const d = new Date(iso + 'T12:00:00'); return d.getDate() + '. ' + d.toLocaleDateString('de-CH', {month: 'long'}); };
+  document.getElementById('basis').textContent = `${T.n} ${T.mehrz} vom ${fmt(T.von)} bis ${fmt(T.bis)} 2026`;
+  document.getElementById('leg').innerHTML = FARBEN.map(([, f, l]) => `<span><i style="background:${f}"></i>${l}</span>`).join('');
+  draw(true);
+}
+render();
+let tm; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => draw(false), 120); });
+</script>
+</body></html>
