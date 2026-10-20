@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="de-CH"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Im Stau kommen weniger Autos durch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{--surface:#fff;--rule:#dde4e9;--rule-soft:#eef2f5;--ink:#14202a;--ink-2:#4a5b68;--ink-3:#71838f;
+  --s1:#0068a4;--s2:#ee7733;--grau:#8c9aa5}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-size:16px;line-height:1.5}
+.wrap{padding:12px 16px 16px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tick-t{font-size:12px;fill:var(--ink-3)}
+.lab{font-size:13px;fill:var(--ink)}
+.grid{stroke:var(--rule-soft);stroke-width:1}
+.axis{stroke:var(--rule);stroke-width:1}
+.src{font-size:12px;color:var(--ink-3);border-top:1px solid var(--rule-soft);padding-top:10px;margin:12px 0 0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</head><body>
+
+<style>
+.kern{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.kz{background:#f3f6f8;border-radius:4px;padding:10px 12px}
+.kz .z{font-size:30px;font-weight:700;line-height:1.1;white-space:nowrap}
+@media(max-width:420px){.kz .z{font-size:24px}}
+.kz .t{font-size:14px;color:var(--ink-2)}
+.ylab{font-size:13px;color:var(--ink-2);margin:4px 0 6px}
+.tip{position:fixed;pointer-events:none;opacity:0;transform:translate(-50%,-100%);background:#fff;border:1px solid var(--rule);
+  border-radius:3px;box-shadow:0 4px 14px rgba(20,32,42,.15);padding:6px 9px;font-size:13px;white-space:nowrap}
+</style>
+<div class="wrap">
+  <div class="kern">
+    <div class="kz"><div class="z" style="color:var(--grau)" id="k1"></div><div class="t">Fahrzeuge pro Stunde, <b>kurz bevor</b> der Verkehr einbricht</div></div>
+    <div class="kz"><div class="z" style="color:var(--s2)" id="k2"></div><div class="t">Fahrzeuge pro Stunde, <b>sobald</b> er im Schritttempo läuft</div></div>
+  </div>
+  <p class="ylab">Fahrzeuge pro Stunde, jeder Sonntag seit Juli, an dem das Tempo unter 30&nbsp;km/h fiel. Fett: mittlerer Sonntag.</p>
+  <div id="chart"></div>
+  <p class="src">Fahrzeuge pro Stunde Richtung Chur, Zählstelle Rothenbrunnen/Isla Bella (A13), hochgerechnet und gerundet.
+  «Kurz davor»: verkehrsreichste Stunde in der Stunde vor dem ersten Einbruch unter 30&nbsp;km/h. «Im Schritttempo»: Mittel aller
+  Viertelstunden des Tages unter 30&nbsp;km/h. Oben und fett: Median aller Sonntage. Quelle: Bundesamt für Strassen (Astra), opentransportdata.swiss. Grafik: Südostschweiz</p>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+const D = [{"d": "12. Juli", "vor": 1170.0, "im": 720.0, "um": "13:15"}, {"d": "19. Juli", "vor": 1200.0, "im": 730.0, "um": "13:45"}, {"d": "26. Juli", "vor": 1210.0, "im": 800.0, "um": "12:30"}, {"d": "2. August", "vor": 1250.0, "im": 750.0, "um": "11:30"}, {"d": "9. August", "vor": 1440.0, "im": 720, "um": "12:15"}, {"d": "16. August", "vor": 1240.0, "im": 670, "um": "13:45"}, {"d": "23. August", "vor": 1340.0, "im": 710.0, "um": "13:15"}, {"d": "30. August", "vor": 1150.0, "im": 740, "um": "13:30"}, {"d": "6. September", "vor": 1240.0, "im": 730.0, "um": "12:30"}, {"d": "13. September", "vor": 1170.0, "im": 810, "um": "12:45"}, {"d": "20. September", "vor": 1180.0, "im": 760.0, "um": "14:00"}, {"d": "27. September", "vor": 1380.0, "im": 820.0, "um": "13:00"}, {"d": "4. Oktober", "vor": 1220.0, "im": 900, "um": "17:00"}, {"d": "11. Oktober", "vor": 1320.0, "im": 800, "um": "13:15"}, {"d": "18. Oktober", "vor": 1350.0, "im": 770, "um": "13:30"}];
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a, t) => { const x = document.createElementNS(NS, n); for (const k in a) x.setAttribute(k, a[k]); if (t != null) x.textContent = t; return x; };
+const tsd = n => Math.round(n).toLocaleString('de-CH').replace(/[’']/g, ' ');
+const med = a => { const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const MV = Math.round(med(D.map(r => r.vor)) / 10) * 10, MI = Math.round(med(D.map(r => r.im)) / 10) * 10;
+document.getElementById('k1').textContent = 'rund ' + tsd(MV);
+document.getElementById('k2').textContent = 'rund ' + tsd(MI);
+const tip = document.getElementById('tip');
+let lastW = 0;
+function draw(){
+  const box = document.getElementById('chart'), Wd = Math.round(box.getBoundingClientRect().width);
+  if (Wd === lastW) return; lastW = Wd;
+  const H = 300, t = 26, b = 10, l = 44, r = 44, y0 = 500, y1 = 1500;
+  const ys = v => t + (1 - (v - y0) / (y1 - y0)) * (H - t - b), xa = l + 40, xb = Wd - r - 40;
+  const svg = el('svg', {viewBox: `0 0 ${Wd} ${H}`, role: 'img', 'aria-label': 'Fahrzeuge pro Stunde kurz vor dem Einbruch und im Schritttempo, je Sonntag'});
+  for (let v = y0; v <= y1; v += 250){
+    svg.appendChild(el('line', {x1: l, x2: Wd - r, y1: ys(v), y2: ys(v), class: 'grid'}));
+    svg.appendChild(el('text', {x: l - 6, y: ys(v) + 4, class: 'tick-t', 'text-anchor': 'end'}, tsd(v)));
+  }
+  svg.appendChild(el('text', {x: xa, y: 14, class: 'lab', 'text-anchor': 'middle', 'font-weight': 600}, 'kurz davor'));
+  svg.appendChild(el('text', {x: xb, y: 14, class: 'lab', 'text-anchor': 'middle', 'font-weight': 600, fill: 'var(--s2)'}, 'im Schritttempo'));
+  D.forEach(d => {
+    const g = el('g', {});
+    g.appendChild(el('line', {x1: xa, x2: xb, y1: ys(d.vor), y2: ys(d.im), stroke: '#b9c4cc', 'stroke-width': 1.5}));
+    g.appendChild(el('circle', {cx: xa, cy: ys(d.vor), r: 4, fill: 'var(--grau)'}));
+    g.appendChild(el('circle', {cx: xb, cy: ys(d.im), r: 4, fill: 'var(--s2)'}));
+    const html = `<b>${d.d}</b>: ${tsd(d.vor)} → ${tsd(d.im)} (−${Math.abs(Math.round((d.im / d.vor - 1) * 100))} %)`;
+    const hit = el('line', {x1: xa, x2: xb, y1: ys(d.vor), y2: ys(d.im), stroke: 'transparent', 'stroke-width': 12});
+    const show = e => { tip.innerHTML = html; tip.style.opacity = 1; tip.style.left = e.clientX + 'px'; tip.style.top = (e.clientY - 10) + 'px'; };
+    hit.addEventListener('pointermove', show); hit.addEventListener('pointerdown', show);
+    hit.addEventListener('pointerleave', () => tip.style.opacity = 0);
+    g.appendChild(hit); svg.appendChild(g);
+  });
+  svg.appendChild(el('line', {x1: xa, x2: xb, y1: ys(MV), y2: ys(MI), stroke: 'var(--ink)', 'stroke-width': 3}));
+  svg.appendChild(el('text', {x: xa - 10, y: ys(MV) + 4, class: 'lab', 'text-anchor': 'end', 'font-weight': 700}, tsd(MV)));
+  svg.appendChild(el('text', {x: xb + 10, y: ys(MI) + 4, class: 'lab', 'font-weight': 700, fill: 'var(--s2)'}, tsd(MI)));
+  box.innerHTML = ''; box.appendChild(svg);
+}
+draw();
+let tm; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(draw, 120); });
+</script>
+</body></html>
