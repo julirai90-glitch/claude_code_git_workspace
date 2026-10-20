@@ -63,7 +63,26 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   const [clon, clat] = GEO.kamera.lonlat, [tlon, tlat] = GEO.kamera.ziel;
   const cam = Cesium.Cartesian3.fromDegrees(clon, clat, GEO.kamera.hoehe_lhn + 49.5);
   const heading = Math.atan2((tlon - clon) * Math.cos(clat * Math.PI / 180), tlat - clat);
-  viewer.camera.setView({destination: cam, orientation: {heading, pitch: Cesium.Math.toRadians(-13), roll: 0}});
+  // Drehpunkt: Mitte zwischen Verengung und Suedportal (swissTLM3D), Ausgangsansicht vom Standort ueber dem Hinterrhein
+  const [vlon, vlat] = GEO.verengung, [plon, plat] = GEO.portal;
+  const mitteCarto = Cesium.Cartographic.fromDegrees((vlon + plon) / 2, (vlat + plat) / 2);
+  const [hgt] = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [mitteCarto]);
+  const mitte = Cesium.Cartographic.toCartesian(hgt);
+  const start = () => {
+    const off = Cesium.Cartesian3.subtract(cam, mitte, new Cesium.Cartesian3());
+    const enu = Cesium.Transforms.eastNorthUpToFixedFrame(mitte), inv = Cesium.Matrix4.inverse(enu, new Cesium.Matrix4());
+    const l = Cesium.Matrix4.multiplyByPointAsVector(inv, off, new Cesium.Cartesian3());
+    const range = Cesium.Cartesian3.magnitude(l);
+    viewer.camera.lookAt(mitte, new Cesium.HeadingPitchRange(Math.atan2(-l.x, -l.y), -Math.asin(l.z / range), range));
+  };
+  start();
+  let dreht = false;
+  viewer.clock.onTick.addEventListener(() => { if (dreht) viewer.camera.rotateRight(0.002); });
+  const knopf = (txt, fn, x) => { const b = document.createElement('button'); b.textContent = txt; b.onclick = fn;
+    b.style.cssText = `position:absolute;right:${x}px;bottom:34px;font:600 14px "Source Sans 3",sans-serif;padding:7px 12px;border:0;border-radius:6px;background:#0068a4;color:#fff;cursor:pointer`;
+    document.body.appendChild(b); return b; };
+  const bd = knopf('Drehen', () => { dreht = !dreht; bd.textContent = dreht ? 'Anhalten' : 'Drehen'; }, 10);
+  knopf('Ausgangsansicht', () => { dreht = false; bd.textContent = 'Drehen'; start(); }, 100);
 
   // Strassenachse (swissTLM3D) als Pfad; Fahrzeuge als Punkte am Boden
   const pfad = pts => {
