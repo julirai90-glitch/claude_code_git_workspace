@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Isla Bella live in 3D (Prototyp)</title>
+<link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.123/Build/Cesium/Widgets/widgets.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",system-ui,sans-serif}
+#view{position:absolute;inset:0}
+.box{position:absolute;background:rgba(255,255,255,.92);border-radius:6px;padding:8px 11px;color:#14202a;font-size:14px;line-height:1.35}
+#info{left:10px;top:10px;max-width:270px}
+#info b.big{font-size:22px;display:block}
+#leg{left:10px;bottom:34px}
+.grad{width:180px;height:10px;border:1px solid #8c9aa5;background:linear-gradient(90deg,#d6461e 0%,#ee7733 20%,#facd46 50%,#fff 80%,#fff 100%)}
+.ticks{display:flex;justify-content:space-between;width:184px;font-size:11px;color:#4a5b68}
+#proto{right:10px;top:10px;background:#fff4e5;border-left:4px solid #ee7733;max-width:230px;font-size:12.5px}
+.muted{color:#4a5b68;font-size:12px}
+.cesium-viewer-bottom{display:none}
+#cred{position:absolute;right:8px;bottom:6px;font-size:11px;color:#fff;text-shadow:0 0 3px #000}
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div class="box" id="info">
+  <div class="muted">Zählstelle Isla Bella (A13), live</div>
+  <div>Richtung Chur: <b class="big" id="nord">–</b></div>
+  <div>Richtung San Bernardino: <b id="sued">–</b></div>
+  <div class="muted" id="stand">Daten werden geladen …</div>
+</div>
+<div class="box" id="leg">
+  <div class="muted">Farbe der Fahrzeuge = gemessenes Tempo</div>
+  <div class="grad"></div>
+  <div class="ticks"><span>0</span><span>20</span><span>50</span><span>80 km/h</span></div>
+</div>
+<div class="box" id="proto"><b>Prototyp</b> – gemessen: Gelände, Luftbild, Strassenachse (swisstopo), Menge und Tempo (Astra-Zählstelle). Gestaltet: Lage der einzelnen Fahrzeuge, 4-fach schnellere Bewegung, Kamerastandort. Sonnenlicht zur aktuellen Uhrzeit.</div>
+<div id="cred">Geodaten © swisstopo · Verkehr: Astra (opentransportdata.swiss)</div>
+
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.123/Build/Cesium/Cesium.js"></script>
+<script>
+(async () => {
+  const GEO = await (await fetch('geo.json')).json();
+  Cesium.Ion.defaultAccessToken = '';
+  const viewer = new Cesium.Viewer('view', {
+    baseLayer: new Cesium.ImageryLayer(new Cesium.UrlTemplateImageryProvider({
+      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg',
+      minimumLevel: 8, maximumLevel: 19, credit: 'swisstopo SWISSIMAGE',
+      rectangle: Cesium.Rectangle.fromDegrees(9.0, 46.5, 9.8, 47.05)})),
+    terrainProvider: await Cesium.CesiumTerrainProvider.fromUrl('https://3d.geo.admin.ch/ch.swisstopo.terrain.3d/v1', {requestVertexNormals: false}),
+    animation: false, timeline: false, baseLayerPicker: false, geocoder: false, homeButton: false,
+    sceneModePicker: false, navigationHelpButton: false, fullscreenButton: false, infoBox: false, selectionIndicator: false,
+    skyAtmosphere: new Cesium.SkyAtmosphere(), requestRenderMode: false
+  });
+  const sc = viewer.scene;
+  sc.globe.enableLighting = true;           // Sonnenstand nach aktueller Uhrzeit
+  sc.globe.depthTestAgainstTerrain = true;
+  sc.fog.enabled = true;
+  viewer.clock.currentTime = Cesium.JulianDate.now(); viewer.clock.shouldAnimate = true;
+
+  // Kamera: westlich ueber dem Hinterrhein, Blick nach Nordnordost (Hoehe: Gelaende + 60 m, + ~49,5 m Geoid, Naeherung)
+  const [clon, clat] = GEO.kamera.lonlat, [tlon, tlat] = GEO.kamera.ziel;
+  const cam = Cesium.Cartesian3.fromDegrees(clon, clat, GEO.kamera.hoehe_lhn + 49.5);
+  const heading = Math.atan2((tlon - clon) * Math.cos(clat * Math.PI / 180), tlat - clat);
+  viewer.camera.setView({destination: cam, orientation: {heading, pitch: Cesium.Math.toRadians(-13), roll: 0}});
+
+  // Strassenachse (swissTLM3D) als Pfad; Fahrzeuge als Punkte am Boden
+  const pfad = pts => {
+    const c = pts.map(([lo, la]) => Cesium.Cartographic.fromDegrees(lo, la));
+    const s = [0];
+    for (let i = 1; i < c.length; i++) s.push(s[i - 1] + new Cesium.EllipsoidGeodesic(c[i - 1], c[i]).surfaceDistance);
+    return {c, s, L: s[s.length - 1]};
+  };
+  const P = {nord: pfad(GEO.nord), sued: pfad(GEO.sued)};
+  const lage = (p, t) => {
+    let i = 1; while (i < p.s.length - 1 && p.s[i] < t) i++;
+    const f = (t - p.s[i - 1]) / (p.s[i] - p.s[i - 1] || 1), a = p.c[i - 1], b = p.c[i];
+    return Cesium.Cartesian3.fromRadians(a.longitude + (b.longitude - a.longitude) * f, a.latitude + (b.latitude - a.latitude) * f, 0);
+  };
+  const farbe = v => {
+    const st = [[0, [214, 70, 30]], [20, [238, 119, 51]], [50, [250, 205, 70]], [80, [255, 255, 255]], [999, [255, 255, 255]]];
+    for (let i = 1; i < st.length; i++) if (v <= st[i][0]) {
+      const [a, ca] = st[i - 1], [b, cb] = st[i], t = (v - a) / (b - a);
+      return Cesium.Color.fromBytes(...ca.map((x, j) => Math.round(x + (cb[j] - x) * t)), 255);
+    }
+    return Cesium.Color.WHITE;
+  };
+  const punkte = viewer.entities;
+  const M = {nord: {q: 0, v: 80}, sued: {q: 0, v: 80}}, POS = {nord: [], sued: []}, ENT = {nord: [], sued: []};
+  const S_VIS = 4;
+
+  async function laden(){
+    try {
+      const d = await (await fetch('https://n8n.julianreich.ch/webhook/verkehr-data?f=latest', {cache: 'no-store'})).json();
+      const s = d.sites.find(x => x.id === 'CH:0611');
+      M.nord = {q: s.dirs.positive.flow, v: s.dirs.positive.speed};
+      M.sued = {q: s.dirs.negative.flow, v: s.dirs.negative.speed};
+      const f = (m) => `${Math.round(m.v)} km/h · ${Math.round(m.q).toLocaleString('de-CH')} Fz/h`;
+      document.getElementById('nord').textContent = f(M.nord);
+      document.getElementById('sued').textContent = f(M.sued);
+      document.getElementById('stand').textContent = 'Stand ' + new Date(s.ts).toLocaleTimeString('de-CH', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Zurich'}) + ' Uhr, wird jede Minute neu abgefragt';
+    } catch (e) { document.getElementById('stand').textContent = 'Live-Daten nicht erreichbar'; }
+  }
+  await laden(); setInterval(laden, 60000);
+
+  let last = performance.now();
+  viewer.scene.preRender.addEventListener(() => {
+    const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;
+    for (const k of ['nord', 'sued']) {
+      const {q, v} = M[k]; if (!q) continue;
+      const gap = 1000 * Math.max(v, 3) / q, vv = v / 3.6 * S_VIS, L = P[k].L;   // Abstand in m aus q = k * v
+      if (!POS[k].length) for (let t = 0; t < L; t += gap) POS[k].push(t);
+      let p = POS[k].map(x => x + vv * dt).filter(x => x < L);
+      if (!p.length || p[0] > gap) p.unshift(Math.max(0, (p.length ? p[0] : gap) - gap));
+      const neu = [p[0]];
+      for (const x of p.slice(1)) { let g = x - neu[neu.length - 1]; if (g < 0.6 * gap) continue; while (g > 1.6 * gap) { neu.push(neu[neu.length - 1] + gap); g = x - neu[neu.length - 1]; } neu.push(x); }
+      POS[k] = neu;
+      const col = farbe(v);
+      while (ENT[k].length < neu.length) ENT[k].push(punkte.add({point: {pixelSize: 7, color: col, outlineColor: Cesium.Color.fromBytes(20, 32, 42, 200), outlineWidth: 1, heightReference: Cesium.HeightReference.CLAMP_TO_GROUND, disableDepthTestDistance: 0}}));
+      ENT[k].forEach((e, i) => {
+        if (i < neu.length) { e.show = true; e.position = lage(P[k], neu[i]); e.point.color = col; } else e.show = false;
+      });
+    }
+  });
+})();
+</script>
+</body>
+</html>
