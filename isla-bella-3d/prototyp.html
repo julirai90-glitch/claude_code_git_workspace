@@ -11,7 +11,7 @@
 html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",system-ui,sans-serif}
 #view{position:absolute;inset:0}
 .box{position:absolute;background:rgba(255,255,255,.92);border-radius:6px;padding:8px 11px;color:#14202a;font-size:14px;line-height:1.35}
-#info{left:10px;top:10px;max-width:270px}
+#info{left:10px;top:10px;max-width:290px;max-height:calc(100vh - 150px);overflow:auto}
 #info b.big{font-size:22px;display:block}
 #leg{left:10px;bottom:34px}
 .grad{width:180px;height:10px;border:1px solid #8c9aa5;background:linear-gradient(90deg,#d6461e 0%,#ee7733 20%,#facd46 50%,#fff 80%,#fff 100%)}
@@ -20,6 +20,11 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
 .muted{color:#4a5b68;font-size:12px}
 .cesium-viewer-bottom{display:none}
 #cred{position:absolute;right:8px;bottom:6px;font-size:11px;color:#fff;text-shadow:0 0 3px #000}
+@media (max-width:600px){
+  #proto{top:auto;bottom:84px;right:10px;left:auto;max-width:150px;font-size:11px;padding:6px 8px}
+  #leg{bottom:84px;max-width:190px;font-size:12px}
+  #info{max-width:calc(100% - 40px);max-height:calc(100vh - 250px)}
+}
 </style>
 </head>
 <body>
@@ -131,9 +136,14 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   const LAGE = {frei: ['wie üblich', '#0068a4'], zaeh: ['langsamer als üblich', '#facd46'], stau: ['deutlich langsamer als üblich', '#ee7733'], keine_daten: ['keine Daten', '#8c9aa5']};
   const schlimmst = s => ['stau', 'zaeh', 'frei', 'keine_daten'].find(x => Object.values(s.dirs).some(d => d.status === x)) || 'keine_daten';
   const MARK = {};
-  const panel = document.createElement('div'); panel.className = 'box'; panel.id = 'site';
-  panel.style.cssText = 'left:10px;top:150px;max-width:270px;display:none';
-  document.body.appendChild(panel);
+  const panel = document.createElement('div'); panel.id = 'site';
+  panel.style.cssText = 'display:none;margin-top:8px;border-top:1px solid #dde4e9;padding-top:6px';
+  // Tagesgrafik aus dem Kachel-Dashboard als Fenster von unten
+  const blatt = document.createElement('div');
+  blatt.style.cssText = 'position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,720px);height:min(78vh,640px);background:#fff;border-radius:10px 10px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.3);display:none;z-index:5';
+  blatt.innerHTML = '<button id="zu" style="position:absolute;right:8px;top:6px;border:0;background:#eef2f5;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;z-index:2">×</button><iframe id="tg" style="width:100%;height:100%;border:0;border-radius:10px 10px 0 0" title="Tagesverlauf"></iframe>';
+  document.body.appendChild(blatt);
+  blatt.querySelector('#zu').onclick = () => { blatt.style.display = 'none'; blatt.querySelector('#tg').src = 'about:blank'; };
   async function marker(){
     let feed;
     try { feed = await (await fetch('https://n8n.julianreich.ch/webhook/verkehr-data?f=latest', {cache: 'no-store'})).json(); } catch (e) { return; }
@@ -160,8 +170,14 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   const zeige = e => {
     const s = e.site, z = d => `<div style="margin-top:4px"><b>${d.label}</b><br>${d.status === 'keine_daten' || d.speed == null ? 'keine aktuellen Messwerte' : Math.round(d.speed) + ' km/h · ' + Math.round(d.flow ?? 0).toLocaleString('de-CH') + ' Fahrzeuge/h'}<br><span style="color:${LAGE[d.status]?.[1] || '#4a5b68'};font-weight:600">${LAGE[d.status]?.[0] || ''}</span></div>`;
     panel.innerHTML = `<b style="font-size:17px">${s.place}</b> <span class="muted">${s.road}</span>` + Object.values(s.dirs).map(z).join('') +
+      `<button id="tgk" style="margin-top:8px;font:600 14px 'Source Sans 3',sans-serif;padding:6px 12px;border:0;border-radius:6px;background:#0068a4;color:#fff;cursor:pointer">Tagesverlauf ▴</button>` +
       `<div class="muted" style="margin-top:6px">${e.genau ? 'Lage: Astra-Zählstellenkarte' : 'Lage gerundet (±1 km)'} · «üblich»: gleiche Zeit an vergleichbaren Tagen</div>`;
     panel.style.display = 'block';
+    if (typeof wahl !== 'undefined') wahl.value = s.id;
+    panel.querySelector('#tgk').onclick = () => {
+      blatt.querySelector('#tg').src = '../verkehr/verkehr-dashboard-kacheln.html?view=chart&site=' + encodeURIComponent(s.id);
+      blatt.style.display = 'block';
+    };
   };
   new Cesium.ScreenSpaceEventHandler(sc.canvas).setInputAction(async ev => {
     const p = sc.pick(ev.position);
@@ -196,6 +212,7 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
     .map(([id, e]) => `<option value="${id}">${e.site.place} (${e.site.road})</option>`).join('');
   wahl.onchange = () => { if (wahl.value) fliege(MARK[wahl.value]); };
   document.getElementById('info').appendChild(wahl);
+  document.getElementById('info').appendChild(panel);
 
   // ---- Fahrzeuge an allen Zaehlstellen: Strecke +-1,5 km aus swissTLM3D, Abstand und Tempo aus der Messung
   const STR = (await (await fetch('strecken.json')).json()).strecken;
