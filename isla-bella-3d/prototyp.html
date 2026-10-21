@@ -181,23 +181,89 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
     viewer.camera.flyTo({destination: Cesium.Cartesian3.fromDegrees(9.55, 45.95, 95000), orientation: {heading: 0, pitch: Cesium.Math.toRadians(-50)}, duration: 3});
   }, 248);
 
+  // ---- Auswahlliste: jede Zaehlstelle direkt anfliegen
+  const fliege = async e => {
+    dreht = false; bd.textContent = 'Drehen'; zeige(e);
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    const c = Cesium.Cartographic.fromCartesian(e.position.getValue(viewer.clock.currentTime));
+    const [g] = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [c]);
+    viewer.camera.flyToBoundingSphere(new Cesium.BoundingSphere(Cesium.Cartographic.toCartesian(g), 50),
+      {offset: new Cesium.HeadingPitchRange(viewer.camera.heading, Cesium.Math.toRadians(-35), 3500), duration: 2.5});
+  };
+  const wahl = document.createElement('select');
+  wahl.style.cssText = 'margin-top:6px;width:100%;font:15px "Source Sans 3",sans-serif;padding:5px;border:1px solid #c9d3da;border-radius:5px';
+  wahl.innerHTML = '<option value="">Zählstelle wählen …</option>' + Object.entries(MARK).sort((a, b) => a[1].site.place.localeCompare(b[1].site.place, 'de'))
+    .map(([id, e]) => `<option value="${id}">${e.site.place} (${e.site.road})</option>`).join('');
+  wahl.onchange = () => { if (wahl.value) fliege(MARK[wahl.value]); };
+  document.getElementById('info').appendChild(wahl);
+
+  // ---- Fahrzeuge an allen Zaehlstellen: Strecke +-1,5 km aus swissTLM3D, Abstand und Tempo aus der Messung
+  const STR = (await (await fetch('strecken.json')).json()).strecken;
+  // Punkte fest auf die Gelaendehoehe von swisstopo setzen (gerundete Standorte vorher auf die Strasse)
+  {
+    const ids = Object.keys(MARK);
+    const carto = ids.map(id => STR[id] && !STR[id].lage_genau ? Cesium.Cartographic.fromDegrees(...STR[id].punkt)
+                                                               : Cesium.Cartographic.fromCartesian(MARK[id].position.getValue(viewer.clock.currentTime)));
+    carto.forEach(c => c.height = 0);
+    const hs = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, carto);
+    ids.forEach((id, i) => {
+      const e = MARK[id]; hs[i].height += 4;
+      e.position = Cesium.Cartographic.toCartesian(hs[i]);
+      e.point.heightReference = Cesium.HeightReference.NONE; e.label.heightReference = Cesium.HeightReference.NONE;
+    });
+  }
+  const STRECKE = {};
+  for (const [id, st] of Object.entries(STR)) {
+    const p = pfad(st.pfad);
+    p.tun = []; for (let i = 1; i < p.s.length; i++) if (st.tunnel[i] || st.tunnel[i - 1]) p.tun.push([p.s[i - 1], p.s[i]]);
+    p.mitte = Cesium.Cartesian3.fromDegrees(...st.punkt);
+    STRECKE[id] = {p, vorw: st.positiv_vorwaerts, POS: {positive: [], negative: []}, ENT: {positive: [], negative: []}};
+  }
+  const imTunnel = (p, t) => p.tun.some(([a, b]) => t >= a && t <= b);
+  // seitlich versetzt (rechts in Fahrtrichtung), damit sich die Richtungen nicht ueberdecken
+  const lageSpur = (p, t, rechts) => {
+    let i = 1; while (i < p.s.length - 1 && p.s[i] < t) i++;
+    const f = (t - p.s[i - 1]) / (p.s[i] - p.s[i - 1] || 1), a = p.c[i - 1], b = p.c[i];
+    const lon = a.longitude + (b.longitude - a.longitude) * f, lat = a.latitude + (b.latitude - a.latitude) * f;
+    const dx = (b.longitude - a.longitude) * Math.cos(lat), dy = b.latitude - a.latitude, n = Math.hypot(dx, dy) || 1;
+    const m = rechts * 2.5 / 6371000;
+    return Cesium.Cartesian3.fromRadians(lon + (dy / n) * m / Math.cos(lat), lat - (dx / n) * m, 0);
+  };
+  const leeren = S => { for (const d of ['positive', 'negative']) { S.ENT[d].forEach(e => viewer.entities.remove(e)); S.ENT[d] = []; S.POS[d] = []; } };
+  let aktiv = new Set(), letzteWahl = 0;
   let last = performance.now();
   viewer.scene.preRender.addEventListener(() => {
     const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;
-    for (const k of ['nord', 'sued']) {
-      const {q, v} = M[k]; if (!q) continue;
-      const gap = 1000 * Math.max(v, 3) / q, vv = v / 3.6 * S_VIS, L = P[k].L;   // Abstand in m aus q = k * v
-      if (!POS[k].length) for (let t = 0; t < L; t += gap) POS[k].push(t);
-      let p = POS[k].map(x => x + vv * dt).filter(x => x < L);
-      if (!p.length || p[0] > gap) p.unshift(Math.max(0, (p.length ? p[0] : gap) - gap));
-      const neu = [p[0]];
-      for (const x of p.slice(1)) { let g = x - neu[neu.length - 1]; if (g < 0.6 * gap) continue; while (g > 1.6 * gap) { neu.push(neu[neu.length - 1] + gap); g = x - neu[neu.length - 1]; } neu.push(x); }
-      POS[k] = neu;
-      const col = farbe(v);
-      while (ENT[k].length < neu.length) ENT[k].push(punkte.add({point: {pixelSize: 7, color: col, outlineColor: Cesium.Color.fromBytes(20, 32, 42, 200), outlineWidth: 1, heightReference: Cesium.HeightReference.CLAMP_TO_GROUND, disableDepthTestDistance: 0}}));
-      ENT[k].forEach((e, i) => {
-        if (i < neu.length) { e.show = true; e.position = lage(P[k], neu[i]); e.point.color = col; } else e.show = false;
-      });
+    // nur Strecken in der Naehe der Kamera animieren (Leistung)
+    if (now - letzteWahl > 1000) {
+      letzteWahl = now;
+      const cp = viewer.camera.positionWC, h = viewer.camera.positionCartographic.height;
+      const neu = new Set(h > 40000 ? [] : Object.keys(STRECKE).filter(id => Cesium.Cartesian3.distance(cp, STRECKE[id].p.mitte) < 15000));
+      for (const id of aktiv) if (!neu.has(id)) leeren(STRECKE[id]);
+      aktiv = neu;
+    }
+    for (const id of aktiv) {
+      const S = STRECKE[id], site = MARK[id] && MARK[id].site; if (!site) continue;
+      const L = S.p.L;
+      for (const d of ['positive', 'negative']) {
+        const q = site.dirs[d].flow, v = site.dirs[d].speed;
+        if (!q || v == null || site.dirs[d].status === 'keine_daten') { S.ENT[d].forEach(e => e.show = false); continue; }
+        const gap = 1000 * Math.max(v, 3) / q, vv = v / 3.6 * S_VIS;     // Abstand in m aus q = k * v
+        if (!S.POS[d].length) for (let t = 0; t < L; t += gap) S.POS[d].push(t);
+        let p = S.POS[d].map(x => x + vv * dt).filter(x => x < L);
+        if (!p.length || p[0] > gap) p.unshift(Math.max(0, (p.length ? p[0] : gap) - gap));
+        const neu = [p[0]];
+        for (const x of p.slice(1)) { let g = x - neu[neu.length - 1]; if (g < 0.6 * gap) continue; while (g > 1.6 * gap) { neu.push(neu[neu.length - 1] + gap); g = x - neu[neu.length - 1]; } neu.push(x); }
+        S.POS[d] = neu;
+        const vorw = (d === 'positive') === S.vorw, col = farbe(v);
+        while (S.ENT[d].length < neu.length) S.ENT[d].push(viewer.entities.add({point: {pixelSize: 7, color: col, outlineColor: Cesium.Color.fromBytes(20, 32, 42, 200), outlineWidth: 1, heightReference: Cesium.HeightReference.CLAMP_TO_GROUND}}));
+        S.ENT[d].forEach((e, i) => {
+          if (i >= neu.length) { e.show = false; return; }
+          const t = vorw ? neu[i] : L - neu[i];
+          if (imTunnel(S.p, t)) { e.show = false; return; }
+          e.show = true; e.position = lageSpur(S.p, t, vorw ? 1 : -1); e.point.color = col;
+        });
+      }
     }
   });
 })();
