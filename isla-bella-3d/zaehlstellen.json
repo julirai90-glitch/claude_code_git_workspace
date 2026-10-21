@@ -1,0 +1,382 @@
+{
+"quelle": "Astra, Strassenverkehrszählung übergeordnet (geo.admin.ch, ch.astra.strassenverkehrszaehlung-uebergeordnet), abgerufen 21.10.2026",
+"stellen": [
+{
+"id": "CH:0014",
+"name": "Julier/Silvaplana",
+"road": "A29",
+"lon": 9.794852,
+"lat": 46.464632,
+"astra_name": "JULIER, SILVAPLANA",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0025",
+"name": "Maienfeld",
+"road": "A13a",
+"lon": 9.50512,
+"lat": 47.014617,
+"astra_name": "BAD RAGAZ (AB)",
+"kanton": "SG",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0044",
+"name": "San Bernardino-Tunnel",
+"road": "A13c",
+"lon": 9.186828,
+"lat": 46.463476,
+"astra_name": "SAN BERNARDINO (TUNNEL)",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0096",
+"name": "Domat/Ems",
+"road": "A13a",
+"lon": 9.456072,
+"lat": 46.837595,
+"astra_name": "DOMAT/EMS (AB)",
+"kanton": "GR",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0132",
+"name": "Pardisla/Chlus-Tunnel",
+"road": "A28",
+"lon": 9.604953,
+"lat": 46.972632,
+"astra_name": "PARDISLA, CHLUSTUNNEL",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0157",
+"name": "Alvaschein/Solis-Tunnel",
+"road": "A29",
+"lon": 9.525386,
+"lat": 46.681368,
+"astra_name": "ALVASCHEIN, SOLISTUNNEL",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0203",
+"name": "Roveredo",
+"road": "A13c",
+"lon": 9.113673,
+"lat": 46.230775,
+"astra_name": "ROVEREDO (AS)",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0228",
+"name": "Zizers/ Rappagugg",
+"road": "A13a",
+"lon": 9.562143,
+"lat": 46.926965,
+"astra_name": "ZIZERS (AB)",
+"kanton": "GR",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0238",
+"name": "Rothenbrunnen S",
+"road": "A13b",
+"lon": 9.424523,
+"lat": 46.75908,
+"astra_name": "ROTHENBRUNNEN S (AB)",
+"kanton": "GR",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0258",
+"name": "Julier/La Veduta",
+"road": "A29",
+"lon": 9.71697,
+"lat": 46.469912,
+"astra_name": "JULIER, LA VEDUTA",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0320",
+"name": "Chur Nord",
+"road": "A13a",
+"lon": 9.536614,
+"lat": 46.884405,
+"astra_name": "CHUR NORD (AB)",
+"kanton": "GR",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0322",
+"name": "Zillis/Bargias",
+"road": "A13c",
+"lon": 9.451982,
+"lat": 46.653641,
+"astra_name": "ZILLIS (AS)",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0373",
+"name": "Klosters/Mezzaselva",
+"road": "A28",
+"lon": 9.844451,
+"lat": 46.893392,
+"astra_name": "KLOSTERS, MEZZASELVA - GR241",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0539",
+"name": "Hinterrhein",
+"road": "A13c",
+"lon": 9.232247,
+"lat": 46.538647,
+"astra_name": "HINTERRHEIN (AB) TUNNEL CASSANAWALD",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0610",
+"name": "Chur/Obere Au",
+"road": "A13a",
+"lon": 9.507345,
+"lat": 46.85707,
+"astra_name": "CHUR, OBERE AU (AB) - GR253",
+"kanton": "GR",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0611",
+"name": "Rothenbrunnen/Isla Bella",
+"road": "A13b",
+"lon": 9.415519,
+"lat": 46.78346,
+"astra_name": "ROTHENBRUNNEN, ISLA BELLA TUNNEL (AB) - GR305",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0708",
+"name": "Küblis",
+"road": "A28",
+"lon": 9.760092,
+"lat": 46.915635,
+"astra_name": "KUEBLIS",
+"kanton": "GR",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0035",
+"name": "Trübbach S",
+"road": "A13a",
+"lon": 9.462862,
+"lat": 47.038667,
+"astra_name": "TRUEBBACH S (AB)",
+"kanton": "SG",
+"spuren": [
+3,
+2
+]
+},
+{
+"id": "CH:0053",
+"name": "Weesen/Kerenzerberg",
+"road": "A3",
+"lon": 9.102002,
+"lat": 47.126787,
+"astra_name": "WEESEN, KERENZERBERG (AB)",
+"kanton": "GL",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0216",
+"name": "Wangen SZ",
+"road": "A3",
+"lon": 8.894867,
+"lat": 47.193372,
+"astra_name": "WANGEN SZ (AB)",
+"kanton": "SZ",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0245",
+"name": "Sargans A3",
+"road": "A3",
+"lon": 9.43993,
+"lat": 47.04068,
+"astra_name": "SARGANS A3 (AB)",
+"kanton": "SG",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0308",
+"name": "Lachen",
+"road": "A3",
+"lon": 8.830715,
+"lat": 47.190441,
+"astra_name": "LACHEN (AB)",
+"kanton": "SZ",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0314",
+"name": "Reichenburg",
+"road": "A3",
+"lon": 8.990055,
+"lat": 47.181198,
+"astra_name": "REICHENBURG (AB)",
+"kanton": "SG",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0318",
+"name": "Mels N",
+"road": "A3",
+"lon": 9.431872,
+"lat": 47.047325,
+"astra_name": "MELS N (AB)",
+"kanton": "SG",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0394",
+"name": "Glarus N",
+"road": "H17",
+"lon": 9.060866,
+"lat": 47.048238,
+"astra_name": "GLARUS N",
+"kanton": "GL",
+"spuren": [
+1,
+1
+]
+},
+{
+"id": "CH:0588",
+"name": "Schmerikon",
+"road": "A15",
+"lon": 8.962576,
+"lat": 47.218504,
+"astra_name": "SCHMERIKON (AB)",
+"kanton": "SG",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0603",
+"name": "Walenstadt",
+"road": "A3",
+"lon": 9.334757,
+"lat": 47.114537,
+"astra_name": "WALENSTADT, TSCHERLACH (AB)",
+"kanton": "SG",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0829",
+"name": "Bilten",
+"road": "A3",
+"lon": 9.039475,
+"lat": 47.1487,
+"astra_name": "BILTEN (AB)",
+"kanton": "GL",
+"spuren": [
+2,
+2
+]
+},
+{
+"id": "CH:0830",
+"name": "Niederurnen",
+"road": "A3",
+"lon": 9.084634,
+"lat": 47.128719,
+"astra_name": "NIEDERURNEN (AB)",
+"kanton": "GL",
+"spuren": [
+2,
+2
+]
+}
+]
+}

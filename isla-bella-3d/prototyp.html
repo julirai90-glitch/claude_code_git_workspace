@@ -34,6 +34,8 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   <div class="muted">Farbe der Fahrzeuge = gemessenes Tempo</div>
   <div class="grad"></div>
   <div class="ticks"><span>0</span><span>20</span><span>50</span><span>80 km/h</span></div>
+  <div class="muted" style="margin-top:6px">Punkte = Zählstellen (antippen), Tempo im Vergleich zu üblich:</div>
+  <div style="font-size:12px"><span style="color:#0068a4">●</span> wie üblich &nbsp;<span style="color:#e0b020">●</span> langsamer &nbsp;<span style="color:#ee7733">●</span> deutlich langsamer &nbsp;<span style="color:#8c9aa5">●</span> keine Daten</div>
 </div>
 <div class="box" id="proto"><b>Prototyp</b> – gemessen: Gelände, Luftbild, Strassenachse (swisstopo), Menge und Tempo (Astra-Zählstelle). Gestaltet: Lage der einzelnen Fahrzeuge, 4-fach schnellere Bewegung, Kamerastandort. Sonnenlicht zur aktuellen Uhrzeit.</div>
 <div id="cred">Geodaten © swisstopo · Verkehr: Astra (opentransportdata.swiss)</div>
@@ -47,7 +49,7 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
     baseLayer: new Cesium.ImageryLayer(new Cesium.UrlTemplateImageryProvider({
       url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg',
       minimumLevel: 8, maximumLevel: 19, credit: 'swisstopo SWISSIMAGE',
-      rectangle: Cesium.Rectangle.fromDegrees(9.0, 46.5, 9.8, 47.05)})),
+      rectangle: Cesium.Rectangle.fromDegrees(5.9, 45.8, 10.5, 47.85)})),
     terrainProvider: await Cesium.CesiumTerrainProvider.fromUrl('https://3d.geo.admin.ch/ch.swisstopo.terrain.3d/v1', {requestVertexNormals: false}),
     animation: false, timeline: false, baseLayerPicker: false, geocoder: false, homeButton: false,
     sceneModePicker: false, navigationHelpButton: false, fullscreenButton: false, infoBox: false, selectionIndicator: false,
@@ -122,6 +124,62 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
     } catch (e) { document.getElementById('stand').textContent = 'Live-Daten nicht erreichbar'; }
   }
   await laden(); setInterval(laden, 60000);
+
+  // ---- alle Zaehlstellen als anklickbare Punkte
+  const ZS = await (await fetch('zaehlstellen.json')).json();
+  const genau = Object.fromEntries(ZS.stellen.map(s => [s.id, s]));
+  const LAGE = {frei: ['wie üblich', '#0068a4'], zaeh: ['langsamer als üblich', '#facd46'], stau: ['deutlich langsamer als üblich', '#ee7733'], keine_daten: ['keine Daten', '#8c9aa5']};
+  const schlimmst = s => ['stau', 'zaeh', 'frei', 'keine_daten'].find(x => Object.values(s.dirs).some(d => d.status === x)) || 'keine_daten';
+  const MARK = {};
+  const panel = document.createElement('div'); panel.className = 'box'; panel.id = 'site';
+  panel.style.cssText = 'left:10px;top:150px;max-width:270px;display:none';
+  document.body.appendChild(panel);
+  async function marker(){
+    let feed;
+    try { feed = await (await fetch('https://n8n.julianreich.ch/webhook/verkehr-data?f=latest', {cache: 'no-store'})).json(); } catch (e) { return; }
+    for (const s of feed.sites) {
+      const g = genau[s.id], lon = g ? g.lon : s.lon, lat = g ? g.lat : s.lat, st = schlimmst(s);
+      const farbe = Cesium.Color.fromCssColorString(LAGE[st][1]);
+      if (!MARK[s.id]) MARK[s.id] = viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(lon, lat),
+        point: {pixelSize: 13, color: farbe, outlineColor: Cesium.Color.WHITE, outlineWidth: 2, heightReference: Cesium.HeightReference.CLAMP_TO_GROUND, disableDepthTestDistance: 3000},
+        label: {text: s.place, font: '600 13px "Source Sans 3", sans-serif', fillColor: Cesium.Color.WHITE, outlineColor: Cesium.Color.fromBytes(20, 32, 42), outlineWidth: 3,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE, pixelOffset: new Cesium.Cartesian2(0, -16), heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 60000), disableDepthTestDistance: 3000}
+      });
+      MARK[s.id].point.color = farbe; MARK[s.id].site = s; MARK[s.id].genau = !!g;
+    }
+  }
+  await marker(); setInterval(marker, 60000);
+  // aus grosser Hoehe alle Punkte ganz zeigen, nah am Boden vom Gelaende verdecken lassen
+  const tiefe = () => {
+    const h = viewer.camera.positionCartographic.height, d = h > 25000 ? Number.POSITIVE_INFINITY : 8000;
+    for (const e of Object.values(MARK)) { e.point.disableDepthTestDistance = d; e.label.disableDepthTestDistance = d; }
+  };
+  viewer.camera.percentageChanged = 0.05; viewer.camera.changed.addEventListener(tiefe); tiefe();
+  const zeige = e => {
+    const s = e.site, z = d => `<div style="margin-top:4px"><b>${d.label}</b><br>${d.status === 'keine_daten' || d.speed == null ? 'keine aktuellen Messwerte' : Math.round(d.speed) + ' km/h · ' + Math.round(d.flow ?? 0).toLocaleString('de-CH') + ' Fahrzeuge/h'}<br><span style="color:${LAGE[d.status]?.[1] || '#4a5b68'};font-weight:600">${LAGE[d.status]?.[0] || ''}</span></div>`;
+    panel.innerHTML = `<b style="font-size:17px">${s.place}</b> <span class="muted">${s.road}</span>` + Object.values(s.dirs).map(z).join('') +
+      `<div class="muted" style="margin-top:6px">${e.genau ? 'Lage: Astra-Zählstellenkarte' : 'Lage gerundet (±1 km)'} · «üblich»: gleiche Zeit an vergleichbaren Tagen</div>`;
+    panel.style.display = 'block';
+  };
+  new Cesium.ScreenSpaceEventHandler(sc.canvas).setInputAction(async ev => {
+    const p = sc.pick(ev.position);
+    if (!p || !p.id || !p.id.site) return;
+    dreht = false; bd.textContent = 'Drehen';
+    zeige(p.id);
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    // Zielhoehe aus dem swisstopo-Gelaende, sonst fliegt die Kamera in den Berg
+    const c = Cesium.Cartographic.fromCartesian(p.id.position.getValue(viewer.clock.currentTime));
+    const [g] = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [c]);
+    viewer.camera.flyToBoundingSphere(new Cesium.BoundingSphere(Cesium.Cartographic.toCartesian(g), 50),
+      {offset: new Cesium.HeadingPitchRange(viewer.camera.heading, Cesium.Math.toRadians(-35), 3500), duration: 2.5});
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+  knopf('Ganz Graubünden', () => {
+    dreht = false; bd.textContent = 'Drehen'; panel.style.display = 'none';
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    viewer.camera.flyTo({destination: Cesium.Cartesian3.fromDegrees(9.55, 45.95, 95000), orientation: {heading: 0, pitch: Cesium.Math.toRadians(-50)}, duration: 3});
+  }, 248);
 
   let last = performance.now();
   viewer.scene.preRender.addEventListener(() => {
