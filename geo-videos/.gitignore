@@ -1,0 +1,9 @@
+# Grosse oder reproduzierbare Dateien nicht versionieren (siehe README: «Reproduzieren»)
+remotion-gr/node_modules/
+remotion-gr/public/terrain/
+remotion-gr/public/cold/
+remotion-gr/out/
+*.mp4
+*.nc
+*.tif
+__pycache__/

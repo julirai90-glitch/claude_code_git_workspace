@@ -1,0 +1,17 @@
+{
+  "name": "remotion-gr",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "terrain": "python3 -I scripts/fetch_terrain.py",
+    "render": "remotion render Nullgrad out/nullgrad_9x16.mp4 --gl=swangle --timeout=300000 --concurrency=2",
+    "render:cloud": "remotion render Nullgrad out/nullgrad_9x16.mp4 --gl=swangle --timeout=300000 --concurrency=2 --browser-executable=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.300",
+    "maplibre-gl": "4.7.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.300"
+  }
+}

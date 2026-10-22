@@ -17,6 +17,10 @@ Interaktive Visualisierungen zur Demografie des Kantons Graubünden (101 Gemeind
 | 07 | [Jung oder alt?](https://julirai90-glitch.github.io/claude_code_git_workspace/ausgaben/07-teil-2-alter.html) | Altersstruktur |
 | 08 | [Geschlechter-Portrait 2025 (5 Embeds)](https://github.com/julirai90-glitch/claude_code_git_workspace/blob/gh-pages/ausgaben/embed/README.md#embeds--geschlechterverteilung-graub%C3%BCnden) | Geschlechterverteilung 2025p — Bubbles, Pyramide, Rankings, CH/Ausländer, Matching |
 
+## Geo-Videos (Experimente, Branch `claude/geo-videos`)
+
+Historische Karten und Luftbilder auf Gelände (Cazis, Morteratsch), Klimadaten Graubünden (0-Grad-Grenze, Remotion-Prototyp). Details, Quellen und Methoden: [geo-videos/README.md](geo-videos/README.md).
+
 ## Branches
 
 | Branch | Inhalt |
