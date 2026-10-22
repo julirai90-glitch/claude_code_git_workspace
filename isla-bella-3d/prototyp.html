@@ -21,8 +21,9 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
 .cesium-viewer-bottom{display:none}
 #cred{position:absolute;right:8px;bottom:6px;font-size:11px;color:#fff;text-shadow:0 0 3px #000}
 @media (max-width:600px){
-  #proto{top:auto;bottom:84px;right:10px;left:auto;max-width:150px;font-size:11px;padding:6px 8px}
-  #leg{bottom:84px;max-width:190px;font-size:12px}
+  #proto{top:auto;bottom:130px;right:10px;left:auto;max-width:150px;font-size:11px;padding:6px 8px}
+  #leg{bottom:130px;max-width:160px;font-size:12px}
+  .grad{width:150px}.ticks{width:154px}
   #info{max-width:calc(100% - 40px);max-height:calc(100vh - 250px)}
 }
 </style>
@@ -310,8 +311,8 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   let flug = null, flugT = 0;
   const flugKnopf = document.createElement('button');
   flugKnopf.textContent = '▶ Flug über die A13';
-  flugKnopf.style.cssText = 'margin-top:6px;width:100%;font:600 15px "Source Sans 3",sans-serif;padding:7px;border:0;border-radius:5px;background:#0068a4;color:#fff;cursor:pointer';
-  document.getElementById('info').insertBefore(flugKnopf, panel);
+  flugKnopf.style.cssText = 'position:absolute;right:10px;bottom:80px;font:700 15px "Source Sans 3",sans-serif;padding:9px 16px;border:0;border-radius:6px;background:#ee7733;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+  document.body.appendChild(flugKnopf);
   // Gelaende alle 100 m (aus a13.json); Kamerahoehe = hoechster Punkt 1,5 km zurueck bis 0,5 km voraus + 450 m, geglaettet
   const vorbereiten = async () => {
     const SCHRITT = 100, roh = A13.hoehe_100m;
