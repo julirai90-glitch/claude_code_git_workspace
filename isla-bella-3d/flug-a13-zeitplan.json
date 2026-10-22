@@ -1,0 +1,62 @@
+{
+ "fps": 25,
+ "dauer": 80,
+ "halte": [
+  {
+   "id": "CH:0320",
+   "name": "Chur Nord",
+   "s": 0,
+   "ein": 0,
+   "aus": 1.41
+  },
+  {
+   "id": "CH:0610",
+   "name": "Chur/Obere Au",
+   "s": 4039,
+   "ein": 2.63,
+   "aus": 6.32
+  },
+  {
+   "id": "CH:0096",
+   "name": "Domat/Ems",
+   "s": 9033,
+   "ein": 8.2,
+   "aus": 11.87
+  },
+  {
+   "id": "CH:0611",
+   "name": "Rothenbrunnen/Isla Bella",
+   "s": 17866,
+   "ein": 18.02,
+   "aus": 21.69
+  },
+  {
+   "id": "CH:0238",
+   "name": "Rothenbrunnen S",
+   "s": 20698,
+   "ein": 21.17,
+   "aus": 24.83
+  },
+  {
+   "id": "CH:0322",
+   "name": "Zillis/Bargias",
+   "s": 33772,
+   "ein": 35.69,
+   "aus": 39.36
+  },
+  {
+   "id": "CH:0539",
+   "name": "Hinterrhein",
+   "s": 60347,
+   "ein": 65.22,
+   "aus": 68.89
+  },
+  {
+   "id": "CH:0044",
+   "name": "San Bernardino-Tunnel",
+   "s": 71298,
+   "ein": 77.42,
+   "aus": 80
+  }
+ ]
+}

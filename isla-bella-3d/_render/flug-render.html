@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<title>A13-Flug (Render)</title>
+<link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.123/Build/Cesium/Widgets/widgets.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@600;700&display=swap">
+<style>
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#view{position:absolute;inset:0}
+.cesium-viewer-bottom{display:none}
+</style>
+</head>
+<body>
+<div id="view"></div>
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.123/Build/Cesium/Cesium.js"></script>
+<script>
+// Renders the A13 camera flight frame by frame for the video: window.bild(s) places the camera at
+// road metre s and resolves once every terrain and imagery tile is loaded. Driven by render_flug.mjs.
+window.bereit = (async () => {
+  const A13 = await (await fetch('../a13.json')).json();
+  const STR = (await (await fetch('../strecken.json')).json()).strecken;
+  Cesium.Ion.defaultAccessToken = '';
+  const viewer = new Cesium.Viewer('view', {
+    baseLayer: new Cesium.ImageryLayer(new Cesium.UrlTemplateImageryProvider({
+      url: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg',
+      minimumLevel: 8, maximumLevel: 19, credit: 'swisstopo SWISSIMAGE',
+      rectangle: Cesium.Rectangle.fromDegrees(5.9, 45.8, 10.5, 47.85)})),
+    terrainProvider: await Cesium.CesiumTerrainProvider.fromUrl('https://3d.geo.admin.ch/ch.swisstopo.terrain.3d/v1', {requestVertexNormals: false}),
+    animation: false, timeline: false, baseLayerPicker: false, geocoder: false, homeButton: false,
+    sceneModePicker: false, navigationHelpButton: false, fullscreenButton: false, infoBox: false, selectionIndicator: false,
+    skyAtmosphere: new Cesium.SkyAtmosphere(), useDefaultRenderLoop: false,
+    contextOptions: {webgl: {preserveDrawingBuffer: true}}
+  });
+  const sc = viewer.scene, g = sc.globe;
+  g.depthTestAgainstTerrain = true; g.maximumScreenSpaceError = +(new URLSearchParams(location.search).get('sse') || 2); g.tileCacheSize = 2000;
+  g.preloadSiblings = true; sc.fog.enabled = true;
+  // fixed sun: mid-morning in autumn, so every render looks the same
+  g.enableLighting = true; viewer.clock.currentTime = Cesium.JulianDate.fromIso8601('2026-10-15T09:30:00Z'); viewer.clock.shouldAnimate = false;
+
+  const pfad = pts => {
+    const c = pts.map(([lo, la]) => Cesium.Cartographic.fromDegrees(lo, la)), s = [0];
+    for (let i = 1; i < c.length; i++) s.push(s[i - 1] + new Cesium.EllipsoidGeodesic(c[i - 1], c[i]).surfaceDistance);
+    return {c, s, L: s[s.length - 1]};
+  };
+  const lage = (p, t) => {
+    let i = 1; while (i < p.s.length - 1 && p.s[i] < t) i++;
+    const f = (t - p.s[i - 1]) / (p.s[i] - p.s[i - 1] || 1), a = p.c[i - 1], b = p.c[i];
+    return new Cesium.Cartographic(a.longitude + (b.longitude - a.longitude) * f, a.latitude + (b.latitude - a.latitude) * f);
+  };
+  const FP = pfad(A13.pfad), P = new URLSearchParams(location.search);
+  const OBEN = +(P.get('oben') || 450), VORAUS = +(P.get('voraus') || 2000), SCHRITT = 100;
+  const glatt = (a, w) => a.map((_, i) => { const t = a.slice(Math.max(0, i - w), i + w + 1); return t.reduce((x, y) => x + y, 0) / t.length; });
+  const roh = A13.hoehe_100m, boden = glatt(roh, 3);
+  const kamera = glatt(roh.map((_, i) => Math.max(...roh.slice(Math.max(0, i - 15), i + 6))), 10).map(h => h + OBEN);
+  const H = (a, t) => { const x = Math.max(0, Math.min(a.length - 1, t / SCHRITT)), i = Math.floor(x), j = Math.min(i + 1, a.length - 1); return a[i] + (a[j] - a[i]) * (x - i); };
+  const pose = s => {
+    const c = lage(FP, s), z = lage(FP, s + VORAUS);
+    const cam = Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, H(kamera, s));
+    const ziel = Cesium.Cartesian3.fromRadians(z.longitude, z.latitude, H(boden, s + VORAUS));
+    const dir = Cesium.Cartesian3.normalize(Cesium.Cartesian3.subtract(ziel, cam, new Cesium.Cartesian3()), new Cesium.Cartesian3());
+    const oben = Cesium.Ellipsoid.WGS84.geodeticSurfaceNormal(cam, new Cesium.Cartesian3());
+    const re = Cesium.Cartesian3.normalize(Cesium.Cartesian3.cross(dir, oben, new Cesium.Cartesian3()), new Cesium.Cartesian3());
+    return {destination: cam, orientation: {direction: dir, up: Cesium.Cartesian3.cross(re, dir, new Cesium.Cartesian3())}};
+  };
+
+  // counters on the route: neutral dot + name (live status is drawn on top of the video, not baked in)
+  const k = la => Math.cos(la * Math.PI / 180);
+  const halte = [];
+  for (const id of A13.zaehlstellen) {
+    const [lo, la] = STR[id].punkt;
+    let b = 0; A13.pfad.forEach(([x, y], i) => { const [bx, by] = A13.pfad[b]; if (Math.hypot((x - lo) * k(la), y - la) < Math.hypot((bx - lo) * k(la), by - la)) b = i; });
+    halte.push({id, name: STR[id].name, s: FP.s[b]});
+    const h = H(boden, FP.s[b]) + 6;
+    viewer.entities.add({position: Cesium.Cartesian3.fromDegrees(lo, la, h),
+      point: {pixelSize: 22, color: Cesium.Color.WHITE, outlineColor: Cesium.Color.fromCssColorString('#0068a4'), outlineWidth: 6, disableDepthTestDistance: 4000},
+      label: {text: STR[id].name, font: '700 34px "Source Sans 3", sans-serif', fillColor: Cesium.Color.WHITE, outlineColor: Cesium.Color.fromBytes(20, 32, 42),
+              outlineWidth: 6, style: Cesium.LabelStyle.FILL_AND_OUTLINE, pixelOffset: new Cesium.Cartesian2(0, -38), disableDepthTestDistance: 4000,
+              distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 12000)}});
+  }
+  await document.fonts.ready;
+
+  const warte = () => new Promise(r => requestAnimationFrame(r));
+  window.bild = async s => {
+    viewer.camera.setView(pose(s));
+    // at least two passes (the first one only picks the tiles for the new view), then until all are loaded
+    let n = 0;
+    do { viewer.render(); n++; await warte(); } while ((n < 2 || !g.tilesLoaded) && n < 3000);
+    return n;   // number of renders, for timing
+  };
+  return {L: FP.L, ende: FP.L - VORAUS, halte};
+})();
+</script>
+</body>
+</html>

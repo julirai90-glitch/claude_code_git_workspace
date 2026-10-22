@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>A13-Flug live</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{--blau:#0068a4;--text:#14202a;--grau:#4a5b68}
+html,body{margin:0;background:#fff;font-family:"Source Sans 3",system-ui,sans-serif;color:var(--text)}
+#rahmen{position:relative;width:100%;max-width:696px;margin:0 auto;aspect-ratio:9/16;background:#000;overflow:hidden}
+video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.karte{position:absolute;left:12px;right:12px;background:rgba(255,255,255,.93);border-radius:8px;padding:10px 13px;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+#oben{top:12px;transition:opacity .4s}
+#oben .ort{font-size:22px;font-weight:700;line-height:1.15}
+#oben .strasse{font-size:13px;color:var(--grau);font-weight:600}
+.ri{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:15px;line-height:1.25}
+.ri b{white-space:nowrap}
+.lage{font-weight:700}
+#unten{bottom:12px;padding:10px 13px 8px}
+#leiste{position:relative;height:22px;margin:4px 6px 0}
+#leiste .linie{position:absolute;left:0;right:0;top:10px;height:3px;background:#c9d3da;border-radius:2px}
+#leiste .weg{position:absolute;left:0;top:10px;height:3px;background:var(--blau);border-radius:2px}
+#leiste .zs{position:absolute;top:4px;width:15px;height:15px;margin-left:-7.5px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #8c9aa5;background:#8c9aa5}
+#leiste .zs.jetzt{box-shadow:0 0 0 3px var(--text)}
+.enden{display:flex;justify-content:space-between;font-size:12px;color:var(--grau);font-weight:600}
+.legende{font-size:12px;color:var(--grau);margin-top:4px}
+#knopf{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;border:0;background:rgba(0,104,164,.92);color:#fff;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#quelle{font-size:12px;color:var(--grau);max-width:696px;margin:6px auto 0;padding:0 2px;line-height:1.35}
+@media (max-width:420px){#oben .ort{font-size:19px}.ri{font-size:14px}}
+</style>
+</head>
+<body>
+<div id="rahmen">
+  <video id="vid" src="flug-a13-720.mp4" poster="flug-a13-poster.jpg" muted playsinline preload="metadata"></video>
+  <div class="karte" id="oben">
+    <div class="strasse">A13 · Zählstelle</div>
+    <div class="ort" id="ort">Chur Nord</div>
+    <div id="werte"></div>
+  </div>
+  <button id="knopf" aria-label="Abspielen">▶</button>
+  <div class="karte" id="unten">
+    <div class="enden"><span>Chur</span><span>San Bernardino</span></div>
+    <div id="leiste"><div class="linie"></div><div class="weg" id="weg"></div></div>
+    <div class="legende"><span style="color:#0068a4">●</span> wie üblich &nbsp;<span style="color:#e0b020">●</span> langsamer &nbsp;<span style="color:#ee7733">●</span> deutlich langsamer &nbsp;<span style="color:#8c9aa5">●</span> keine Daten</div>
+    <div class="legende" id="stand">Verkehrsdaten werden geladen …</div>
+  </div>
+</div>
+<div id="quelle">Luftbild und Gelände: swisstopo. Strassenachse: Astra. Verkehr: Astra-Zählstellen (opentransportdata.swiss), live, jede Minute neu. Der Kameraflug ist gestaltet und stark beschleunigt; «üblich» heisst: gleiche Zeit an vergleichbaren Tagen.</div>
+<script>
+(async () => {
+  const vid = document.getElementById('vid'), knopf = document.getElementById('knopf');
+  const LAGE = {frei: ['wie üblich', '#0068a4'], zaeh: ['langsamer', '#e0b020'], stau: ['deutlich langsamer', '#ee7733'], keine_daten: ['keine Daten', '#8c9aa5']};
+  const schlimmst = s => ['stau', 'zaeh', 'frei', 'keine_daten'].find(x => Object.values(s.dirs).some(d => d.status === x)) || 'keine_daten';
+  const PLAN = await (await fetch('flug-a13-zeitplan.json')).json();
+  const L = Math.max(...PLAN.halte.map(h => h.s));
+  const leiste = document.getElementById('leiste'), PUNKT = {};
+  for (const h of PLAN.halte) {
+    const d = document.createElement('div'); d.className = 'zs'; d.style.left = (h.s / L * 100) + '%'; d.title = h.name;
+    leiste.appendChild(d); PUNKT[h.id] = d;
+  }
+  let SITES = {};
+  async function laden() {
+    try {
+      const d = await (await fetch('https://n8n.julianreich.ch/webhook/verkehr-data?f=latest', {cache: 'no-store'})).json();
+      SITES = Object.fromEntries(d.sites.map(s => [s.id, s]));
+      for (const h of PLAN.halte) PUNKT[h.id].style.background = LAGE[SITES[h.id] ? schlimmst(SITES[h.id]) : 'keine_daten'][1];
+      const ts = Math.max(...PLAN.halte.map(h => SITES[h.id] ? +new Date(SITES[h.id].ts) : 0));
+      document.getElementById('stand').textContent = ts ? 'Stand ' + new Date(ts).toLocaleTimeString('de-CH', {hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Zurich'}) + ' Uhr' : 'Keine aktuellen Verkehrsdaten';
+      zeige(true);
+    } catch (e) { document.getElementById('stand').textContent = 'Live-Daten nicht erreichbar'; }
+  }
+  let jetzt = null;
+  function zeige(neu) {
+    const t = vid.currentTime;
+    const h = PLAN.halte.find(x => t >= x.ein && t <= x.aus) || PLAN.halte.filter(x => x.ein <= t).pop() || PLAN.halte[0];
+    // progress bar: road metre at the current time, interpolated between counters
+    const a = PLAN.halte.filter(x => x.aus <= t).pop(), b = PLAN.halte.find(x => x.aus > t);
+    const s = !a ? (b ? b.s * t / b.aus : 0) : !b ? L : a.s + (b.s - a.s) * (t - a.aus) / (b.aus - a.aus);
+    document.getElementById('weg').style.width = Math.min(100, s / L * 100) + '%';
+    if (h.id === jetzt && !neu) return;
+    if (jetzt) PUNKT[jetzt].classList.remove('jetzt');
+    jetzt = h.id; PUNKT[jetzt].classList.add('jetzt');
+    const site = SITES[h.id];
+    document.getElementById('ort').textContent = h.name;
+    document.getElementById('werte').innerHTML = !site ? '<div class="ri">keine aktuellen Messwerte</div>' : Object.values(site.dirs).map(d => {
+      const l = LAGE[d.status] || LAGE.keine_daten;
+      const w = d.status === 'keine_daten' || d.speed == null ? 'keine Messwerte' : `${Math.round(d.speed)} km/h · ${Math.round(d.flow ?? 0).toLocaleString('de-CH')} Fz/h`;
+      return `<div class="ri"><span>${d.label}</span><b>${w}</b></div><div class="lage" style="color:${l[1]};font-size:14px">${l[0]}</div>`;
+    }).join('');
+  }
+  vid.addEventListener('timeupdate', () => zeige(false));
+  vid.addEventListener('play', () => { knopf.textContent = '❚❚'; knopf.setAttribute('aria-label', 'Anhalten'); });
+  vid.addEventListener('pause', () => { knopf.textContent = '▶'; knopf.setAttribute('aria-label', 'Abspielen'); });
+  vid.addEventListener('ended', () => { knopf.textContent = '↻'; knopf.setAttribute('aria-label', 'Nochmals'); });
+  knopf.onclick = () => vid.paused ? vid.play() : vid.pause();
+  // play once the video scrolls into view, pause when it leaves
+  new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting && e.intersectionRatio > 0.6 && vid.currentTime === 0) vid.play().catch(() => {});
+    if (!e.isIntersecting && !vid.paused) vid.pause();
+  }), {threshold: [0, 0.6]}).observe(vid);
+  await laden(); setInterval(laden, 60000);
+})();
+</script>
+</body>
+</html>
