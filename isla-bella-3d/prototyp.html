@@ -39,6 +39,7 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   <div class="muted">Farbe der Fahrzeuge = gemessenes Tempo</div>
   <div class="grad"></div>
   <div class="ticks"><span>0</span><span>20</span><span>50</span><span>80 km/h</span></div>
+  <div class="muted" style="margin-top:6px">Drehen und neigen: rechte Maustaste ziehen, auf dem Handy zwei Finger</div>
   <div class="muted" style="margin-top:6px">Punkte = Zählstellen (antippen), Tempo im Vergleich zu üblich:</div>
   <div style="font-size:12px"><span style="color:#0068a4">●</span> wie üblich &nbsp;<span style="color:#e0b020">●</span> langsamer &nbsp;<span style="color:#ee7733">●</span> deutlich langsamer &nbsp;<span style="color:#8c9aa5">●</span> keine Daten</div>
 </div>
@@ -81,15 +82,34 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
     const l = Cesium.Matrix4.multiplyByPointAsVector(inv, off, new Cesium.Cartesian3());
     const range = Cesium.Cartesian3.magnitude(l);
     viewer.camera.lookAt(mitte, new Cesium.HeadingPitchRange(Math.atan2(-l.x, -l.y), -Math.asin(l.z / range), range));
+    viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);   // Lage behalten, Navigation wieder frei
   };
-  start();
+  // Startbild: ganz Graubuenden, von Sueden gesehen
+  const GR = {destination: Cesium.Cartesian3.fromDegrees(9.55, 45.95, 95000), orientation: {heading: 0, pitch: Cesium.Math.toRadians(-50)}};
+  viewer.camera.setView(GR);
+  // Maus: links verschieben, rechts ziehen drehen/neigen, Rad zoomen; Touch: zwei Finger drehen/neigen
+  const ssc = sc.screenSpaceCameraController;
+  ssc.tiltEventTypes = [Cesium.CameraEventType.RIGHT_DRAG, Cesium.CameraEventType.MIDDLE_DRAG, Cesium.CameraEventType.PINCH,
+    {eventType: Cesium.CameraEventType.LEFT_DRAG, modifier: Cesium.KeyboardEventModifier.CTRL}];
+  ssc.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
+  sc.canvas.addEventListener('contextmenu', e => e.preventDefault());
+  // Drehen um den Bodenpunkt in der Bildmitte (nicht um den Erdmittelpunkt)
+  const umMitte = () => {
+    const c = new Cesium.Cartesian2(sc.canvas.clientWidth / 2, sc.canvas.clientHeight / 2);
+    const ziel = sc.globe.pick(viewer.camera.getPickRay(c), sc);
+    if (!ziel) return false;
+    const r = Cesium.Cartesian3.distance(viewer.camera.positionWC, ziel);
+    viewer.camera.lookAt(ziel, new Cesium.HeadingPitchRange(viewer.camera.heading, viewer.camera.pitch, r));
+    return true;
+  };
   let dreht = false;
   viewer.clock.onTick.addEventListener(() => { if (dreht) viewer.camera.rotateRight(0.002); });
   const knopf = (txt, fn, x) => { const b = document.createElement('button'); b.textContent = txt; b.onclick = fn;
     b.style.cssText = `position:absolute;right:${x}px;bottom:34px;font:600 14px "Source Sans 3",sans-serif;padding:7px 12px;border:0;border-radius:6px;background:#0068a4;color:#fff;cursor:pointer`;
     document.body.appendChild(b); return b; };
-  const bd = knopf('Drehen', () => { dreht = !dreht; bd.textContent = dreht ? 'Anhalten' : 'Drehen'; }, 10);
-  knopf('Ausgangsansicht', () => { dreht = false; bd.textContent = 'Drehen'; start(); }, 100);
+  const stopp = () => { dreht = false; bd.textContent = 'Drehen'; viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY); };
+  const bd = knopf('Drehen', () => { if (dreht) stopp(); else if (umMitte()) { dreht = true; bd.textContent = 'Anhalten'; } }, 10);
+  knopf('Isla Bella', () => { stopp(); start(); }, 100);
 
   // Strassenachse (swissTLM3D) als Pfad; Fahrzeuge als Punkte am Boden
   const pfad = pts => {
@@ -182,7 +202,7 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   new Cesium.ScreenSpaceEventHandler(sc.canvas).setInputAction(async ev => {
     const p = sc.pick(ev.position);
     if (!p || !p.id || !p.id.site) return;
-    dreht = false; bd.textContent = 'Drehen';
+    stopp();
     zeige(p.id);
     viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
     // Zielhoehe aus dem swisstopo-Gelaende, sonst fliegt die Kamera in den Berg
@@ -192,14 +212,14 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
       {offset: new Cesium.HeadingPitchRange(viewer.camera.heading, Cesium.Math.toRadians(-35), 3500), duration: 2.5});
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
   knopf('Ganz Graubünden', () => {
-    dreht = false; bd.textContent = 'Drehen'; panel.style.display = 'none';
+    stopp(); panel.style.display = 'none';
     viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
-    viewer.camera.flyTo({destination: Cesium.Cartesian3.fromDegrees(9.55, 45.95, 95000), orientation: {heading: 0, pitch: Cesium.Math.toRadians(-50)}, duration: 3});
-  }, 248);
+    viewer.camera.flyTo({...GR, duration: 3});
+  }, 192);
 
   // ---- Auswahlliste: jede Zaehlstelle direkt anfliegen
   const fliege = async e => {
-    dreht = false; bd.textContent = 'Drehen'; zeige(e);
+    stopp(); zeige(e);
     viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
     const c = Cesium.Cartographic.fromCartesian(e.position.getValue(viewer.clock.currentTime));
     const [g] = await Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [c]);
