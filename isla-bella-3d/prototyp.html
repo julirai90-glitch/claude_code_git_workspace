@@ -43,7 +43,7 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   <div class="muted" style="margin-top:6px">Punkte = Zählstellen (antippen), Tempo im Vergleich zu üblich:</div>
   <div style="font-size:12px"><span style="color:#0068a4">●</span> wie üblich &nbsp;<span style="color:#e0b020">●</span> langsamer &nbsp;<span style="color:#ee7733">●</span> deutlich langsamer &nbsp;<span style="color:#8c9aa5">●</span> keine Daten</div>
 </div>
-<div class="box" id="proto"><b>Prototyp</b> – gemessen: Gelände, Luftbild, Strassenachse (swisstopo), Menge und Tempo (Astra-Zählstelle). Gestaltet: Lage der einzelnen Fahrzeuge, 4-fach schnellere Bewegung, Kamerastandort. Sonnenlicht zur aktuellen Uhrzeit.</div>
+<div class="box" id="proto"><b>Prototyp</b> – gemessen: Gelände, Luftbild, Strassenachse (swisstopo), Menge und Tempo (Astra-Zählstelle). Gestaltet: Lage der einzelnen Fahrzeuge, 4-fach schnellere Bewegung, Kamerastandort und Kameraflug. Sonnenlicht zur aktuellen Uhrzeit.</div>
 <div id="cred">Geodaten © swisstopo · Verkehr: Astra (opentransportdata.swiss)</div>
 
 <script src="https://cesium.com/downloads/cesiumjs/releases/1.123/Build/Cesium/Cesium.js"></script>
@@ -107,7 +107,8 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
   const knopf = (txt, fn, x) => { const b = document.createElement('button'); b.textContent = txt; b.onclick = fn;
     b.style.cssText = `position:absolute;right:${x}px;bottom:34px;font:600 14px "Source Sans 3",sans-serif;padding:7px 12px;border:0;border-radius:6px;background:#0068a4;color:#fff;cursor:pointer`;
     document.body.appendChild(b); return b; };
-  const stopp = () => { dreht = false; bd.textContent = 'Drehen'; viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY); };
+  let flugStopp = () => {};
+  const stopp = () => { flugStopp(); dreht = false; bd.textContent = 'Drehen'; viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY); };
   const bd = knopf('Drehen', () => { if (dreht) stopp(); else if (umMitte()) { dreht = true; bd.textContent = 'Anhalten'; } }, 10);
   knopf('Isla Bella', () => { stopp(); start(); }, 100);
 
@@ -302,6 +303,55 @@ html,body{margin:0;height:100%;background:#000;font-family:"Source Sans 3",syste
         });
       }
     }
+  });
+  // ---- Kameraflug ueber die A13 (Astra-Achse Chur Nord - San Bernardino): Kamera ueber der Strasse, Blick 2 km voraus
+  const A13 = await (await fetch('a13.json')).json();
+  const FP = pfad(A13.pfad), FLUG_V = 700, VORAUS = 2000;   // m Strasse pro Sekunde (gestaltet)
+  let flug = null, flugT = 0;
+  const flugKnopf = document.createElement('button');
+  flugKnopf.textContent = '▶ Flug über die A13';
+  flugKnopf.style.cssText = 'margin-top:6px;width:100%;font:600 15px "Source Sans 3",sans-serif;padding:7px;border:0;border-radius:5px;background:#0068a4;color:#fff;cursor:pointer';
+  document.getElementById('info').insertBefore(flugKnopf, panel);
+  // Gelaende alle 100 m (aus a13.json); Kamerahoehe = hoechster Punkt 1,5 km zurueck bis 0,5 km voraus + 450 m, geglaettet
+  const vorbereiten = async () => {
+    const SCHRITT = 100, roh = A13.hoehe_100m;
+    const max = roh.map((_, i) => Math.max(...roh.slice(Math.max(0, i - 15), i + 6)));
+    const glatt = (a, w) => a.map((_, i) => { const t = a.slice(Math.max(0, i - w), i + w + 1); return t.reduce((x, y) => x + y, 0) / t.length; });
+    const sVon = id => { const [lo, la] = STR[id].punkt, k = Math.cos(la * Math.PI / 180);
+      let b = 0; A13.pfad.forEach(([x, y], i) => { const [bx, by] = A13.pfad[b]; if (Math.hypot((x - lo) * k, y - la) < Math.hypot((bx - lo) * k, by - la)) b = i; });
+      return FP.s[b]; };
+    return {SCHRITT, boden: glatt(roh, 3), kamera: glatt(max, 10).map(h => h + 450), halte: A13.zaehlstellen.filter(id => MARK[id] && STR[id]).map(id => [sVon(id), id])};
+  };
+  const pose = s => {
+    const H = (a, t) => { const x = Math.max(0, Math.min(a.length - 1, t / flug.SCHRITT)), i = Math.floor(x), j = Math.min(i + 1, a.length - 1); return a[i] + (a[j] - a[i]) * (x - i); };
+    const c = Cesium.Cartographic.fromCartesian(lage(FP, s)), z = Cesium.Cartographic.fromCartesian(lage(FP, s + VORAUS));
+    const cam = Cesium.Cartesian3.fromRadians(c.longitude, c.latitude, H(flug.kamera, s));
+    const ziel = Cesium.Cartesian3.fromRadians(z.longitude, z.latitude, H(flug.boden, s + VORAUS));
+    const dir = Cesium.Cartesian3.normalize(Cesium.Cartesian3.subtract(ziel, cam, new Cesium.Cartesian3()), new Cesium.Cartesian3());
+    const oben = Cesium.Ellipsoid.WGS84.geodeticSurfaceNormal(cam, new Cesium.Cartesian3());
+    const re = Cesium.Cartesian3.normalize(Cesium.Cartesian3.cross(dir, oben, new Cesium.Cartesian3()), new Cesium.Cartesian3());
+    return {destination: cam, orientation: {direction: dir, up: Cesium.Cartesian3.cross(re, dir, new Cesium.Cartesian3())}};
+  };
+  flugStopp = () => { if (flug) flug.aktiv = false; flugKnopf.textContent = '▶ Flug über die A13'; };
+  flugKnopf.onclick = async () => {
+    if (flug && flug.aktiv) return flugStopp();
+    stopp(); viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    flugKnopf.textContent = 'Flug wird vorbereitet …';
+    if (!flug) flug = await vorbereiten();
+    Object.assign(flug, {s: 0, aktiv: true, laeuft: false, zeigt: null});
+    flugKnopf.textContent = '■ Flug beenden';
+    viewer.camera.flyTo({...pose(0), duration: 2.5, complete: () => { if (flug.aktiv) { flug.laeuft = true; flugT = performance.now(); } }});
+  };
+  // jede Beruehrung der Karte beendet den Flug
+  sc.canvas.addEventListener('pointerdown', () => flugStopp()); sc.canvas.addEventListener('wheel', () => flugStopp());
+  viewer.clock.onTick.addEventListener(() => {
+    if (!flug || !flug.aktiv || !flug.laeuft) return;
+    const now = performance.now(); flug.s += FLUG_V * Math.min(0.1, (now - flugT) / 1000); flugT = now;
+    if (flug.s >= FP.L - VORAUS) { flugStopp(); return; }
+    viewer.camera.setView(pose(flug.s));
+    // Zaehlstelle voraus im Infokasten zeigen
+    const h = flug.halte.find(([x]) => x > flug.s - 300 && x < flug.s + VORAUS + 1000);
+    if (h && h[1] !== flug.zeigt) { flug.zeigt = h[1]; zeige(MARK[h[1]]); }
   });
 })();
 </script>
