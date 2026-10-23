@@ -19,6 +19,9 @@ Arbeitsgedächtnis für spätere Sessions. Stand 23.10.2026.
 | `gelaende.bin.gz` / `.json` | 20-m-Höhenraster 12 × 12 km (2754–2766 / 1185–1197 km LV95), uint16 Dezimeter |
 | `_bau_gebaeude.py` | Baut die Gebäudedateien (fiona, shapely, numpy, mapbox-earcut) |
 | `_bau_gelaende.py` | Baut das Gelände (numpy, tifffile, imagecodecs) |
+| `boden.jpg` | Bodenkarte 4096 × 4096 px (≈ 2,9 m/px), deckt das Geländenetz exakt ab |
+| `orte.json` | 23 Quartiernamen + 11 Wahrzeichen für die Beschriftung |
+| `_bau_boden.py` | Baut `boden.jpg` und `orte.json` (mapbox-vector-tile, pyproj, pillow, shapely) |
 
 Bauskripte laden Rohdaten nach `~/.cache/chur-3d` (nie ins Repo). Laufzeit ca. 1¼ min bzw. 40 s.
 
@@ -45,6 +48,20 @@ Bauskripte laden Rohdaten nach `~/.cache/chur-3d` (nie ins Repo). Laufzeit ca. 1
 - **Gemeindegrenze**: geo.admin `find` auf `ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill`,
   liefert alle Jahre seit 1850 (`jahr`, `is_current_jahr`).
 - geo.admin SearchServer: `x` = Nord, `y` = Ost (vertauscht!). St. Martinsplatz 1: 2759669 / 1190711.
+
+## Design (23.10.2026, nach Julians Feedback «wie Lenzburg»)
+
+- Hell, Karte als Boden, Steildächer rot, Flachdächer grau, Fassaden hell. Baujahr und Nutzung als Ebenen.
+- Bodenkarte selbst gezeichnet aus der **swisstopo-Basiskarte (Vektor)**:
+  `https://vectortiles0.geo.admin.ch/tiles/ch.swisstopo.base.vt/v1.0.0/{z}/{x}/{y}.pbf`, max. Zoom 14,
+  Antwort gzip-komprimiert. Farben angelehnt an den Stil `ch.swisstopo.lightbasemap.vt`.
+  Eine fertige helle Rasterkarte gibt es im WMTS nicht (nur Landeskarte farbig/grau, zu unruhig).
+- Ortsnamen aus derselben Quelle: Layer `place` (class `neighbourhood`, innerhalb Grenze 2019) und
+  ausgewählte `poi` (Liste `LANDMARKS` im Skript, Name exakt wie in der Basiskarte).
+- **Stolperstein Flächenausrichtung:** swissBUILDINGS3D speichert Flachdächer oft nach unten zeigend
+  und Böden nach oben. Böden deshalb über die Höhe erkennen (waagrecht und < 1 m über Gebäudeunterkante),
+  nicht über die Ausrichtung – sonst fehlen die Flachdächer und man sieht in leere Gebäude.
+  Im Browser beidseitig beleuchten (`DoubleSide`), Dach/Wand über |Normale.y|.
 
 ## Bekannte Lücken (auch auf der Seite genannt)
 
