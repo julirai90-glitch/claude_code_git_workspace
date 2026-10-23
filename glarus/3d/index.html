@@ -8,14 +8,14 @@
 <link rel="icon" href="data:,">
 <style>
   :root {
-    --bg: #15181c; --panel: rgba(21,24,28,.88); --ink: #eef0f2; --muted: #9aa3ad;
-    --line: rgba(255,255,255,.12); --accent: #ffffff;
+    --bg: #e6eaec; --panel: rgba(255,255,255,.95); --ink: #1d2125; --muted: #5f6870;
+    --line: rgba(0,0,0,.12); --accent: #2563eb;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
     font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
   #scene { position: fixed; inset: 0; }
-  .panel { position: fixed; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  .panel { position: fixed; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08);
     backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   #head { top: 12px; left: 12px; padding: 10px 14px; max-width: 340px; }
   #head h1 { margin: 0; font-size: 18px; letter-spacing: .01em; }
@@ -36,7 +36,7 @@
   #yearlabel { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; min-width: 72px; }
   #count { color: var(--muted); font-size: 12.5px; flex: 1; min-width: 180px; }
   #hist { width: 100%; height: 46px; display: block; margin-top: 6px; }
-  #slider { width: 100%; margin: 2px 0 0; accent-color: #f6c25b; }
+  #slider { width: 100%; margin: 2px 0 0; accent-color: #b5523b; }
   .axis { position: relative; height: 15px; color: var(--muted); font-size: 11px; }
   .axis span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
   .axis span:first-child, .axis span:last-child { transform: none; }
@@ -48,6 +48,13 @@
   details p { margin: 4px 0; }
   #tools { position: fixed; right: 12px; bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
   #tools .tool { background: var(--panel); width: 36px; height: 36px; padding: 0; font-size: 16px; }
+  #labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  #labels div { position: absolute; left: 0; top: 0; white-space: nowrap; will-change: transform; }
+  #labels .l { background: #fff; color: #1d2125; font-size: 11.5px; font-weight: 600; padding: 2px 6px;
+    border: 1px solid rgba(0,0,0,.18); border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+  #labels .l::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: 14px; background: rgba(0,0,0,.45); }
+  #labels .q { color: #4a5157; font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff; }
   #loading { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 14px; }
   @media (max-width: 760px) {
     #head { right: 12px; max-width: none; padding: 8px 12px; }
@@ -56,16 +63,18 @@
     #bottom { right: 60px; padding: 8px 10px 6px; }
     #yearlabel { font-size: 22px; min-width: 60px; }
     #count { min-width: 0; font-size: 12px; }
+    .axis span:nth-child(2), .axis span:nth-child(5) { display: none; }
   }
 </style>
 </head>
 <body>
 <div id="scene"></div>
+<div id="labels"></div>
 <div id="loading">Glarus wird geladen …</div>
 
 <div id="head" class="panel">
   <h1>Glarus 3D <span style="font-weight:400;color:var(--muted);font-size:12px">Prototyp</span></h1>
-  <p>Alle Gebäude von Glarus und Ennenda, eingefärbt nach Baujahr. Schieber ziehen: Wie der Ort gewachsen ist. Gebäude antippen für Details.</p>
+  <p>Alle Gebäude von Glarus und Ennenda. Ebene «Baujahr» wählen und den Schieber ziehen: So ist der Ort gewachsen. Gebäude antippen für Details.</p>
 </div>
 
 <div id="info" class="panel">
@@ -81,7 +90,8 @@
     <button id="play" aria-label="Zeitreise abspielen">▶ Zeitreise</button>
     <span id="count"></span>
     <span class="modes" role="group" aria-label="Einfärbung">
-      <button data-mode="year" class="on">Baujahr</button>
+      <button data-mode="map" class="on">Karte</button>
+      <button data-mode="year">Baujahr</button>
       <button data-mode="use">Nutzung</button>
     </span>
   </div>
@@ -92,7 +102,7 @@
   <details>
     <summary>Was ist gemessen, was nicht?</summary>
     <p><b>Gemessen:</b> Gebäudeformen aus swissBUILDINGS3D 3.0 (swisstopo, Ausgabe 2019), Gelände aus swissALTI3D
-      (swisstopo), Baujahr, Nutzung, Geschosse und Adresse aus dem GWR (BFS, Export <span id="gwrdate"></span>).
+      und Basiskarte (swisstopo), Baujahr, Nutzung, Geschosse und Adresse aus dem GWR (BFS, Export <span id="gwrdate"></span>).
       Gebiet: die früheren Gemeinden Glarus und Ennenda (Grenzen vor der Fusion 2011), zugeschnitten auf den Talboden.</p>
     <p><b>Lücken:</b> Die Zeitreise zeigt nur Gebäude, die heute noch stehen. Abgerissene und abgebrannte Häuser fehlen, der Ort
       von 1900 war also dichter, als er hier aussieht. Baujahr und Gebäude sind über die Lage verknüpft
@@ -126,9 +136,10 @@ const NOW = 2026;
 const START = [2723551, 1211430];   // Glarus (geo.admin location search)
 
 // ---------- colours
-const YEAR_STOPS = [[1800, "#6a3d9a"], [1880, "#8a3f9e"], [1920, "#b23a7d"], [1950, "#e0605e"],
-                    [1975, "#f39545"], [2000, "#f7c948"], [2026, "#fdf3b0"]];
-const UNKNOWN = "#7c8590";
+const YEAR_STOPS = [[1800, "#2d1e5f"], [1880, "#5b2a86"], [1920, "#9c3587"], [1950, "#d4486f"],
+                    [1975, "#ef7d3c"], [2000, "#f3b234"], [2026, "#e3d44a"]];
+const UNKNOWN = "#9aa1a8";
+const ROOF = "#b5523b", FLAT = "#b9b4ac", WALL = "#efebe4", FRESH = "#2563eb";
 const USE = {
   wohnen: ["Wohnen", "#6fa8e6"],
   arbeit: ["Arbeit, Handel, Industrie", "#f0a35e"],
@@ -161,11 +172,11 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 el.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#15181c");
-scene.fog = new THREE.Fog("#15181c", 6000, 14000);
+scene.background = new THREE.Color("#e6eaec");
+scene.fog = new THREE.Fog("#e6eaec", 7000, 16000);
 const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 5, 40000);
-scene.add(new THREE.HemisphereLight("#dfe8f2", "#2a2722", 1.4));
-const sun = new THREE.DirectionalLight("#fff4e0", 2.2);
+scene.add(new THREE.HemisphereLight("#ffffff", "#8a8578", 1.9));
+const sun = new THREE.DirectionalLight("#fff6e8", 1.6);
 sun.position.set(-0.5, 1, 0.35);
 scene.add(sun);
 
@@ -183,9 +194,10 @@ async function inflate(url) {
   return new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
 }
 
-const [B, T, bBuf, tBuf] = await Promise.all([
+const [B, T, PLACES, bBuf, tBuf] = await Promise.all([
   fetch("gebaeude.json").then(r => r.json()),
   fetch("gelaende.json").then(r => r.json()),
+  fetch("orte.json").then(r => r.json()),
   inflate("gebaeude.bin.gz"),
   inflate("gelaende.bin.gz"),
 ]);
@@ -206,18 +218,14 @@ const hAt = (e, n) => {   // bilinear height in metres above sea level
   const w = (T.cols - 1) * T.cell, h = (T.rows - 1) * T.cell;
   const geo = new THREE.PlaneGeometry(w, h, T.cols - 1, T.rows - 1);
   geo.rotateX(-Math.PI / 2);
-  const p = geo.attributes.position, col = new Float32Array(p.count * 3);
-  const low = new THREE.Color("#3a4038"), mid = new THREE.Color("#4d544a"), high = new THREE.Color("#8d918f"), c = new THREE.Color();
-  for (let i = 0; i < p.count; i++) {
-    const z = heights[i] * T.zscale + T.zmin;
-    p.setY(i, z - ZB);
-    if (z < 1200) c.copy(low).lerp(mid, (z - 470) / 730);
-    else c.copy(mid).lerp(high, Math.min(1, (z - 1200) / 1200));
-    col.set([c.r, c.g, c.b], i * 3);
-  }
-  geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+  const p = geo.attributes.position;
+  for (let i = 0; i < p.count; i++) p.setY(i, heights[i] * T.zscale + T.zmin - ZB);
   geo.computeVertexNormals();
-  const mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, polygonOffset: true,
+  // boden.jpg covers exactly this plane (first to last cell centre), north at the top
+  const tex = new THREE.TextureLoader().load("boden.jpg");
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ map: tex, polygonOffset: true,
     polygonOffsetFactor: 2, polygonOffsetUnits: 2 }));
   const cx = T.west + T.cell / 2 + w / 2, cn = T.north - T.cell / 2 - h / 2;
   mesh.position.set(cx - OX, 0, -(cn - OY));
@@ -227,7 +235,7 @@ const hAt = (e, n) => {   // bilinear height in metres above sea level
 {
   const pts = B.boundary.map(([x, y]) => toLocal(x + OX, y + OY, hAt(x + OX, y + OY) + 4));
   const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
-    new THREE.LineDashedMaterial({ color: "#c9d1d9", dashSize: 40, gapSize: 30, transparent: true, opacity: .6 }));
+    new THREE.LineDashedMaterial({ color: "#6b4f8a", dashSize: 40, gapSize: 30, transparent: true, opacity: .7 }));
   line.computeLineDistances();
   scene.add(line);
 }
@@ -257,29 +265,36 @@ const colors = new Uint8Array(N * 3);
 bgeo.setAttribute("color", new THREE.BufferAttribute(colors, 3, true));
 bgeo.computeVertexNormals();
 
-const uniforms = { uYear: { value: NOW }, uFresh: { value: 0 }, uSel: { value: -1 } };
+const uniforms = { uYear: { value: NOW }, uFresh: { value: 0 }, uSel: { value: -1 }, uMap: { value: 1 } };
 const bidF = new Float32Array(bid);
 bgeo.setAttribute("aBid", new THREE.BufferAttribute(bidF, 1));
-const bmat = new THREE.MeshLambertMaterial({ vertexColors: true });
+// face winding in swissBUILDINGS3D is not consistent: light both sides
+const bmat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
 bmat.onBeforeCompile = sh => {
   Object.assign(sh.uniforms, uniforms);
-  sh.vertexShader = "attribute float aYear;\nattribute float aBid;\nvarying float vYear;\nvarying float vBid;\n" +
-    sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvYear = aYear; vBid = aBid;");
-  sh.fragmentShader = "uniform float uYear;\nuniform float uFresh;\nuniform float uSel;\nvarying float vYear;\nvarying float vBid;\n" +
+  const wall = new THREE.Color(WALL), flat = new THREE.Color(FLAT), fresh = new THREE.Color(FRESH);
+  sh.vertexShader = "attribute float aYear;\nattribute float aBid;\nvarying float vYear;\nvarying float vBid;\nvarying float vUp;\n" +
+    sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvYear = aYear; vBid = aBid; vUp = objectNormal.y;");
+  sh.fragmentShader = "uniform float uYear;\nuniform float uFresh;\nuniform float uSel;\nuniform float uMap;\nvarying float vYear;\nvarying float vBid;\nvarying float vUp;\n" +
     sh.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
       if (vYear > uYear + 0.5) discard;
-      if (vYear < -0.5 && uYear < ${NOW}.0) diffuseColor.rgb *= 0.35;
-      if (uFresh > 0.0 && vYear > uYear - uFresh) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0), 0.6);
-      if (abs(vBid - uSel) < 0.5) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.3, 0.9, 1.0), 0.7);`);
+      // walls: plain facade colour on the map, a pale tint of the layer colour otherwise
+      if (uMap > 0.5 && abs(vUp) > 0.97) diffuseColor.rgb = vec3(${flat.r}, ${flat.g}, ${flat.b});  // flat roofs
+      if (abs(vUp) < 0.35) diffuseColor.rgb = uMap > 0.5 ? vec3(${wall.r}, ${wall.g}, ${wall.b}) : mix(diffuseColor.rgb, vec3(1.0), 0.45);
+      if (vYear < -0.5 && uYear < ${NOW}.0) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.93), 0.75);
+      if (uFresh > 0.0 && vYear > uYear - uFresh) diffuseColor.rgb = vec3(${fresh.r}, ${fresh.g}, ${fresh.b});
+      if (abs(vBid - uSel) < 0.5) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.0, 0.75, 0.85), 0.75);`);
 };
 const bmesh = new THREE.Mesh(bgeo, bmat);
 scene.add(bmesh);
 
-let mode = "year";
+let mode = "map";
 function paint() {
+  uniforms.uMap.value = mode === "map" ? 1 : 0;
   const pal = meta.map(m => {
-    const c = mode === "year" ? (m.year < 0 ? new THREE.Color(UNKNOWN) : yearColor(m.year || 1700))
-                              : new THREE.Color(USE[m.use][1]);
+    const c = mode === "map" ? new THREE.Color(ROOF)
+      : mode === "year" ? (m.year < 0 ? new THREE.Color(UNKNOWN) : yearColor(m.year || 1700))
+      : new THREE.Color(USE[m.use][1]);
     return [c.r * 255, c.g * 255, c.b * 255];
   });
   for (let i = 0; i < N; i++) colors.set(pal[bid[i]], i * 3);
@@ -294,11 +309,15 @@ $("nojahr").textContent = B.stats.ohne.toLocaleString("de-CH");
 $("vor1919").textContent = meta.filter(m => m.p === "Vor 1919").length.toLocaleString("de-CH");
 function legend() {
   const L = $("legend");
-  if (mode === "year") {
+  if (mode === "map") {
+    L.innerHTML = `<span><i style="background:${ROOF}"></i>Steildach</span><span><i style="background:${FLAT}"></i>Flachdach</span>
+      <span><i style="background:${FRESH}"></i>neu gebaut (Zeitreise)</span>
+      <span>Farben nach Alter: Ebene «Baujahr»</span>`;
+  } else if (mode === "year") {
     const grad = YEAR_STOPS.map(([y, c]) => `${c} ${((y - 1800) / (NOW - 1800) * 100).toFixed(0)}%`).join(",");
     L.innerHTML = `<span>alt<span id="ramp" style="background:linear-gradient(90deg,${grad})"></span>neu</span>
       <span><i style="background:${UNKNOWN}"></i>Baujahr unbekannt</span>
-      <span><i style="background:#fff"></i>neu gebaut (Zeitreise)</span>`;
+      <span><i style="background:${FRESH}"></i>neu gebaut (Zeitreise)</span>`;
   } else {
     L.innerHTML = Object.values(USE).map(([t, c]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
   }
@@ -314,7 +333,7 @@ function hist() {
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   svg.innerHTML = decades.map(({ d, n }) => {
     const x = (d - 1800) / span * W, w = 10 / span * W - 1.5, h = Math.max(1, n / max * (H - 2));
-    const c = d <= y ? yearColor(d + 5).getStyle() : "rgba(255,255,255,.15)";
+    const c = d <= y ? yearColor(d + 5).getStyle() : "rgba(0,0,0,.1)";
     return `<rect x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${c}"><title>${d === 1800 ? "bis 1809" : d + "er"}: ${n} Gebäude</title></rect>`;
   }).join("");
 }
@@ -389,6 +408,27 @@ function home() {
 }
 $("reset").addEventListener("click", () => { controls.autoRotate = false; home(); });
 $("spin").addEventListener("click", () => { controls.autoRotate = !controls.autoRotate; controls.autoRotateSpeed = 0.6; });
+// labels: landmarks as boxes on a stem, quarters as plain text
+const labelEl = $("labels");
+const labels = PLACES.map(p => {
+  const d = document.createElement("div");
+  d.className = p.k; d.textContent = p.t;
+  labelEl.appendChild(d);
+  return { d, p: toLocal(p.e, p.n, hAt(p.e, p.n) + (p.k === "l" ? 45 : 25)), k: p.k };
+});
+const v3 = new THREE.Vector3();
+function placeLabels() {
+  const dist = camera.position.distanceTo(controls.target);
+  for (const L of labels) {
+    v3.copy(L.p).project(camera);
+    const show = v3.z < 1 && Math.abs(v3.x) < 1.1 && Math.abs(v3.y) < 1.1 && (L.k === "l" || dist < 4500);
+    L.d.style.display = show ? "" : "none";
+    if (!show) continue;
+    const x = (v3.x + 1) / 2 * innerWidth, y = (1 - v3.y) / 2 * innerHeight;
+    L.d.style.transform = `translate(${x}px, ${y}px) translate(-50%, ${L.k === "l" ? "calc(-100% - 14px)" : "-50%"})`;
+  }
+}
+
 home();
 paint();
 setYear(NOW);
@@ -398,7 +438,7 @@ addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
-renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); placeLabels(); });
 </script>
 </body>
 </html>

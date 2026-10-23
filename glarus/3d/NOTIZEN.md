@@ -36,6 +36,17 @@ tifffile, imagecodecs). Rohdaten in `~/.cache/glarus-3d/`.
 - Dreiecke zusammenfassen bringt hier nur 32 % (Chur 60 %).
 - 303 Registergebäude im Gebiet mit Status «abgebrochen».
 
+## Design hell (23.10.2026, wie chur-3d Commit 09d0f8f)
+- Theme, Karte/Baujahr/Nutzung-Ebenen und Shader aus Chur übernommen (Patch, Texte für Glarus angepasst).
+- `boden.jpg` (1,2 MB) und `orte.json` (27 Beschriftungen) aus `_bau_boden.py`, swisstopo-Basiskarte Vektor z14.
+  LANDMARKS nur mit Namen exakt aus dem poi-Layer. Kein Rathaus/keine Stadtkirche im poi-Layer für Glarus.
+  Zusätzlich Ortsnamen der Klasse `village` (Glarus, Ennenda). Riedern und Netstal liegen ausserhalb des Gebiets.
+- **Flachdächer fehlten auch hier:** vorher hatten nur 359 von 3736 Gebäuden eine waagrechte Fläche über dem
+  Boden, nach der Chur-Korrektur (Böden über Höhe statt Ausrichtung) 2171. Nebeneffekt: Registerzuordnung
+  leicht verschoben (genaue Baujahre 870 → 865, ohne Register 322 → 334), weil die Grundrisse jetzt aus den
+  Böden nach Höhe bestimmt werden. Prüfskript: `~/.cache/glarus-3d/roofcheck.py`.
+- Leere Platzhalter-Zips im Cache blockieren einen Neubau: vorher `rm ~/.cache/glarus-3d/sb3d_*.gdb.zip`.
+
 ## Stolpersteine
 - Server-Platte voll (23.10.2026: 139 MB frei, pip-Cache auf Julians OK geleert). Bauskripte löschen Zips und
   GeoTIFFs gleich nach dem Lesen.

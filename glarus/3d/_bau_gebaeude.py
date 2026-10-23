@@ -69,6 +69,7 @@ def merge_faces(tris):
     tris: (n,3,3) array. Returns (m,3,3) array with far fewer triangles."""
     c = tris.reshape(-1, 3).mean(axis=0)
     tris = tris - c  # plane offsets in local metres, not LV95 millions
+    zmin = tris[:, :, 2].min()
     groups = defaultdict(list)
     for t in tris:
         n = np.cross(t[1] - t[0], t[2] - t[0])
@@ -76,7 +77,9 @@ def merge_faces(tris):
         if ln < 1e-6:
             continue
         n = n / ln
-        if n[2] < -0.9:  # floors and undersides are never seen from above
+        # floors are never seen from above. Winding is not reliable in the source (flat roofs are
+        # often stored facing down), so a floor is a horizontal face at the bottom of the building.
+        if abs(n[2]) > 0.9 and t[:, 2].max() < zmin + 1.0:
             continue
         key = (round(n[0], 2), round(n[1], 2), round(n[2], 2), round(float(n @ t[0]), 1))
         groups[key].append(t)
@@ -105,7 +108,11 @@ def merge_faces(tris):
             ends = np.cumsum([len(r) for r in rings]).astype(np.uint32)
             idx = earcut.triangulate_float64(verts, ends).reshape(-1, 3)
             p3 = o + np.outer(verts[:, 0], u) + np.outer(verts[:, 1], v) + d * n
-            out.extend(p3[idx])
+            tri = p3[idx]
+            # earcut winding is arbitrary: flip triangles whose normal points away from the face normal
+            flip = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0]) @ n < 0
+            tri[flip] = tri[flip][:, ::-1]
+            out.extend(tri)
     return np.array(out) + c if out else np.zeros((0, 3, 3))
 
 
@@ -148,7 +155,9 @@ def main():
                     continue
                 seen.add(p["UUID"])
                 foot = MultiPoint([tuple(x) for x in tris.reshape(-1, 3)[:, :2]]).convex_hull
-                floor = [Polygon(t[:, :2]) for t in tris if np.cross(t[1] - t[0], t[2] - t[0])[2] < 0]
+                zb = tris[:, :, 2].min()
+                floor = [Polygon(t[:, :2]) for t in tris
+                         if t[:, 2].max() < zb + 1.0 and abs(np.cross(t[1] - t[0], t[2] - t[0])[2]) > 1e-3]
                 floor = [q for q in floor if q.area > 1e-4]
                 if floor:
                     foot = unary_union(floor)
