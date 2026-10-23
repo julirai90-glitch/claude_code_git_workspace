@@ -95,6 +95,8 @@ Annahme) – genauso machen. Abgerissene Gebäude fehlen dort in der Zeitreise; 
   (ÖV-Echtzeit-Schlüssel → über n8n-Webhook wie bei den Verkehrsdaten). Vor jedem Push `git fetch origin gh-pages`;
   der nächtliche Archiv-Job pusht ebenfalls auf `gh-pages` (dann `git rebase origin/gh-pages`).
 - Quellenhinweis auf jeder Seite (swisstopo, Astra, MeteoSchweiz usw.).
+- **Parallelbetrieb:** Eine andere Session arbeitet gleichzeitig in `glarus/3d/` (`glarus/3d/HANDOFF.md`). Nur in
+  `chur-3d/` schreiben, vor jedem Push `git fetch origin gh-pages` + `git rebase origin/gh-pages`, nie force-push.
 
 ## Erste Schritte der neuen Session
 
