@@ -43,10 +43,17 @@ def fetch(url, name):
     return path
 
 
-def unzip(path):
-    out = path[:-4] + "_x"
+def fetch_unzip(url, name, keep=None):
+    """Download and extract once; the zip is deleted afterwards (disk space on the server is tight).
+
+    keep: optional set of file names to keep from the archive, everything else is skipped."""
+    out = os.path.join(CACHE, name[:-4] + "_x")
     if not os.path.exists(out):
-        zipfile.ZipFile(path).extractall(out)
+        path = fetch(url, name)
+        with zipfile.ZipFile(path) as z:
+            members = [m for m in z.namelist() if keep is None or os.path.basename(m) in keep]
+            z.extractall(out, members)
+        os.remove(path)
     return out
 
 
@@ -110,7 +117,8 @@ def merge_faces(tris):
 
 
 def load_gwr():
-    root = unzip(fetch(GWR_URL, "gwr_gr.zip"))
+    root = fetch_unzip(GWR_URL, "gwr_gr.zip", keep={"gebaeude_batiment_edificio.csv", "eingang_entree_entrata.csv",
+                                                     "kodes_codes_codici.csv", "license.pdf"})
     codes = {}
     for r in csv.DictReader(open(os.path.join(root, "kodes_codes_codici.csv"), encoding="utf-8"), delimiter="\t"):
         codes[(r["CMERKM"], r["CECODID"])] = r["CODTXTKD"]
@@ -135,7 +143,7 @@ def main():
     # --- buildings
     seen, buildings = set(), []
     for s in SHEETS:
-        root = unzip(fetch(SB_URL.format(s=s), f"sb3d_{s}.gdb.zip"))
+        root = fetch_unzip(SB_URL.format(s=s), f"sb3d_{s}.gdb.zip")
         gdb = [os.path.join(root, d) for d in os.listdir(root) if d.endswith(".gdb")][0]
         with fiona.open(gdb, layer="Building_solid") as src:
             for f in src:
@@ -216,7 +224,7 @@ def main():
     scale = (hi - lo) / 65535
     q = np.round((pos - lo) / scale).astype(np.uint16)
     # pre-compressed: GitHub Pages does not gzip binary files, the page inflates it
-    with gzip.open(os.path.join(HERE, "gebaeude.bin.gz"), "wb", compresslevel=9) as f:
+    with gzip.GzipFile(os.path.join(HERE, "gebaeude.bin.gz"), "wb", compresslevel=9, mtime=0) as f:
         f.write(q.tobytes()); f.write(bid.tobytes())
 
     with_year = sum(1 for m in meta if m["s"] == "j")

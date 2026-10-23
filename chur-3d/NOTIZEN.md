@@ -23,7 +23,11 @@ Arbeitsgedächtnis für spätere Sessions. Stand 23.10.2026.
 | `orte.json` | 23 Quartiernamen + 11 Wahrzeichen für die Beschriftung |
 | `_bau_boden.py` | Baut `boden.jpg` und `orte.json` (mapbox-vector-tile, pyproj, pillow, shapely) |
 
-Bauskripte laden Rohdaten nach `~/.cache/chur-3d` (nie ins Repo). Laufzeit ca. 1¼ min bzw. 40 s.
+Bauskripte laden Rohdaten nach `~/.cache/chur-3d` (nie ins Repo, nie ins Scratchpad). Laufzeit ca. 1¼ min bzw. 40 s.
+**Serverplatte ist knapp** (23.10.2026 voll gelaufen): Zips werden nach dem Entpacken gelöscht, vom GWR nur
+die drei CSV behalten (nicht buildings.geojson, data.sqlite), Geländekacheln nach dem Einlesen gelöscht.
+Cache aktuell ca. 165 MB. gzip ohne Zeitstempel (`mtime=0`), damit ein Neubau ohne Datenänderung keinen Diff erzeugt.
+Playwright: nur `chromium-1243` vorhanden.
 
 ## Datenquellen – geprüft
 

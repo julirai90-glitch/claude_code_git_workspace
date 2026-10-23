@@ -45,6 +45,7 @@ def main():
             if not os.path.exists(path):
                 urllib.request.urlretrieve(href, path)
             a = tifffile.imread(path)  # 500 x 500, row 0 = north edge
+            os.remove(path)  # 144 tiles = 160 MB; re-downloading takes under a minute
             sub = a[STEP // 2::STEP, STEP // 2::STEP]
             r = (N1 - 1 - n) * px
             c = (e - E0) * px
@@ -52,7 +53,7 @@ def main():
     assert not np.isnan(grid).any()
     zmin = float(np.floor(grid.min()))
     q = np.round((grid - zmin) * 10).astype(np.uint16)  # decimetres
-    with gzip.open(os.path.join(HERE, "gelaende.bin.gz"), "wb", compresslevel=9) as f:
+    with gzip.GzipFile(os.path.join(HERE, "gelaende.bin.gz"), "wb", compresslevel=9, mtime=0) as f:
         f.write(q.tobytes())
     meta = {"west": E0 * 1000, "north": N1 * 1000, "cell": STEP * 2, "cols": grid.shape[1],
             "rows": grid.shape[0], "zmin": zmin, "zscale": 0.1,
