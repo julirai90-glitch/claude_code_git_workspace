@@ -66,6 +66,14 @@ Erfahrungswerte (Cloud-Container ohne Grafikkarte, 4 Kerne):
 - GitHub Pages: `cache-control: max-age=600` – nach dem Hochladen bis 10 min alte Version im Browser.
 - Fahrzeuge und Ampelfarben nie ins Video backen: Sie wären vom Render-Zeitpunkt, nicht live.
 
+## Nächster Schritt: Stau-Kalender (geplant Mo 26.10.2026)
+
+- Quelle: `verkehr/data/archiv/JJJJ-MM-TT.json` (seit 26.06.2026), `series["CH:0611|positive"]` = 96 Viertelstunden
+  `[Menge, Tempo]`; `index.json` mit Tagestyp (modo/fr/sa/so). Abdeckung A13 76–95 % der Viertelstunden.
+- Erste Sichtung: langsamste Viertelstunden Isla Bella alle Richtung Chur, Ferien-Samstage/-Sonntage im August
+  (z. B. Sa 08.08. 14:30 6 km/h). Einzelwerte mit sehr kleiner Menge (z. B. 20 Fz/h) können Messfehler/Sperrung sein.
+- Einheit der Menge im Archiv nicht dokumentiert (vermutlich Fz/h wie im Live-Feed) – prüfen.
+
 ## Offen / nicht geprüft
 
 - `flug-a13.html` auf echtem iPhone/Android und im Somedia-CMS (iframe-Höhe, Autoplay beim Scrollen).
