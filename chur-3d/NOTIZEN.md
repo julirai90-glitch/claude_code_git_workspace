@@ -48,6 +48,16 @@ Playwright: nur `chromium-1243` vorhanden.
   überhöhen im Diagramm die Jahrzehnte 1910/1940/1960 usw. Grenze im Bild nur dort, wo sie echt ist.
 - **St. Moritz:** ganze Gemeinde, 1078 Gebäude, 1009 mit Baujahr, keine Nur-Perioden.
 
+## Video (25.10.2026)
+
+- `_video/flug.html`: Render-Seite (Flug mit Zeitreise, 29 s, 1080×1920, Szenenzeiten und Kamera-Keyframes
+  oben im Script). `_video/render_pipe.js` rendert und schickt JPEG-Bilder direkt in ffmpeg.
+- Ergebnis `chur-flug-social.mp4` (31 MB) **nicht im Repo** (öffentlich, würde es aufblähen), liegt nur lokal.
+- Dauer: 870 Bilder in 18 min (≈ 1,2 s/Bild, SwiftShader, 2 Kerne), weil keine Kacheln nachgeladen werden.
+  PNG-Einzelbilder wären ≈ 1,6 GB gewesen → deshalb die Pipe.
+- Kamera: anfangs zu steil/nah (wirkte wie eine flache Karte); gut: Blickwinkel 52°, Neigung 32–38°,
+  von Südosten Richtung Calanda.
+
 ## Datenquellen – geprüft
 
 - **swissBUILDINGS3D 3.0, Ausgabe 2022**, File-GDB pro Kartenblatt über STAC
