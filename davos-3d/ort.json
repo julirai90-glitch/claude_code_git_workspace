@@ -1,0 +1,90 @@
+{
+  "name": "Davos",
+  "bfs": 3851,
+  "boundary_year": "aktuell",
+  "clip": [
+    2778500,
+    1181500,
+    2787000,
+    1189500
+  ],
+  "terrain_km": [
+    2776,
+    2789,
+    1179,
+    1192
+  ],
+  "start": [
+    2781839,
+    1185061
+  ],
+  "start_note": "Bushaltestelle Davos Platz, Bahnhof (geo.admin SearchServer)",
+  "area_text": "Davos Platz und Davos Dorf – ein Ausschnitt von etwa 8,5 × 8 km aus der Gemeinde Davos (284 km²); Frauenkirch, Glaris, Monstein, Wiesen und die Seitentäler fehlen",
+  "place_classes": [
+    "neighbourhood",
+    "village"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Davos Platz",
+      "Bahnhof Davos Platz"
+    ],
+    [
+      "railway_station",
+      "Davos Dorf",
+      "Bahnhof Davos Dorf"
+    ],
+    [
+      "stadium",
+      "Zondacrypto-Arena",
+      "Eisstadion"
+    ],
+    [
+      "funicular_stop",
+      "Davos Platz Schatzalpbahn",
+      "Schatzalpbahn"
+    ],
+    [
+      "funicular_stop",
+      "Davos Dorf (Parsennbahn)",
+      "Parsennbahn"
+    ],
+    [
+      "cable_car_station",
+      "Davos Platz (Jakobshorn)",
+      "Jakobshornbahn"
+    ],
+    [
+      "hospital",
+      "Spital Davos",
+      "Spital"
+    ],
+    [
+      "observatory",
+      "Physikalisch-Meteorologisches Observatorium Davos",
+      "Observatorium (PMOD)"
+    ],
+    [
+      "swimming_pool",
+      "Strandbad Davosersee",
+      "Strandbad Davosersee"
+    ],
+    [
+      "inn",
+      "Hotel Schatzalp",
+      "Hotel Schatzalp"
+    ],
+    [
+      "hospital",
+      "Hochgebirgsklinik Davos",
+      "Hochgebirgsklinik"
+    ],
+    [
+      "college",
+      "Schweizerische Alpine Mittelschule Davos SAMD",
+      "SAMD"
+    ]
+  ]
+}

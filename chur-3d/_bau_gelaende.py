@@ -1,17 +1,17 @@
-"""Build chur-3d/gelaende.bin.gz + gelaende.json: a 20 m height grid around Chur.
+"""Build <ort>/gelaende.bin.gz + gelaende.json: a 20 m height grid (extent: terrain_km in ort.json).
 
 Source: swisstopo swissALTI3D, 2 m tiles (latest release per tile), via the STAC API.
-Needs:  numpy, tifffile, imagecodecs   (pip install numpy tifffile imagecodecs)
-Run:    python _bau_gelaende.py [cache_dir]
+Needs:  numpy, tifffile, imagecodecs, pyproj
+Run:    python chur-3d/_bau_gelaende.py <ort-folder> [cache_dir]
 """
 import gzip, json, os, sys, urllib.request
 
 import numpy as np
 import tifffile
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~/.cache/chur-3d")
-E0, E1, N0, N1 = 2754, 2766, 1185, 1197  # km, LV95; Chur 2019 boundary plus valley sides
+HERE = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
+CACHE = sys.argv[2] if len(sys.argv) > 2 else os.path.expanduser("~/.cache/orte-3d")
+E0, E1, N0, N1 = json.load(open(os.path.join(HERE, "ort.json")))["terrain_km"]  # km, LV95
 STEP = 10  # pixels of 2 m -> 20 m grid
 STAC = "https://data.geo.admin.ch/api/stac/v0.9/collections/ch.swisstopo.swissalti3d/items"
 
@@ -19,7 +19,11 @@ STAC = "https://data.geo.admin.ch/api/stac/v0.9/collections/ch.swisstopo.swissal
 def tile_urls():
     """Latest 2 m GeoTIFF per 1 km tile, from the STAC listing."""
     best = {}
-    url = f"{STAC}?bbox=9.42,46.78,9.62,46.92&limit=100"
+    from pyproj import Transformer
+    to_wgs = Transformer.from_crs(2056, 4326, always_xy=True)
+    lo0, la0 = to_wgs.transform(E0 * 1000 + 50, N0 * 1000 + 50)
+    lo1, la1 = to_wgs.transform(E1 * 1000 - 50, N1 * 1000 - 50)
+    url = f"{STAC}?bbox={lo0},{la0},{lo1},{la1}&limit=100"
     while url:
         d = json.load(urllib.request.urlopen(url))
         for f in d["features"]:

@@ -1,0 +1,25 @@
+{
+  "name": "Chur",
+  "bfs": 3901,
+  "boundary_year": 2019,
+  "clip": null,
+  "terrain_km": [2754, 2766, 1185, 1197],
+  "start": [2759669, 1190711],
+  "start_note": "St. Martinsplatz 1 (geo.admin SearchServer)",
+  "area_text": "Gemeinde Chur in den Grenzen von 2019, also ohne Maladers und Haldenstein",
+  "place_classes": ["neighbourhood"],
+  "exclude_places": ["Hof"],
+  "landmarks": [
+    ["railway_station", "Chur", "Bahnhof Chur"],
+    ["attraction", "Hof Chur", "Hof (Kathedrale)"],
+    ["historic_government", "Rathaus", "Rathaus"],
+    ["hospital", "Kantonsspital Graubünden Hauptstandort (KSH)", "Kantonsspital"],
+    ["university", "Fachhochschule Graubünden, Gebäude A", "Fachhochschule"],
+    ["university", "Pädagogische Hochschule Graubünden Chur phGR", "PH Graubünden"],
+    ["stadium", "Sportanlage Obere Au", "Obere Au"],
+    ["cable_car_station", "Chur (Brambrüeschbahn)", "Brambrüeschbahn"],
+    ["military", "Eidgenössischer Waffenplatz Chur", "Waffenplatz"],
+    ["hospital", "Psychiatrische Klinik Waldhaus Chur", "Klinik Waldhaus"],
+    ["swimming_pool", "Schwimmbad Sand", "Schwimmbad Sand"]
+  ]
+}

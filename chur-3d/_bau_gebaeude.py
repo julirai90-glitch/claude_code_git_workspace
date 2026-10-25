@@ -1,34 +1,33 @@
-"""Build chur-3d/gebaeude.bin.gz + gebaeude.json from swissBUILDINGS3D 3.0 and the GWR.
+"""Build <ort>/gebaeude.bin.gz + gebaeude.json from swissBUILDINGS3D 3.0 and the GWR.
 
-Sources (downloaded into CACHE, never into the repo):
-  - swissBUILDINGS3D 3.0, release 2022, sheets around Chur (swisstopo, OGD)
+The place is described by <ort>/ort.json (name, BFS number, boundary year, optional clip box,
+terrain extent). Sources (downloaded into CACHE, never into the repo):
+  - swissBUILDINGS3D 3.0, release 2022 (or the latest one before), sheets found via the STAC API
   - Federal Register of Buildings and Dwellings GWR, canton GR export (BFS, OGD)
-  - Chur municipal boundary 2019 (before the mergers with Maladers 2020 and
-    Haldenstein 2021), swissBOUNDARIES3D via api3.geo.admin.ch
+  - municipal boundary, swissBOUNDARIES3D via api3.geo.admin.ch
 
-Needs: fiona, shapely, numpy, mapbox_earcut  (pip install fiona shapely numpy mapbox-earcut)
-Run:   python _bau_gebaeude.py [cache_dir]
+Needs: fiona, shapely, numpy, pyproj, mapbox_earcut
+Run:   python chur-3d/_bau_gebaeude.py <ort-folder> [cache_dir]     (after _bau_gelaende.py)
 """
-import csv, gzip, io, json, math, os, sys, urllib.request, zipfile
+import csv, gzip, io, json, math, os, sys, urllib.parse, urllib.request, zipfile
 from collections import defaultdict
 
 import fiona
 import mapbox_earcut as earcut
 import numpy as np
 from shapely import STRtree
-from shapely.geometry import MultiPoint, Point, Polygon, shape
+from pyproj import Transformer
+from shapely.geometry import MultiPoint, Point, Polygon, box, shape
 from shapely.ops import unary_union
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~/.cache/chur-3d")
-SHEETS = ["1195-22", "1195-24", "1196-11", "1196-13", "1175-44", "1176-33"]
-SB_URL = ("https://data.geo.admin.ch/ch.swisstopo.swissbuildings3d_3_0/swissbuildings3d_3_0_2022_{s}/"
-          "swissbuildings3d_3_0_2022_{s}_2056_5728.gdb.zip")
+HERE = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.dirname(os.path.abspath(__file__))
+CACHE = sys.argv[2] if len(sys.argv) > 2 else os.path.expanduser("~/.cache/orte-3d")
+CFG = json.load(open(os.path.join(HERE, "ort.json")))
+STAC = "https://data.geo.admin.ch/api/stac/v0.9/collections/ch.swisstopo.swissbuildings3d_3_0/items"
 GWR_URL = "https://public.madd.bfs.admin.ch/gr.zip"
 BOUNDARY_URL = ("https://api3.geo.admin.ch/rest/services/api/MapServer/find?"
-                "layer=ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill&searchText=Chur"
+                "layer=ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill&searchText={name}"
                 "&searchField=gemname&contains=false&returnGeometry=true&sr=2056&geometryFormat=geojson")
-BOUNDARY_YEAR = 2019
 GBAUP = {"8011": (None, 1918), "8012": (1919, 1945), "8013": (1946, 1960), "8014": (1961, 1970),
          "8015": (1971, 1980), "8016": (1981, 1985), "8017": (1986, 1990), "8018": (1991, 1995),
          "8019": (1996, 2000), "8020": (2001, 2005), "8021": (2006, 2010), "8022": (2011, 2015),
@@ -58,9 +57,38 @@ def fetch_unzip(url, name, keep=None):
 
 
 def boundary():
-    data = json.load(open(fetch(BOUNDARY_URL, "chur_grenzen.json")))
-    hit = [r for r in data["results"] if r["properties"]["jahr"] == BOUNDARY_YEAR]
-    return shape(hit[0]["geometry"])
+    """Municipal boundary of the configured year ("aktuell" = current), optionally clipped to a box."""
+    url = BOUNDARY_URL.format(name=urllib.parse.quote(CFG["name"]))
+    data = json.load(open(fetch(url, f"grenzen_{CFG['bfs']}.json")))
+    hit = [r for r in data["results"] if r["properties"]["gde_nr"] == CFG["bfs"] and (
+        r["properties"]["is_current_jahr"] if CFG["boundary_year"] == "aktuell"
+        else r["properties"]["jahr"] == CFG["boundary_year"])]
+    full = shape(hit[0]["geometry"])
+    area = full.intersection(box(*CFG["clip"])) if CFG.get("clip") else full
+    return full, area
+
+
+def sheets(area):
+    """swissBUILDINGS3D sheets touching the area: per sheet the newest release up to 2022
+    (later releases are only published as one file for all of Switzerland)."""
+    to_wgs = Transformer.from_crs(2056, 4326, always_xy=True)
+    x0, y0, x1, y1 = area.bounds
+    lo0, la0 = to_wgs.transform(x0, y0)
+    lo1, la1 = to_wgs.transform(x1, y1)
+    url = f"{STAC}?bbox={lo0},{la0},{lo1},{la1}&limit=100"
+    best = {}
+    while url:
+        d = json.load(urllib.request.urlopen(url))
+        for f in d["features"]:
+            parts = f["id"].split("_")  # swissbuildings3d_3_0_<year>_<sheet>
+            if len(parts) != 5 or int(parts[3]) > 2022:
+                continue
+            year, sheet = int(parts[3]), parts[4]
+            href = next(a["href"] for k, a in f["assets"].items() if k.endswith(".gdb.zip"))
+            if sheet not in best or year > best[sheet][0]:
+                best[sheet] = (year, href)
+        url = next((l["href"] for l in d.get("links", []) if l["rel"] == "next"), None)
+    return best
 
 
 def merge_faces(tris):
@@ -128,7 +156,7 @@ def load_gwr():
             addr[r["EGID"]].append(f'{r["STRNAME"]} {r.get("DEINR", "")}'.strip())
     rows = []
     for r in csv.DictReader(open(os.path.join(root, "gebaeude_batiment_edificio.csv"), encoding="utf-8"), delimiter="\t"):
-        if r["GGDENR"] != "3901" or not r["GKODE"]:
+        if r["GGDENR"] != str(CFG["bfs"]) or not r["GKODE"]:
             continue
         rows.append(r)
     return rows, codes, addr
@@ -136,14 +164,16 @@ def load_gwr():
 
 def main():
     os.makedirs(CACHE, exist_ok=True)
-    area = boundary()
+    full, area = boundary()
     minx, miny, maxx, maxy = area.bounds
     ox, oy = round((minx + maxx) / 2), round((miny + maxy) / 2)
 
     # --- buildings
     seen, buildings = set(), []
-    for s in SHEETS:
-        root = fetch_unzip(SB_URL.format(s=s), f"sb3d_{s}.gdb.zip")
+    found = sheets(area)
+    print("sheets", {s: y for s, (y, _) in found.items()})
+    for s, (year, href) in sorted(found.items()):
+        root = fetch_unzip(href, f"sb3d_{year}_{s}.gdb.zip")
         gdb = [os.path.join(root, d) for d in os.listdir(root) if d.endswith(".gdb")][0]
         with fiona.open(gdb, layer="Building_solid") as src:
             for f in src:
@@ -229,17 +259,22 @@ def main():
 
     with_year = sum(1 for m in meta if m["s"] == "j")
     with_period = sum(1 for m in meta if m["s"] == "p")
+    # boundary as lines (only the real municipal border, not the clip box), cut to the terrain
+    e0, e1, n0, n1 = CFG["terrain_km"]
+    border = full.boundary.intersection(box(e0 * 1000, n0 * 1000, e1 * 1000, n1 * 1000))
+    border = [list(g.coords) for g in getattr(border, "geoms", [border]) if g.geom_type == "LineString"]
+    main_area = max(getattr(area, "geoms", [area]), key=lambda g: g.area)
+    years = sorted({y for y, _ in found.values()})
     out = {
         "origin_lv95": [ox, oy], "min": lo.round(3).tolist(), "scale": scale.tolist(),
         "vertices": int(len(pos)), "buildings": meta,
         "stats": {"buildings": len(meta), "baujahr": with_year, "bauperiode": with_period,
                   "ohne": len(meta) - with_year - with_period, "gwr_abgebrochen": demolished},
-        "sources": {"swissbuildings3d": "swisstopo swissBUILDINGS3D 3.0, Ausgabe 2022",
+        "sources": {"swissbuildings3d": "swisstopo swissBUILDINGS3D 3.0, Ausgabe " + "/".join(map(str, years)),
                     "gwr": "BFS GWR, Export " + (rows[0]["GEXPDAT"] if rows else "?"),
-                    "grenze": f"swissBOUNDARIES3D, Gemeinde Chur Stand {BOUNDARY_YEAR}"},
-        "boundary": [[round(x - ox, 1), round(y - oy, 1)] for x, y in area.geoms[0].exterior.coords]
-        if area.geom_type == "MultiPolygon" else
-        [[round(x - ox, 1), round(y - oy, 1)] for x, y in area.exterior.coords],
+                    "grenze": f"swissBOUNDARIES3D, Gemeinde {CFG['name']} Stand {CFG['boundary_year']}"},
+        "area": [[round(x - ox, 1), round(y - oy, 1)] for x, y in main_area.exterior.coords],
+        "boundary_lines": [[[round(x - ox, 1), round(y - oy, 1)] for x, y, *_ in ln] for ln in border],
     }
     json.dump(out, open(os.path.join(HERE, "gebaeude.json"), "w"), ensure_ascii=False, separators=(",", ":"))
     print(out["stats"])

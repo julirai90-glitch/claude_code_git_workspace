@@ -1,0 +1,66 @@
+{
+  "name": "St. Moritz",
+  "bfs": 3787,
+  "boundary_year": "aktuell",
+  "clip": null,
+  "terrain_km": [
+    2776,
+    2788,
+    1145,
+    1157
+  ],
+  "start": [
+    2784229,
+    1152487
+  ],
+  "start_note": "Bushaltestelle St. Moritz, Schulhausplatz (geo.admin SearchServer)",
+  "area_text": "ganze Gemeinde St. Moritz (Stand 2026)",
+  "place_classes": [
+    "neighbourhood",
+    "suburb",
+    "village"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "St. Moritz",
+      "Bahnhof"
+    ],
+    [
+      "tower",
+      "Schiefer Turm",
+      "Schiefer Turm"
+    ],
+    [
+      "stadium",
+      "Eisarena Ludains",
+      "Eisarena Ludains"
+    ],
+    [
+      "swimming_pool",
+      "Hallenbad & Spa OVAVERVA",
+      "Hallenbad Ovaverva"
+    ],
+    [
+      "building",
+      "Suvretta House",
+      "Suvretta House"
+    ],
+    [
+      "hospital",
+      "Klinik Gut St. Moritz",
+      "Klinik Gut"
+    ],
+    [
+      "funicular_stop",
+      "St. Moritz (Standseilbahn)",
+      "Standseilbahn Chantarella"
+    ],
+    [
+      "cable_car_station",
+      "St. Moritz Bad (Signalbahn)",
+      "Signalbahn"
+    ]
+  ]
+}

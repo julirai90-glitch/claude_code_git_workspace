@@ -23,11 +23,30 @@ Arbeitsgedächtnis für spätere Sessions. Stand 23.10.2026.
 | `orte.json` | 23 Quartiernamen + 11 Wahrzeichen für die Beschriftung |
 | `_bau_boden.py` | Baut `boden.jpg` und `orte.json` (mapbox-vector-tile, pyproj, pillow, shapely) |
 
-Bauskripte laden Rohdaten nach `~/.cache/chur-3d` (nie ins Repo, nie ins Scratchpad). Laufzeit ca. 1¼ min bzw. 40 s.
+Bauskripte laden Rohdaten nach `~/.cache/orte-3d` (nie ins Repo, nie ins Scratchpad). Laufzeit ca. 1¼ min bzw. 40 s.
 **Serverplatte ist knapp** (23.10.2026 voll gelaufen): Zips werden nach dem Entpacken gelöscht, vom GWR nur
 die drei CSV behalten (nicht buildings.geojson, data.sqlite), Geländekacheln nach dem Einlesen gelöscht.
 Cache aktuell ca. 165 MB. gzip ohne Zeitstempel (`mtime=0`), damit ein Neubau ohne Datenänderung keinen Diff erzeugt.
 Playwright: nur `chromium-1243` vorhanden.
+
+## Mehrere Orte (25.10.2026: Davos, St. Moritz)
+
+- Alles Ortsspezifische steht in `<ort>/ort.json` (Name, BFS-Nr., Grenzjahr oder "aktuell", optional
+  `clip`-Rechteck, Geländeausschnitt, Startpunkt, Gebietstext, Ortsnamen-Klassen, Wahrzeichen).
+- Bauskripte liegen nur in `chur-3d/` und nehmen den Ortsordner als Argument, Reihenfolge:
+  `_bau_gelaende.py <ort>` → `_bau_gebaeude.py <ort>` → `_bau_boden.py <ort> [--list]`.
+  `--list` zeigt alle Namen aus der Basiskarte im Gebiet, daraus die `landmarks` wählen.
+- Kartenblätter werden über STAC gesucht (neueste Ausgabe ≤ 2022 je Blatt). Chur bekam dadurch zwei
+  Blätter mehr (1195-42, 1196-31) und ein Gebäude mehr (4096 statt 4095) – die alte feste Liste war unvollständig.
+- `index.html` ist in allen Ortsordnern identisch bis auf `<title>` und den Ortsnamen im Starttext
+  (wird ohnehin aus ort.json gesetzt). Änderungen in `chur-3d/index.html` machen und kopieren:
+  `sed -e "s|<title>Chur 3D</title>|<title>Davos 3D</title>|" -e 's|"ortname">Chur<|"ortname">Davos<|g'`.
+- Cache: `~/.cache/orte-3d` (gemeinsam, GWR GR nur einmal). Kartenblätter von Davos/St. Moritz nach dem
+  Bau gelöscht (Platz); ein Neubau lädt sie neu.
+- **Davos:** nur Ausschnitt Platz/Dorf (`clip` 2778500–2787000 / 1181500–1189500), Gemeinde ist 284 km².
+  2636 Gebäude; bei 701 (27 %) hat das GWR nur eine Bauperiode → diese erscheinen am Periodenbeginn und
+  überhöhen im Diagramm die Jahrzehnte 1910/1940/1960 usw. Grenze im Bild nur dort, wo sie echt ist.
+- **St. Moritz:** ganze Gemeinde, 1078 Gebäude, 1009 mit Baujahr, keine Nur-Perioden.
 
 ## Datenquellen – geprüft
 

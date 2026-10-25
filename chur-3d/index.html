@@ -70,11 +70,11 @@
 <body>
 <div id="scene"></div>
 <div id="labels"></div>
-<div id="loading">Chur wird geladen …</div>
+<div id="loading">Wird geladen …</div>
 
 <div id="head" class="panel">
-  <h1>Chur 3D <span style="font-weight:400;color:var(--muted);font-size:12px">Prototyp</span></h1>
-  <p>Alle Gebäude der Stadt. Ebene «Baujahr» wählen und den Schieber ziehen: So ist Chur gewachsen. Gebäude antippen für Details.</p>
+  <h1><span class="ortname">Chur</span> 3D <span style="font-weight:400;color:var(--muted);font-size:12px">Prototyp</span></h1>
+  <p>Alle Gebäude von <span class="ortname">Chur</span>. Ebene «Baujahr» wählen und den Schieber ziehen: So ist <span class="ortname">Chur</span> gewachsen. Gebäude antippen für Details.</p>
 </div>
 
 <div id="info" class="panel">
@@ -103,11 +103,12 @@
     <summary>Was ist gemessen, was nicht?</summary>
     <p><b>Gemessen:</b> Gebäudeformen aus swissBUILDINGS3D 3.0 (swisstopo, Ausgabe 2022), Gelände aus swissALTI3D
       und Basiskarte (swisstopo), Baujahr, Nutzung, Geschosse und Adresse aus dem GWR (BFS, Export <span id="gwrdate"></span>).
-      Gebiet: Gemeinde Chur in den Grenzen von 2019, also ohne Maladers und Haldenstein.</p>
-    <p><b>Lücken:</b> Die Zeitreise zeigt nur Gebäude, die heute noch stehen. Abgerissene Häuser fehlen, die Stadt
-      von 1900 war also dichter, als sie hier aussieht. Baujahr und Gebäude sind über die Lage verknüpft
+      Gebiet: <span id="areatext"></span>.</p>
+    <p><b>Lücken:</b> Die Zeitreise zeigt nur Gebäude, die heute noch stehen. Abgerissene Häuser fehlen, um 1900 stand
+      also mehr, als hier zu sehen ist. Baujahr und Gebäude sind über die Lage verknüpft
       (Registerpunkt im Grundriss); bei <span id="nojahr"></span> Gebäuden fehlt ein Baujahr, sie bleiben grau
-      und stehen in jedem Jahr. Bei Häusern mit mehreren Registereinträgen gilt das älteste Baujahr.
+      und stehen in jedem Jahr. Bei <span id="nurperiode"></span> Gebäuden kennt das Register nur eine Bauperiode;
+      sie erscheinen zu Beginn der Periode (Periode «vor 1919»: in jedem Jahr). Bei Häusern mit mehreren Registereinträgen gilt das älteste Baujahr.
       Das 3D-Modell stammt von 2022: Neubauten danach fehlen oder zeigen noch den Vorgängerbau.</p>
     <p><b>Gestaltet:</b> Farben, Kamera, Höhen nicht überhöht. Altbauten erscheinen im Baujahr gemäss Register,
       das bei sehr alten Häusern oft geschätzt ist.</p>
@@ -130,7 +131,6 @@ import * as THREE from "three";
 import { MapControls } from "three/addons/controls/MapControls.js";
 
 const NOW = 2026;
-const START = [2759669, 1190711];   // St. Martinsplatz (geo.admin search)
 
 // ---------- colours
 const YEAR_STOPS = [[1800, "#2d1e5f"], [1880, "#5b2a86"], [1920, "#9c3587"], [1950, "#d4486f"],
@@ -191,10 +191,11 @@ async function inflate(url) {
   return new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
 }
 
-const [B, T, PLACES, bBuf, tBuf] = await Promise.all([
+const [B, T, PLACES, ORT, bBuf, tBuf] = await Promise.all([
   fetch("gebaeude.json").then(r => r.json()),
   fetch("gelaende.json").then(r => r.json()),
   fetch("orte.json").then(r => r.json()),
+  fetch("ort.json").then(r => r.json()),
   inflate("gebaeude.bin.gz"),
   inflate("gelaende.bin.gz"),
 ]);
@@ -228,9 +229,15 @@ const hAt = (e, n) => {   // bilinear height in metres above sea level
   mesh.position.set(cx - OX, 0, -(cn - OY));
   scene.add(mesh);
 }
-// municipal boundary 2019
-{
-  const pts = B.boundary.map(([x, y]) => toLocal(x + OX, y + OY, hAt(x + OX, y + OY) + 4));
+// place settings: one index.html for every place, everything place-specific lives in ort.json
+const START = ORT.start;
+document.title = `${ORT.name} 3D`;
+document.querySelectorAll(".ortname").forEach(e => { e.textContent = ORT.name; });
+document.getElementById("areatext").textContent = ORT.area_text;
+
+// municipal boundary (cut to the terrain)
+for (const ln of B.boundary_lines) {
+  const pts = ln.map(([x, y]) => toLocal(x + OX, y + OY, hAt(x + OX, y + OY) + 4));
   const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
     new THREE.LineDashedMaterial({ color: "#6b4f8a", dashSize: 40, gapSize: 30, transparent: true, opacity: .7 }));
   line.computeLineDistances();
@@ -303,6 +310,7 @@ function paint() {
 const $ = id => document.getElementById(id);
 $("gwrdate").textContent = B.sources.gwr.replace(/.*Export /, "").split("-").reverse().join(".");
 $("nojahr").textContent = B.stats.ohne.toLocaleString("de-CH");
+$("nurperiode").textContent = B.stats.bauperiode.toLocaleString("de-CH");
 function legend() {
   const L = $("legend");
   if (mode === "map") {

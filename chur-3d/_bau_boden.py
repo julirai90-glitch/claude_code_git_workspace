@@ -1,10 +1,11 @@
-"""Build chur-3d/boden.jpg: a light map texture (forest, meadows, water, roads, rail) for the terrain,
-and chur-3d/orte.json: quarter names and a few landmarks for the labels.
+"""Build <ort>/boden.jpg: a light map texture (forest, meadows, water, roads, rail) for the terrain,
+and <ort>/orte.json: quarter names and the landmarks listed in ort.json for the labels.
 
 Source: swisstopo light base map vector tiles (ch.swisstopo.base.vt, zoom 14), drawn with Pillow
 in LV95 so the texture lines up exactly with the 20 m terrain grid from _bau_gelaende.py.
 Needs:  mapbox-vector-tile, pyproj, pillow   (pip install mapbox-vector-tile pyproj pillow)
-Run:    python _bau_boden.py [cache_dir]
+Run:    python chur-3d/_bau_boden.py <ort-folder> [cache_dir]      (after gelaende and gebaeude)
+        add --list to print all named places/POIs in the area (to pick landmarks for ort.json)
 """
 import gzip, json, math, os, sys, urllib.request
 
@@ -12,8 +13,15 @@ import mapbox_vector_tile as mvt
 from PIL import Image, ImageDraw
 from pyproj import Transformer
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-CACHE = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~/.cache/chur-3d")
+LIST = "--list" in sys.argv
+ARGS = [a for a in sys.argv[1:] if a != "--list"]
+HERE = os.path.abspath(ARGS[0]) if ARGS else os.path.dirname(os.path.abspath(__file__))
+CACHE = ARGS[1] if len(ARGS) > 1 else os.path.expanduser("~/.cache/orte-3d")
+CFG = json.load(open(os.path.join(HERE, "ort.json")))
+# landmark labels: (subclass, exact name in the base map's poi layer) -> label shown on the page
+LANDMARKS = {(sc, name): label for sc, name, label in CFG.get("landmarks", [])}
+PLACE_CLASSES = set(CFG.get("place_classes", ["neighbourhood"]))
+EXCLUDE = set(CFG.get("exclude_places", []))
 TILE = "https://vectortiles0.geo.admin.ch/tiles/ch.swisstopo.base.vt/v1.0.0/{z}/{x}/{y}.pbf"
 Z = 14
 OUT = 4096
@@ -47,20 +55,6 @@ ROAD_W = {"motorway": 15, "trunk": 13, "primary": 11, "secondary": 9, "tertiary"
 ROAD = (255, 255, 255)
 CASING = (205, 200, 192)
 RAIL = (150, 146, 140)
-# landmark labels: exact name in the base map's poi layer -> label shown on the page
-LANDMARKS = {
-    ("railway_station", "Chur"): "Bahnhof Chur",
-    ("attraction", "Hof Chur"): "Hof (Kathedrale)",
-    ("historic_government", "Rathaus"): "Rathaus",
-    ("hospital", "Kantonsspital Graubünden Hauptstandort (KSH)"): "Kantonsspital",
-    ("university", "Fachhochschule Graubünden, Gebäude A"): "Fachhochschule",
-    ("university", "Pädagogische Hochschule Graubünden Chur phGR"): "PH Graubünden",
-    ("stadium", "Sportanlage Obere Au"): "Obere Au",
-    ("cable_car_station", "Chur (Brambrüeschbahn)"): "Brambrüeschbahn",
-    ("military", "Eidgenössischer Waffenplatz Chur"): "Waffenplatz",
-    ("hospital", "Psychiatrische Klinik Waldhaus Chur"): "Klinik Waldhaus",
-    ("swimming_pool", "Schwimmbad Sand"): "Schwimmbad Sand",
-}
 
 
 def tiles():
@@ -172,6 +166,8 @@ def main():
             and pr.get("brunnel") != "tunnel" else None)
 
     write_places(data)
+    if LIST:
+        return
     img = img.resize((OUT, OUT), Image.LANCZOS)
     img.save(os.path.join(HERE, "boden.jpg"), quality=82, optimize=True, progressive=True)
     print("boden.jpg", os.path.getsize(os.path.join(HERE, "boden.jpg")) // 1024, "KB")
@@ -181,7 +177,7 @@ def write_places(data):
     from shapely.geometry import Point, Polygon
     g = json.load(open(os.path.join(HERE, "gebaeude.json")))
     ox, oy = g["origin_lv95"]
-    area = Polygon([(x + ox, y + oy) for x, y in g["boundary"]])
+    area = Polygon([(x + ox, y + oy) for x, y in g["area"]])
     out, seen = [], set()
     for x, y, t in data:
         for layer in ("place", "poi"):
@@ -194,7 +190,11 @@ def write_places(data):
                     continue
                 px, py = p(f["geometry"]["coordinates"])
                 e, n = W0 + px / PX, N0 - py / PX
-                if (layer == "place" and pr.get("class") == "neighbourhood" and pr["name"] != "Hof"  # label: Hof (Kathedrale)
+                if LIST:
+                    if area.contains(Point(e, n)) and pr.get("class") not in ("bollard", "mast", "bus"):
+                        print(layer, pr.get("class"), pr.get("subclass"), pr["name"], round(e), round(n))
+                    continue
+                if (layer == "place" and pr.get("class") in PLACE_CLASSES and pr["name"] not in EXCLUDE
                         and area.contains(Point(e, n))):
                     label, kind = pr["name"], "q"
                 elif layer == "poi" and (pr.get("subclass"), pr["name"]) in LANDMARKS:
