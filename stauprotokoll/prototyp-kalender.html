@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de-CH"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sonntagsstaukalender Isla Bella</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{--surface:#fff;--rule:#dde4e9;--rule-soft:#eef2f5;--ink:#14202a;--ink-2:#4a5b68;--ink-3:#71838f;
+  --s1:#0068a4;--s2:#ee7733;--grau:#8c9aa5}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);font-size:16px;line-height:1.5}
+.wrap{padding:12px 16px 16px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.tick-t{font-size:12px;fill:var(--ink-3)}
+.lab{font-size:13px;fill:var(--ink)}
+.grid{stroke:var(--rule-soft);stroke-width:1}
+.axis{stroke:var(--rule);stroke-width:1}
+.src{font-size:12px;color:var(--ink-3);border-top:1px solid var(--rule-soft);padding-top:10px;margin:12px 0 0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+</head><body>
+
+<style>
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink-2);margin:0 0 10px}
+.leg i{display:inline-block;width:14px;height:11px;margin-right:6px;vertical-align:-1px}
+.fazit{font-size:17px;line-height:1.45;margin:0 0 10px}
+</style>
+<div class="wrap">
+  <p class="fazit" id="fazit"></p>
+  <div class="leg"><span><i style="background:#b8460f"></i>unter 30&nbsp;km/h</span><span><i style="background:#f4a46e"></i>30–50</span><span><i style="background:#fbe3d1"></i>50–70</span><span><i style="background:#eef2f5"></i>über 70</span><span><i style="background:#fff;outline:1px solid #dde4e9"></i>keine Daten</span></div>
+  <div id="chart"></div>
+  <p class="src">Mittleres Tempo je Viertelstunde Richtung Chur, Zählstelle Rothenbrunnen/Isla Bella (A13), Sonntage seit Juli 2026,
+  10 bis 20 Uhr. Sonntage mit Messausfall fehlen. Gemessenes Tempo, keine Staumeldungen.
+  Quelle: Bundesamt für Strassen (Astra), opentransportdata.swiss. Grafik: Südostschweiz</p>
+</div>
+<script>
+const D = [{"d": "5. Juli", "v": [77, 75, 76, 75, 75, 74, 76, 76, 74, 73, 73, 72, 73, 71, 73, 68, 40, 47, 72, 71, 74, 73, 71, 75, 72, 70, 73, 72, 74, 76, 72, 75, 72, 77, 72, 78, 76, 75, 77, 80], "n": 0, "ab": null, "tief": 40}, {"d": "12. Juli", "v": [77, 77, 76, 75, 76, 77, 73, 73, 74, 73, 73, 39, 43, 24, 33, 24, 16, 24, 39, 25, 25, 33, 22, 16, 31, 32, 24, 28, 31, 24, 29, 36, 64, 76, 77, 77, 78, 76, 76, 76], "n": 12, "ab": "13:15", "tief": 16}, {"d": "19. Juli", "v": [79, 78, 75, 77, 78, 72, 72, 54, 71, 39, 36, 33, 37, 31, 75, 29, 28, 30, 15, 30, 20, 30, 18, 20, 23, 26, 14, 31, 17, 25, 29, 26, 21, 32, 25, 20, 46, 78, 78, 79], "n": 16, "ab": "13:45", "tief": 14}, {"d": "26. Juli", "v": [78, 77, 75, 75, 74, 73, 65, 55, 32, 32, 26, 41, 19, 31, 34, 29, 22, 33, 21, 23, 21, 23, 19, 28, 43, 73, 33, 71, 66, 74, 78, 74, 75, 74, 77, 78, 78, 79, 79, 78], "n": 10, "ab": "12:30", "tief": 19}, {"d": "2. Aug.", "v": [75, 77, 75, 66, 58, 34, 29, 41, 31, 31, 28, 34, 14, 30, 29, 25, 13, 26, 26, 19, 22, 30, 22, 12, 27, 21, 29, 20, 43, 17, 11, 34, 27, 15, 36, 34, 76, 70, 76, 76], "n": 20, "ab": "11:30", "tief": 11}, {"d": "9. Aug.", "v": [73, 75, 69, 73, 67, 65, 63, 59, 62, 29, 41, 45, 48, 29, 36, 40, 26, 21, 26, 27, 24, 25, 28, 33, 40, 31, 48, 22, 23, 33, 12, 35, 31, 17, 21, 50, 25, 62, 74, 82], "n": 15, "ab": "12:15", "tief": 12}, {"d": "16. Aug.", "v": [79, 80, 77, 75, 79, 72, 69, 76, 67, 60, 59, 69, 36, 67, 41, 20, 18, 22, 36, 23, 23, null, 76, null, 74, 74, 87, 54, 43, 16, 59, 76, 75, 79, 73, 79, 80, 79, 78, 81], "n": 6, "ab": "13:45", "tief": 16}, {"d": "23. Aug.", "v": [79, 77, 76, 76, 77, 75, 76, 74, 61, 74, 67, 63, 64, 27, 43, 26, 41, 27, 26, 30, 31, null, 10, 28, 74, 57, 36, 44, 21, 31, 24, 23, 43, 44, 61, 38, 37, 72, 78, 78], "n": 9, "ab": "13:15", "tief": 10}, {"d": "30. Aug.", "v": [79, 74, 79, 76, 68, 71, 70, 70, 77, 70, 54, 44, 43, 42, 22, 28, 16, 23, 36, 19, 24, 50, 19, 34, null, null, 27, 30, 31, 29, 53, 27, 25, 17, 37, 28, 54, 48, 57, 70], "n": 13, "ab": "13:30", "tief": 16}, {"d": "6. Sept.", "v": [77, 76, 81, 78, 63, 67, 63, 50, 48, 31, 25, 30, 33, 22, 32, 17, 33, 28, 22, 27, 19, 13, 27, 17, 28, 20, 26, 45, 83, 78, 81, 74, 79, 76, 82, 77, 37, 27, 32, 40], "n": 14, "ab": "12:30", "tief": 13}, {"d": "13. Sept.", "v": [77, 77, 80, 73, 74, 75, 59, 60, 46, 44, 44, 14, 29, 31, 15, 36, 39, 14, 45, 28, 31, 27, 26, 15, 14, 23, 28, 31, 36, 28, 58, 32, 33, 38, 41, 51, 54, 69, 75, 73], "n": 12, "ab": "12:45", "tief": 14}, {"d": "20. Sept.", "v": [76, 79, 78, 73, 77, 76, 71, 50, 77, 66, 71, 76, 47, 33, 30, 40, 27, 27, 22, 24, 25, 25, 26, 20, 22, 34, 26, 31, 29, 41, 23, 58, 26, 50, 68, 60, 74, 79, 77, 80], "n": 13, "ab": "14:00", "tief": 20}, {"d": "27. Sept.", "v": [76, 80, 77, 80, 80, 76, 78, 55, 65, 70, 57, 36, 24, 48, 27, 36, 19, 31, 26, 28, 25, 14, 30, 32, 30, 22, 36, 20, 55, 55, 35, 44, 44, 76, 78, 73, 80, 77, 78, 71], "n": 9, "ab": "13:00", "tief": 14}, {"d": "4. Okt.", "v": [80, 83, 76, 81, 78, 82, 81, 80, 81, 70, 82, 76, 78, 69, 62, 73, 54, 64, 72, 51, 66, 73, 37, 36, 51, 34, 33, 46, 24, 18, 31, 43, 65, 78, 77, 73, 77, 77, 78, 78], "n": 2, "ab": "17:00", "tief": 18}, {"d": "11. Okt.", "v": [82, 79, 81, 80, 78, 75, 77, 80, 76, 69, 59, 63, 59, 25, 57, 56, 34, 40, 52, 48, 29, 26, 40, 23, 23, 25, 22, 28, 30, 22, 18, 27, 34, 16, 49, 58, 71, 46, 77, 82], "n": 12, "ab": "13:15", "tief": 16}, {"d": "18. Okt.", "v": [82, 81, 78, 79, 79, 79, 75, 72, 63, 55, 59, 39, 62, 58, 29, 46, 30, 38, 21, 23, 17, 30, 38, 18, 42, 78, 82, 79, 77, 75, 73, 74, 74, 77, 79, 75, 83, 88, 84, 80], "n": 5, "ab": "13:30", "tief": 17}, {"d": "25. Okt.", "v": [78, 61, 81, 78, 79, 76, 71, 75, 80, 77, 81, 73, 72, 75, 70, 60, 56, 58, 58, 27, 49, 41, 24, 42, 60, 64, 25, 68, 60, 57, 78, 72, 81, 75, 71, 75, 79, 78, 79, 84], "n": 3, "ab": "14:45", "tief": 24}];
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a, t) => { const x = document.createElementNS(NS, n); for (const k in a) x.setAttribute(k, a[k]); if (t != null) x.textContent = t; return x; };
+const farbe = v => v == null ? '#fff' : v < 30 ? '#b8460f' : v < 50 ? '#f4a46e' : v < 70 ? '#fbe3d1' : '#eef2f5';
+const uhr = i => { const m = 600 + i * 15; return String(Math.floor(m / 60)).padStart(2, '0') + '.' + String(m % 60).padStart(2, '0'); };
+const mit = D.filter(d => d.n > 0).length;
+document.getElementById('fazit').innerHTML = `An <b>${mit} von ${D.length} Sonntagen</b> fiel das Tempo bei Isla Bella Richtung Chur zeitweise unter 30&nbsp;km/h.`;
+let lastW = 0;
+function draw(){
+  const box = document.getElementById('chart'), Wd = Math.round(box.getBoundingClientRect().width);
+  if (Wd === lastW) return; lastW = Wd;
+  const lw = 58, l = lw + 6, r = 2, rh = 20, top = 18, H = top + D.length * rh + 2, cw = (Wd - l - r) / 40;
+  const svg = el('svg', {viewBox: `0 0 ${Wd} ${H}`, role: 'img', 'aria-label': 'Tempo bei Isla Bella je Sonntag und Viertelstunde'});
+  const step = Wd < 480 ? 2 : 1;
+  for (let h = 10; h <= 20; h += step){
+    const x = l + (h - 10) * 4 * cw;
+    svg.appendChild(el('text', {x, y: 11, class: 'tick-t', 'text-anchor': h === 10 ? 'start' : h === 20 ? 'end' : 'middle'}, h === 10 ? '10 Uhr' : String(h)));
+  }
+  D.forEach((d, k) => {
+    const y = top + k * rh;
+    svg.appendChild(el('text', {x: lw, y: y + rh / 2 + 4, class: 'lab', 'text-anchor': 'end'}, d.d));
+    d.v.forEach((v, i) => {
+      const c = el('rect', {x: l + i * cw, y: y + 1, width: Math.max(cw - 1, 1), height: rh - 2, fill: farbe(v)});
+      c.appendChild(el('title', {}, `${d.d}, ${uhr(i)} Uhr: ` + (v == null ? 'keine Daten' : v + ' km/h')));
+      svg.appendChild(c);
+    });
+  });
+  box.innerHTML = ''; box.appendChild(svg);
+}
+draw();
+let tm; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(draw, 120); });
+</script>
+</body></html>
