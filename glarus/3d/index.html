@@ -63,7 +63,7 @@
     #bottom { right: 60px; padding: 8px 10px 6px; }
     #yearlabel { font-size: 22px; min-width: 60px; }
     #count { min-width: 0; font-size: 12px; }
-    .axis span:nth-child(2), .axis span:nth-child(5) { display: none; }
+    .axis span:nth-child(3) { display: none; }
   }
 </style>
 </head>
@@ -96,8 +96,8 @@
     </span>
   </div>
   <svg id="hist" preserveAspectRatio="none"></svg>
-  <input id="slider" type="range" min="1800" max="2026" step="1" value="2026" aria-label="Jahr">
-  <div class="axis"><span style="left:0">vor 1800</span><span style="left:22.1%">1850</span><span style="left:44.2%">1900</span><span style="left:66.4%">1950</span><span style="left:88.5%">2000</span><span style="right:0">heute</span></div>
+  <input id="slider" type="range" min="1918" max="2026" step="1" value="2026" aria-label="Jahr">
+  <div class="axis"><span style="left:0">vor 1919</span><span style="left:29.6%">1950</span><span style="left:52.8%">1975</span><span style="left:75.9%">2000</span><span style="right:0">heute</span></div>
   <div id="legend"></div>
   <details>
     <summary>Was ist gemessen, was nicht?</summary>
@@ -133,6 +133,7 @@ import * as THREE from "three";
 import { MapControls } from "three/addons/controls/MapControls.js";
 
 const NOW = 2026;
+const FIRST = 1918;   // slider start: state "before 1919"
 const START = [2723551, 1211430];   // Glarus (geo.admin location search)
 
 // ---------- colours
@@ -325,21 +326,22 @@ function legend() {
 // histogram of build years per decade
 const known = meta.filter(m => m.year >= 0);
 const decades = [];
-const bucket = y => y < 1810 ? 1800 : Math.floor(y / 10) * 10;   // first bar: everything up to 1809
-for (let d = 1800; d <= 2020; d += 10) decades.push({ d, n: known.filter(m => bucket(m.year) === d).length });
+// the register gives only "before 1919" for most old buildings, so the time slider starts there
+const bucket = y => y < 1920 ? FIRST : Math.floor(y / 10) * 10;   // first bar: everything up to 1919
+for (let d = FIRST; d <= 2020; d = d === FIRST ? 1920 : d + 10) decades.push({ d, n: known.filter(m => bucket(m.year) === d).length });
 function hist() {
   const svg = $("hist"), max = Math.max(...decades.map(x => x.n)), W = 1000, H = 46, y = uniforms.uYear.value;
-  const span = NOW - 1800;
+  const span = NOW - FIRST;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   svg.innerHTML = decades.map(({ d, n }) => {
-    const x = (d - 1800) / span * W, w = 10 / span * W - 1.5, h = Math.max(1, n / max * (H - 2));
-    const c = d <= y ? yearColor(d + 5).getStyle() : "rgba(0,0,0,.1)";
-    return `<rect x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${c}"><title>${d === 1800 ? "bis 1809" : d + "er"}: ${n} Gebäude</title></rect>`;
+    const x = (d - FIRST) / span * W, w = (d === FIRST ? 2 : 10) / span * W - 1.5, h = Math.max(1, n / max * (H - 2));
+    const c = d <= y ? yearColor(d === FIRST ? 1700 : d + 5).getStyle() : "rgba(0,0,0,.1)";
+    return `<rect x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${c}"><title>${d === FIRST ? "bis 1919" : d + "er"}: ${n} Gebäude</title></rect>`;
   }).join("");
 }
 function setYear(y) {
   uniforms.uYear.value = y;
-  $("yearlabel").textContent = y >= NOW ? "heute" : y <= 1800 ? "1800" : y;
+  $("yearlabel").textContent = y >= NOW ? "heute" : y <= FIRST ? "vor 1919" : y;
   $("slider").value = y;
   const n = known.filter(m => m.year <= y).length;
   $("count").textContent = y >= NOW
@@ -356,7 +358,7 @@ let playing = null;
 function stopPlay() { if (playing) { cancelAnimationFrame(playing); playing = null; $("play").textContent = "▶ Zeitreise"; uniforms.uFresh.value = 0; } }
 $("play").addEventListener("click", () => {
   if (playing) return stopPlay();
-  let y = uniforms.uYear.value >= NOW ? 1800 : uniforms.uYear.value, last = performance.now();
+  let y = uniforms.uYear.value >= NOW ? FIRST : uniforms.uYear.value, last = performance.now();
   $("play").textContent = "❚❚ Pause";
   uniforms.uFresh.value = 6;
   const step = t => {
