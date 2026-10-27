@@ -81,7 +81,7 @@
   <button class="close" aria-label="Schliessen">×</button>
   <h2 id="i-title"></h2>
   <dl id="i-list"></dl>
-  <p class="hint">Quelle: Gebäude- und Wohnungsregister (GWR), BFS; Form: swissBUILDINGS3D, swisstopo</p>
+  <p class="hint">Quelle: Gebäude- und Wohnungsregister (GWR), BFS; Form: swissBUILDINGS3D, swisstopo; Grundrisse: amtliche Vermessung GR</p>
 </div>
 
 <div id="bottom" class="panel">
@@ -102,17 +102,21 @@
   <details>
     <summary>Was ist gemessen, was nicht?</summary>
     <p><b>Gemessen:</b> Gebäudeformen aus swissBUILDINGS3D 3.0 (swisstopo, Ausgabe 2022), Gelände aus swissALTI3D
-      und Basiskarte (swisstopo), Baujahr, Nutzung, Geschosse und Adresse aus dem GWR (BFS, Export <span id="gwrdate"></span>).
+      und Basiskarte (swisstopo), Baujahr, Nutzung, Geschosse und Adresse aus dem GWR (BFS, Export <span id="gwrdate"></span>), Hausgrundrisse und
+      Gebäudenummern (EGID) aus der amtlichen Vermessung (AV), Kanton Graubünden, <span id="avdate"></span>.
       Gebiet: <span id="areatext"></span>.</p>
     <p><b>Lücken:</b> Die Zeitreise zeigt nur Gebäude, die heute noch stehen. Abgerissene Häuser fehlen, um 1900 stand
-      also mehr, als hier zu sehen ist. Baujahr und Gebäude sind über die Lage verknüpft
-      (Registerpunkt im Grundriss); bei <span id="nojahr"></span> Gebäuden fehlt ein Baujahr, sie bleiben grau
+      also mehr, als hier zu sehen ist. Baujahr und Gebäude sind bei <span id="egidanteil"></span> Gebäuden über die
+      Gebäudenummer (EGID) der amtlichen Vermessung verknüpft, sonst über die Lage (Registerpunkt im Grundriss); bei <span id="nojahr"></span> Gebäuden fehlt ein Baujahr, sie bleiben grau
       und stehen in jedem Jahr. Bei <span id="nurperiode"></span> Gebäuden kennt das Register nur eine Bauperiode;
-      sie erscheinen zu Beginn der Periode (Periode «vor 1919»: in jedem Jahr). Wo das 3D-Modell mehrere Häuser als einen Körper führt (Häuserzeilen), ist er in der Ebene «Baujahr» gestreift
-      (ältestes und neuestes Baujahr) und erscheint in der Zeitreise mit dem ältesten; die Infobox listet alle Baujahre.
+      sie erscheinen zu Beginn der Periode (Periode «vor 1919»: in jedem Jahr). Wo das 3D-Modell mehrere Häuser als einen Körper führt (Häuserzeilen), ist er entlang der Hausgrundrisse
+      der amtlichen Vermessung geteilt (<span id="geteilt"></span>). Die Schnitte und Trennwände sind daraus
+      abgeleitet, nicht gemessen; an den Hausgrenzen kann ein Dachstück dem Nachbarhaus zufallen.
       Das 3D-Modell stammt von 2022: Neubauten danach fehlen oder zeigen noch den Vorgängerbau.</p>
     <p><b>Gestaltet:</b> Farben, Kamera, Höhen nicht überhöht. Altbauten erscheinen im Baujahr gemäss Register,
       das bei sehr alten Häusern oft geschätzt ist.</p>
+    <p>Diese Informationen der amtlichen Vermessung erfolgen ohne Gewähr und haben keinerlei Rechtswirkung.
+      Verbindlich sind einzig die vom Nachführungsgeometer erstellten und beglaubigten Auszüge.</p>
   </details>
 </div>
 
@@ -325,6 +329,9 @@ const $ = id => document.getElementById(id);
 $("gwrdate").textContent = B.sources.gwr.replace(/.*Export /, "").split("-").reverse().join(".");
 $("nojahr").textContent = B.stats.ohne.toLocaleString("de-CH");
 $("nurperiode").textContent = B.stats.bauperiode.toLocaleString("de-CH");
+$("avdate").textContent = (B.sources.av || "").replace(/.*, /, "");
+$("egidanteil").textContent = (B.stats.egid || 0).toLocaleString("de-CH");
+$("geteilt").textContent = `${(B.stats.geteilt || 0).toLocaleString("de-CH")} Körper in ${meta.filter(m => m.v).length.toLocaleString("de-CH")} Häuser`;
 function legend() {
   const L = $("legend");
   if (mode === "map") {
@@ -335,7 +342,7 @@ function legend() {
     const grad = YEAR_STOPS.map(([y, c]) => `${c} ${((y - 1800) / (NOW - 1800) * 100).toFixed(0)}%`).join(",");
     L.innerHTML = `<span>alt<span id="ramp" style="background:linear-gradient(90deg,${grad})"></span>neu</span>
       <span><i style="background:${UNKNOWN}"></i>Baujahr unbekannt</span>
-      <span><i style="background:repeating-linear-gradient(135deg,${YEAR_STOPS[1][1]} 0 3px,${YEAR_STOPS[5][1]} 3px 6px)"></i>mehrere Baujahre (Häuserzeile)</span>
+      ${meta.some(m => m.mix) ? `<span><i style="background:repeating-linear-gradient(135deg,${YEAR_STOPS[1][1]} 0 3px,${YEAR_STOPS[5][1]} 3px 6px)"></i>mehrere Baujahre (Häuserzeile)</span>` : ""}
       <span><i style="background:${FRESH}"></i>neu gebaut (Zeitreise)</span>`;
   } else {
     L.innerHTML = Object.values(USE).map(([t, c]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
@@ -411,6 +418,7 @@ function showInfo(i) {
   rows.push(["Höhe", `${m.h.toLocaleString("de-CH")} m (Modell)`]);
   if (m.ad && m.ad.length > 1 && !m.ys) rows.push(["Adressen", m.ad.join(", ")]);
   if (m.n) rows.push(["Hinweis", "Das 3D-Modell führt diese Häuser als einen Körper. Er erscheint in der Zeitreise mit dem ältesten Baujahr; Nutzung und Geschosse gelten für dieses."]);
+  if (m.v) rows.push(["Hinweis", "Aus einem grösseren 3D-Körper herausgeschnitten, entlang des Hausgrundrisses der amtlichen Vermessung."]);
   if (m.e) rows.push([m.ys ? "EGID (ältestes)" : "EGID", m.e]);
   if (!m.e) rows.push(["Register", "kein GWR-Eintrag zugeordnet"]);
   $("i-list").innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");

@@ -99,16 +99,28 @@ Playwright: nur `chromium-1243` vorhanden.
 ## Bekannte Lücken (auch auf der Seite genannt)
 
 - Zeitreise zeigt nur heute bestehende Gebäude; Abbrüche fehlen (GWR Chur-heute: 460 abgebrochene Einträge).
-- **519 Modellkörper enthalten mehrere GWR-Gebäude** (Altstadt-Zeilen, bis 21 Einträge, zusammen 1666),
-  davon haben aber nur **210 verschiedene Baujahre** (Davos 154 von 372, St. Moritz 109 von 163).
-  Seit 27.10.2026: diese Körper in der Ebene «Baujahr» gestreift (ältestes/neuestes Jahr, 6-m-Streifen),
-  Infobox listet alle Baujahre mit Adresse; in der Zeitreise erscheint der Körper mit dem ältesten Jahr.
-  Daten: `ys` (alle Einträge) und `mix` (neuestes Jahr) in gebaeude.json.
-- **Echtes Aufteilen nach Hausgrundriss wäre machbar:** amtliche Vermessung GR ist auf geodienste.ch
-  «frei erhältlich» (kostenlos, KGeoIG Art. 16), WFS `https://geodienste.ch/db/av_0/deu`, Layer `ms:LCSF`
-  (Bodenbedeckung, `Art = Gebaeude`, Feld `GWR_EGID`). Stichprobe Altstadt: 106 von 117 Grundrissen mit EGID.
-  Damit liessen sich auch Baujahre direkt über die EGID statt über die Lage verknüpfen.
-  Nutzungsbedingungen https://geo.gr.ch/geodaten/nutzungsbedingungen noch nicht gelesen.
+- **Häuserzeilen werden seit 27.10.2026 nach Hausgrundriss geteilt** (Variante 2, ersetzt die Streifen).
+  Quelle: amtliche Vermessung GR, geodienste.ch WFS `https://geodienste.ch/db/av_0/deu`, Layer `ms:LCSF`
+  (`Art = Gebaeude`, `BFSNr`, Feld `GWR_EGID`), Cache `~/.cache/orte-3d/av_<bfs>.json` mit Abrufdatum.
+  - Ablauf im Build: AV-Grundrisse, die zu mehr als der Hälfte in einem 3D-Körper liegen (> 4 m²); ab zwei
+    davon wird der Körper geteilt. Zellen = AV-Grundriss selbst, Rest (Dachüberstand, Lücken) per Voronoi.
+    Dach-/Schrägflächen werden in 2D geschnitten, Wände entlang der Wand (s, z). Trennwände zwischen den
+    Teilen bis zum tieferen der beiden Dächer, damit ein Haus in der Zeitreise allein geschlossen wirkt.
+  - GWR-Verknüpfung jetzt zuerst per EGID aus der AV, sonst wie bisher über die Lage.
+  - Chur: 706 Körper → 2214 Häuser, total 5604 statt 4096 Gebäude, 4608 per EGID. Davos: 341 → 851
+    (3146 total, 3055 per EGID). St. Moritz: 120 → 320 (1278 total, 1205 per EGID).
+  - **Chur «ohne Baujahr» stieg von 678 auf 1030:** Altstadthäuser ohne GBAUJ/GBAUP im GWR waren vorher
+    im Körper des Nachbarn mit Jahr versteckt. 920 lebende EGIDs in Chur haben kein GBAUJ. Ehrlicher, aber
+    mehr Grau in der Altstadt.
+  - Dreiecke Chur 239k → 357k, gebaeude.bin.gz 1,5 → 2,0 MB.
+  - Grenzen: Schnitte und Trennwände abgeleitet, nicht gemessen; wo die Stufe im 3D-Dach nicht genau auf der
+    AV-Grenze liegt, fällt ein Dachstreifen dem Nachbarn zu. AV ist tagesaktuell, 3D-Modell von 2022.
+  - Streifen-Code (`ys`, `mix`, `uStripe`) bleibt für Körper, bei denen nur die Lage-Verknüpfung mehrere
+    Einträge findet (Legende erscheint nur, wenn es solche gibt).
+  - Nutzungsbedingungen (gelesen 27.10.2026, geo.gr.ch war down → Web-Archiv-Kopie vom 13.08.2026 und
+    PDF `Nutzungsbestimmungen.pdf`, Stand 24.03.2017): Nutzung frei, Pflicht sind Quelle mit Datum
+    («Quelle: Amtliche Vermessung (AV), Kanton Graubünden, tt.mm.jjjj») und der Vermerk «Diese Informationen
+    der amtlichen Vermessung erfolgen ohne Gewähr …». Beides steht auf der Seite.
 - 47 Gebäude haben ein GWR-Baujahr nach 2022, das Modell ist von 2022 (evtl. Vorgängerbau in der Form).
 - Bauperiode «vor 1919» ohne Jahr: steht in jedem Jahr der Zeitreise.
 
