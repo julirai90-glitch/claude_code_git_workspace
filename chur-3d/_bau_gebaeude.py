@@ -242,6 +242,13 @@ def main():
                 m["ad"] = ads[:3]
             if len(rs) > 1:
                 m["n"] = len(rs)
+                # every register entry of this solid: [year or null, period label or null, first address]
+                m["ys"] = sorted(([int(r["GBAUJ"]) if r["GBAUJ"] else None,
+                                   None if r["GBAUJ"] else codes.get(("GBAUP", r["GBAUP"])),
+                                   (sorted(addr.get(r["EGID"], [])) or [""])[0]] for r in rs),
+                                 key=lambda e: (e[0] is None, e[0] or 0))
+                if len(set(ys)) > 1:
+                    m["mix"] = ys[-1]  # newest exact year; the solid is drawn striped old/new
         pos.append(t.reshape(-1, 3))
         bid.append(np.full(len(t) * 3, len(meta), dtype=np.uint16))
         meta.append(m)

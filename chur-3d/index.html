@@ -108,7 +108,8 @@
       also mehr, als hier zu sehen ist. Baujahr und Gebäude sind über die Lage verknüpft
       (Registerpunkt im Grundriss); bei <span id="nojahr"></span> Gebäuden fehlt ein Baujahr, sie bleiben grau
       und stehen in jedem Jahr. Bei <span id="nurperiode"></span> Gebäuden kennt das Register nur eine Bauperiode;
-      sie erscheinen zu Beginn der Periode (Periode «vor 1919»: in jedem Jahr). Bei Häusern mit mehreren Registereinträgen gilt das älteste Baujahr.
+      sie erscheinen zu Beginn der Periode (Periode «vor 1919»: in jedem Jahr). Wo das 3D-Modell mehrere Häuser als einen Körper führt (Häuserzeilen), ist er in der Ebene «Baujahr» gestreift
+      (ältestes und neuestes Baujahr) und erscheint in der Zeitreise mit dem ältesten; die Infobox listet alle Baujahre.
       Das 3D-Modell stammt von 2022: Neubauten danach fehlen oder zeigen noch den Vorgängerbau.</p>
     <p><b>Gestaltet:</b> Farben, Kamera, Höhen nicht überhöht. Altbauten erscheinen im Baujahr gemäss Register,
       das bei sehr alten Häusern oft geschätzt ist.</p>
@@ -265,11 +266,15 @@ for (let i = 0; i < N; i++) {
 const bgeo = new THREE.BufferGeometry();
 bgeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
 bgeo.setAttribute("aYear", new THREE.BufferAttribute(yearAttr, 1));
-const colors = new Uint8Array(N * 3);
+const colors = new Uint8Array(N * 3), colorsB = new Uint8Array(N * 3), mixAttr = new Float32Array(N);
+for (let i = 0; i < N; i++) mixAttr[i] = meta[bid[i]].mix || 0;
 bgeo.setAttribute("color", new THREE.BufferAttribute(colors, 3, true));
+// solids holding several register buildings (row houses): second colour = newest year, drawn as stripes
+bgeo.setAttribute("colorB", new THREE.BufferAttribute(colorsB, 3, true));
+bgeo.setAttribute("aMix", new THREE.BufferAttribute(mixAttr, 1));
 bgeo.computeVertexNormals();
 
-const uniforms = { uYear: { value: NOW }, uFresh: { value: 0 }, uSel: { value: -1 }, uMap: { value: 1 } };
+const uniforms = { uYear: { value: NOW }, uFresh: { value: 0 }, uSel: { value: -1 }, uMap: { value: 1 }, uStripe: { value: 0 } };
 const bidF = new Float32Array(bid);
 bgeo.setAttribute("aBid", new THREE.BufferAttribute(bidF, 1));
 // face winding in swissBUILDINGS3D is not consistent: light both sides
@@ -277,11 +282,17 @@ const bmat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.Dou
 bmat.onBeforeCompile = sh => {
   Object.assign(sh.uniforms, uniforms);
   const wall = new THREE.Color(WALL), flat = new THREE.Color(FLAT), fresh = new THREE.Color(FRESH);
-  sh.vertexShader = "attribute float aYear;\nattribute float aBid;\nvarying float vYear;\nvarying float vBid;\nvarying float vUp;\n" +
-    sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvYear = aYear; vBid = aBid; vUp = objectNormal.y;");
-  sh.fragmentShader = "uniform float uYear;\nuniform float uFresh;\nuniform float uSel;\nuniform float uMap;\nvarying float vYear;\nvarying float vBid;\nvarying float vUp;\n" +
+  sh.vertexShader = "attribute float aYear;\nattribute float aBid;\nattribute vec3 colorB;\nattribute float aMix;\n" +
+    "varying float vYear;\nvarying float vBid;\nvarying float vUp;\nvarying vec3 vColorB;\nvarying float vMix;\nvarying vec3 vPos;\n" +
+    sh.vertexShader.replace("#include <begin_vertex>",
+      "#include <begin_vertex>\nvYear = aYear; vBid = aBid; vUp = objectNormal.y; vColorB = colorB; vMix = aMix; vPos = position;");
+  sh.fragmentShader = "uniform float uYear;\nuniform float uFresh;\nuniform float uSel;\nuniform float uMap;\nuniform float uStripe;\n" +
+    "varying float vYear;\nvarying float vBid;\nvarying float vUp;\nvarying vec3 vColorB;\nvarying float vMix;\nvarying vec3 vPos;\n" +
     sh.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
       if (vYear > uYear + 0.5) discard;
+      // several construction years in one solid: diagonal stripes oldest / newest (pale until the newest is built)
+      if (uStripe > 0.5 && vMix > 0.5 && fract((vPos.x + vPos.z) / 6.0) > 0.5)
+        diffuseColor.rgb = uYear >= vMix ? vColorB : mix(diffuseColor.rgb, vec3(0.93), 0.6);
       // walls: plain facade colour on the map, a pale tint of the layer colour otherwise
       if (uMap > 0.5 && abs(vUp) > 0.97) diffuseColor.rgb = vec3(${flat.r}, ${flat.g}, ${flat.b});  // flat roofs
       if (abs(vUp) < 0.35) diffuseColor.rgb = uMap > 0.5 ? vec3(${wall.r}, ${wall.g}, ${wall.b}) : mix(diffuseColor.rgb, vec3(1.0), 0.45);
@@ -295,14 +306,17 @@ scene.add(bmesh);
 let mode = "map";
 function paint() {
   uniforms.uMap.value = mode === "map" ? 1 : 0;
+  uniforms.uStripe.value = mode === "year" ? 1 : 0;
   const pal = meta.map(m => {
     const c = mode === "map" ? new THREE.Color(ROOF)
       : mode === "year" ? (m.year < 0 ? new THREE.Color(UNKNOWN) : yearColor(m.year || 1700))
       : new THREE.Color(USE[m.use][1]);
     return [c.r * 255, c.g * 255, c.b * 255];
   });
-  for (let i = 0; i < N; i++) colors.set(pal[bid[i]], i * 3);
+  const palB = meta.map(m => { const c = yearColor(m.mix || 1700); return [c.r * 255, c.g * 255, c.b * 255]; });
+  for (let i = 0; i < N; i++) { colors.set(pal[bid[i]], i * 3); colorsB.set(palB[bid[i]], i * 3); }
   bgeo.attributes.color.needsUpdate = true;
+  bgeo.attributes.colorB.needsUpdate = true;
   legend();
 }
 
@@ -321,6 +335,7 @@ function legend() {
     const grad = YEAR_STOPS.map(([y, c]) => `${c} ${((y - 1800) / (NOW - 1800) * 100).toFixed(0)}%`).join(",");
     L.innerHTML = `<span>alt<span id="ramp" style="background:linear-gradient(90deg,${grad})"></span>neu</span>
       <span><i style="background:${UNKNOWN}"></i>Baujahr unbekannt</span>
+      <span><i style="background:repeating-linear-gradient(135deg,${YEAR_STOPS[1][1]} 0 3px,${YEAR_STOPS[5][1]} 3px 6px)"></i>mehrere Baujahre (Häuserzeile)</span>
       <span><i style="background:${FRESH}"></i>neu gebaut (Zeitreise)</span>`;
   } else {
     L.innerHTML = Object.values(USE).map(([t, c]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
@@ -387,15 +402,16 @@ renderer.domElement.addEventListener("pointerup", e => {
 function showInfo(i) {
   const m = meta[i];
   uniforms.uSel.value = i;
-  $("i-title").textContent = m.ad ? m.ad[0] : (m.k || "Gebäude");
+  $("i-title").textContent = m.ys ? `${m.n} Gebäude in einem Modellkörper` : m.ad ? m.ad[0] : (m.k || "Gebäude");
   const rows = [];
-  rows.push(["Baujahr", m.s === "j" ? m.y : m.s === "p" ? `Periode ${m.p}` : "nicht erfasst"]);
+  if (m.ys) rows.push(["Baujahre", m.ys.map(([y, p, a]) => `${y ?? (p ? "Periode " + p : "unbekannt")}${a ? " · " + a : ""}`).join("<br>")]);
+  else rows.push(["Baujahr", m.s === "j" ? m.y : m.s === "p" ? `Periode ${m.p}` : "nicht erfasst"]);
   if (m.k) rows.push(["Nutzung", m.k]);
   if (m.g) rows.push(["Geschosse", m.g]);
   rows.push(["Höhe", `${m.h.toLocaleString("de-CH")} m (Modell)`]);
-  if (m.ad && m.ad.length > 1) rows.push(["Adressen", m.ad.join(", ")]);
-  if (m.n) rows.push(["Register", `${m.n} Einträge, ältestes Baujahr gezeigt`]);
-  if (m.e) rows.push(["EGID", m.e]);
+  if (m.ad && m.ad.length > 1 && !m.ys) rows.push(["Adressen", m.ad.join(", ")]);
+  if (m.n) rows.push(["Hinweis", "Das 3D-Modell führt diese Häuser als einen Körper. Er erscheint in der Zeitreise mit dem ältesten Baujahr; Nutzung und Geschosse gelten für dieses."]);
+  if (m.e) rows.push([m.ys ? "EGID (ältestes)" : "EGID", m.e]);
   if (!m.e) rows.push(["Register", "kein GWR-Eintrag zugeordnet"]);
   $("i-list").innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
   $("info").style.display = "block";

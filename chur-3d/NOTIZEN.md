@@ -99,9 +99,16 @@ Playwright: nur `chromium-1243` vorhanden.
 ## Bekannte Lücken (auch auf der Seite genannt)
 
 - Zeitreise zeigt nur heute bestehende Gebäude; Abbrüche fehlen (GWR Chur-heute: 460 abgebrochene Einträge).
-- **519 Modellkörper enthalten mehrere GWR-Gebäude** (Altstadt-Zeilen, bis 21 Einträge, zusammen 1666).
-  Gezeigt wird das älteste Baujahr → ganze Häuserzeilen wirken älter. Besser wäre Aufteilen nach
-  Grundstück/Grundriss (amtliche Vermessung) – offen.
+- **519 Modellkörper enthalten mehrere GWR-Gebäude** (Altstadt-Zeilen, bis 21 Einträge, zusammen 1666),
+  davon haben aber nur **210 verschiedene Baujahre** (Davos 154 von 372, St. Moritz 109 von 163).
+  Seit 27.10.2026: diese Körper in der Ebene «Baujahr» gestreift (ältestes/neuestes Jahr, 6-m-Streifen),
+  Infobox listet alle Baujahre mit Adresse; in der Zeitreise erscheint der Körper mit dem ältesten Jahr.
+  Daten: `ys` (alle Einträge) und `mix` (neuestes Jahr) in gebaeude.json.
+- **Echtes Aufteilen nach Hausgrundriss wäre machbar:** amtliche Vermessung GR ist auf geodienste.ch
+  «frei erhältlich» (kostenlos, KGeoIG Art. 16), WFS `https://geodienste.ch/db/av_0/deu`, Layer `ms:LCSF`
+  (Bodenbedeckung, `Art = Gebaeude`, Feld `GWR_EGID`). Stichprobe Altstadt: 106 von 117 Grundrissen mit EGID.
+  Damit liessen sich auch Baujahre direkt über die EGID statt über die Lage verknüpfen.
+  Nutzungsbedingungen https://geo.gr.ch/geodaten/nutzungsbedingungen noch nicht gelesen.
 - 47 Gebäude haben ein GWR-Baujahr nach 2022, das Modell ist von 2022 (evtl. Vorgängerbau in der Form).
 - Bauperiode «vor 1919» ohne Jahr: steht in jedem Jahr der Zeitreise.
 
