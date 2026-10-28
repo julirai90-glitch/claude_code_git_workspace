@@ -1,0 +1,177 @@
+# WORT	Frage  (Umlaute als AE/OE/UE, kein ß; | = Trennstelle)
+# --- Kantonskürzel und Abkürzungen (2 Buchstaben) ---
+GR	Kantons|kürzel Graubünden
+ZH	Kantons|kürzel Zürich
+BE	Kantons|kürzel Bern
+LU	Kantons|kürzel Luzern
+SG	Kantons|kürzel St. Gallen
+TI	Kantons|kürzel Tessin
+VS	Kantons|kürzel Wallis
+TG	Kantons|kürzel Thurgau
+ZG	Kantons|kürzel Zug
+GL	Kantons|kürzel Glarus
+SZ	Kantons|kürzel Schwyz
+AG	Kantons|kürzel Aargau
+SH	Kantons|kürzel Schaff|hausen
+NE	Kantons|kürzel Neuenburg
+JU	Kantons|kürzel Jura
+FR	Kantons|kürzel Freiburg
+BS	Kantons|kürzel Basel-Stadt
+BL	Kantons|kürzel Basel-Land
+OW	Kantons|kürzel Obwalden
+NW	Kantons|kürzel Nidwalden
+AR	Kantons|kürzel Appenzell A.Rh.
+AI	Kantons|kürzel Appenzell I.Rh.
+VD	Kantons|kürzel Waadt
+UR	Kanton am Gotthard
+CH	Länder|kürzel Schweiz
+EU	Staaten|bund (Abk.)
+PS	Nach|schrift (Abk.)
+KM	Längen|mass (Abk.)
+OK	einver|standen (engl.)
+NR	Nummer (Abk.)
+ST	Sankt (Abk.)
+AB	weg, fort
+AN	bei, nahe
+AU	Schmerz|laut
+DA	dort
+DU	vertraute Anrede
+EI	Hühner|produkt
+ER	Personal|pronomen
+ES	Personal|pronomen
+IM	in dem
+IN	modisch (ugs.)
+JA	Zustim|mung
+OB	Binde|wort
+OH	Ausruf des Staunens
+SO	auf diese Weise
+UM	rund, etwa
+ZU	ge|schlossen
+NU	Augen|blick (im ...)
+# --- klassische Kurzwörter ---
+AAL	Schlangen|fisch
+ADE	Lebewohl
+AHA	Ausruf des Erkennens
+AHN	Vorfahr
+ALP	Bergweide
+ALT	nicht jung
+AMT	Behörde
+ARA	Papagei
+ARM	Körper|teil
+ART	Gattung
+AST	Teil des Baumes
+AUE	Fluss|niederung
+BAD	Wasch|raum
+BAR	Theke
+BUS	Verkehrs|mittel
+DOM	Kathe|drale
+DUO	Zweier|gruppe
+EHE	Lebens|bund
+EID	Schwur
+EIS	gefrorenes Wasser
+ELF	Zahl
+EMU	austral. Laufvogel
+ERZ	Metall|gestein
+GAS	Aggregat|zustand
+GNU	Antilopen|art
+HAI	Raubfisch
+HUT	Kopf|bedeckung
+IRE	Bewohner der Grünen Insel
+KAP	Land|spitze
+KUH	Milch|lieferantin
+LAU	mässig warm
+LOS	Schicksal
+MAI	Monat
+MUT	Tapfer|keit
+NIL	Strom in Afrika
+NUN	jetzt
+ODE	feierliches Gedicht
+OEL	Schmier|stoff
+OHR	Hörorgan
+OPA	Gross|vater
+ORT	Stelle
+OESE	Schlinge
+OST	Himmels|richtung
+POL	Ende der Erdachse
+RAD	Teil des Velos
+RAT	Empfeh|lung
+REH	Waldtier
+ROM	Ewige Stadt
+SEE	Binnen|gewässer
+TAL	Senke zwischen Bergen
+TEE	Aufguss|getränk
+TOR	Eingang
+UHR	Zeit|messer
+UHU	Eulen|vogel
+UNO	Weltorga|nisation (Abk.)
+ZOO	Tierpark
+ZUG	Bahn
+EBBE	niedriger Wasser|stand
+ENDE	Schluss
+ESEL	Lasttier
+ETUI	kleines Futteral
+EULE	Nacht|vogel
+IDEE	Einfall
+IGEL	Stachel|tier
+MEER	Ozean
+NEST	Brut|stätte
+OASE	Wüsten|quelle
+OPER	Musik|bühnen|werk
+PAAR	zwei Zusam|menge|hörige
+ROSE	Blume
+RUHE	Stille
+SEIL	Tau
+SOLE	Salz|wasser
+URNE	Wahl|behälter
+ZEHE	Fussglied
+AARE	Fluss durch Bern
+ARIE	Sologesang
+ASTER	Herbst|blume
+ELBE	Strom in Deutsch|land
+ERDE	unser Planet
+NASE	Riech|organ
+OTTER	Marder|art
+TENOR	Sänger|stimme
+TRAM	Strassen|bahn
+VELO	Fahrrad (schweiz.)
+ZNUENI	Pausen|brot (schweiz.)
+ZVIERI	Nach|mittags|imbiss
+ROESTI	Kartoffel|gericht
+# --- Graubünden ---
+CHUR	Bündner Haupt|stadt
+DAVOS	WEF-Ort
+AROSA	Kurort im Schanfigg
+FLIMS	Ferienort in der Surselva
+LAAX	Ski|ort in der Surselva
+ILANZ	Hauptort der Surselva
+THUSIS	Ort am Hinter|rhein
+SCUOL	Kurort im Unter|engadin
+ZUOZ	Ort im Ober|engadin
+SILS	Ort im Ober|engadin
+VALS	Therme im Valsertal
+SAMEDAN	Engadiner Flugplatz-Ort
+BIVIO	Dorf am Julier|pass
+LENZ	Frühling (poet.)
+RHEIN	Strom aus Grau|bünden
+INN	Fluss im Engadin
+ALBULA	Bündner Pass
+MALOJA	Pass im Ober|engadin
+JULIER	Bündner Pass
+BERNINA	Pass ins Puschlav
+FLUELA	Pass bei Davos
+MOESA	Fluss im Misox
+MISOX	Bündner Südtal
+BERGELL	Bündner Südtal
+ENGADIN	Hochtal am Inn
+VIAMALA	Schlucht am Hinter|rhein
+HEIDI	Spyri|Figur
+STEINBOCK	Bündner Wappen|tier
+ARVE	Zirbel|kiefer
+GAMS	Bergtier
+SENN	Alphirt
+PIZ	rätorom.: Berggipfel
+RHB	Bündner Bahn (Abk.)
+HCD	Davoser Eishockey|club (Abk.)
+CAPUNS	Bündner Mangold|gericht
+PIZOKEL	Bündner Teigware
+NUSSTORTE	Engadiner Spezialität

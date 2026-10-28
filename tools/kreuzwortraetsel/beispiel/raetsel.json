@@ -1,0 +1,654 @@
+{
+ "grid": [
+  "#B#ST#A#A#S#S",
+  "BE#T#AUSSAGEN",
+  "#RAUS#STIL#SO",
+  "BERN#ARIEL##B",
+  "#I#TADELN#SH#",
+  "AN##BEIL#AMIN",
+  "#IN#ENTEN#SEE",
+  "EGO#N#E#+++++",
+  "#ERSTENS+++++",
+  "INDIEN#T+++++",
+  "###EUTER+++++",
+  "SZ#GRETE+++++",
+  "#ER#E#AI+++++",
+  "EI#BRETT+++++",
+  "#TAL+++++++++"
+ ],
+ "entries": [
+  {
+   "r": 0,
+   "c": 0,
+   "typ": "BA",
+   "start": [
+    1,
+    0
+   ],
+   "dir": "a",
+   "word": "BE",
+   "clue": "Kantons|kürzel Bern"
+  },
+  {
+   "r": 0,
+   "c": 0,
+   "typ": "BD",
+   "start": [
+    0,
+    1
+   ],
+   "dir": "d",
+   "word": "BEREINIGEN",
+   "clue": ""
+  },
+  {
+   "r": 0,
+   "c": 2,
+   "typ": "A",
+   "start": [
+    0,
+    3
+   ],
+   "dir": "a",
+   "word": "ST",
+   "clue": "Sankt (Abk.)"
+  },
+  {
+   "r": 0,
+   "c": 2,
+   "typ": "BD",
+   "start": [
+    0,
+    3
+   ],
+   "dir": "d",
+   "word": "STUNT",
+   "clue": ""
+  },
+  {
+   "r": 0,
+   "c": 5,
+   "typ": "BD",
+   "start": [
+    0,
+    6
+   ],
+   "dir": "d",
+   "word": "AUSREITEN",
+   "clue": ""
+  },
+  {
+   "r": 0,
+   "c": 7,
+   "typ": "D",
+   "start": [
+    1,
+    7
+   ],
+   "dir": "d",
+   "word": "STILLE",
+   "clue": ""
+  },
+  {
+   "r": 0,
+   "c": 7,
+   "typ": "BD",
+   "start": [
+    0,
+    8
+   ],
+   "dir": "d",
+   "word": "ASIEN",
+   "clue": ""
+  },
+  {
+   "r": 0,
+   "c": 9,
+   "typ": "D",
+   "start": [
+    1,
+    9
+   ],
+   "dir": "d",
+   "word": "ALL",
+   "clue": ""
+  },
+  {
+   "r": 0,
+   "c": 9,
+   "typ": "BD",
+   "start": [
+    0,
+    10
+   ],
+   "dir": "d",
+   "word": "SG",
+   "clue": "Kantons|kürzel St. Gallen"
+  },
+  {
+   "r": 0,
+   "c": 11,
+   "typ": "D",
+   "start": [
+    1,
+    11
+   ],
+   "dir": "d",
+   "word": "ES",
+   "clue": "sächl. Fürwort"
+  },
+  {
+   "r": 0,
+   "c": 11,
+   "typ": "BD",
+   "start": [
+    0,
+    12
+   ],
+   "dir": "d",
+   "word": "SNOB",
+   "clue": ""
+  },
+  {
+   "r": 1,
+   "c": 2,
+   "typ": "D",
+   "start": [
+    2,
+    2
+   ],
+   "dir": "d",
+   "word": "AR",
+   "clue": "Kfz-Z. Appenzell A.Rh."
+  },
+  {
+   "r": 1,
+   "c": 4,
+   "typ": "A",
+   "start": [
+    1,
+    5
+   ],
+   "dir": "a",
+   "word": "AUSSAGEN",
+   "clue": ""
+  },
+  {
+   "r": 2,
+   "c": 0,
+   "typ": "A",
+   "start": [
+    2,
+    1
+   ],
+   "dir": "a",
+   "word": "RAUS",
+   "clue": ""
+  },
+  {
+   "r": 2,
+   "c": 0,
+   "typ": "BA",
+   "start": [
+    3,
+    0
+   ],
+   "dir": "a",
+   "word": "BERN",
+   "clue": ""
+  },
+  {
+   "r": 2,
+   "c": 5,
+   "typ": "A",
+   "start": [
+    2,
+    6
+   ],
+   "dir": "a",
+   "word": "STIL",
+   "clue": ""
+  },
+  {
+   "r": 2,
+   "c": 5,
+   "typ": "D",
+   "start": [
+    3,
+    5
+   ],
+   "dir": "d",
+   "word": "ADEN",
+   "clue": ""
+  },
+  {
+   "r": 2,
+   "c": 10,
+   "typ": "A",
+   "start": [
+    2,
+    11
+   ],
+   "dir": "a",
+   "word": "SO",
+   "clue": "auf diese Weise"
+  },
+  {
+   "r": 3,
+   "c": 4,
+   "typ": "A",
+   "start": [
+    3,
+    5
+   ],
+   "dir": "a",
+   "word": "ARIEL",
+   "clue": ""
+  },
+  {
+   "r": 3,
+   "c": 4,
+   "typ": "D",
+   "start": [
+    4,
+    4
+   ],
+   "dir": "d",
+   "word": "ABENTEURER",
+   "clue": ""
+  },
+  {
+   "r": 3,
+   "c": 10,
+   "typ": "D",
+   "start": [
+    4,
+    10
+   ],
+   "dir": "d",
+   "word": "SMS",
+   "clue": ""
+  },
+  {
+   "r": 3,
+   "c": 11,
+   "typ": "D",
+   "start": [
+    4,
+    11
+   ],
+   "dir": "d",
+   "word": "HIE",
+   "clue": ""
+  },
+  {
+   "r": 4,
+   "c": 0,
+   "typ": "BA",
+   "start": [
+    5,
+    0
+   ],
+   "dir": "a",
+   "word": "AN",
+   "clue": "bei, nahe"
+  },
+  {
+   "r": 4,
+   "c": 2,
+   "typ": "A",
+   "start": [
+    4,
+    3
+   ],
+   "dir": "a",
+   "word": "TADELN",
+   "clue": ""
+  },
+  {
+   "r": 4,
+   "c": 9,
+   "typ": "A",
+   "start": [
+    4,
+    10
+   ],
+   "dir": "a",
+   "word": "SH",
+   "clue": "Kfz-Z. Schaff|hausen"
+  },
+  {
+   "r": 4,
+   "c": 12,
+   "typ": "D",
+   "start": [
+    5,
+    12
+   ],
+   "dir": "d",
+   "word": "NE",
+   "clue": "Kfz-Z. Neuenburg"
+  },
+  {
+   "r": 5,
+   "c": 2,
+   "typ": "D",
+   "start": [
+    6,
+    2
+   ],
+   "dir": "d",
+   "word": "NORD",
+   "clue": ""
+  },
+  {
+   "r": 5,
+   "c": 3,
+   "typ": "A",
+   "start": [
+    5,
+    4
+   ],
+   "dir": "a",
+   "word": "BEIL",
+   "clue": ""
+  },
+  {
+   "r": 5,
+   "c": 8,
+   "typ": "A",
+   "start": [
+    5,
+    9
+   ],
+   "dir": "a",
+   "word": "AMIN",
+   "clue": ""
+  },
+  {
+   "r": 6,
+   "c": 0,
+   "typ": "A",
+   "start": [
+    6,
+    1
+   ],
+   "dir": "a",
+   "word": "IN",
+   "clue": "modisch (ugs.)"
+  },
+  {
+   "r": 6,
+   "c": 0,
+   "typ": "BA",
+   "start": [
+    7,
+    0
+   ],
+   "dir": "a",
+   "word": "EGO",
+   "clue": ""
+  },
+  {
+   "r": 6,
+   "c": 3,
+   "typ": "A",
+   "start": [
+    6,
+    4
+   ],
+   "dir": "a",
+   "word": "ENTEN",
+   "clue": ""
+  },
+  {
+   "r": 6,
+   "c": 9,
+   "typ": "A",
+   "start": [
+    6,
+    10
+   ],
+   "dir": "a",
+   "word": "SEE",
+   "clue": "Binnen|gewässer"
+  },
+  {
+   "r": 7,
+   "c": 3,
+   "typ": "D",
+   "start": [
+    8,
+    3
+   ],
+   "dir": "d",
+   "word": "SIEG",
+   "clue": ""
+  },
+  {
+   "r": 7,
+   "c": 5,
+   "typ": "D",
+   "start": [
+    8,
+    5
+   ],
+   "dir": "d",
+   "word": "ENTE",
+   "clue": ""
+  },
+  {
+   "r": 7,
+   "c": 7,
+   "typ": "D",
+   "start": [
+    8,
+    7
+   ],
+   "dir": "d",
+   "word": "STREIT",
+   "clue": ""
+  },
+  {
+   "r": 8,
+   "c": 0,
+   "typ": "A",
+   "start": [
+    8,
+    1
+   ],
+   "dir": "a",
+   "word": "ERSTENS",
+   "clue": ""
+  },
+  {
+   "r": 8,
+   "c": 0,
+   "typ": "BA",
+   "start": [
+    9,
+    0
+   ],
+   "dir": "a",
+   "word": "INDIEN",
+   "clue": ""
+  },
+  {
+   "r": 9,
+   "c": 6,
+   "typ": "D",
+   "start": [
+    10,
+    6
+   ],
+   "dir": "d",
+   "word": "ETAT",
+   "clue": ""
+  },
+  {
+   "r": 10,
+   "c": 0,
+   "typ": "BA",
+   "start": [
+    11,
+    0
+   ],
+   "dir": "a",
+   "word": "SZ",
+   "clue": "Kantons|kürzel Schwyz"
+  },
+  {
+   "r": 10,
+   "c": 1,
+   "typ": "D",
+   "start": [
+    11,
+    1
+   ],
+   "dir": "d",
+   "word": "ZEIT",
+   "clue": ""
+  },
+  {
+   "r": 10,
+   "c": 2,
+   "typ": "A",
+   "start": [
+    10,
+    3
+   ],
+   "dir": "a",
+   "word": "EUTER",
+   "clue": ""
+  },
+  {
+   "r": 11,
+   "c": 2,
+   "typ": "A",
+   "start": [
+    11,
+    3
+   ],
+   "dir": "a",
+   "word": "GRETE",
+   "clue": ""
+  },
+  {
+   "r": 12,
+   "c": 0,
+   "typ": "A",
+   "start": [
+    12,
+    1
+   ],
+   "dir": "a",
+   "word": "ER",
+   "clue": "männl. Fürwort"
+  },
+  {
+   "r": 12,
+   "c": 0,
+   "typ": "BA",
+   "start": [
+    13,
+    0
+   ],
+   "dir": "a",
+   "word": "EI",
+   "clue": "Hühner|produkt"
+  },
+  {
+   "r": 12,
+   "c": 3,
+   "typ": "D",
+   "start": [
+    13,
+    3
+   ],
+   "dir": "d",
+   "word": "BL",
+   "clue": "Kfz-Z. Basel-Land"
+  },
+  {
+   "r": 12,
+   "c": 5,
+   "typ": "A",
+   "start": [
+    12,
+    6
+   ],
+   "dir": "a",
+   "word": "AI",
+   "clue": "Kantons|kürzel Appenzell I.Rh."
+  },
+  {
+   "r": 13,
+   "c": 2,
+   "typ": "A",
+   "start": [
+    13,
+    3
+   ],
+   "dir": "a",
+   "word": "BRETT",
+   "clue": ""
+  },
+  {
+   "r": 14,
+   "c": 0,
+   "typ": "A",
+   "start": [
+    14,
+    1
+   ],
+   "dir": "a",
+   "word": "TAL",
+   "clue": "Senke zwischen Bergen"
+  }
+ ],
+ "loesungswort": "BERGSTERN",
+ "loesung_zellen": [
+  [
+   13,
+   3
+  ],
+  [
+   1,
+   11
+  ],
+  [
+   2,
+   1
+  ],
+  [
+   7,
+   1
+  ],
+  [
+   8,
+   7
+  ],
+  [
+   2,
+   7
+  ],
+  [
+   6,
+   12
+  ],
+  [
+   11,
+   4
+  ],
+  [
+   6,
+   5
+  ]
+ ],
+ "box": [
+  7,
+  8,
+  7,
+  5
+ ]
+}
