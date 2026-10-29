@@ -42,6 +42,7 @@ Nur **Daten** – keine Gestaltung. `pruefkarte.png` dient nur der Kontrolle, ni
 | `09_bildquellen.csv` | verfügbare Karten (Blatt/Ausgabe) und Luftbilder (Flugjahr) mit WMTS-Layer und Zeitstempel | Bildbestellung / Reihe kleiner Bilder |
 | `kennzahlen.json` | maschinenlesbare Kennzahlen + Gegenproben | |
 | `pruefkarte.png` | Kontrolle: Umrisse, Profil, Orte auf Relief | nur intern |
+| `datenuebersicht.png` | alle Datensätze als schlichte Diagramme | Überblick, keine Grafikvorlage |
 
 Koordinaten: LV95 (EPSG:2056); WGS84 per swisstopo-Näherungsformel (~1 m).
 
