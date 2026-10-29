@@ -18,7 +18,7 @@ def shapes(p):
         h = f.read(8)
         if len(h) < 8: break
         _, cl = struct.unpack('>II', h); c = f.read(cl * 2); st = struct.unpack('<i', c[:4])[0]
-        if st in (5, 15, 25):
+        if st in (3, 5, 13, 15, 23, 25):
             np_, npt = struct.unpack('<ii', c[36:44]); parts = list(struct.unpack(f'<{np_}i', c[44:44 + 4 * np_]))
             o = 44 + 4 * np_; pts = [struct.unpack('<dd', c[o + 16 * i:o + 16 * i + 16]) for i in range(npt)]
             out.append([pts[a:b] for a, b in zip(parts, parts[1:] + [npt])])

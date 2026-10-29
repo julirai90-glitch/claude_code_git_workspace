@@ -1,0 +1,35 @@
+gletscher,sgi_id,jahr_start,jahr_ende,quelle_start,quelle_ende,flaeche_start_km2,flaeche_ende_km2,volumenaenderung_km3,mittl_dickenaenderung_m,geod_massenbilanz_mwe_pro_jahr,unsicherheit_mwe
+Vadret da Morteratsch,E22-03,1850,1935,sieg-map,lk50,20.2355,18.7996,-0.242574,-11.905,-0.124,0.303
+Vadret da Morteratsch,E22-03,1850,1955,sieg-map,lk25,20.2355,17.7429,-0.484946,-23.963,-0.207,0.177
+Vadret da Morteratsch,E22-03,1850,1985,sieg-map,ai-bw,20.2355,17.4585,-0.480768,-23.756,-0.161,0.315
+Vadret da Morteratsch,E22-03,1850,2008,sieg-map,ai-bw,20.2355,14.9619,-0.860255,-42.008,-0.263,0.378
+Vadret da Morteratsch,E22-03,1850,2015,sieg-map,sa3d-2018,20.2355,14.9339,-1.117786,-54.584,-0.327,0.329
+Vadret da Morteratsch,E22-03,1850,2020,sieg-map,ss3d-r2024,20.2355,7.6985,-1.179667,-57.790,-0.422,0.324
+Vadret da Morteratsch,E22-03,1850,2021,sieg-map,sa3d-2022,20.2355,7.6846,-1.116626,-54.702,-0.398,0.322
+Vadret da Morteratsch,E22-03,1850,2022,sieg-map,is-stand,20.2355,7.6783,-1.239380,-60.716,-0.439,0.324
+Vadret da Morteratsch,E22-03,1935,1955,lk50,lk25,18.7996,17.7429,-0.270168,-14.352,-0.628,0.482
+Vadret da Morteratsch,E22-03,1935,1985,lk50,ai-bw,18.7996,17.4585,-0.288911,-15.346,-0.271,0.183
+Vadret da Morteratsch,E22-03,1935,2008,lk50,ai-bw,18.7996,14.9619,-0.661399,-34.856,-0.456,0.186
+Vadret da Morteratsch,E22-03,1935,2015,lk50,sa3d-2018,18.7996,14.9339,-0.825192,-43.459,-0.520,0.173
+Vadret da Morteratsch,E22-03,1935,2020,lk50,ss3d-r2024,18.7996,7.6985,-0.885889,-46.819,-0.669,0.175
+Vadret da Morteratsch,E22-03,1935,2021,lk50,sa3d-2022,18.7996,7.6846,-0.824035,-43.553,-0.615,0.169
+Vadret da Morteratsch,E22-03,1935,2022,lk50,is-stand,18.7996,7.6783,-0.944817,-49.935,-0.697,0.181
+Vadret da Morteratsch,E22-03,1955,1985,lk25,ai-bw,17.7429,17.4585,-0.039384,-2.211,-0.063,0.155
+Vadret da Morteratsch,E22-03,1955,2008,lk25,ai-bw,17.7429,14.9619,-0.404459,-22.631,-0.397,0.095
+Vadret da Morteratsch,E22-03,1955,2015,lk25,sa3d-2018,17.7429,14.9339,-0.522495,-29.215,-0.453,0.086
+Vadret da Morteratsch,E22-03,1955,2020,lk25,ss3d-r2024,17.7429,7.6985,-0.583855,-32.780,-0.600,0.095
+Vadret da Morteratsch,E22-03,1955,2021,lk25,sa3d-2022,17.7429,7.6846,-0.521605,-29.287,-0.528,0.092
+Vadret da Morteratsch,E22-03,1955,2022,lk25,is-stand,17.7429,7.6783,-0.642225,-36.061,-0.641,0.094
+Vadret da Morteratsch,E22-03,1985,2008,ai-bw,ai-bw,17.4585,14.9619,-0.371659,-20.994,-0.847,0.114
+Vadret da Morteratsch,E22-03,1985,2015,ai-bw,sa3d-2018,17.4585,14.9339,-0.472020,-26.645,-0.826,0.146
+Vadret da Morteratsch,E22-03,1985,2020,ai-bw,ss3d-r2024,17.4585,7.6985,-0.533911,-30.261,-1.031,0.149
+Vadret da Morteratsch,E22-03,1985,2021,ai-bw,sa3d-2022,17.4585,7.6846,-0.471307,-26.715,-0.885,0.147
+Vadret da Morteratsch,E22-03,1985,2022,ai-bw,is-stand,17.4585,7.6783,-0.592771,-33.599,-1.083,0.149
+Vadret da Morteratsch,E22-03,2008,2015,ai-bw,sa3d-2018,14.9619,14.9339,-0.087848,-5.871,-0.714,0.208
+Vadret da Morteratsch,E22-03,2008,2020,ai-bw,ss3d-r2024,14.9619,7.6985,-0.148425,-9.907,-0.928,0.170
+Vadret da Morteratsch,E22-03,2008,2021,ai-bw,sa3d-2022,14.9619,7.6846,-0.087364,-5.832,-0.504,0.157
+Vadret da Morteratsch,E22-03,2008,2022,ai-bw,is-stand,14.9619,7.6783,-0.202105,-13.493,-1.084,0.169
+Vadret da Morteratsch,E22-03,2015,2020,sa3d-2018,ss3d-r2024,14.9339,7.6985,-0.061821,-4.139,-0.929,0.134
+Vadret da Morteratsch,E22-03,2015,2022,sa3d-2018,is-stand,14.9339,7.6783,-0.115045,-7.691,-1.236,0.203
+Vadret Pers,E22-16,2015,2020,sa3d-2018,ss3d-r2024,6.5816,6.5816,-0.025145,-3.820,-0.649,0.136
+Vadret Pers,E22-16,2015,2022,sa3d-2018,is-stand,6.5816,6.5816,-0.049830,-7.571,-0.919,0.207
