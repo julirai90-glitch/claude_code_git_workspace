@@ -118,6 +118,7 @@ python3 $REPO/python/make_mort_v.py $REPO/python ~/geo/mort ~/geo/glamos frames 
 # 9:16 im Terra-Grischuna-Layout (Stone Serif / Klavika, Zähler in #CC0000); Schriften lizenziert, nie ins Repo:
 FONT_SET=tg TG_FONTS=~/geo/fonts python3 $REPO/python/make_mort_v.py $REPO/python ~/geo/mort ~/geo/glamos frames 0 2000
 # optional ROUTE=<gpx>: geplante Wanderroute (weiss, dunkle Kontur) + Zungenspitzen 1850–2016 aus morteratsch-print-daten/04_…; GPX nicht ins Repo
+# Ebenen zum Weiterschneiden: 'layers 0 2000' (Gelände ohne Text + Marker), danach 'compose' (fertige Frames + Overlay-Ebene mit Alpha)
 
 # 4) Klima (Arbeitsordner ~/geo/wx)
 cd ~/geo/wx

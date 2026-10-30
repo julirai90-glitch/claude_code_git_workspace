@@ -82,6 +82,7 @@ if ROUTE:
             q = project(g, pos, tgt, Wp, Hp, E, N)
             if q is None: continue
             x, y = q[0] * k, q[1] * k
+            if y > SAFE1 - 12: continue          # am unteren Rand der 4:5-Zone nicht halb anschneiden
             d.ellipse((x - 6, y - 6, x + 6, y + 6), fill=(255, 255, 255), outline=(26, 28, 33), width=2)
             if side == 'r': d.text((x + 14, y), txt, font=F_MK, fill=(255, 255, 255), anchor='lm', stroke_width=3, stroke_fill=(26, 28, 33))
             else: d.text((x - 14, y), txt, font=F_MK, fill=(255, 255, 255), anchor='rm', stroke_width=3, stroke_fill=(26, 28, 33))
@@ -121,7 +122,7 @@ def chrome(sa, sb, m, Y):
         text_ra(d, (W - 66, y0 + 56), f"{v:,.0f} m".replace(',', '\u2009').replace('-', '−'), F_NUM, C_NUM)
         d.text((W - 66, y0 + 142), f"gemessen bis {when.strftime('%m.%Y')}", font=F_SM, fill=(90, 94, 100), anchor='ra')
     # legend (bottom of safe zone)
-    yl = SAFE1 - 80
+    yl = SAFE1 - 80 if not ROUTE else y0 + 190 + 30 + 62   # mit Route: Legende unter den Jahreskasten (Marker liegen unten)
     txt = 'Ausdehnung 1850 (rekonstruiert)'
     lw = d.textlength(txt, font=F_LAB)
     if ROUTE:
@@ -161,7 +162,8 @@ def load_tex(key, m1850):
     tex = M.load_tex(key, m1850)
     return route_tex(tex) if ROUTE else tex
 
-def frame(sc, texs, t):
+def terrain(sc, texs, t):
+    # Gelände ohne Text (RGBA) + Marker-Ebene (RGBA oder None)
     pos, tgt = cam_at(min(1.0, t / M.T_STAGES))
     ia, ib, m, lin = M.stage_mix(t)
     SS = 1.25
@@ -171,11 +173,23 @@ def frame(sc, texs, t):
     img = M.compose(g, sc, texs[ia], **kw)
     if m > 0: img = img * (1 - m) + M.compose(g, sc, texs[ib], **kw) * m
     im = Image.fromarray((img * 255).astype(np.uint8)).resize((W, H), Image.LANCZOS).convert('RGBA')
+    return im, (markers(g, pos, tgt, int(W * SS), int(H * SS)) if ROUTE else None)
+
+def overlay(mk, t):
+    # alles, was über dem Gelände liegt: Marker + Titel/Jahr/Zähler/Legende/Quellen
+    ia, ib, m, lin = M.stage_mix(t)
     Y = STAGES[ia]['year'] + (STAGES[ib]['year'] - STAGES[ia]['year']) * lin + 0.999
-    if ROUTE: im = Image.alpha_composite(im, markers(g, pos, tgt, int(W * SS), int(H * SS)))
-    im = Image.alpha_composite(im, chrome(STAGES[ia], STAGES[ib], m, Y))
+    L = chrome(STAGES[ia], STAGES[ib], m, Y)
+    return Image.alpha_composite(mk, L) if mk is not None else L
+
+def finish(im, ov, t):
+    im = Image.alpha_composite(im, ov)
     if t < M.INTRO: im = Image.blend(Image.new('RGBA', im.size, (236, 240, 244, 255)), im, M.ease(t / M.INTRO))
     return im
+
+def frame(sc, texs, t):
+    im, mk = terrain(sc, texs, t)
+    return finish(im, overlay(mk, t), t)
 
 if __name__ == '__main__':
     mode = mode_args[0]
@@ -187,6 +201,33 @@ if __name__ == '__main__':
         os.makedirs('test_v', exist_ok=True)
         for i in idx:
             frame(sc, texs, M.INTRO + i * (M.HOLD + M.FADE) + 0.1).convert('RGB').save(f"test_v/s{STAGES[i]['year']}.png")
+    elif mode == 'layers':
+        # Ebenen zum Weiterschneiden: layers_v/clean (Gelände ohne Text), layers_v/mk (Marker, RGBA); 'last' = Bild vor dem Abspann
+        texs = {i: load_tex(s['key'], m1850) for i, s in enumerate(STAGES)}
+        a, b = int(mode_args[1]), int(mode_args[2])
+        for d in ('clean', 'mk'): os.makedirs(f'layers_v/{d}', exist_ok=True)
+        todo = [(f, f / M.FPS) for f in range(a, min(b, M.N)) if f / M.FPS < M.T_STAGES] + [('last', M.T_STAGES - 1e-3)]
+        for f, t in todo:
+            name = f if f == 'last' else f'{f:04d}'
+            if os.path.exists(f'layers_v/clean/{name}.png'): continue
+            im, mk = terrain(sc, texs, t)
+            if mk is not None: mk.save(f'layers_v/mk/{name}.png')
+            im.convert('RGB').save(f'layers_v/clean/{name}.png'); print(f, flush=True)
+    elif mode == 'compose':
+        # aus layers_v: frames_v (fertig) + layers_v/ovl (alles über dem Gelände, RGBA) + layers_v/credits.png
+        os.makedirs('frames_v', exist_ok=True); os.makedirs('layers_v/ovl', exist_ok=True)
+        def load(name):
+            im = Image.open(f'layers_v/clean/{name}.png').convert('RGBA')
+            mk = Image.open(f'layers_v/mk/{name}.png') if ROUTE else None
+            return im, mk
+        card = credits().convert('RGBA'); card.convert('RGB').save('layers_v/credits.png')
+        im, mk = load('last'); last = finish(im, overlay(mk, M.T_STAGES - 1e-3), M.T_STAGES - 1e-3)
+        for f in range(M.N):
+            t = f / M.FPS; out = f'frames_v/{f:04d}.png'
+            if t >= M.T_STAGES:
+                Image.blend(last, card, M.ease(min(1.0, (t - M.T_STAGES) / 0.6))).convert('RGB').save(out); continue
+            im, mk = load(f'{f:04d}'); ov = overlay(mk, t)
+            ov.save(f'layers_v/ovl/{f:04d}.png'); finish(im, ov, t).convert('RGB').save(out)
     else:
         texs = {i: load_tex(s['key'], m1850) for i, s in enumerate(STAGES)}
         a, b = int(mode_args[1]), int(mode_args[2])
