@@ -115,6 +115,8 @@ cd ~/geo/mort
 VARIANT=luftbild python3 $REPO/python/make_mort.py $REPO/python ~/geo/mort ~/geo/glamos frames 0 2000
 VARIANT=karten   python3 $REPO/python/make_mort.py $REPO/python ~/geo/mort ~/geo/glamos frames 0 2000
 python3 $REPO/python/make_mort_v.py $REPO/python ~/geo/mort ~/geo/glamos frames 0 2000     # 9:16
+# 9:16 im Terra-Grischuna-Layout (Stone Serif / Klavika, Zähler in #CC0000); Schriften lizenziert, nie ins Repo:
+FONT_SET=tg TG_FONTS=~/geo/fonts python3 $REPO/python/make_mort_v.py $REPO/python ~/geo/mort ~/geo/glamos frames 0 2000
 
 # 4) Klima (Arbeitsordner ~/geo/wx)
 cd ~/geo/wx

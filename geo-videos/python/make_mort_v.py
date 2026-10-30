@@ -14,12 +14,27 @@ from PIL import Image, ImageDraw, ImageFont
 W, H = 1080, 1920
 SAFE0, SAFE1 = (H - 1350) // 2, (H + 1350) // 2      # 4:5 zone rows 285..1635
 FONT = M.FONT
-F_YEAR = ImageFont.truetype(FONT + 'InterDisplay-Bold.otf', 120)
-F_SUB = ImageFont.truetype(FONT + 'Inter-Medium.otf', 30)
-F_LAB = ImageFont.truetype(FONT + 'Inter-SemiBold.otf', 32)
-F_NUM = ImageFont.truetype(FONT + 'InterDisplay-Bold.otf', 76)
-F_SM = ImageFont.truetype(FONT + 'Inter-Medium.otf', 26)
-F_HEAD = ImageFont.truetype(FONT + 'InterDisplay-Bold.otf', 60)
+# FONT_SET=tg: Terra-Grischuna-Schriften aus $TG_FONTS (lizenziert, nicht im Repo); Standard: Inter
+FONT_SET = os.environ.get('FONT_SET', 'inter')
+if FONT_SET == 'tg':
+    def tg(stem, size):
+        for ext in ('.otf', '.ttf'):
+            f = os.path.join(os.environ['TG_FONTS'], stem + ext)
+            if os.path.exists(f): return ImageFont.truetype(f, size)
+        raise FileNotFoundError(f'{stem}.otf/.ttf nicht in TG_FONTS')
+    SERIF, REG, MED, BOLD = (lambda s, n=n: tg(n, s) for n in ('StoneSerifStd-Semibold', 'Klavika-Regular', 'Klavika-Medium', 'Klavika-Bold'))
+    F_YEAR, F_SUB, F_LAB, F_NUM, F_SM, F_HEAD = BOLD(120), REG(30), MED(32), BOLD(76), REG(26), SERIF(60)
+    F_CB, F_CS = REG(28), MED(30)                    # Credits: Text, Zwischentitel
+    C_NUM = (204, 0, 0)                              # TG-Rot #CC0000 (provisorischer Bildschirmwert)
+else:
+    F_YEAR = ImageFont.truetype(FONT + 'InterDisplay-Bold.otf', 120)
+    F_SUB = ImageFont.truetype(FONT + 'Inter-Medium.otf', 30)
+    F_LAB = ImageFont.truetype(FONT + 'Inter-SemiBold.otf', 32)
+    F_NUM = ImageFont.truetype(FONT + 'InterDisplay-Bold.otf', 76)
+    F_SM = ImageFont.truetype(FONT + 'Inter-Medium.otf', 26)
+    F_HEAD = ImageFont.truetype(FONT + 'InterDisplay-Bold.otf', 60)
+    F_CB, F_CS = ImageFont.truetype(FONT + 'Inter-Regular.otf', 28), ImageFont.truetype(FONT + 'Inter-SemiBold.otf', 30)
+    C_NUM = (28, 32, 38)
 STAGES = M.STAGES
 
 CAM = ((3950, 13600, 10400), (3900, 5300, 2300), (3900, 12600, 8700), (3930, 5600, 2250))
@@ -46,7 +61,7 @@ def chrome(sa, sb, m, Y):
     lc = M.length_change(Y)
     if lc is not None:
         v, when = lc
-        d.text((W - 66, y0 + 56), f"{v:,.0f} m".replace(',', '\u2009').replace('-', '−'), font=F_NUM, fill=(28, 32, 38), anchor='ra')
+        d.text((W - 66, y0 + 56), f"{v:,.0f} m".replace(',', '\u2009').replace('-', '−'), font=F_NUM, fill=C_NUM, anchor='ra')
         d.text((W - 66, y0 + 142), f"gemessen bis {when.strftime('%m.%Y')}", font=F_SM, fill=(90, 94, 100), anchor='ra')
     # legend (bottom of safe zone)
     yl = SAFE1 - 80
@@ -64,7 +79,7 @@ def chrome(sa, sb, m, Y):
 
 def credits():
     im = Image.new('RGB', (W, H), (245, 245, 242)); d = ImageDraw.Draw(im)
-    fb = ImageFont.truetype(FONT + 'Inter-Regular.otf', 28); fs = ImageFont.truetype(FONT + 'Inter-SemiBold.otf', 30)
+    fb, fs = F_CB, F_CS
     y = SAFE0 + 20
     d.text((70, y), 'Morteratsch, 1946–2025', font=F_HEAD, fill=(28, 32, 38)); y += 110
     blocks = [('Quellen', ['Luftbilder: SWISSIMAGE HIST 1946;', 'SWISSIMAGE Zeitreise 1954/55, 1971,', '1985, 1998, 2009; SWISSIMAGE 2025',
