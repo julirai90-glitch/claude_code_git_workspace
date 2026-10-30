@@ -570,3 +570,21 @@ Wenn du z.B. den Atlas und das Kanton-Embed auf derselben WordPress-Seite zeigen
 
 *Letztes Update: 2026-09-10.
 Bei Datenupdate auf gh-pages aktualisieren sich alle Embeds automatisch — keine Code-Änderung im einbettenden Artikel nötig.*
+
+---
+
+## RhB-Bahnhöfe und Behindertengesetz
+
+Karte aller 103 RhB-Bahnhöfe nach Umsetzungsstand BehiG. Grundkarte swisstopo, ohne API-Schlüssel. Auf dem Handy scrollt ein Finger die Seite, zwei Finger bewegen die Karte.
+
+```html
+<iframe id="rhb-karte"
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/rhb-bahnhoefe/karte.html"
+  title="Karte: Umsetzungsstand des Behindertengesetzes an den RhB-Bahnhöfen"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; display:block;"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'documentElementScroll' }, '#rhb-karte');</script>
+```
+
+Gemessene Höhen im iframe: 1095 px bei 358 px Breite, 1186 px bei 288 px, 1148 px bei 696 px. Mit offener Tabelle rund 4800 px.
