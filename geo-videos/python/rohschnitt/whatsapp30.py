@@ -20,18 +20,23 @@ SEQ = [('v08', 4.5, 3.5, 'Morteratschgletscher\nOktober 2026'),
        ('v03', 2.0, 2.0, None),
        ('v09', 1.0, 2.0, None),
        ('f20', 0, 1.8, None),
-       ('v10', 7.0, 3.9, 'www.terragrischuna.ch')]
+       ('v10', 7.0, 3.9, 'Die Wanderreportage\nab Dezember in der\nTerra Grischuna|www.terragrischuna.ch')]
 
-def caption(txt, path, small=False):
+def caption(txt, path):
+    # 'Haupttext|Zusatzzeile': Zusatzzeile kleiner darunter (z.B. URL)
+    main, _, sub = txt.partition('|')
+    rows = [(l, FM) for l in main.split('\n')] + ([(sub, FS)] if sub else [])
+    y = int(H * 0.68) if not sub else int(H * 0.58)
     L = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(L)
-    font = FS if small else FM; lines = txt.split('\n'); lh = font.size * 1.25
-    y = (H - 90 - lh * len(lines)) if small else int(H * 0.68)
-    if not small: d.rectangle((W / 2 - 22, y - 26, W / 2 + 22, y - 20), fill=(204, 0, 0, 255))
+    d.rectangle((W / 2 - 22, y - 26, W / 2 + 22, y - 20), fill=(204, 0, 0, 255))
+    pos = []; yy = y
+    for l, font in rows:
+        if font is FS: yy += 16
+        pos.append((l, font, yy)); yy += font.size * 1.25
     sh = Image.new('RGBA', (W, H), (0, 0, 0, 0)); ds = ImageDraw.Draw(sh)
-    for i, l in enumerate(lines):
-        ds.text((W / 2 + 2, y + i * lh + 2), l, font=font, fill=(0, 0, 0, 200), anchor='ma')
+    for l, font, yy in pos: ds.text((W / 2 + 2, yy + 2), l, font=font, fill=(0, 0, 0, 200), anchor='ma')
     L = Image.alpha_composite(sh.filter(ImageFilter.GaussianBlur(4)), L); d = ImageDraw.Draw(L)
-    for i, l in enumerate(lines): d.text((W / 2, y + i * lh), l, font=font, fill=(255, 255, 255, 255), anchor='ma')
+    for l, font, yy in pos: d.text((W / 2, yy), l, font=font, fill=(255, 255, 255, 255), anchor='ma')
     L.save(path)
 
 parts = []
@@ -45,14 +50,18 @@ for n, (src, ss, dur, txt) in enumerate(SEQ):
         base = f"scale=-2:{H},crop={W}:{H}:x='(iw-{W})/2-60+120*t/{dur}':y=0,setsar=1"   # Querformat, leichter Schwenk
     fc = f'[0:v]{base},fps={FPS}[b]'
     if txt:
-        cp = f'{O}/{n:02d}_cap.png'; caption(txt, cp, small=txt.startswith('www'))
+        cp = f'{O}/{n:02d}_cap.png'; caption(txt, cp)
         inp += ['-loop', '1', '-t', str(dur), '-i', cp]
         fc += f";[1:v]format=rgba,fade=in:st=0.2:d=0.3:alpha=1,fade=out:st={dur - 0.35}:d=0.3:alpha=1[c];[b][c]overlay[b]"
     subprocess.run(['ffmpeg', '-v', 'error', '-y', *inp, '-filter_complex', fc, '-map', '[b]', '-an', '-c:v', 'libx264',
                     '-pix_fmt', 'yuv420p', '-crf', '18', '-r', str(FPS), out], check=True)
     parts.append(out)
 open(f'{O}/concat.txt', 'w').write(''.join(f"file '{p}'\n" for p in parts))
-dst = f'{GEO}/wa/morteratsch_whatsapp_30s_ohne_wz.mp4'
-subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', f'{O}/concat.txt', '-an', '-c:v', 'libx264',
-                '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-crf', '20', '-movflags', '+faststart', dst], check=True)
-print(dst)
+# WhatsApp-Status: max. 10 MB -> 2-Pass mit ~2,4 Mbit/s (30 s ≈ 9 MB)
+dst = f'{GEO}/wa/morteratsch_whatsapp_30s.mp4'
+enc = ['-an', '-c:v', 'libx264', '-profile:v', 'high', '-preset', 'slow', '-b:v', '2400k', '-maxrate', '2800k', '-bufsize', '4800k',
+       '-pix_fmt', 'yuv420p', '-passlogfile', f'{O}/pass']
+src = ['-f', 'concat', '-safe', '0', '-i', f'{O}/concat.txt']
+subprocess.run(['ffmpeg', '-v', 'error', '-y', *src, *enc, '-pass', '1', '-f', 'mp4', os.devnull], check=True)
+subprocess.run(['ffmpeg', '-v', 'error', '-y', *src, *enc, '-pass', '2', '-movflags', '+faststart', dst], check=True)
+print(dst, os.path.getsize(dst))
