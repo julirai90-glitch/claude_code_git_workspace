@@ -77,7 +77,7 @@ if ROUTE:
     def markers(g, pos, tgt, Wp, Hp):
         L = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(L); k = W / Wp
         lab = [(yr, E, N, 'r') for yr, E, N in TIPS]
-        lab += [('Bahnhof Morteratsch', *RPTS[0], 'l'), ('Ziel der Wanderung (geplant)', *RPTS[-1], 'l')]
+        lab += [('Bahnhof Morteratsch', *RPTS[0], 'l'), ('Ziel der Wanderung', *RPTS[-1], 'l')]
         for txt, E, N, side in lab:
             q = project(g, pos, tgt, Wp, Hp, E, N)
             if q is None: continue
