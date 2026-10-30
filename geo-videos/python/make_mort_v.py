@@ -170,8 +170,31 @@ def credits():
     d.text((70, SAFE1 - 60), '© swisstopo · GLAMOS', font=fs, fill=(28, 32, 38))
     return im
 
+# Datenlücke im Luftbild 1954/55 (schwarzes Polygon südlich Bahnhof Morteratsch) mit dem Luftbild 1946 füllen.
+# Bereich LV95 (E0, N0, E1, N1); Lückenpixel = Graustufe < 20 im Bereich, leicht geschlossen und erweitert;
+# Helligkeit von 1946 per Mittelwert/Streuung an den Rand um die Lücke angeglichen.
+FILL = {'img1955': ('img1946', (2791900, 1147050, 2792300, 1147450))}
+def fill_gap(tex, key):
+    src, (e0, n0, e1, n1) = FILL[key]
+    from scipy import ndimage
+    other = np.asarray(Image.open(f'tex/{src}.png').convert('RGB'), np.float32) / 255
+    c0, c1 = int((e0 - M.E0) / 2), int((e1 - M.E0) / 2); r0, r1 = int((M.N1 - n1) / 2), int((M.N1 - n0) / 2)
+    win = tex[r0:r1, c0:c1]; gap = win.mean(2) < 20 / 255
+    gap = ndimage.binary_dilation(ndimage.binary_closing(gap, iterations=3), iterations=4)
+    ring = ndimage.binary_dilation(gap, iterations=12) & ~gap
+    o = other[r0:r1, c0:c1]
+    o = (o - o[ring].mean(0)) / (o[ring].std(0) + 1e-6) * win[ring].std(0) + win[ring].mean(0)
+    a = ndimage.gaussian_filter(gap.astype(np.float32), 1.5)[..., None]
+    tex = tex.copy(); tex[r0:r1, c0:c1] = win * (1 - a) + np.clip(o, 0, 1) * a
+    return tex
+
 def load_tex(key, m1850):
-    tex = M.load_tex(key, m1850)
+    if key in FILL:
+        tex = fill_gap(np.asarray(Image.open(f'tex/{key}.png').convert('RGB'), np.float32) / 255, key)
+        a = (m1850 * 0.95)[..., None]
+        tex = tex * (1 - a) + np.array(M.C_1850, np.float32) * a     # wie M.load_tex
+    else:
+        tex = M.load_tex(key, m1850)
     return route_tex(tex) if ROUTE else tex
 
 def terrain(sc, texs, t):
