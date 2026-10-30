@@ -25,6 +25,7 @@ if FONT_SET == 'tg':
     SERIF, REG, MED, BOLD = (lambda s, n=n: tg(n, s) for n in ('StoneSerifStd-Semibold', 'Klavika-Regular', 'Klavika-Medium', 'Klavika-Bold'))
     F_YEAR, F_SUB, F_LAB, F_NUM, F_SM, F_HEAD = BOLD(120), REG(30), MED(32), BOLD(76), REG(26), SERIF(60)
     F_CB, F_CS = REG(28), MED(30)                    # Credits: Text, Zwischentitel
+    F_MK = MED(26)                                   # Routen-Marker
     C_NUM = (204, 0, 0)                              # TG-Rot #CC0000 (provisorischer Bildschirmwert)
 else:
     F_YEAR = ImageFont.truetype(FONT + 'InterDisplay-Bold.otf', 120)
@@ -35,7 +36,56 @@ else:
     F_HEAD = ImageFont.truetype(FONT + 'InterDisplay-Bold.otf', 60)
     F_CB, F_CS = ImageFont.truetype(FONT + 'Inter-Regular.otf', 28), ImageFont.truetype(FONT + 'Inter-SemiBold.otf', 30)
     C_NUM = (28, 32, 38)
+    F_MK = ImageFont.truetype(FONT + 'Inter-SemiBold.otf', 26)
 STAGES = M.STAGES
+
+# ---- optional: geplante Wanderroute (ROUTE=<gpx>, nicht im Repo) + Zungenspitzen der Inventare ----
+ROUTE = os.environ.get('ROUTE')
+def wgs84_lv95(lon, lat):
+    # swisstopo-Näherungsformel WGS84 -> LV95 (< 1 m); gegen 04_/07_*.csv geprüft: Abweichung <= 0,7 m
+    p = (lat * 3600 - 169028.66) / 10000; l = (lon * 3600 - 26782.5) / 10000
+    E = 2600072.37 + 211455.93 * l - 10938.51 * l * p - 0.36 * l * p * p - 44.54 * l ** 3
+    N = 1200147.07 + 308807.95 * p + 3745.25 * l * l + 76.63 * p * p - 194.56 * l * l * p + 119.79 * p ** 3
+    return E, N
+if ROUTE:
+    import csv, xml.etree.ElementTree as ET
+    from render import camera
+    from render_m import hs
+    # GPX: Track- oder Routenpunkte; Zeitstempel/Höhen der Datei werden ignoriert (Höhe aus swissALTI3D)
+    RPTS = [wgs84_lv95(float(e.get('lon')), float(e.get('lat'))) for e in ET.parse(ROUTE).iter()
+            if e.tag.split('}')[-1] in ('trkpt', 'rtept')]
+    TIPS = [(r['inventar_jahr'], float(r['E_lv95']), float(r['N_lv95'])) for r in
+            csv.DictReader(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'morteratsch-print-daten', '04_zungenspitzen_inventare.csv')))]
+    def route_tex(tex):
+        # Route wie die 1850-Umrisse ins 2-m-Texturraster: dunkle Kontur 10 m, weisser Kern 4 m
+        pts = M.tex_px(RPTS); out = tex
+        for w, col in ((5, (0.10, 0.11, 0.13)), (2, (1.0, 1.0, 1.0))):
+            im = Image.new('L', (tex.shape[1], tex.shape[0]), 0); ImageDraw.Draw(im).line(pts, fill=255, width=w, joint='curve')
+            a = M.filters.gaussian(np.asarray(im, np.float32) / 255, 0.6)[..., None]
+            out = out * (1 - a) + np.array(col, np.float32) * a
+        return out
+    def project(g, pos, tgt, Wp, Hp, E, N, fov=30):
+        # Weltpunkt (x = E - E0, y = N - N0, z = Gelände) -> Bildpixel; None, wenn verdeckt oder ausserhalb
+        x, y = E - M.E0, N - M.N0; P = np.array((x, y, hs(g['Z'], x, y, g['SY']) + 2.0))
+        cam, f, r, u = camera(pos, tgt); d = P - cam; df = d @ f
+        if df <= 0: return None
+        tanf = np.tan(np.radians(fov) / 2)
+        i = (d @ r / df / tanf + 1) / 2 * Wp; j = (1 - d @ u / df / (tanf * Hp / Wp)) / 2 * Hp
+        if not (0 <= i < Wp and 0 <= j < Hp): return None
+        if np.linalg.norm(d) > g['dist'][int(j), int(i)] + 40: return None
+        return i, j
+    def markers(g, pos, tgt, Wp, Hp):
+        L = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(L); k = W / Wp
+        lab = [(yr, E, N, 'r') for yr, E, N in TIPS]
+        lab += [('Bahnhof Morteratsch', *RPTS[0], 'l'), ('Ziel der Wanderung (geplant)', *RPTS[-1], 'l')]
+        for txt, E, N, side in lab:
+            q = project(g, pos, tgt, Wp, Hp, E, N)
+            if q is None: continue
+            x, y = q[0] * k, q[1] * k
+            d.ellipse((x - 6, y - 6, x + 6, y + 6), fill=(255, 255, 255), outline=(26, 28, 33), width=2)
+            if side == 'r': d.text((x + 14, y), txt, font=F_MK, fill=(255, 255, 255), anchor='lm', stroke_width=3, stroke_fill=(26, 28, 33))
+            else: d.text((x - 14, y), txt, font=F_MK, fill=(255, 255, 255), anchor='rm', stroke_width=3, stroke_fill=(26, 28, 33))
+        return L
 
 CAM = ((3950, 13600, 10400), (3900, 5300, 2300), (3900, 12600, 8700), (3930, 5600, 2250))
 def cam_at(u):
@@ -67,7 +117,13 @@ def chrome(sa, sb, m, Y):
     yl = SAFE1 - 80
     txt = 'Ausdehnung 1850 (rekonstruiert)'
     lw = d.textlength(txt, font=F_LAB)
-    d.rounded_rectangle((40, yl - 14, 130 + lw, yl + 52), 14, fill=(248, 248, 246, 205))
+    if ROUTE:
+        yr = yl - 62; txt2 = 'Wanderweg (geplante Route)'
+        d.rounded_rectangle((40, yr - 14, 130 + max(lw, d.textlength(txt2, font=F_LAB)), yl + 52), 14, fill=(248, 248, 246, 205))
+        d.line([(60, yr + 19), (104, yr + 19)], fill=(26, 28, 33), width=8); d.line([(61, yr + 19), (103, yr + 19)], fill=(255, 255, 255), width=3)
+        d.text((118, yr), txt2, font=F_LAB, fill=(40, 44, 50))
+    else:
+        d.rounded_rectangle((40, yl - 14, 130 + lw, yl + 52), 14, fill=(248, 248, 246, 205))
     c = tuple(int(v * 255) for v in M.C_1850)
     for x in (62, 78, 94): d.line([(x, yl + 19), (x + 9, yl + 19)], fill=c, width=5)
     d.text((118, yl), txt, font=F_LAB, fill=(40, 44, 50))
@@ -94,16 +150,22 @@ def credits():
     d.text((70, SAFE1 - 60), '© swisstopo · GLAMOS', font=fs, fill=(28, 32, 38))
     return im
 
+def load_tex(key, m1850):
+    tex = M.load_tex(key, m1850)
+    return route_tex(tex) if ROUTE else tex
+
 def frame(sc, texs, t):
     pos, tgt = cam_at(min(1.0, t / M.T_STAGES))
     ia, ib, m, lin = M.stage_mix(t)
     SS = 1.25
     g = sc.geometry(pos, tgt, int(W * SS), int(H * SS), 30)
+    if ROUTE: g.update(Z=sc.Z, SY=sc.SY)
     kw = dict(shade_amt=0.0, haze_k=1 / 90000.0)
     img = M.compose(g, sc, texs[ia], **kw)
     if m > 0: img = img * (1 - m) + M.compose(g, sc, texs[ib], **kw) * m
     im = Image.fromarray((img * 255).astype(np.uint8)).resize((W, H), Image.LANCZOS).convert('RGBA')
     Y = STAGES[ia]['year'] + (STAGES[ib]['year'] - STAGES[ia]['year']) * lin + 0.999
+    if ROUTE: im = Image.alpha_composite(im, markers(g, pos, tgt, int(W * SS), int(H * SS)))
     im = Image.alpha_composite(im, chrome(STAGES[ia], STAGES[ib], m, Y))
     if t < M.INTRO: im = Image.blend(Image.new('RGBA', im.size, (236, 240, 244, 255)), im, M.ease(t / M.INTRO))
     return im
@@ -114,12 +176,12 @@ if __name__ == '__main__':
     m1850 = M.outline_mask(sc.Z.shape)
     if mode == 'test':
         idx = [int(x) for x in mode_args[1].split(',')]
-        texs = {i: M.load_tex(STAGES[i]['key'], m1850) for i in idx}
+        texs = {i: load_tex(STAGES[i]['key'], m1850) for i in idx}
         os.makedirs('test_v', exist_ok=True)
         for i in idx:
             frame(sc, texs, M.INTRO + i * (M.HOLD + M.FADE) + 0.1).convert('RGB').save(f"test_v/s{STAGES[i]['year']}.png")
     else:
-        texs = {i: M.load_tex(s['key'], m1850) for i, s in enumerate(STAGES)}
+        texs = {i: load_tex(s['key'], m1850) for i, s in enumerate(STAGES)}
         a, b = int(mode_args[1]), int(mode_args[2])
         os.makedirs('frames_v', exist_ok=True)
         card = credits().convert('RGBA'); last = None
