@@ -54,7 +54,8 @@ def length_change(year_float):
     return CUM[k], T[k]
 
 # ---- SGI 1850 outline (E22-03 incl. Pers), rasterised to the 2 m texture grid ----
-def tex_px(pts): return [((x - E0) / 2.0, (N0 + 10000 - y) / 2.0) for x, y in pts]
+N1 = N0 + np.load('dem.npy', mmap_mode='r').shape[0] * 2   # Nordrand des Blocks (Standard 1148000)
+def tex_px(pts): return [((x - E0) / 2.0, (N1 - y) / 2.0) for x, y in pts]
 OUT1850 = [tex_px(part) for rec, sh in load(f'{GL}/inventory_sgi1850_r1992/SGI_1850') if rec['SGI'] == 'E22-03' for part in sh]
 
 def dashed(d, pts, dash=22, gap=12, width=9):

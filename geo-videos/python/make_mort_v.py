@@ -64,12 +64,12 @@ if ROUTE:
             a = M.filters.gaussian(np.asarray(im, np.float32) / 255, 0.6)[..., None]
             out = out * (1 - a) + np.array(col, np.float32) * a
         return out
-    def project(g, pos, tgt, Wp, Hp, E, N, fov=30):
+    def project(g, pos, tgt, Wp, Hp, E, N, fov=None):
         # Weltpunkt (x = E - E0, y = N - N0, z = Gelände) -> Bildpixel; None, wenn verdeckt oder ausserhalb
         x, y = E - M.E0, N - M.N0; P = np.array((x, y, hs(g['Z'], x, y, g['SY']) + 2.0))
         cam, f, r, u = camera(pos, tgt); d = P - cam; df = d @ f
         if df <= 0: return None
-        tanf = np.tan(np.radians(fov) / 2)
+        tanf = np.tan(np.radians(fov or FOV) / 2)
         i = (d @ r / df / tanf + 1) / 2 * Wp; j = (1 - d @ u / df / (tanf * Hp / Wp)) / 2 * Hp
         if not (0 <= i < Wp and 0 <= j < Hp): return None
         if np.linalg.norm(d) > g['dist'][int(j), int(i)] + 40: return None
@@ -88,9 +88,21 @@ if ROUTE:
             else: d.text((x - 14, y), txt, font=F_MK, fill=(255, 255, 255), anchor='rm', stroke_width=3, stroke_fill=(26, 28, 33))
         return L
 
+# CAM_SET: orig (Standard) | bahnhof (geneigt + 32°, Bahnhof Morteratsch bleibt im Bild) | flug (Start tief über dem Bahnhof, Rückflug in die Übersicht)
+CAM_SET = os.environ.get('CAM_SET', 'orig')
+FOV = 30 if CAM_SET == 'orig' else 32
 CAM = ((3950, 13600, 10400), (3900, 5300, 2300), (3900, 12600, 8700), (3930, 5600, 2250))
+if CAM_SET != 'orig': CAM = ((3950, 13600, 10400), (3900, 6500, 2300), (3900, 12600, 8700), (3930, 6800, 2250))
+CAM_FLY = ((4250, 11300, 3300), (4000, 7600, 2000)), 0.3      # Startpose über dem Bahnhof, Anteil der Fahrt bis zur Übersicht
 def cam_at(u):
-    e = M.ease(u); p0, t0, p1, t1 = CAM
+    p0, t0, p1, t1 = CAM
+    if CAM_SET == 'flug':
+        (pf, tf), uf = CAM_FLY
+        if u < uf:
+            e = M.ease(u / uf)
+            return tuple(np.array(pf) * (1 - e) + np.array(p0) * e), tuple(np.array(tf) * (1 - e) + np.array(t0) * e)
+        u = (u - uf) / (1 - uf)
+    e = M.ease(u)
     return tuple(np.array(p0) * (1 - e) + np.array(p1) * e), tuple(np.array(t0) * (1 - e) + np.array(t1) * e)
 
 def text_ra(d, xy, txt, font, fill):
@@ -126,7 +138,7 @@ def chrome(sa, sb, m, Y):
     txt = 'Ausdehnung 1850 (rekonstruiert)'
     lw = d.textlength(txt, font=F_LAB)
     if ROUTE:
-        yr = yl - 62; txt2 = 'Wanderweg (geplante Route)'
+        yr = yl - 62; txt2 = 'Wanderweg'
         d.rounded_rectangle((40, yr - 14, 130 + max(lw, d.textlength(txt2, font=F_LAB)), yl + 52), 14, fill=(248, 248, 246, 205))
         d.line([(60, yr + 19), (104, yr + 19)], fill=(26, 28, 33), width=8); d.line([(61, yr + 19), (103, yr + 19)], fill=(255, 255, 255), width=3)
         d.text((118, yr), txt2, font=F_LAB, fill=(40, 44, 50))
@@ -167,7 +179,7 @@ def terrain(sc, texs, t):
     pos, tgt = cam_at(min(1.0, t / M.T_STAGES))
     ia, ib, m, lin = M.stage_mix(t)
     SS = 1.25
-    g = sc.geometry(pos, tgt, int(W * SS), int(H * SS), 30)
+    g = sc.geometry(pos, tgt, int(W * SS), int(H * SS), FOV)
     if ROUTE: g.update(Z=sc.Z, SY=sc.SY)
     kw = dict(shade_amt=0.0, haze_k=1 / 90000.0)
     img = M.compose(g, sc, texs[ia], **kw)
@@ -200,7 +212,7 @@ if __name__ == '__main__':
         texs = {i: load_tex(STAGES[i]['key'], m1850) for i in idx}
         os.makedirs('test_v', exist_ok=True)
         for i in idx:
-            frame(sc, texs, M.INTRO + i * (M.HOLD + M.FADE) + 0.1).convert('RGB').save(f"test_v/s{STAGES[i]['year']}.png")
+            frame(sc, texs, M.INTRO + i * (M.HOLD + M.FADE) + 0.1).convert('RGB').save(f"test_v/{CAM_SET}_s{STAGES[i]['year']}.png")
     elif mode == 'layers':
         # Ebenen zum Weiterschneiden: layers_v/clean (Gelände ohne Text), layers_v/mk (Marker, RGBA); 'last' = Bild vor dem Abspann
         texs = {i: load_tex(s['key'], m1850) for i, s in enumerate(STAGES)}

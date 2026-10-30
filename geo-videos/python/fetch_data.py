@@ -111,12 +111,14 @@ def glamos(gldir):
 
 
 def morteratsch(workdir, gldir):
-    """Morteratsch: Block LV95 E 2788000–2796000, N 1138000–1148000 (8 x 10 km), alles 2 m."""
+    """Morteratsch: Block LV95 E 2788000–2796000, N 1138000–1148000 (8 x 10 km), alles 2 m.
+    MORT_N1=1150 erweitert den Block nach Norden (bis N 1150000, z.B. damit Bahnhof Morteratsch nicht am Rand liegt)."""
     import numpy as np
+    n1 = int(os.environ.get('MORT_N1', '1148'))
     glamos(gldir)
-    alti3d_tiles(workdir, (9.86, 46.37, 9.98, 46.48), [(e, n) for e in range(2788, 2796) for n in range(1138, 1148)], 'dl/alti_m')
-    np.save(os.path.join(workdir, 'dem.npy'), mosaic_dem(workdir, 'dl/alti_m', 2788, 1138, 8, 10))
-    ext = (2788000, 1138000, 2796000, 1148000)
+    alti3d_tiles(workdir, (9.86, 46.37, 9.98, 46.50), [(e, n) for e in range(2788, 2796) for n in range(1138, n1)], 'dl/alti_m')
+    np.save(os.path.join(workdir, 'dem.npy'), mosaic_dem(workdir, 'dl/alti_m', 2788, 1138, 8, n1 - 1138))
+    ext = (2788000, 1138000, 2796000, n1 * 1000)
     cache = os.path.join(workdir, 'dl', 'tilecache')
     os.makedirs(os.path.join(workdir, 'tex'), exist_ok=True)
     for y in (1877, 1896, 1925, 1938, 1967, 1985, 2015):
