@@ -92,6 +92,13 @@ def cam_at(u):
     e = M.ease(u); p0, t0, p1, t1 = CAM
     return tuple(np.array(p0) * (1 - e) + np.array(p1) * e), tuple(np.array(t0) * (1 - e) + np.array(t1) * e)
 
+def text_ra(d, xy, txt, font, fill):
+    # rechtsbündig; TG-Schriften haben kein U+2009 -> Zwischenraum 0,2 em von Hand setzen
+    if FONT_SET != 'tg' or '\u2009' not in txt: return d.text(xy, txt, font=font, fill=fill, anchor='ra')
+    parts = txt.split('\u2009'); gap = 0.2 * font.size
+    x = xy[0] - sum(d.textlength(p, font=font) for p in parts) - gap * (len(parts) - 1)
+    for p in parts: d.text((x, xy[1]), p, font=font, fill=fill, anchor='la'); x += d.textlength(p, font=font) + gap
+
 def chrome(sa, sb, m, Y):
     L = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(L)
     # top band (outside the 4:5 zone): headline
@@ -111,7 +118,7 @@ def chrome(sa, sb, m, Y):
     lc = M.length_change(Y)
     if lc is not None:
         v, when = lc
-        d.text((W - 66, y0 + 56), f"{v:,.0f} m".replace(',', '\u2009').replace('-', '−'), font=F_NUM, fill=C_NUM, anchor='ra')
+        text_ra(d, (W - 66, y0 + 56), f"{v:,.0f} m".replace(',', '\u2009').replace('-', '−'), F_NUM, C_NUM)
         d.text((W - 66, y0 + 142), f"gemessen bis {when.strftime('%m.%Y')}", font=F_SM, fill=(90, 94, 100), anchor='ra')
     # legend (bottom of safe zone)
     yl = SAFE1 - 80
