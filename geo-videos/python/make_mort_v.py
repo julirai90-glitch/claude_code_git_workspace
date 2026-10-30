@@ -128,11 +128,14 @@ def chrome(sa, sb, m, Y):
         d.text((70, y0 + 142), st['sub'].replace('Luftbild · ', ''), font=F_SM, fill=(60, 64, 70, int(255 * a)))
     d.line((560, y0 + 24, 560, y0 + 166), fill=(205, 205, 200), width=2)
     d.text((W - 66, y0 + 22), 'Zungenrückzug seit 1878', font=F_SM, fill=(45, 50, 58), anchor='ra')
-    lc = M.length_change(Y)
-    if lc is not None:
+    # Zähler gehört zum angezeigten Flugjahr (Stand bis Ende des Flugjahrs) und wird wie die Jahreszahl überblendet,
+    # statt während der Überblendung schon Werte späterer Jahre zu zeigen
+    for st, a in ((sa, ta), (sb, 1 - ta)):
+        lc = M.length_change(st['year'] + 0.999)
+        if a < 0.01 or lc is None: continue
         v, when = lc
-        text_ra(d, (W - 66, y0 + 56), f"{v:,.0f} m".replace(',', '\u2009').replace('-', '−'), F_NUM, C_NUM)
-        d.text((W - 66, y0 + 142), f"gemessen bis {when.strftime('%m.%Y')}", font=F_SM, fill=(90, 94, 100), anchor='ra')
+        text_ra(d, (W - 66, y0 + 56), f"{v:,.0f} m".replace(',', '\u2009').replace('-', '−'), F_NUM, C_NUM + (int(255 * a),))
+        d.text((W - 66, y0 + 142), f"gemessen bis {when.strftime('%m.%Y')}", font=F_SM, fill=(90, 94, 100, int(255 * a)), anchor='ra')
     # legend (bottom of safe zone)
     yl = SAFE1 - 80 if not ROUTE else y0 + 190 + 30 + 62   # mit Route: Legende unter den Jahreskasten (Marker liegen unten)
     txt = 'Ausdehnung 1850 (rekonstruiert)'
