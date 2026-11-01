@@ -13,7 +13,7 @@ async function open(w, h) {
     if (!f.startsWith(ROOT) || !fs.existsSync(f)) return r.fulfill({ status: 404, body: '' });
     r.fulfill({ status: 200, body: fs.readFileSync(f), contentType: TYPES[path.extname(f)] || 'application/octet-stream' });
   });
-  await p.goto(`http://tg.local/index.html?w=${w}&h=${h}`);
+  await p.goto(`http://tg.local/index.html?w=${w}&h=${h}${process.env.Q || ''}`);
   await p.waitForFunction(() => window.READY === true, null, { timeout: 120000 });
   return { b, p };
 }

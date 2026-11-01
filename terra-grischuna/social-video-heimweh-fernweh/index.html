@@ -60,13 +60,15 @@ const N_STRIP = 12, SW = PW / N_STRIP;
 
 // PDF-Seiten in Heftreihenfolge. S. 49–52 = eingeheftete Abo-Karte -> übersprungen,
 // danach gilt: PDF-Seite = Folio + 4.
-const SEQ = [];
+const SHORT = Q.get('cut') === 'short';                 // ~30-s-Fassung
+const COVER = Q.get('cover') !== '0';                   // Umschlag U1 vorne
+const SEQ = COVER ? ['U1', 'U2'] : [];
 for (let p = 1; p <= 48; p++) SEQ.push(p);
 for (let p = 53; p <= 68; p++) SEQ.push(p);
 const NLEAF = SEQ.length / 2;              // 32 Blätter
 const HI = new Set([1, 4, 8, 9, 14, 18, 27, 35]);   // in 300 dpi vorhanden
 const pad = n => String(n).padStart(2, '0');
-const webSrc = p => `pages/web/p-${pad(p)}.jpg`;
+const webSrc = p => p === 'U1' ? 'pages/cover/u1.jpg' : p === 'U2' ? null : `pages/web/p-${pad(p)}.jpg`;
 const hiSrc = p => HI.has(p) ? `pages/hi/h-${pad(p)}.jpg` : webSrc(p);
 
 // ---------- Helfer ----------
@@ -94,7 +96,7 @@ async function load(src) {
   if (IMG[src]) return IMG[src];
   const im = new Image(); im.src = src; await im.decode(); IMG[src] = im; return im;
 }
-await Promise.all([...SEQ.map(p => load(webSrc(p))), ...[...HI].map(p => load(hiSrc(p))),
+await Promise.all([...SEQ.filter(webSrc).map(p => load(webSrc(p))), ...[...HI].map(p => load(hiSrc(p))),
   load('assets/logo_white.png'), load('assets/p9chart_orig.png'), load('assets/p9chart_clean.png'),
   load('assets/p27chart_orig.png'), load('assets/p27chart_clean.png')]);
 await document.fonts.load('800 40px "Barlow Semi Condensed"');
@@ -130,10 +132,10 @@ for (let k = 0; k < NLEAF; k++) {
     const s = j === 0 ? root : document.createElement('div');
     if (j > 0) { s.className = 'strip'; Object.assign(s.style, { left: SW + 'px', width: SW + 'px', height: PH + 'px' }); parent.appendChild(s); }
     const f = document.createElement('div'); f.className = 'face front';
-    Object.assign(f.style, { width: (SW + 1.2) + 'px', backgroundImage: `url(${webSrc(front)})`,
+    Object.assign(f.style, { width: (SW + 1.2) + 'px', backgroundImage: webSrc(front) ? `url(${webSrc(front)})` : 'none',
       backgroundSize: `${PW}px ${PH}px`, backgroundPosition: `${-j * SW}px 0` });
     const b = document.createElement('div'); b.className = 'face back';
-    Object.assign(b.style, { width: (SW + 1.2) + 'px', backgroundImage: `url(${webSrc(back)})`,
+    Object.assign(b.style, { width: (SW + 1.2) + 'px', backgroundImage: webSrc(back) ? `url(${webSrc(back)})` : 'none',
       backgroundSize: `${PW}px ${PH}px`, backgroundPosition: `${-(PW - (j + 1) * SW)}px 0` });
     if (j === 0) {
       const g1 = document.createElement('div'); g1.className = 'gut';
@@ -148,7 +150,7 @@ for (let k = 0; k < NLEAF; k++) {
     parent = s;
   }
   leavesEl.appendChild(wrap);
-  leaves.push({ k, front, back, wrap, root, strips, start: null, dur: 1 });
+  leaves.push({ k, front, back, wrap, root, strips, start: null, dur: 1, stiff: front === 'U1' ? .25 : 1 });
 }
 
 // ---------- Zeitplan: Blätter-Läufe ----------
@@ -157,6 +159,9 @@ function flip(t0, k0, n, dur = .9, stag = .3) {
   for (let i = 0; i < n; i++) { const L = leaves[k0 + i]; L.start = t0 + i * stag; L.dur = dur; }
   return t0 + (n - 1) * stag + dur;
 }
+// goTo: bis Doppelseite 'target' (= Anzahl umgeblätterter Inhaltsblätter) weiterblättern
+const CO = COVER ? 1 : 0; let cur = 0;
+function goTo(t0, target, dur, stag) { const n = target - cur; if (n <= 0 || t0 >= GH / 2) return t0 >= GH / 2 ? GH : t0; const r = flip(t0, cur + CO, n, dur, stag); cur = target; return r; }
 const leafP = (L, t) => L.start === null ? 0 : clamp((t - L.start) / L.dur);
 
 // ---------- Kamera ----------
@@ -173,7 +178,8 @@ const pageView = (folio, extra = {}) => focus(folio, 0, 0, 1, 1, .9, FMT === 'st
 const flipView = (extra = {}) => Object.assign({ x: PW * .32, y: PH * .5, z: fitZ(PW * 1.25, PH, 1, FMT === 'story' ? .7 : .84), rx: 9, rz: 0 }, extra);
 
 const camKeys = [];
-const key = (t, v, ease = E.io) => camKeys.push(Object.assign({ t, ease }, v));
+const GH = 1e5; // 'Geister'-Zeit für Szenen, die in der Kurzfassung entfallen
+const key = (t, v, ease = E.io) => { if (t < GH / 2) camKeys.push(Object.assign({ t, ease }, v)); };
 function camAt(t) {
   if (t <= camKeys[0].t) return camKeys[0];
   for (let i = 0; i < camKeys.length - 1; i++) {
@@ -265,17 +271,39 @@ const story = FMT === 'story';
 const TOP = story ? 250 : 70;            // obere Textzone (Reels-UI oben frei lassen)
 const CARD_W = W, CARD_Y = story ? 700 : 330;
 
+// --- S-1 Umschlag: Meer bewegt sich, Umschlag klappt auf ---
+const TC = COVER ? 2.5 : 0;
+if (COVER) {
+  const cv = focus(1, 0, 0, 1, 1, .9, FMT === 'story' ? .74 : .86, { off: .0 });
+  key(0, Object.assign({}, cv, { z: cv.z * .94 }));
+  key(1.25, Object.assign({}, cv, { z: cv.z * 1.0 }), E.lin);
+  flip(1.2, 0, 1, 1.25, 0);
+  card({ src: 'pages/cover/u1.jpg', folio: 1, r: [0, 0, 1, 1], t0: 0, t1: 1.25, radius: 0, inDur: .01, outDur: .25, to: null,
+    draw(ctx, w, h, lt, im, c, cam) {
+      // Bei geneigter Kamera ist die Karte nicht deckungsgleich -> nur weiche Wasserbewegung als Überlagerung, sobald flach
+      drawPageView(ctx, im, cam, 1);
+      const [, yh] = proj(cam, 0, .63 * PH), [, yb] = proj(cam, 0, PH);
+      const y0 = Math.max(0, Math.round(yh)), y1 = Math.min(h, Math.round(yb));
+      if (y1 > y0 + 4) {
+        const hh = y1 - y0; const off = c.off || (c.off = new OffscreenCanvas(w, h)); const o = off.getContext('2d');
+        o.clearRect(0, 0, w, h); o.drawImage(ctx.canvas, 0, y0, w, hh, 0, 0, w, hh);
+        const T = lt * 1.25 + 3;
+        for (let y = 0; y < hh; y += 2) { const d = y / hh; const dx = (Math.sin(y * .09 / (.4 + d) + T * 3.2) * (1 + 4 * d)) * cam.z; ctx.drawImage(off, 0, y, w, 2, dx, y0 + y, w, 2); }
+      }
+    } });
+  scrim(0, 1.3, 'top', .3, .55, true);
+}
 // --- S0 Intro: Inhaltsverzeichnis S. 1 ---
-key(0.0, focus(1, .3, .19, .62, .34, 1.0, .9, { rx: 4, rz: -2, off: .1 }));
-key(1.7, focus(1, .06, .17, .94, .36, 1.0, .9, { rx: 2, rz: -1, off: .14 }), E.out);
-key(2.7, pageView(1, { rx: 0, rz: 0 }));
-scrim(0, 2.6, 'top', .38, .85, true);
-caption({ panel: false, x: 64, t0: .15, t1: 2.6, y: TOP - 20, kicker: 'Terra Grischuna · Heft 5 | 2026', kickerColor: '#ff6a55',
+key(TC + 0.0, focus(1, .3, .19, .62, .34, 1.0, .9, { rx: 4, rz: -2, off: .1 }));
+key(TC + 1.7, focus(1, .06, .17, .94, .36, 1.0, .9, { rx: 2, rz: -1, off: .14 }), E.out);
+key(TC + 2.7, pageView(1, { rx: 0, rz: 0 }));
+scrim(TC, TC + 2.6, 'top', .38, .85, true);
+caption({ panel: false, x: 64, t0: TC + .15, t1: TC + 2.6, y: TOP - 20, kicker: 'Terra Grischuna · Heft 5 | 2026', kickerColor: '#ff6a55',
   title: 'Heimweh – Fernweh', titleCls: 'kicker', titleSize: story ? 120 : 104, titleWeight: 800, lh: .95 });
 
 // --- S1 Blättern zu S. 4/5 ---
-let t = flip(2.75, 0, 2, .95, .32);                        // -> 4/5
-key(2.95, flipView({ x: PW * .2 }));
+let t = goTo(TC + 2.75, 2, .95, .32);                        // -> 4/5
+key(TC + 2.95, flipView({ x: PW * .2 }));
 key(t + .05, focus(4, 0, .03, 1, .36, 1, .9));
 // --- S2 Kaffeebarone: Gemälde löst sich, Wasser bewegt sich ---
 const kaffeeR = [0, .0419, 1, .3452];
@@ -309,7 +337,7 @@ caption({ t0: s2 + .7, t1: s2 + 4.3, y: TOP - 20, kicker: 'Die Auswanderer',
 key(s2 + 4.4, focus(4, 0, .03, 1, .36, 1, .9));
 
 // --- S3 Blättern zu S. 8/9 ---
-t = flip(s2 + 4.55, 2, 2, .95, .32);
+t = SHORT ? GH : goTo(s2 + 4.55, 4, .95, .32);
 key(s2 + 4.75, flipView({ x: PW * .1 }));
 const mapView = focus(8, .06, .29, .96, .87, 1.0, .62);
 key(t + .1, mapView);
@@ -353,8 +381,9 @@ caption({ t0: s4b + .2, t1: s4 + 7.0, y: TOP - 20, kicker: 'Statistik: Wer geht'
 key(s4 + 7.0, focus(9, .06, .43, .98, .70, 1.04, .6), E.lin);
 
 // --- S5 Blättern zu S. 14/15 (vorbei an «Fern der Heimat») ---
-t = flip(s4 + 7.05, 4, 3, .85, .34);
-key(s4 + 7.3, flipView({ x: PW * .25 }));
+const pre5 = SHORT ? s2 + 4.55 : s4 + 7.05;
+t = SHORT ? goTo(pre5, 7, .8, .2) : goTo(pre5, 7, .85, .34);
+key(pre5 + .25, flipView({ x: PW * .25 }));
 const faceView = focus(14, .05, .02, .95, .62, 1.0, .62, { off: -.07 });
 key(t + .1, faceView);
 // --- S6 Bruno Cathomas: Porträt mit Tiefe, Zitat ---
@@ -384,8 +413,8 @@ caption({ t0: s6 + .5, t1: s6 + 4.4, y: story ? 1140 : 820, panel: false, x: 64,
   sub: 'Bruno Cathomas aus Laax, heute am Wiener Burgtheater', subSize: 34 });
 
 // --- S7 Blättern zu S. 18/19 ---
-t = flip(s6 + 4.45, 7, 2, .9, .32);
-key(s6 + 4.65, flipView({ x: PW * .15 }));
+t = SHORT ? GH : goTo(s6 + 4.45, 9, .9, .32);
+key(SHORT ? GH : s6 + 4.65, flipView({ x: PW * .15 }));
 const solerView = focus(18, 0, 0, 1, 1, 1, .85, { off: -.02 });
 key(t + .1, solerView);
 // --- S8 Verner Soler: Blätter im Wind, «Salbe für das Heimweh» ---
@@ -418,7 +447,7 @@ caption({ t0: s8 + .4, t1: s8 + 4.6, y: TOP - 20, kicker: 'Verner Soler, Los Ang
   sub: 'So nennt der Bauernsohn aus Vrin die «Terra Grischuna». Seit 36 Jahren lebt er in Los Angeles.', subSize: story ? 36 : 32 });
 
 // --- S9 Schnell durch die Vrin-Bilder zu S. 26/27 ---
-t = flip(s8 + 4.65, 9, 4, .8, .3);
+t = goTo(s8 + 4.65, 13, .8, .3);
 key(s8 + 4.85, flipView({ x: PW * .3, rx: 11 }));
 const s27View = focus(27, .03, .5, .99, .785, 1.0, .6);
 key(t + .1, s27View);
@@ -431,9 +460,10 @@ Object.assign(callout.style, { position: 'absolute', zIndex: 8, fontSize: (story
 key(s10 + 5.0, focus(27, .03, .5, .99, .785, 1.04, .6), E.lin);
 
 // --- S11 Zugezogene: Ilanz, Cazis, Ferrera ---
-t = flip(s10 + 5.05, 13, 4, .75, .55);
-key(s10 + 5.25, flipView({ x: PW * .3 }));
-const chipsT = s10 + 5.05;
+const pre11 = SHORT ? s6 + 4.45 : s10 + 5.05;
+t = SHORT ? goTo(pre11, 17, .7, .16) : goTo(pre11, 17, .75, .55);
+key(pre11 + .2, flipView({ x: PW * .3 }));
+const chipsT = SHORT ? GH : pre11;
 caption({ t0: chipsT + .2, t1: chipsT + 2.55, y: TOP - 10, kicker: 'Zugezogen nach Graubünden', title: 'Ilanz · Cazis · Ferrera', titleCls: 'kicker', titleSize: story ? 72 : 60, titleWeight: 800, stag: .26 });
 scrim(chipsT, chipsT + 2.55, 'top', .32, .8);
 const heidiView = focus(35, .17, 0, .94, .37, 1, .6);
@@ -483,22 +513,22 @@ caption({ t0: s12 + 1.0, t1: s12 + 4.8, y: TOP - 20, kicker: 'Heidis Heimweh', t
 
 // --- S13 Magazin-Montage ---
 const s13 = s12 + 4.85;
-t = flip(s13, 17, 6, .7, .17);                        // -> 46/47
+t = SHORT ? goTo(s13, 30, .55, .09) : goTo(s13, 23, .7, .17);                        // -> 46/47
 key(s13 + .2, flipView({ x: PW * .35, rx: 12 }));
-const mag = [
+const mag = SHORT ? [] : [
   { at: t, view: focus(46, .03, .03, .55, .9, .98, .75), title: 'Ein Museum für eine Brücke', next: [23, 2] },
   { view: focus(50, 0, 0, 1, 1, .9, .7), title: 'Die Jagd-Oper', next: [25, 2] },
   { view: focus(54, 0, 0, 1, 1, .9, .7), title: 'Alpahirt', next: [27, 3] },
   { view: focus(60, 0, 0, 1, 1, .9, .7), title: 'Wenn die Kamera entscheidet', next: null },
 ];
-let mt = t;
+let mt = SHORT ? s13 + .4 : t;
 mag.forEach((m, i) => {
   key(mt + .05, m.view);
   const hold = i === 3 ? 1.3 : 1.05;
   caption({ t0: mt, t1: mt + hold + .15, y: TOP - 10, kicker: i === 0 ? 'Magazin' : null, kickerColor: '#9fbf3b', title: m.title, titleCls: 'kicker', titleSize: story ? 64 : 56, titleWeight: 800 });
   scrim(mt - .1, mt + hold + .2, 'top', .32, .82);
   key(mt + hold, Object.assign({}, m.view, { z: m.view.z * 1.04 }), E.lin);
-  if (m.next) { mt = flip(mt + hold, m.next[0], m.next[1], .62, .16); }
+  if (m.next) { mt = goTo(mt + hold, m.next[0] + m.next[1], .62, .16); }
   else mt = mt + hold;
 });
 // --- S14 Outro ---
@@ -512,6 +542,7 @@ endBox.innerHTML = `<img src="assets/logo_white.png" style="width:${story ? 760 
   <div class="serif" style="font-size:${story ? 44 : 38}px;font-style:italic;font-weight:500;margin-top:30px;color:rgba(255,255,255,.88)">Oktober 2026, Heft 5</div>
   <div class="kicker pill" style="font-size:${story ? 44 : 38}px;margin-top:56px;padding:16px 40px 12px;letter-spacing:.04em;text-transform:none">terragrischuna.ch</div>`;
 const endParts = [...endBox.children];
+camKeys.sort((a, b) => a.t - b.t);
 const DURATION = s14 + 5.0;
 
 // Seiten-Stapel verwenden 300 dpi, wo vorhanden
@@ -534,9 +565,9 @@ function render(t) {
     else flying.push([L, p]);
   }
   // Stapel
-  if (Lk >= 0) { leftStack.style.display = 'block'; const s = stackSrc(leaves[Lk].back); if (lastL !== s) { leftStack.style.backgroundImage = `url(${s})`; lastL = s; } }
+  if (Lk >= 0) { leftStack.style.display = 'block'; const s = stackSrc(leaves[Lk].back); if (lastL !== s) { leftStack.style.backgroundImage = s ? `url(${s})` : 'none'; lastL = s; } }
   else leftStack.style.display = 'none';
-  if (Rk < NLEAF) { rightStack.style.display = 'block'; const s = stackSrc(leaves[Rk].front); if (lastR !== s) { rightStack.style.backgroundImage = `url(${s})`; lastR = s; } }
+  if (Rk < NLEAF) { rightStack.style.display = 'block'; const s = stackSrc(leaves[Rk].front); if (lastR !== s) { rightStack.style.backgroundImage = s ? `url(${s})` : 'none'; lastR = s; } }
   else rightStack.style.display = 'none';
   const thick = n => { let sh = []; const m = Math.min(7, Math.ceil(n / 3)); for (let i = 1; i <= m; i++) sh.push(`${i * 1.4}px ${i * .9}px 0 ${i % 2 ? '#e7e3da' : '#cfcac0'}`); return sh.join(','); };
   rightStack.style.boxShadow = thick(NLEAF - Rk);
@@ -552,7 +583,7 @@ function render(t) {
     const e = E.io(p);
     const th = -180 * e;
     L.wrap.style.zIndex = th > -90 ? 1000 - L.k : 1000 + L.k;
-    const curl = 46 * Math.sin(2 * Math.PI * e);
+    const curl = 46 * L.stiff * Math.sin(2 * Math.PI * e);
     let acc = th; let wsum = 0; const wts = [];
     for (let j = 0; j < N_STRIP; j++) { const wv = Math.pow(j / (N_STRIP - 1), 1.6); wts.push(wv); wsum += wv; }
     for (let j = 0; j < N_STRIP; j++) {
