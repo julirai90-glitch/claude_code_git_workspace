@@ -1,0 +1,7 @@
+pages/
+assets/*.png
+assets/*.woff2
+assets/fonts.css
+*.mp4
+*.wav
+geo.json

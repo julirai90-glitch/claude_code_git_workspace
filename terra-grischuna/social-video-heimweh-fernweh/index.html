@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<title>Terra Grischuna 5/2026 – Social Flipbook</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+  :root { --red:#BC180F; --paper:#fbfaf7; }
+  html,body { margin:0; padding:0; overflow:hidden; background:#000; }
+  #stage { position:relative; overflow:hidden; perspective:3200px;
+    background: radial-gradient(120% 80% at 50% 45%, #3a3632 0%, #1f1d1b 55%, #0e0d0c 100%); }
+  #book { position:absolute; left:0; top:0; transform-origin:0 0; }
+  .page { position:absolute; top:0; background-size:100% 100%; background-color:var(--paper); }
+  .page::after { content:""; position:absolute; inset:0; pointer-events:none; }
+  .page.right::after { background: linear-gradient(to right, rgba(0,0,0,.20), rgba(0,0,0,.05) 40px, rgba(0,0,0,0) 90px); }
+  .page.left::after  { background: linear-gradient(to left,  rgba(0,0,0,.20), rgba(0,0,0,.05) 40px, rgba(0,0,0,0) 90px); }
+  .castshadow { position:absolute; inset:0; pointer-events:none; }
+  #bookshadow { position:absolute; top:0; border-radius:6px; background:rgba(0,0,0,.55); filter:blur(38px); }
+  .leafwrap { position:absolute; top:0; pointer-events:none; }
+  .leaf, .strip { position:absolute; top:0; transform-style:preserve-3d; transform-origin:0 50%; }
+  .face { position:absolute; top:0; left:0; height:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; background-repeat:no-repeat; background-color:var(--paper); }
+  .face.back { transform:rotateY(180deg); }
+  .face .shade { position:absolute; inset:0; background:#000; opacity:0; }
+  .face .gut { position:absolute; inset:0; }
+  #anchor { position:absolute; left:0; top:0; }
+  .ring { position:absolute; border-radius:50%; border:4px solid var(--red); box-sizing:border-box; }
+  .glow { position:absolute; border-radius:50%; background: radial-gradient(circle, rgba(255,60,40,.55), rgba(255,60,40,0) 70%); }
+  #fx { position:absolute; inset:0; pointer-events:none; }
+  .card { position:absolute; transform-origin:0 0; box-shadow: 0 40px 90px rgba(0,0,0,.55), 0 8px 24px rgba(0,0,0,.35); }
+  .scrim { position:absolute; left:0; right:0; pointer-events:none; }
+  .cap { position:absolute; color:#fff; z-index:8; }
+  .kicker { font-family:'Barlow Semi Condensed',sans-serif; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+  .serif { font-family:'Source Serif 4',serif; }
+  .w { display:inline-block; will-change:transform; }
+  .pill { display:inline-block; background:var(--red); color:#fff; border-radius:999px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="book">
+    <div id="bookshadow"></div>
+    <div id="leftStack" class="page left"><div class="castshadow" id="lshadow"></div></div>
+    <div id="rightStack" class="page right"><div class="castshadow" id="rshadow"></div></div>
+    <div id="anchor"></div>
+    <div id="leaves"></div>
+  </div>
+  <div id="fx"></div>
+</div>
+<script type="module">
+// ===================================================================
+//  Terra Grischuna 5|2026 – "Durchblättern" Social-Video
+//  Deterministische Animation: window.render(t) zeichnet Frame zur Zeit t (Sek.).
+//  Alle Texte stammen aus dem Heft (Revisions-PDF tg0526). Keine erfundenen Zahlen.
+// ===================================================================
+const Q = new URLSearchParams(location.search);
+const W = +Q.get('w') || 1080, H = +Q.get('h') || 1920;
+const FMT = H / W > 1.5 ? 'story' : 'feed';          // 9:16 oder 4:5
+const PW = 1100, PH = Math.round(PW * 841.89 / 595.276); // A4-Proportion
+const N_STRIP = 12, SW = PW / N_STRIP;
+
+// PDF-Seiten in Heftreihenfolge. S. 49–52 = eingeheftete Abo-Karte -> übersprungen,
+// danach gilt: PDF-Seite = Folio + 4.
+const SEQ = [];
+for (let p = 1; p <= 48; p++) SEQ.push(p);
+for (let p = 53; p <= 68; p++) SEQ.push(p);
+const NLEAF = SEQ.length / 2;              // 32 Blätter
+const HI = new Set([1, 4, 8, 9, 14, 18, 27, 35]);   // in 300 dpi vorhanden
+const pad = n => String(n).padStart(2, '0');
+const webSrc = p => `pages/web/p-${pad(p)}.jpg`;
+const hiSrc = p => HI.has(p) ? `pages/hi/h-${pad(p)}.jpg` : webSrc(p);
+
+// ---------- Helfer ----------
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, u) => a + (b - a) * u;
+const E = {
+  lin: u => u,
+  io: u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2,
+  out: u => 1 - Math.pow(1 - u, 3),
+  out5: u => 1 - Math.pow(1 - u, 5),
+  in: u => u * u * u,
+  ioS: u => u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2,
+  back: u => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2); },
+};
+const seg = (t, t0, t1, ease = E.io) => ease(clamp((t - t0) / (t1 - t0)));
+// Ein-/Ausblend-Hüllkurve
+const env = (t, t0, t1, fin = .4, fout = .4) => Math.min(seg(t, t0, t0 + fin, E.out), 1 - seg(t, t1 - fout, t1, E.in));
+function rnd(i) { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+
+const geo = await (await fetch('geo.json')).json();
+
+// ---------- Bilder vorladen ----------
+const IMG = {};
+async function load(src) {
+  if (IMG[src]) return IMG[src];
+  const im = new Image(); im.src = src; await im.decode(); IMG[src] = im; return im;
+}
+await Promise.all([...SEQ.map(p => load(webSrc(p))), ...[...HI].map(p => load(hiSrc(p))),
+  load('assets/logo_white.png'), load('assets/p9chart_orig.png'), load('assets/p9chart_clean.png'),
+  load('assets/p27chart_orig.png'), load('assets/p27chart_clean.png')]);
+await document.fonts.load('800 40px "Barlow Semi Condensed"');
+await document.fonts.load('700 40px "Barlow Semi Condensed"');
+await document.fonts.load('500 40px "Barlow Semi Condensed"');
+await document.fonts.load('600 40px "Source Serif 4"');
+await document.fonts.load('italic 600 40px "Source Serif 4"');
+await document.fonts.load('italic 500 40px "Source Serif 4"');
+
+// ---------- DOM-Grundgerüst ----------
+const $ = id => document.getElementById(id);
+const stage = $('stage'), book = $('book'), leavesEl = $('leaves'), anchor = $('anchor'), fx = $('fx');
+stage.style.width = W + 'px'; stage.style.height = H + 'px';
+const leftStack = $('leftStack'), rightStack = $('rightStack');
+for (const el of [leftStack, rightStack]) { el.style.width = PW + 'px'; el.style.height = PH + 'px'; }
+leftStack.style.left = -PW + 'px'; rightStack.style.left = '0px';
+const bookshadow = $('bookshadow'); bookshadow.style.height = PH + 'px';
+
+// ---------- Blätter (3D, in Streifen für die Papierwölbung) ----------
+const leaves = [];
+for (let k = 0; k < NLEAF; k++) {
+  const front = SEQ[2 * k], back = SEQ[2 * k + 1];
+  const wrap = document.createElement('div');
+  wrap.className = 'leafwrap';
+  Object.assign(wrap.style, { left: -PW + 'px', width: 2 * PW + 'px', height: PH + 'px',
+    perspective: '2600px', perspectiveOrigin: `${PW}px ${PH * .5}px`, display: 'none' });
+  const root = document.createElement('div');
+  root.className = 'leaf';
+  Object.assign(root.style, { left: PW + 'px', width: SW + 'px', height: PH + 'px' });
+  wrap.appendChild(root);
+  let parent = root; const strips = [];
+  for (let j = 0; j < N_STRIP; j++) {
+    const s = j === 0 ? root : document.createElement('div');
+    if (j > 0) { s.className = 'strip'; Object.assign(s.style, { left: SW + 'px', width: SW + 'px', height: PH + 'px' }); parent.appendChild(s); }
+    const f = document.createElement('div'); f.className = 'face front';
+    Object.assign(f.style, { width: (SW + 1.2) + 'px', backgroundImage: `url(${webSrc(front)})`,
+      backgroundSize: `${PW}px ${PH}px`, backgroundPosition: `${-j * SW}px 0` });
+    const b = document.createElement('div'); b.className = 'face back';
+    Object.assign(b.style, { width: (SW + 1.2) + 'px', backgroundImage: `url(${webSrc(back)})`,
+      backgroundSize: `${PW}px ${PH}px`, backgroundPosition: `${-(PW - (j + 1) * SW)}px 0` });
+    if (j === 0) {
+      const g1 = document.createElement('div'); g1.className = 'gut';
+      g1.style.background = 'linear-gradient(to right, rgba(0,0,0,.2), rgba(0,0,0,0) 80px)'; f.appendChild(g1);
+      const g2 = document.createElement('div'); g2.className = 'gut';
+      g2.style.background = 'linear-gradient(to left, rgba(0,0,0,.2), rgba(0,0,0,0) 80px)'; b.appendChild(g2);
+    }
+    const fs = document.createElement('div'); fs.className = 'shade'; f.appendChild(fs);
+    const bs = document.createElement('div'); bs.className = 'shade'; b.appendChild(bs);
+    s.appendChild(f); s.appendChild(b);
+    strips.push({ el: s, fs, bs });
+    parent = s;
+  }
+  leavesEl.appendChild(wrap);
+  leaves.push({ k, front, back, wrap, root, strips, start: null, dur: 1 });
+}
+
+// ---------- Zeitplan: Blätter-Läufe ----------
+// flip(t0, ab Blatt k0, Anzahl n, Dauer pro Blatt, Versatz)
+function flip(t0, k0, n, dur = .9, stag = .3) {
+  for (let i = 0; i < n; i++) { const L = leaves[k0 + i]; L.start = t0 + i * stag; L.dur = dur; }
+  return t0 + (n - 1) * stag + dur;
+}
+const leafP = (L, t) => L.start === null ? 0 : clamp((t - L.start) / L.dur);
+
+// ---------- Kamera ----------
+// Buchkoordinaten: Falz bei x=0, rechte Seite x∈[0,PW], linke x∈[-PW,0]
+const side = folio => folio % 2 === 0 ? -PW : 0;
+const fitZ = (w, h, fw = .9, fh = .9) => Math.min(W * fw / w, H * fh / h);
+function focus(folio, x0, y0, x1, y1, fw = .92, fh = .9, extra = {}) {
+  const ox = side(folio);
+  const z = fitZ((x1 - x0) * PW, (y1 - y0) * PH, fw, fh);
+  const off = (extra.off ?? (FMT === 'story' ? .085 : .06)) * H / z;   // Platz für Textpanel oben
+  return Object.assign({ x: ox + (x0 + x1) / 2 * PW, y: (y0 + y1) / 2 * PH - off, z, rx: 0, rz: 0 }, extra);
+}
+const pageView = (folio, extra = {}) => focus(folio, 0, 0, 1, 1, .9, FMT === 'story' ? .72 : .8, Object.assign({ off: .02 }, extra));
+const flipView = (extra = {}) => Object.assign({ x: PW * .32, y: PH * .5, z: fitZ(PW * 1.25, PH, 1, FMT === 'story' ? .7 : .84), rx: 9, rz: 0 }, extra);
+
+const camKeys = [];
+const key = (t, v, ease = E.io) => camKeys.push(Object.assign({ t, ease }, v));
+function camAt(t) {
+  if (t <= camKeys[0].t) return camKeys[0];
+  for (let i = 0; i < camKeys.length - 1; i++) {
+    const a = camKeys[i], b = camKeys[i + 1];
+    if (t >= a.t && t <= b.t) {
+      const u = b.ease((t - a.t) / Math.max(1e-6, b.t - a.t));
+      // Zoom logarithmisch interpolieren -> gleichmässige Bewegung
+      return { x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), z: Math.exp(lerp(Math.log(a.z), Math.log(b.z), u)),
+        rx: lerp(a.rx || 0, b.rx || 0, u), rz: lerp(a.rz || 0, b.rz || 0, u) };
+    }
+  }
+  return camKeys[camKeys.length - 1];
+}
+// Buchpunkt -> Bildschirm (nur bei rx=rz=0 exakt; Pop-Karten starten nur bei flacher Kamera)
+const proj = (c, bx, by) => [W / 2 + (bx - c.x) * c.z, H / 2 + (by - c.y) * c.z];
+
+// ---------- Textebenen ----------
+const caps = [];
+function el(tag, cls, html, parent = fx) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; parent.appendChild(e); return e; }
+// Wörter einzeln einblenden
+function words(text) { return text.split(' ').map(w => `<span class="w">${w}</span>`).join(' '); }
+function caption({ panel = true, t0, t1, x = 48, y, w = W - 96, kicker, kickerColor = 'var(--red)', title, titleCls = 'serif', titleSize = 64, titleWeight = 600, titleStyle = 'normal', sub, subSize = 34, align = 'left', lh = 1.08, stag = .045, pill = false }) {
+  const box = el('div', 'cap'); Object.assign(box.style, { left: x + 'px', top: y + 'px', textAlign: align });
+  if (panel) Object.assign(box.style, { maxWidth: w + 'px', boxSizing: 'border-box', padding: '28px 34px 32px', background: 'rgba(16,14,12,.88)', borderLeft: '8px solid var(--red)', borderRadius: '3px', boxShadow: '0 20px 50px rgba(0,0,0,.35)' });
+  else box.style.width = w + 'px';
+  const parts = [];
+  if (kicker) { const k = el('div', 'kicker' + (pill ? ' pill' : ''), words(kicker), box);
+    Object.assign(k.style, { fontSize: '30px', color: pill ? '#fff' : kickerColor, marginBottom: '16px', padding: pill ? '8px 20px 6px' : '0' }); parts.push(k); }
+  if (title) { const h = el('div', titleCls, words(title), box);
+    Object.assign(h.style, { fontSize: titleSize + 'px', lineHeight: lh, fontWeight: titleWeight, fontStyle: titleStyle, textShadow: '0 2px 24px rgba(0,0,0,.45)' }); parts.push(h); }
+  if (sub) { const s = el('div', 'serif', words(sub), box);
+    Object.assign(s.style, { fontSize: subSize + 'px', lineHeight: 1.3, fontWeight: 500, fontStyle: 'italic', marginTop: '20px', color: 'rgba(255,255,255,.88)', textShadow: '0 2px 18px rgba(0,0,0,.5)' }); parts.push(s); }
+  const ws = [...box.querySelectorAll('.w')];
+  const c = { box, ws, t0, t1, stag, panel }; caps.push(c); return c;
+}
+function drawCaps(t) {
+  for (const c of caps) {
+    const vis = t >= c.t0 - .01 && t <= c.t1;
+    c.box.style.display = vis ? 'block' : 'none'; if (!vis) continue;
+    const out = seg(t, c.t1 - .35, c.t1, E.in);
+    if (c.panel) { const pu = seg(t, c.t0 - .05, c.t0 + .3, E.out); c.box.style.opacity = (pu * (1 - out)).toFixed(3); c.box.style.clipPath = `inset(0 ${(1 - pu) * 100}% 0 0)`; }
+    c.ws.forEach((w, i) => {
+      const u = seg(t, c.t0 + i * c.stag, c.t0 + i * c.stag + .45, E.out);
+      w.style.opacity = (u * (1 - out)).toFixed(3);
+      w.style.transform = `translateY(${(1 - u) * 26 - out * 18}px)`;
+      w.style.filter = u < 1 ? `blur(${(1 - u) * 6}px)` : 'none';
+    });
+  }
+}
+// Abdunkelungen für Lesbarkeit
+const scrims = [];
+function scrim(t0, t1, pos = 'top', size = .42, a = .78, force = false) {
+  if (!force) return null;
+  const s = el('div', 'scrim');
+  s.style[pos] = '0'; s.style.height = Math.round(H * size) + 'px';
+  s.style.background = `linear-gradient(to ${pos === 'top' ? 'bottom' : 'top'}, rgba(10,9,8,${a}), rgba(10,9,8,${a * .6}) 45%, rgba(10,9,8,0))`;
+  scrims.push({ s, t0, t1 }); return s;
+}
+const dims = []; // Vollflächige Abdunkelung (für Pop-Karten)
+function dim(t0, t1, a = .6) { const d = el('div', 'scrim'); d.style.top = '0'; d.style.height = H + 'px'; d.style.background = '#0b0a09'; dims.push({ d, t0, t1, a }); }
+
+// ---------- Pop-Karten (Bild löst sich aus der Seite) ----------
+const cards = [];
+function card({ src, folio, r, t0, t1, to, radius = 4, draw, inDur = .9, outDur = .8, z = 5 }) {
+  const cv = document.createElement('canvas'); cv.className = 'card'; cv.style.zIndex = z; fx.appendChild(cv);
+  cards.push({ cv, ctx: cv.getContext('2d'), src, folio, r, t0, t1, to, radius, draw, inDur, outDur });
+}
+// Bild-Ausschnitt (normierte Seitenkoordinaten) "cover" in Zielrechteck zeichnen, mit Ken-Burns-Zoom/Pan
+function drawCover(ctx, im, r, w, h, zoom = 1, px = .5, py = .5) {
+  const sx0 = r[0] * im.width, sy0 = r[1] * im.height, sw = (r[2] - r[0]) * im.width, sh = (r[3] - r[1]) * im.height;
+  const s = Math.max(w / sw, h / sh) * zoom;
+  const vw = w / s, vh = h / s;
+  const sx = sx0 + (sw - vw) * px, sy = sy0 + (sh - vh) * py;
+  ctx.drawImage(im, sx, sy, vw, vh, 0, 0, w, h);
+  return { sx, sy, s };
+}
+
+// Seite so zeichnen, wie die Kamera sie sieht (+ Zusatzzoom um Bildschirmpunkt)
+function drawPageView(ctx, im, cam, folio, zx = 1, cx = W / 2, cy = H / 2) {
+  const [sx, sy] = proj(cam, side(folio), 0);
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(zx, zx); ctx.translate(-cx, -cy);
+  ctx.drawImage(im, sx, sy, PW * cam.z, PH * cam.z); ctx.restore();
+}
+
+// ===================================================================
+//  DREHBUCH
+// ===================================================================
+const story = FMT === 'story';
+const TOP = story ? 250 : 70;            // obere Textzone (Reels-UI oben frei lassen)
+const CARD_W = W, CARD_Y = story ? 700 : 330;
+
+// --- S0 Intro: Inhaltsverzeichnis S. 1 ---
+key(0.0, focus(1, .3, .19, .62, .34, 1.0, .9, { rx: 4, rz: -2, off: .1 }));
+key(1.7, focus(1, .06, .17, .94, .36, 1.0, .9, { rx: 2, rz: -1, off: .14 }), E.out);
+key(2.7, pageView(1, { rx: 0, rz: 0 }));
+scrim(0, 2.6, 'top', .38, .85, true);
+caption({ panel: false, x: 64, t0: .15, t1: 2.6, y: TOP - 20, kicker: 'Terra Grischuna · Heft 5 | 2026', kickerColor: '#ff6a55',
+  title: 'Heimweh – Fernweh', titleCls: 'kicker', titleSize: story ? 120 : 104, titleWeight: 800, lh: .95 });
+
+// --- S1 Blättern zu S. 4/5 ---
+let t = flip(2.75, 0, 2, .95, .32);                        // -> 4/5
+key(2.95, flipView({ x: PW * .2 }));
+key(t + .05, focus(4, 0, .03, 1, .36, 1, .9));
+// --- S2 Kaffeebarone: Gemälde löst sich, Wasser bewegt sich ---
+const kaffeeR = [0, .0419, 1, .3452];
+const s2 = t + .25;
+card({ src: hiSrc(4), folio: 4, r: kaffeeR, t0: s2, t1: s2 + 4.4,
+  to: { x: 0, y: CARD_Y, w: CARD_W, h: story ? 760 : 560 },
+  draw(ctx, w, h, lt, im) {
+    // Ken Burns: langsamer Schwenk über die Fazenda
+    const zoom = 1.05 + .08 * lt, px = .15 + .55 * E.ioS(clamp(lt));
+    const cv = ctx.canvas;
+    drawCover(ctx, im, kaffeeR, w, h, zoom, px, .5);
+    // Wasser: zeilenweise Verschiebung im unteren Bilddrittel (Teich im Vordergrund)
+    const y0 = Math.round(h * .62);
+    const tmp = ctx.getImageData(0, y0, w, h - y0);
+    const off = new OffscreenCanvas(w, h - y0); off.getContext('2d').putImageData(tmp, 0, 0);
+    const T = lt * 4.4;
+    for (let y = 0; y < h - y0; y += 2) {
+      const depth = y / (h - y0);
+      const dx = Math.sin(y * .11 + T * 2.6) * (1.2 + 3.5 * depth) + Math.sin(y * .037 - T * 1.3) * 2 * depth;
+      ctx.drawImage(off, 0, y, w, 2, dx, y0 + y, w, 2);
+    }
+    // weiches Licht
+    const g = ctx.createLinearGradient(0, 0, w, 0);
+    const lx = -.3 + 1.6 * lt;
+    g.addColorStop(clamp(lx - .2), 'rgba(255,240,210,0)'); g.addColorStop(clamp(lx), 'rgba(255,240,210,.10)'); g.addColorStop(clamp(lx + .2), 'rgba(255,240,210,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  } });
+dim(s2, s2 + 4.4, .55);
+caption({ t0: s2 + .7, t1: s2 + 4.3, y: TOP - 20, kicker: 'Die Auswanderer',
+  title: '1855 zahlten Prättigauer Gemeinden armen Familien die Reise nach Brasilien.', titleSize: story ? 56 : 46, sub: 'Was sie auf den Kaffeeplantagen erwartete.', subSize: story ? 36 : 30 });
+key(s2 + 4.4, focus(4, 0, .03, 1, .36, 1, .9));
+
+// --- S3 Blättern zu S. 8/9 ---
+t = flip(s2 + 4.55, 2, 2, .95, .32);
+key(s2 + 4.75, flipView({ x: PW * .1 }));
+const mapView = focus(8, .06, .29, .96, .87, 1.0, .62);
+key(t + .1, mapView);
+// --- S4 Statistik: Karte pulsiert, Zähler, Balken wachsen ---
+const s4 = t + .1;
+const dots = geo.mapDots.map((d, i) => {
+  const g = el('div', 'glow', null, anchor), r1 = el('div', 'ring', null, anchor), r2 = el('div', 'ring', null, anchor);
+  return { d, g, r1, r2, i, x: side(8) + d[0] * PW, y: d[1] * PH };
+});
+scrim(s4, s4 + 2.9, 'top', .40, .9);
+const counter = caption({ t0: s4 + .2, t1: s4 + 2.9, y: TOP - 30, kicker: 'Statistik: Wer geht', title: 'über 16 500', titleCls: 'kicker', titleSize: story ? 130 : 110, titleWeight: 800,
+  sub: 'Jugendliche verliessen Graubünden vom 15. Jahrhundert bis 1914, um als Zuckerbäcker zu arbeiten.', subSize: story ? 38 : 32 });
+// Zahl: Wörter 4 und 5 ('16' '500') werden zählend ersetzt (Kicker = 3 Wörter, 'über' = Wort 3)
+const p9 = geo.p9chart, p27 = geo.p27chart;
+// Diagramm 1874–1920 (S. 9) – saubere Fläche + Balken, die von unten wachsen
+function chartLayer(folio, gd, origSrc, cleanSrc) {
+  const [x0, y0, x1, y1] = gd.rect;
+  const box = el('div', null, null, anchor);
+  Object.assign(box.style, { position: 'absolute', left: (side(folio) + x0 * PW) + 'px', top: (y0 * PH) + 'px', width: ((x1 - x0) * PW) + 'px', height: ((y1 - y0) * PH) + 'px', display: 'none' });
+  const clean = el('div', null, null, box); Object.assign(clean.style, { position: 'absolute', inset: 0, background: `url(${cleanSrc}) 0 0/100% 100%` });
+  const cols = gd.cols.map((c, i) => {
+    const prev = i > 0 ? gd.cols[i - 1][1] : 0, next = i < gd.cols.length - 1 ? gd.cols[i + 1][0] : 1;
+    const a = (c[0] + prev) / 2, b = (c[1] + next) / 2;
+    const d = el('div', null, null, box);
+    Object.assign(d.style, { position: 'absolute', top: 0, bottom: 0, left: (a * 100) + '%', width: ((b - a) * 100) + '%', overflow: 'hidden' });
+    const inner = el('div', null, null, d);
+    Object.assign(inner.style, { position: 'absolute', top: 0, height: '100%', left: (-a / (b - a) * 100) + '%', width: (100 / (b - a)) + '%', background: `url(${origSrc}) 0 0/100% 100%` });
+    return d;
+  });
+  const full = el('div', null, null, box); Object.assign(full.style, { position: 'absolute', inset: 0, background: `url(${origSrc}) 0 0/100% 100%`, opacity: 0 });
+  return { box, cols, full, gd };
+}
+const ch9 = chartLayer(9, p9, 'assets/p9chart_orig.png', 'assets/p9chart_clean.png');
+const ch27 = chartLayer(27, p27, 'assets/p27chart_orig.png', 'assets/p27chart_clean.png');
+const chartView = focus(9, .06, .43, .98, .70, 1.0, .6);
+key(s4 + 2.6, mapView);
+key(s4 + 3.5, chartView);
+const s4b = s4 + 3.4;
+scrim(s4b, s4 + 7.0, 'top', .36, .85);
+caption({ t0: s4b + .2, t1: s4 + 7.0, y: TOP - 20, kicker: 'Statistik: Wer geht', title: 'Auswanderung aus Graubünden nach Amerika, 1874–1920', titleSize: story ? 56 : 48 });
+key(s4 + 7.0, focus(9, .06, .43, .98, .70, 1.04, .6), E.lin);
+
+// --- S5 Blättern zu S. 14/15 (vorbei an «Fern der Heimat») ---
+t = flip(s4 + 7.05, 4, 3, .85, .34);
+key(s4 + 7.3, flipView({ x: PW * .25 }));
+const faceView = focus(14, .05, .02, .95, .62, 1.0, .62, { off: -.07 });
+key(t + .1, faceView);
+// --- S6 Bruno Cathomas: Porträt mit Tiefe, Zitat ---
+const s6 = t + .1;
+card({ src: hiSrc(14), folio: 14, r: [0, 0, 1, 1], t0: s6, t1: s6 + 4.4, radius: 0, inDur: .01, outDur: .6,
+  to: null,
+  draw(ctx, w, h, lt, im, c, cam) {
+    // Basis = Seite wie sie die Kamera sieht; Gesicht (weiche Maske) zoomt schneller -> Parallaxe
+    drawPageView(ctx, im, cam, 14);
+    const [fx0, fy0] = proj(cam, side(14) + .42 * PW, .27 * PH);   // Gesichtsmitte
+    const off = c.off || (c.off = new OffscreenCanvas(w, h)); const o = off.getContext('2d');
+    o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, w, h);
+    drawPageView(o, im, cam, 14, 1 + .045 * E.ioS(lt), fx0, fy0);
+    o.globalCompositeOperation = 'destination-in';
+    const R = .30 * PW * cam.z;
+    const g = o.createRadialGradient(fx0, fy0, R * .45, fx0, fy0, R);
+    g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    o.fillStyle = g; o.fillRect(0, 0, w, h);
+    ctx.drawImage(off, 0, 0);
+    const lg = ctx.createLinearGradient(0, 0, w, h); const lx = -.2 + 1.3 * lt;
+    lg.addColorStop(clamp(lx - .15), 'rgba(255,255,255,0)'); lg.addColorStop(clamp(lx), 'rgba(255,255,255,.07)'); lg.addColorStop(clamp(lx + .15), 'rgba(255,255,255,0)');
+    ctx.fillStyle = lg; ctx.fillRect(0, 0, w, h);
+  } });
+key(s6 + 4.4, Object.assign({}, faceView, { z: faceView.z * 1.07, y: faceView.y + 10 }), E.lin);
+scrim(s6 + .2, s6 + 4.4, 'bottom', .55, .9, true);
+caption({ t0: s6 + .5, t1: s6 + 4.4, y: story ? 1140 : 820, panel: false, x: 64, w: W - 128, title: '«Ich war wirklich das klassische Landei.»', titleSize: story ? 76 : 62, titleStyle: 'italic', stag: .09,
+  sub: 'Bruno Cathomas aus Laax, heute am Wiener Burgtheater', subSize: 34 });
+
+// --- S7 Blättern zu S. 18/19 ---
+t = flip(s6 + 4.45, 7, 2, .9, .32);
+key(s6 + 4.65, flipView({ x: PW * .15 }));
+const solerView = focus(18, 0, 0, 1, 1, 1, .85, { off: -.02 });
+key(t + .1, solerView);
+// --- S8 Verner Soler: Blätter im Wind, «Salbe für das Heimweh» ---
+const s8 = t + .1;
+card({ src: hiSrc(18), folio: 18, r: [0, 0, 1, 1], t0: s8, t1: s8 + 4.6, radius: 0, inDur: .01, outDur: .6, to: null,
+  draw(ctx, w, h, lt, im, c, cam) {
+    drawPageView(ctx, im, cam, 18);
+    // Laubdach oben: zeilenweises Wiegen, nach unten abnehmend
+    const [, ya] = proj(cam, 0, 0), [, yb0] = proj(cam, 0, .34 * PH);
+    const y0 = Math.max(0, Math.round(ya)), yb = Math.min(h, Math.round(yb0));
+    const T = lt * 4.6;
+    if (yb > y0 + 4) {
+      const hh = yb - y0;
+      const off = c.off || (c.off = new OffscreenCanvas(w, h)); const o = off.getContext('2d');
+      o.clearRect(0, 0, w, h); o.drawImage(ctx.canvas, 0, y0, w, hh, 0, 0, w, hh);
+      for (let y = 0; y < hh; y += 2) {
+        const a = Math.pow(clamp(1 - (y + (y0 - ya)) / (yb0 - ya)), 1.5);
+        const dx = (Math.sin(T * 1.7 + y * .010) * 9 + Math.sin(T * 3.3 + y * .045) * 2.5) * a * cam.z;
+        ctx.drawImage(off, 0, y, w, 2, dx, y0 + y, w, 2);
+      }
+    }
+    const [gx, gy] = proj(cam, side(18) + .2 * PW, .3 * PH);
+    const g = ctx.createRadialGradient(gx, gy, 10, gx, gy, PH * .55 * cam.z);
+    g.addColorStop(0, `rgba(255,205,150,${.10 + .04 * Math.sin(T)})`); g.addColorStop(1, 'rgba(255,205,150,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  } });
+key(s8 + 4.6, Object.assign({}, solerView, { z: solerView.z * 1.08, x: solerView.x + 40, y: solerView.y + 60 }), E.lin);
+scrim(s8 + .2, s8 + 4.6, 'top', .48, .88);
+caption({ t0: s8 + .4, t1: s8 + 4.6, y: TOP - 20, kicker: 'Verner Soler, Los Angeles', title: '«Salbe für das Heimweh»', titleSize: story ? 92 : 76, titleStyle: 'italic', stag: .1,
+  sub: 'So nennt der Bauernsohn aus Vrin die «Terra Grischuna». Seit 36 Jahren lebt er in Los Angeles.', subSize: story ? 36 : 32 });
+
+// --- S9 Schnell durch die Vrin-Bilder zu S. 26/27 ---
+t = flip(s8 + 4.65, 9, 4, .8, .3);
+key(s8 + 4.85, flipView({ x: PW * .3, rx: 11 }));
+const s27View = focus(27, .03, .5, .99, .785, 1.0, .6);
+key(t + .1, s27View);
+// --- S10 Wer kommt: Wanderungssaldo-Balken ---
+const s10 = t + .1;
+scrim(s10, s10 + 5.0, 'top', .36, .88);
+caption({ t0: s10 + .2, t1: s10 + 5.0, y: TOP - 20, kicker: 'Statistik: Wer kommt', title: 'Der Aderlass ans Unterland – und sein Ende', titleSize: story ? 62 : 52 });
+const callout = el('div', 'kicker pill', '2025: grösstes Plus seit 1992 (+244)');
+Object.assign(callout.style, { position: 'absolute', zIndex: 8, fontSize: (story ? 40 : 34) + 'px', padding: '14px 28px 10px', display: 'none', boxShadow: '0 10px 30px rgba(0,0,0,.4)' });
+key(s10 + 5.0, focus(27, .03, .5, .99, .785, 1.04, .6), E.lin);
+
+// --- S11 Zugezogene: Ilanz, Cazis, Ferrera ---
+t = flip(s10 + 5.05, 13, 4, .75, .55);
+key(s10 + 5.25, flipView({ x: PW * .3 }));
+const chipsT = s10 + 5.05;
+caption({ t0: chipsT + .2, t1: chipsT + 2.55, y: TOP - 10, kicker: 'Zugezogen nach Graubünden', title: 'Ilanz · Cazis · Ferrera', titleCls: 'kicker', titleSize: story ? 72 : 60, titleWeight: 800, stag: .26 });
+scrim(chipsT, chipsT + 2.55, 'top', .32, .8);
+const heidiView = focus(35, .17, 0, .94, .37, 1, .6);
+key(t + .1, heidiView);
+// --- S12 Heidi: Foto wird zur Schneekugel ---
+const s12 = t + .15;
+const heidiR = [.1902, 0, .9141, .3592];
+const GS = story ? 820 : 560; // Kugeldurchmesser
+card({ src: hiSrc(35), folio: 35, r: heidiR, t0: s12, t1: s12 + 4.8, radius: 0, inDur: 1.1, z: 6,
+  to: { x: (W - GS) / 2, y: story ? 720 : 470, w: GS, h: GS, round: true },
+  draw(ctx, w, h, lt, im, c) {
+    const T = lt * 4.8; const roundU = c.roundU;
+    drawCover(ctx, im, heidiR, w, h, 1.0 + .06 * lt + .35 * roundU, .62 - .0 * lt, .45);
+    // Schnee: deterministische Flocken
+    const n = 170;
+    for (let i = 0; i < n; i++) {
+      const sz = .6 + rnd(i) * 2.6, sp = .05 + rnd(i + 99) * .13 * (sz / 2);
+      let yy = (rnd(i + 7) + T * sp) % 1.15 - .08;
+      const xx = rnd(i + 3) + Math.sin(T * (.6 + rnd(i + 5)) + i) * .02;
+      ctx.globalAlpha = clamp(.35 + .65 * (sz / 3.2)) * clamp(lt * 4);
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(xx * w, yy * h, sz * w / 560, 0, 6.283); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    if (roundU > 0) {
+      // Glas: Randverdunkelung + Glanzlichter
+      const rg = ctx.createRadialGradient(w / 2, h / 2, w * .30, w / 2, h / 2, w * .5);
+      rg.addColorStop(0, 'rgba(0,0,0,0)'); rg.addColorStop(1, `rgba(10,20,30,${.55 * roundU})`);
+      ctx.fillStyle = rg; ctx.fillRect(0, 0, w, h);
+      ctx.save(); ctx.globalAlpha = .55 * roundU;
+      const hg = ctx.createRadialGradient(w * .32, h * .26, 2, w * .32, h * .26, w * .22);
+      hg.addColorStop(0, 'rgba(255,255,255,.65)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = hg; ctx.beginPath(); ctx.ellipse(w * .33, h * .25, w * .2, h * .11, -.6, 0, 6.283); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = w * .012;
+      ctx.beginPath(); ctx.arc(w / 2, h / 2, w * .455, 3.5, 4.4); ctx.stroke();
+      ctx.restore();
+    }
+  } });
+key(s12 + 4.8, Object.assign({}, heidiView, { z: heidiView.z * 1.03 }), E.lin);
+const base = el('div'); // Sockel der Schneekugel
+Object.assign(base.style, { position: 'absolute', zIndex: 5, left: ((W - GS * .78) / 2) + 'px', width: (GS * .78) + 'px', height: (GS * .2) + 'px',
+  top: ((story ? 720 : 470) + GS * .86) + 'px', borderRadius: '24px 24px 60px 60px / 24px 24px 40px 40px',
+  background: 'linear-gradient(180deg,#8a2a1c 0%,#BC180F 18%,#7a0f09 70%,#3d0805 100%)', boxShadow: '0 30px 60px rgba(0,0,0,.55)', display: 'none' });
+const baseLogo = el('img', null, null, base); baseLogo.src = 'assets/logo_white.png';
+Object.assign(baseLogo.style, { position: 'absolute', left: '50%', top: '42%', width: '62%', transform: 'translate(-50%,-50%)', filter: 'brightness(0) invert(1)', opacity: .92 });
+dim(s12, s12 + 4.8, .7);
+caption({ t0: s12 + 1.0, t1: s12 + 4.8, y: TOP - 20, kicker: 'Heidis Heimweh', title: 'Wenn Heidi in die Schneekugel blickt', titleSize: story ? 62 : 50, sub: 'Wie aus einer Bündner Erzählung ein globaler Mythos wurde.', subSize: story ? 34 : 30 });
+
+// --- S13 Magazin-Montage ---
+const s13 = s12 + 4.85;
+t = flip(s13, 17, 6, .7, .17);                        // -> 46/47
+key(s13 + .2, flipView({ x: PW * .35, rx: 12 }));
+const mag = [
+  { at: t, view: focus(46, .03, .03, .55, .9, .98, .75), title: 'Ein Museum für eine Brücke', next: [23, 2] },
+  { view: focus(50, 0, 0, 1, 1, .9, .7), title: 'Die Jagd-Oper', next: [25, 2] },
+  { view: focus(54, 0, 0, 1, 1, .9, .7), title: 'Alpahirt', next: [27, 3] },
+  { view: focus(60, 0, 0, 1, 1, .9, .7), title: 'Wenn die Kamera entscheidet', next: null },
+];
+let mt = t;
+mag.forEach((m, i) => {
+  key(mt + .05, m.view);
+  const hold = i === 3 ? 1.3 : 1.05;
+  caption({ t0: mt, t1: mt + hold + .15, y: TOP - 10, kicker: i === 0 ? 'Magazin' : null, kickerColor: '#9fbf3b', title: m.title, titleCls: 'kicker', titleSize: story ? 64 : 56, titleWeight: 800 });
+  scrim(mt - .1, mt + hold + .2, 'top', .32, .82);
+  key(mt + hold, Object.assign({}, m.view, { z: m.view.z * 1.04 }), E.lin);
+  if (m.next) { mt = flip(mt + hold, m.next[0], m.next[1], .62, .16); }
+  else mt = mt + hold;
+});
+// --- S14 Outro ---
+const s14 = mt;
+key(s14 + 1.3, { x: 0, y: PH * .55, z: fitZ(2.3 * PW, PH, 1, .7) * .78, rx: 26, rz: -6 });
+key(s14 + 4.6, { x: 0, y: PH * .55, z: fitZ(2.3 * PW, PH, 1, .7) * .72, rx: 28, rz: -7 }, E.lin);
+dim(s14 + .3, s14 + 5, .62);
+const endBox = el('div', 'cap'); Object.assign(endBox.style, { left: 0, width: W + 'px', top: (story ? 560 : 300) + 'px', textAlign: 'center', zIndex: 9 });
+endBox.innerHTML = `<img src="assets/logo_white.png" style="width:${story ? 760 : 680}px;display:block;margin:0 auto 64px">
+  <div class="kicker" style="font-size:${story ? 118 : 100}px;line-height:.95;letter-spacing:.02em">Heimweh –<br>Fernweh</div>
+  <div class="serif" style="font-size:${story ? 44 : 38}px;font-style:italic;font-weight:500;margin-top:30px;color:rgba(255,255,255,.88)">Oktober 2026, Heft 5</div>
+  <div class="kicker pill" style="font-size:${story ? 44 : 38}px;margin-top:56px;padding:16px 40px 12px;letter-spacing:.04em;text-transform:none">terragrischuna.ch</div>`;
+const endParts = [...endBox.children];
+const DURATION = s14 + 5.0;
+
+// Seiten-Stapel verwenden 300 dpi, wo vorhanden
+const stackSrc = p => hiSrc(p);
+
+// ===================================================================
+//  RENDER
+// ===================================================================
+let lastL = null, lastR = null;
+function render(t) {
+  const c = camAt(t);
+  book.style.transform = `translate(${W / 2}px, ${H / 2}px) rotateX(${c.rx || 0}deg) rotateZ(${c.rz || 0}deg) scale(${c.z}) translate(${-c.x}px, ${-c.y}px)`;
+
+  // Blätter-Zustand
+  let Lk = -1, Rk = NLEAF; const flying = [];
+  for (const L of leaves) {
+    const p = leafP(L, t);
+    if (p >= 1) Lk = Math.max(Lk, L.k);
+    else if (p <= 0) Rk = Math.min(Rk, L.k);
+    else flying.push([L, p]);
+  }
+  // Stapel
+  if (Lk >= 0) { leftStack.style.display = 'block'; const s = stackSrc(leaves[Lk].back); if (lastL !== s) { leftStack.style.backgroundImage = `url(${s})`; lastL = s; } }
+  else leftStack.style.display = 'none';
+  if (Rk < NLEAF) { rightStack.style.display = 'block'; const s = stackSrc(leaves[Rk].front); if (lastR !== s) { rightStack.style.backgroundImage = `url(${s})`; lastR = s; } }
+  else rightStack.style.display = 'none';
+  const thick = n => { let sh = []; const m = Math.min(7, Math.ceil(n / 3)); for (let i = 1; i <= m; i++) sh.push(`${i * 1.4}px ${i * .9}px 0 ${i % 2 ? '#e7e3da' : '#cfcac0'}`); return sh.join(','); };
+  rightStack.style.boxShadow = thick(NLEAF - Rk);
+  leftStack.style.boxShadow = thick(Lk + 1).replace(/(\d+\.?\d*)px (\d+\.?\d*)px 0/g, '-$1px $2px 0');
+  const bl = Lk >= 0 ? -PW : 0, br = Rk < NLEAF ? PW : 0;
+  Object.assign(bookshadow.style, { left: (bl + 20) + 'px', width: (br - bl - 40) + 'px', top: '40px' });
+
+  // fliegende Blätter
+  let rShadow = 0, rx = PW, lShadow = 0, lx = PW;
+  for (const L of leaves) L.wrap.style.display = 'none';
+  for (const [L, p] of flying) {
+    L.wrap.style.display = 'block';
+    const e = E.io(p);
+    const th = -180 * e;
+    L.wrap.style.zIndex = th > -90 ? 1000 - L.k : 1000 + L.k;
+    const curl = 46 * Math.sin(2 * Math.PI * e);
+    let acc = th; let wsum = 0; const wts = [];
+    for (let j = 0; j < N_STRIP; j++) { const wv = Math.pow(j / (N_STRIP - 1), 1.6); wts.push(wv); wsum += wv; }
+    for (let j = 0; j < N_STRIP; j++) {
+      const d = j === 0 ? th : -curl * wts[j] / wsum;
+      if (j > 0) acc += d;
+      const S = L.strips[j];
+      S.el.style.transform = `rotateY(${d}deg)` + (j === 0 ? ' translateZ(.5px)' : '');
+      const cs = Math.cos(acc * Math.PI / 180);
+      const front = cs > 0;
+      const shade = .5 * (1 - Math.abs(cs)) + (front ? 0 : .04);
+      S.fs.style.opacity = front ? shade.toFixed(3) : 0;
+      S.bs.style.opacity = !front ? shade.toFixed(3) : 0;
+    }
+    const s = Math.sin(Math.PI * e);
+    if (th > -90) { rShadow = Math.max(rShadow, s); rx = Math.min(rx, PW * Math.cos(th * Math.PI / 180)); }
+    else { lShadow = Math.max(lShadow, s); lx = Math.min(lx, PW * Math.cos((180 + th) * Math.PI / 180)); }
+  }
+  $('rshadow').style.background = rShadow > 0 ? `linear-gradient(to right, rgba(0,0,0,${.10 * rShadow}) 0, rgba(0,0,0,${.30 * rShadow}) ${Math.max(0, rx - 30)}px, rgba(0,0,0,0) ${rx + 120}px)` : 'none';
+  $('lshadow').style.background = lShadow > 0 ? `linear-gradient(to left, rgba(0,0,0,${.10 * lShadow}) 0, rgba(0,0,0,${.30 * lShadow}) ${Math.max(0, lx - 30)}px, rgba(0,0,0,0) ${lx + 120}px)` : 'none';
+
+  // --- Karte S. 8: pulsierende Zuckerbäcker-Städte (>200) ---
+  const mapOn = t > s4 - .2 && t < s4 + 3.6;
+  for (const D of dots) {
+    for (const e of [D.g, D.r1, D.r2]) e.style.display = mapOn ? 'block' : 'none';
+    if (!mapOn) continue;
+    const lt = t - s4 - .15 - D.i * .07;
+    const base = PW * .0133;
+    const pulse = (ph) => { const u = ((lt - ph) % 1.3 + 1.3) % 1.3 / 1.3; return lt - ph < 0 ? null : u; };
+    [[D.r1, 0], [D.r2, .65]].forEach(([r, ph]) => {
+      const u = pulse(ph);
+      if (u === null) { r.style.opacity = 0; return; }
+      const sz = base * (1 + 3.2 * E.out(u));
+      Object.assign(r.style, { left: (D.x - sz / 2) + 'px', top: (D.y - sz / 2) + 'px', width: sz + 'px', height: sz + 'px', opacity: (1 - u) * .9, borderWidth: (3 * (1 - u) + 1) + 'px' });
+    });
+    const gu = clamp(lt * 3), gs = base * 4;
+    Object.assign(D.g.style, { left: (D.x - gs / 2) + 'px', top: (D.y - gs / 2) + 'px', width: gs + 'px', height: gs + 'px', opacity: gu * (.6 + .4 * Math.sin(lt * 5)) });
+  }
+  // Zähler "über 16 500"
+  if (t >= s4 && t <= s4 + 3) {
+    const u = seg(t, s4 + .3, s4 + 1.7, E.out);
+    const v = Math.round(16500 * u / 10) * 10;
+    const str = v.toLocaleString('de-CH').replace(/[’']/g, ' ');
+    const parts = str.split(' ');
+    counter.ws[4].textContent = parts.length > 1 ? parts[0] : '0';
+    counter.ws[5].textContent = parts.length > 1 ? parts[1] : String(v).padStart(1, '0');
+  }
+
+  // --- Diagramme wachsen ---
+  function chartDraw(ch, t0, mode) {
+    const on = t > t0 - 1.5 && t < t0 + 8;
+    ch.box.style.display = on ? 'block' : 'none'; if (!on) return;
+    const n = ch.cols.length;
+    ch.cols.forEach((d, i) => {
+      const u = seg(t, t0 + i * .035, t0 + i * .035 + .55, E.out);
+      if (mode === 'up') d.style.clipPath = `inset(${(1 - u) * 100}% 0 0 0)`;
+      else { const z = ch.gd.zero; d.style.clipPath = `inset(${z * (1 - u) * 100}% 0 ${(1 - z) * (1 - u) * 100}% 0)`; }
+    });
+    ch.full.style.opacity = seg(t, t0 + n * .035 + .5, t0 + n * .035 + .9);
+  }
+  chartDraw(ch9, s4b + .5, 'up');
+  chartDraw(ch27, s10 + .6, 'mid');
+  // Callout 2025
+  const cOn = t > s10 + 2.6 && t < s10 + 5.0;
+  callout.style.display = cOn ? 'block' : 'none';
+  if (cOn) {
+    const [x0, y0, x1, y1] = p27.rect; const lastC = p27.cols[p27.cols.length - 1];
+    const bx = side(27) + (x0 + (x1 - x0) * (lastC[0] + lastC[1]) / 2) * PW, by = (y0 + (y1 - y0) * (p27.zero - .07)) * PH;
+    const [sx, sy] = proj(c, bx, by);
+    const u = seg(t, s10 + 2.6, s10 + 3.1, E.back), o = 1 - seg(t, s10 + 4.6, s10 + 5.0);
+    const cw = callout.offsetWidth, chh = callout.offsetHeight;
+    Object.assign(callout.style, { left: Math.min(W - cw - 40, sx - cw + 60) + 'px', top: (sy - chh - 70) + 'px', opacity: o, transform: `scale(${.6 + .4 * u})`, transformOrigin: '90% 120%' });
+  }
+
+  // --- Pop-Karten ---
+  for (const C of cards) {
+    const on = t >= C.t0 && t <= C.t1;
+    C.cv.style.display = on ? 'block' : 'none'; if (!on) continue;
+    const ox = side(C.folio);
+    const cam0 = camAt(C.t0);
+    const [ax, ay] = proj(cam0, ox + C.r[0] * PW, C.r[1] * PH), [bx, by] = proj(cam0, ox + C.r[2] * PW, C.r[3] * PH);
+    const from = { x: ax, y: ay, w: bx - ax, h: by - ay };
+    let rect, roundU = 0;
+    if (C.to) {
+      const uin = seg(t, C.t0, C.t0 + C.inDur, E.io), uout = seg(t, C.t1 - C.outDur, C.t1, E.io);
+      const u = uin * (1 - uout);
+      rect = { x: lerp(from.x, C.to.x, u), y: lerp(from.y, C.to.y, u), w: lerp(from.w, C.to.w, u), h: lerp(from.h, C.to.h, u) };
+      if (C.to.round) roundU = u;
+      C.cv.style.boxShadow = `0 ${40 * u}px ${90 * u}px rgba(0,0,0,${.55 * u}), 0 ${8 * u}px ${24 * u}px rgba(0,0,0,${.35 * u})`;
+      C.cv.style.opacity = 1;
+    } else {
+      // Vollbild-Karte, deckungsgleich mit der Seite unter der Kamera
+      rect = { x: 0, y: 0, w: W, h: H };
+      C.cv.style.boxShadow = 'none';
+      C.cv.style.opacity = (seg(t, C.t0, C.t0 + .5) * (1 - seg(t, C.t1 - C.outDur, C.t1))).toFixed(3);
+    }
+    const w = Math.max(2, Math.round(rect.w)), h = Math.max(2, Math.round(rect.h));
+    if (C.cv.width !== w || C.cv.height !== h) { C.cv.width = w; C.cv.height = h; C.off = null; }
+    C.cv.style.left = rect.x + 'px'; C.cv.style.top = rect.y + 'px';
+    C.cv.style.width = w + 'px'; C.cv.style.height = h + 'px';
+    C.cv.style.borderRadius = roundU > 0 ? `${50 * roundU}%` : C.radius + 'px';
+    C.roundU = roundU;
+    const lt = clamp((t - C.t0) / (C.t1 - C.t0));
+    C.ctx.clearRect(0, 0, w, h);
+    C.draw(C.ctx, w, h, lt, IMG[C.src], C, c);
+  }
+  // Schneekugel-Sockel
+  const bOn = t > s12 + .6 && t < s12 + 4.8;
+  base.style.display = bOn ? 'block' : 'none';
+  if (bOn) { const u = seg(t, s12 + .7, s12 + 1.3, E.out) * (1 - seg(t, s12 + 4.2, s12 + 4.7)); base.style.opacity = u; base.style.transform = `translateY(${(1 - u) * 60}px)`; }
+
+  // Abdunkelungen
+  for (const s of scrims) { const o = env(t, s.t0, s.t1, .35, .35); s.s.style.display = o > 0 ? 'block' : 'none'; s.s.style.opacity = o; }
+  for (const d of dims) { const o = env(t, d.t0, d.t1, .6, .6) * d.a; d.d.style.display = o > 0 ? 'block' : 'none'; d.d.style.opacity = o; }
+  drawCaps(t);
+
+  // Outro
+  const eOn = t > s14 + .5;
+  endBox.style.display = eOn ? 'block' : 'none';
+  if (eOn) endParts.forEach((p, i) => { const u = seg(t, s14 + .7 + i * .22, s14 + 1.3 + i * .22, E.out); p.style.opacity = u; p.style.transform = `translateY(${(1 - u) * 40}px)`; });
+}
+window.render = render;
+window.DURATION = DURATION;
+window.FLIP_EVENTS = leaves.filter(L => L.start !== null).map(L => ({ t: L.start, dur: L.dur }));
+window.POP_EVENTS = cards.map(C => C.t0);
+window.T = { s2, s4, s4b, s6, s8, s10, chipsT, s12, s13, s14 };
+window.READY = true;
+render(+Q.get('t') || 0);
+</script>
+</body>
+</html>
