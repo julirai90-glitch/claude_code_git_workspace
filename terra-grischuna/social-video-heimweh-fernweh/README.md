@@ -1,6 +1,6 @@
 # Social-Video «Heimweh – Fernweh» (Terra Grischuna 5 | 2026)
 
-Ein Video, in dem das Heft durchgeblättert wird: 3D-Blättern mit Papierwölbung, Kamerafahrten auf einzelne Artikel, die dabei in Bewegung kommen. Ausgegeben wird 9:16 (Reels/Stories/TikTok), 30 fps, in zwei Fassungen: lang (~60 s) und kurz (~30 s: Cover, Kaffeebarone, Cathomas, Heidi, Schluss).
+Ein Video, in dem das Heft durchgeblättert wird: 3D-Blättern mit Papierwölbung, Kamerafahrten auf einzelne Artikel, die dabei in Bewegung kommen. Ausgegeben wird 9:16 (Reels/Stories/TikTok), 30 fps, in zwei Fassungen: lang (~67 s) und kurz (~30 s: Cover, Kaffeebarone, Cathomas, Heidi, Schluss).
 
 Die Heftseiten selbst (Revisions-PDF) liegen **nicht** im Repo, weil das Heft urheberrechtlich geschützt ist. `prepare.sh` erzeugt sie lokal aus dem PDF.
 
@@ -14,13 +14,13 @@ Die Heftseiten selbst (Revisions-PDF) liegen **nicht** im Repo, weil das Heft ur
 | 9–17 s | 8/9 Statistik «Wer geht» | Zuckerbäcker-Städte pulsieren, Zähler bis 16 500, Balken 1874–1920 wachsen |
 | 17–23 s | 14/15 Bruno Cathomas | Porträt mit Parallaxe, Zitat «Ich war wirklich das klassische Landei.» |
 | 23–29 s | 18/19 Verner Soler | Laub wiegt im Wind, Zitat «Salbe für das Heimweh» |
-| 29–36 s | 26/27 Statistik «Wer kommt» | Wanderungssaldo-Balken wachsen ab der Nulllinie, Hinweis auf 2025 |
+| 29–36 s | 26/27 Statistik «Wer kommt» | Wanderungssaldo-Balken wachsen ab der Nulllinie, zwei Erklärtafeln (Lesehilfe aus dem Heft), Hinweis auf 2025 |
 | 36–38 s | 28–33 | Schnelles Blättern: Ilanz · Cazis · Ferrera |
-| 38–43 s | 34/35 Heidi | Filmbild wird zur Schneekugel mit Schneefall |
-| 43–52 s | Magazin | Museum Langwies, Jagd-Oper, Alpahirt, Kunstmuseum |
+| 38–43 s | 34/35 Heidi | Filmbild wird zur Schneekugel auf Holzsockel, Schneefall |
+| 43–52 s | Magazin | Museum Langwies, Jagd-Oper, Kunstmuseum |
 | 52–57 s | Schluss | Logo, Heftitel, terragrischuna.ch |
 
-Zeiten der langen Fassung ohne Cover; mit Cover kommen 2,5 s dazu.
+Richtzeiten aus der ersten Fassung; inzwischen sind die Stationen je rund 1 s länger und es kommen 2,5 s Cover dazu (Verweildauern: Konstanten D2–D12 in index.html).
 
 ## Herkunft der Texte
 

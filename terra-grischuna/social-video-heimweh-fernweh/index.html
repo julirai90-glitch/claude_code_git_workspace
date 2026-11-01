@@ -293,6 +293,8 @@ if (COVER) {
     } });
   scrim(0, 1.3, 'top', .3, .55, true);
 }
+// Verweildauer der Stationen
+const D2 = SHORT ? 4.9 : 5.4, D6 = SHORT ? 4.9 : 5.4, D8 = 5.6, D10 = 7.2, D12 = SHORT ? 5.2 : 5.8;
 // --- S0 Intro: Inhaltsverzeichnis S. 1 ---
 key(TC + 0.0, focus(1, .3, .19, .62, .34, 1.0, .9, { rx: 4, rz: -2, off: .1 }));
 key(TC + 1.7, focus(1, .06, .17, .94, .36, 1.0, .9, { rx: 2, rz: -1, off: .14 }), E.out);
@@ -308,7 +310,7 @@ key(t + .05, focus(4, 0, .03, 1, .36, 1, .9));
 // --- S2 Kaffeebarone: Gemälde löst sich, Wasser bewegt sich ---
 const kaffeeR = [0, .0419, 1, .3452];
 const s2 = t + .25;
-card({ src: hiSrc(4), folio: 4, r: kaffeeR, t0: s2, t1: s2 + 4.4,
+card({ src: hiSrc(4), folio: 4, r: kaffeeR, t0: s2, t1: s2 + D2,
   to: { x: 0, y: CARD_Y, w: CARD_W, h: story ? 760 : 560 },
   draw(ctx, w, h, lt, im) {
     // Ken Burns: langsamer Schwenk über die Fazenda
@@ -331,14 +333,14 @@ card({ src: hiSrc(4), folio: 4, r: kaffeeR, t0: s2, t1: s2 + 4.4,
     g.addColorStop(clamp(lx - .2), 'rgba(255,240,210,0)'); g.addColorStop(clamp(lx), 'rgba(255,240,210,.10)'); g.addColorStop(clamp(lx + .2), 'rgba(255,240,210,0)');
     ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
   } });
-dim(s2, s2 + 4.4, .55);
-caption({ t0: s2 + .7, t1: s2 + 4.3, y: TOP - 20, kicker: 'Die Auswanderer',
+dim(s2, s2 + D2, .55);
+caption({ t0: s2 + .7, t1: s2 + D2 - .1, y: TOP - 20, kicker: 'Die Auswanderer',
   title: '1855 zahlten Prättigauer Gemeinden armen Familien die Reise nach Brasilien.', titleSize: story ? 56 : 46, sub: 'Was sie auf den Kaffeeplantagen erwartete.', subSize: story ? 36 : 30 });
-key(s2 + 4.4, focus(4, 0, .03, 1, .36, 1, .9));
+key(s2 + D2, focus(4, 0, .03, 1, .36, 1, .9));
 
 // --- S3 Blättern zu S. 8/9 ---
-t = SHORT ? GH : goTo(s2 + 4.55, 4, .95, .32);
-key(s2 + 4.75, flipView({ x: PW * .1 }));
+t = SHORT ? GH : goTo(s2 + D2 + .15, 4, .95, .32);
+key(s2 + D2 + .35, flipView({ x: PW * .1 }));
 const mapView = focus(8, .06, .29, .96, .87, 1.0, .62);
 key(t + .1, mapView);
 // --- S4 Statistik: Karte pulsiert, Zähler, Balken wachsen ---
@@ -347,8 +349,8 @@ const dots = geo.mapDots.map((d, i) => {
   const g = el('div', 'glow', null, anchor), r1 = el('div', 'ring', null, anchor), r2 = el('div', 'ring', null, anchor);
   return { d, g, r1, r2, i, x: side(8) + d[0] * PW, y: d[1] * PH };
 });
-scrim(s4, s4 + 2.9, 'top', .40, .9);
-const counter = caption({ t0: s4 + .2, t1: s4 + 2.9, y: TOP - 30, kicker: 'Statistik: Wer geht', title: 'über 16 500', titleCls: 'kicker', titleSize: story ? 130 : 110, titleWeight: 800,
+scrim(s4, s4 + 3.6, 'top', .40, .9);
+const counter = caption({ t0: s4 + .2, t1: s4 + 3.6, y: TOP - 30, kicker: 'Statistik: Wer geht', title: 'über 16 500', titleCls: 'kicker', titleSize: story ? 130 : 110, titleWeight: 800,
   sub: 'Jugendliche verliessen Graubünden vom 15. Jahrhundert bis 1914, um als Zuckerbäcker zu arbeiten.', subSize: story ? 38 : 32 });
 // Zahl: Wörter 4 und 5 ('16' '500') werden zählend ersetzt (Kicker = 3 Wörter, 'über' = Wort 3)
 const p9 = geo.p9chart, p27 = geo.p27chart;
@@ -373,22 +375,22 @@ function chartLayer(folio, gd, origSrc, cleanSrc) {
 const ch9 = chartLayer(9, p9, 'assets/p9chart_orig.png', 'assets/p9chart_clean.png');
 const ch27 = chartLayer(27, p27, 'assets/p27chart_orig.png', 'assets/p27chart_clean.png');
 const chartView = focus(9, .06, .43, .98, .70, 1.0, .6);
-key(s4 + 2.6, mapView);
-key(s4 + 3.5, chartView);
-const s4b = s4 + 3.4;
-scrim(s4b, s4 + 7.0, 'top', .36, .85);
-caption({ t0: s4b + .2, t1: s4 + 7.0, y: TOP - 20, kicker: 'Statistik: Wer geht', title: 'Auswanderung aus Graubünden nach Amerika, 1874–1920', titleSize: story ? 56 : 48 });
-key(s4 + 7.0, focus(9, .06, .43, .98, .70, 1.04, .6), E.lin);
+key(s4 + 3.3, mapView);
+key(s4 + 4.2, chartView);
+const s4b = s4 + 4.1;
+scrim(s4b, s4 + 8.2, 'top', .36, .85);
+caption({ t0: s4b + .2, t1: s4 + 8.2, y: TOP - 20, kicker: 'Statistik: Wer geht', title: 'Auswanderung aus Graubünden nach Amerika, 1874–1920', titleSize: story ? 56 : 48 });
+key(s4 + 8.2, focus(9, .06, .43, .98, .70, 1.04, .6), E.lin);
 
 // --- S5 Blättern zu S. 14/15 (vorbei an «Fern der Heimat») ---
-const pre5 = SHORT ? s2 + 4.55 : s4 + 7.05;
+const pre5 = SHORT ? s2 + D2 + .15 : s4 + 8.25;
 t = SHORT ? goTo(pre5, 7, .8, .2) : goTo(pre5, 7, .85, .34);
 key(pre5 + .25, flipView({ x: PW * .25 }));
 const faceView = focus(14, .05, .02, .95, .62, 1.0, .62, { off: -.07 });
 key(t + .1, faceView);
 // --- S6 Bruno Cathomas: Porträt mit Tiefe, Zitat ---
 const s6 = t + .1;
-card({ src: hiSrc(14), folio: 14, r: [0, 0, 1, 1], t0: s6, t1: s6 + 4.4, radius: 0, inDur: .01, outDur: .6,
+card({ src: hiSrc(14), folio: 14, r: [0, 0, 1, 1], t0: s6, t1: s6 + D6, radius: 0, inDur: .01, outDur: .6,
   to: null,
   draw(ctx, w, h, lt, im, c, cam) {
     // Basis = Seite wie sie die Kamera sieht; Gesicht (weiche Maske) zoomt schneller -> Parallaxe
@@ -407,19 +409,19 @@ card({ src: hiSrc(14), folio: 14, r: [0, 0, 1, 1], t0: s6, t1: s6 + 4.4, radius:
     lg.addColorStop(clamp(lx - .15), 'rgba(255,255,255,0)'); lg.addColorStop(clamp(lx), 'rgba(255,255,255,.07)'); lg.addColorStop(clamp(lx + .15), 'rgba(255,255,255,0)');
     ctx.fillStyle = lg; ctx.fillRect(0, 0, w, h);
   } });
-key(s6 + 4.4, Object.assign({}, faceView, { z: faceView.z * 1.07, y: faceView.y + 10 }), E.lin);
-scrim(s6 + .2, s6 + 4.4, 'bottom', .55, .9, true);
-caption({ t0: s6 + .5, t1: s6 + 4.4, y: story ? 1140 : 820, panel: false, x: 64, w: W - 128, title: '«Ich war wirklich das klassische Landei.»', titleSize: story ? 76 : 62, titleStyle: 'italic', stag: .09,
+key(s6 + D6, Object.assign({}, faceView, { z: faceView.z * 1.07, y: faceView.y + 10 }), E.lin);
+scrim(s6 + .2, s6 + D6, 'bottom', .5, .95, true);
+caption({ t0: s6 + .5, t1: s6 + D6, y: story ? 1300 : 880, panel: false, x: 64, w: W - 128, title: '«Ich war wirklich das klassische Landei.»', titleSize: story ? 76 : 62, titleStyle: 'italic', stag: .09,
   sub: 'Bruno Cathomas aus Laax, heute am Wiener Burgtheater', subSize: 34 });
 
 // --- S7 Blättern zu S. 18/19 ---
-t = SHORT ? GH : goTo(s6 + 4.45, 9, .9, .32);
-key(SHORT ? GH : s6 + 4.65, flipView({ x: PW * .15 }));
+t = SHORT ? GH : goTo(s6 + D6 + .05, 9, .9, .32);
+key(SHORT ? GH : s6 + D6 + .25, flipView({ x: PW * .15 }));
 const solerView = focus(18, 0, 0, 1, 1, 1, .85, { off: -.02 });
 key(t + .1, solerView);
 // --- S8 Verner Soler: Blätter im Wind, «Salbe für das Heimweh» ---
 const s8 = t + .1;
-card({ src: hiSrc(18), folio: 18, r: [0, 0, 1, 1], t0: s8, t1: s8 + 4.6, radius: 0, inDur: .01, outDur: .6, to: null,
+card({ src: hiSrc(18), folio: 18, r: [0, 0, 1, 1], t0: s8, t1: s8 + D8, radius: 0, inDur: .01, outDur: .6, to: null,
   draw(ctx, w, h, lt, im, c, cam) {
     drawPageView(ctx, im, cam, 18);
     // Laubdach oben: zeilenweises Wiegen, nach unten abnehmend
@@ -441,26 +443,29 @@ card({ src: hiSrc(18), folio: 18, r: [0, 0, 1, 1], t0: s8, t1: s8 + 4.6, radius:
     g.addColorStop(0, `rgba(255,205,150,${.10 + .04 * Math.sin(T)})`); g.addColorStop(1, 'rgba(255,205,150,0)');
     ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
   } });
-key(s8 + 4.6, Object.assign({}, solerView, { z: solerView.z * 1.08, x: solerView.x + 40, y: solerView.y + 60 }), E.lin);
-scrim(s8 + .2, s8 + 4.6, 'top', .48, .88);
-caption({ t0: s8 + .4, t1: s8 + 4.6, y: TOP - 20, kicker: 'Verner Soler, Los Angeles', title: '«Salbe für das Heimweh»', titleSize: story ? 92 : 76, titleStyle: 'italic', stag: .1,
+key(s8 + D8, Object.assign({}, solerView, { z: solerView.z * 1.08, x: solerView.x + 40, y: solerView.y + 60 }), E.lin);
+scrim(s8 + .2, s8 + D8, 'top', .48, .88);
+caption({ t0: s8 + .4, t1: s8 + D8, y: TOP - 20, kicker: 'Verner Soler, Los Angeles', title: '«Salbe für das Heimweh»', titleSize: story ? 92 : 76, titleStyle: 'italic', stag: .1,
   sub: 'So nennt der Bauernsohn aus Vrin die «Terra Grischuna». Seit 36 Jahren lebt er in Los Angeles.', subSize: story ? 36 : 32 });
 
 // --- S9 Schnell durch die Vrin-Bilder zu S. 26/27 ---
-t = goTo(s8 + 4.65, 13, .8, .3);
-key(s8 + 4.85, flipView({ x: PW * .3, rx: 11 }));
+t = goTo(s8 + D8 + .05, 13, .8, .3);
+key(s8 + D8 + .25, flipView({ x: PW * .3, rx: 11 }));
 const s27View = focus(27, .03, .5, .99, .785, 1.0, .6);
 key(t + .1, s27View);
 // --- S10 Wer kommt: Wanderungssaldo-Balken ---
 const s10 = t + .1;
-scrim(s10, s10 + 5.0, 'top', .36, .88);
-caption({ t0: s10 + .2, t1: s10 + 5.0, y: TOP - 20, kicker: 'Statistik: Wer kommt', title: 'Der Aderlass ans Unterland – und sein Ende', titleSize: story ? 62 : 52 });
+scrim(s10, s10 + D10, 'top', .36, .88);
+caption({ t0: s10 + .2, t1: s10 + 3.7, y: TOP - 20, kicker: 'Statistik: Wer kommt', title: 'Der Aderlass ans Unterland – und sein Ende', titleSize: story ? 58 : 50,
+  sub: 'Wie viele Menschen Graubünden pro Jahr netto an andere Kantone verlor (grau) oder von ihnen gewann (rot), 1981–2025.', subSize: story ? 34 : 30 });
+caption({ t0: s10 + 3.75, t1: s10 + D10, y: TOP - 20, kicker: 'Statistik: Wer kommt', title: 'In 40 der 45 Jahre war die Bilanz negativ.', titleSize: story ? 58 : 50,
+  sub: 'Am stärksten 2001 mit minus 1293 Personen. Seit 2018 nähert sie sich null.', subSize: story ? 34 : 30 });
 const callout = el('div', 'kicker pill', '2025: grösstes Plus seit 1992 (+244)');
 Object.assign(callout.style, { position: 'absolute', zIndex: 8, fontSize: (story ? 40 : 34) + 'px', padding: '14px 28px 10px', display: 'none', boxShadow: '0 10px 30px rgba(0,0,0,.4)' });
-key(s10 + 5.0, focus(27, .03, .5, .99, .785, 1.04, .6), E.lin);
+key(s10 + D10, focus(27, .03, .5, .99, .785, 1.04, .6), E.lin);
 
 // --- S11 Zugezogene: Ilanz, Cazis, Ferrera ---
-const pre11 = SHORT ? s6 + 4.45 : s10 + 5.05;
+const pre11 = SHORT ? s6 + D6 + .05 : s10 + D10 + .05;
 t = SHORT ? goTo(pre11, 17, .7, .16) : goTo(pre11, 17, .75, .55);
 key(pre11 + .2, flipView({ x: PW * .3 }));
 const chipsT = SHORT ? GH : pre11;
@@ -472,7 +477,7 @@ key(t + .1, heidiView);
 const s12 = t + .15;
 const heidiR = [.1902, 0, .9141, .3592];
 const GS = story ? 820 : 560; // Kugeldurchmesser
-card({ src: hiSrc(35), folio: 35, r: heidiR, t0: s12, t1: s12 + 4.8, radius: 0, inDur: 1.1, z: 6,
+card({ src: hiSrc(35), folio: 35, r: heidiR, t0: s12, t1: s12 + D12, radius: 0, inDur: 1.1, z: 6,
   to: { x: (W - GS) / 2, y: story ? 720 : 470, w: GS, h: GS, round: true },
   draw(ctx, w, h, lt, im, c) {
     const T = lt * 4.8; const roundU = c.roundU;
@@ -498,37 +503,42 @@ card({ src: hiSrc(35), folio: 35, r: heidiR, t0: s12, t1: s12 + 4.8, radius: 0, 
       ctx.fillStyle = hg; ctx.beginPath(); ctx.ellipse(w * .33, h * .25, w * .2, h * .11, -.6, 0, 6.283); ctx.fill();
       ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = w * .012;
       ctx.beginPath(); ctx.arc(w / 2, h / 2, w * .455, 3.5, 4.4); ctx.stroke();
+      ctx.globalAlpha = roundU;
+      const pile = ctx.createLinearGradient(0, h * .82, 0, h);
+      pile.addColorStop(0, 'rgba(255,255,255,0)'); pile.addColorStop(.35, 'rgba(240,244,250,.85)'); pile.addColorStop(1, 'rgba(225,232,242,1)');
+      ctx.fillStyle = pile; ctx.beginPath(); ctx.ellipse(w / 2, h * 1.02, w * .5, h * .2, 0, 0, 6.283); ctx.fill();
+      ctx.strokeStyle = 'rgba(200,225,255,.5)'; ctx.lineWidth = w * .008; ctx.beginPath(); ctx.arc(w / 2, h / 2, w * .496, 0, 6.283); ctx.stroke();
       ctx.restore();
     }
   } });
-key(s12 + 4.8, Object.assign({}, heidiView, { z: heidiView.z * 1.03 }), E.lin);
+key(s12 + D12, Object.assign({}, heidiView, { z: heidiView.z * 1.03 }), E.lin);
 const base = el('div'); // Sockel der Schneekugel
-Object.assign(base.style, { position: 'absolute', zIndex: 5, left: ((W - GS * .78) / 2) + 'px', width: (GS * .78) + 'px', height: (GS * .2) + 'px',
-  top: ((story ? 720 : 470) + GS * .86) + 'px', borderRadius: '24px 24px 60px 60px / 24px 24px 40px 40px',
-  background: 'linear-gradient(180deg,#8a2a1c 0%,#BC180F 18%,#7a0f09 70%,#3d0805 100%)', boxShadow: '0 30px 60px rgba(0,0,0,.55)', display: 'none' });
-const baseLogo = el('img', null, null, base); baseLogo.src = 'assets/logo_white.png';
-Object.assign(baseLogo.style, { position: 'absolute', left: '50%', top: '42%', width: '62%', transform: 'translate(-50%,-50%)', filter: 'brightness(0) invert(1)', opacity: .92 });
-dim(s12, s12 + 4.8, .7);
-caption({ t0: s12 + 1.0, t1: s12 + 4.8, y: TOP - 20, kicker: 'Heidis Heimweh', title: 'Wenn Heidi in die Schneekugel blickt', titleSize: story ? 62 : 50, sub: 'Wie aus einer Bündner Erzählung ein globaler Mythos wurde.', subSize: story ? 34 : 30 });
+Object.assign(base.style, { position: 'absolute', zIndex: 7, left: ((W - GS * .66) / 2) + 'px', width: (GS * .66) + 'px', height: (GS * .17) + 'px',
+  top: ((story ? 720 : 470) + GS * .9) + 'px', clipPath: 'polygon(6% 0, 94% 0, 100% 100%, 0 100%)',
+  background: 'linear-gradient(180deg,#6b4a32 0%,#4a3020 35%,#2e1d12 100%)', display: 'none' });
+const baseHi = el('div', null, null, base); Object.assign(baseHi.style, { position: 'absolute', left: 0, right: 0, top: 0, height: '10%', background: 'rgba(255,220,180,.25)' });
+const floorSh = el('div'); Object.assign(floorSh.style, { position: 'absolute', zIndex: 4, left: ((W - GS) / 2) + 'px', width: GS + 'px', height: (GS * .12) + 'px',
+  top: ((story ? 720 : 470) + GS * 1.02) + 'px', borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(0,0,0,.7), rgba(0,0,0,0))', display: 'none' });
+dim(s12, s12 + D12, .94);
+caption({ t0: s12 + 1.0, t1: s12 + D12, y: TOP - 20, kicker: 'Heidis Heimweh', title: 'Wenn Heidi in die Schneekugel blickt', titleSize: story ? 62 : 50, sub: 'Wie aus einer Bündner Erzählung ein globaler Mythos wurde.', subSize: story ? 34 : 30 });
 
 // --- S13 Magazin-Montage ---
-const s13 = s12 + 4.85;
+const s13 = s12 + D12 + .05;
 t = SHORT ? goTo(s13, 30, .55, .09) : goTo(s13, 23, .7, .17);                        // -> 46/47
 key(s13 + .2, flipView({ x: PW * .35, rx: 12 }));
 const mag = SHORT ? [] : [
   { at: t, view: focus(46, .03, .03, .55, .9, .98, .75), title: 'Ein Museum für eine Brücke', next: [23, 2] },
-  { view: focus(50, 0, 0, 1, 1, .9, .7), title: 'Die Jagd-Oper', next: [25, 2] },
-  { view: focus(54, 0, 0, 1, 1, .9, .7), title: 'Alpahirt', next: [27, 3] },
+  { view: focus(50, 0, 0, 1, 1, .9, .7), title: 'Die Jagd-Oper', next: [25, 5] },
   { view: focus(60, 0, 0, 1, 1, .9, .7), title: 'Wenn die Kamera entscheidet', next: null },
 ];
 let mt = SHORT ? s13 + .4 : t;
 mag.forEach((m, i) => {
   key(mt + .05, m.view);
-  const hold = i === 3 ? 1.3 : 1.05;
+  const hold = i === mag.length - 1 ? 1.9 : 1.6;
   caption({ t0: mt, t1: mt + hold + .15, y: TOP - 10, kicker: i === 0 ? 'Magazin' : null, kickerColor: '#9fbf3b', title: m.title, titleCls: 'kicker', titleSize: story ? 64 : 56, titleWeight: 800 });
   scrim(mt - .1, mt + hold + .2, 'top', .32, .82);
   key(mt + hold, Object.assign({}, m.view, { z: m.view.z * 1.04 }), E.lin);
-  if (m.next) { mt = goTo(mt + hold, m.next[0] + m.next[1], .62, .16); }
+  if (m.next) { mt = goTo(mt + hold, m.next[0] + m.next[1], .62, m.next[1] > 2 ? .1 : .16); }
   else mt = mt + hold;
 });
 // --- S14 Outro ---
@@ -605,7 +615,7 @@ function render(t) {
   $('lshadow').style.background = lShadow > 0 ? `linear-gradient(to left, rgba(0,0,0,${.10 * lShadow}) 0, rgba(0,0,0,${.30 * lShadow}) ${Math.max(0, lx - 30)}px, rgba(0,0,0,0) ${lx + 120}px)` : 'none';
 
   // --- Karte S. 8: pulsierende Zuckerbäcker-Städte (>200) ---
-  const mapOn = t > s4 - .2 && t < s4 + 3.6;
+  const mapOn = t > s4 - .2 && t < s4 + 4.3;
   for (const D of dots) {
     for (const e of [D.g, D.r1, D.r2]) e.style.display = mapOn ? 'block' : 'none';
     if (!mapOn) continue;
@@ -622,7 +632,7 @@ function render(t) {
     Object.assign(D.g.style, { left: (D.x - gs / 2) + 'px', top: (D.y - gs / 2) + 'px', width: gs + 'px', height: gs + 'px', opacity: gu * (.6 + .4 * Math.sin(lt * 5)) });
   }
   // Zähler "über 16 500"
-  if (t >= s4 && t <= s4 + 3) {
+  if (t >= s4 && t <= s4 + 3.7) {
     const u = seg(t, s4 + .3, s4 + 1.7, E.out);
     const v = Math.round(16500 * u / 10) * 10;
     const str = v.toLocaleString('de-CH').replace(/[’']/g, ' ');
@@ -646,13 +656,13 @@ function render(t) {
   chartDraw(ch9, s4b + .5, 'up');
   chartDraw(ch27, s10 + .6, 'mid');
   // Callout 2025
-  const cOn = t > s10 + 2.6 && t < s10 + 5.0;
+  const cOn = t > s10 + 3.9 && t < s10 + D10;
   callout.style.display = cOn ? 'block' : 'none';
   if (cOn) {
     const [x0, y0, x1, y1] = p27.rect; const lastC = p27.cols[p27.cols.length - 1];
     const bx = side(27) + (x0 + (x1 - x0) * (lastC[0] + lastC[1]) / 2) * PW, by = (y0 + (y1 - y0) * (p27.zero - .07)) * PH;
     const [sx, sy] = proj(c, bx, by);
-    const u = seg(t, s10 + 2.6, s10 + 3.1, E.back), o = 1 - seg(t, s10 + 4.6, s10 + 5.0);
+    const u = seg(t, s10 + 3.9, s10 + 4.4, E.back), o = 1 - seg(t, s10 + D10 - .4, s10 + D10);
     const cw = callout.offsetWidth, chh = callout.offsetHeight;
     Object.assign(callout.style, { left: Math.min(W - cw - 40, sx - cw + 60) + 'px', top: (sy - chh - 70) + 'px', opacity: o, transform: `scale(${.6 + .4 * u})`, transformOrigin: '90% 120%' });
   }
@@ -690,9 +700,9 @@ function render(t) {
     C.draw(C.ctx, w, h, lt, IMG[C.src], C, c);
   }
   // Schneekugel-Sockel
-  const bOn = t > s12 + .6 && t < s12 + 4.8;
-  base.style.display = bOn ? 'block' : 'none';
-  if (bOn) { const u = seg(t, s12 + .7, s12 + 1.3, E.out) * (1 - seg(t, s12 + 4.2, s12 + 4.7)); base.style.opacity = u; base.style.transform = `translateY(${(1 - u) * 60}px)`; }
+  const bOn = t > s12 + .6 && t < s12 + D12;
+  base.style.display = bOn ? 'block' : 'none'; floorSh.style.display = bOn ? 'block' : 'none';
+  if (bOn) { const u = seg(t, s12 + .7, s12 + 1.3, E.out) * (1 - seg(t, s12 + D12 - .6, s12 + D12 - .1)); base.style.opacity = u; floorSh.style.opacity = u; base.style.transform = `translateY(${(1 - u) * 40}px)`; }
 
   // Abdunkelungen
   for (const s of scrims) { const o = env(t, s.t0, s.t1, .35, .35); s.s.style.display = o > 0 ? 'block' : 'none'; s.s.style.opacity = o; }
