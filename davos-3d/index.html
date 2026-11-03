@@ -48,6 +48,9 @@
   details p { margin: 4px 0; }
   #tools { position: fixed; right: 12px; bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
   #tools .tool { background: var(--panel); width: 36px; height: 36px; padding: 0; font-size: 16px; }
+  #pad { position: fixed; right: 12px; bottom: 60px; display: grid; grid-template-columns: repeat(3, 36px); gap: 4px; }
+  #pad .tool { background: var(--panel); width: 36px; height: 36px; padding: 0; font-size: 16px;
+    touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   #labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
   #labels div { position: absolute; left: 0; top: 0; white-space: nowrap; will-change: transform; }
   #labels .l { background: #fff; color: #1d2125; font-size: 11.5px; font-weight: 600; padding: 2px 6px;
@@ -64,6 +67,9 @@
     #yearlabel { font-size: 22px; min-width: 60px; }
     #count { min-width: 0; font-size: 12px; }
     .axis span:nth-child(2), .axis span:nth-child(5) { display: none; }
+    #pad { top: 64px; bottom: auto; }
+    #pad .tool { width: 40px; height: 40px; }
+    #pad { grid-template-columns: repeat(3, 40px); }
   }
 </style>
 </head>
@@ -120,8 +126,18 @@
   </details>
 </div>
 
-<div id="tools">
+<div id="pad" aria-label="Navigation">
+  <button class="tool" data-nav="rl" title="Nach links drehen" aria-label="Nach links drehen">↺</button>
+  <button class="tool" data-nav="f" title="Vorwärts" aria-label="Vorwärts">↑</button>
+  <button class="tool" data-nav="rr" title="Nach rechts drehen" aria-label="Nach rechts drehen">↻</button>
+  <button class="tool" data-nav="l" title="Links" aria-label="Links">←</button>
   <button class="tool" id="reset" title="Ansicht zurücksetzen" aria-label="Ansicht zurücksetzen">⌂</button>
+  <button class="tool" data-nav="r" title="Rechts" aria-label="Rechts">→</button>
+  <button class="tool" data-nav="out" title="Herauszoomen" aria-label="Herauszoomen">−</button>
+  <button class="tool" data-nav="b" title="Zurück" aria-label="Zurück">↓</button>
+  <button class="tool" data-nav="in" title="Hineinzoomen" aria-label="Hineinzoomen">+</button>
+</div>
+<div id="tools">
   <button class="tool" id="spin" title="Drehen" aria-label="Automatisch drehen">⟳</button>
 </div>
 
@@ -475,7 +491,35 @@ addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
-renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); placeLabels(); });
+// on-screen navigation: hold a button to keep moving (phones: two-finger gestures are hard to discover)
+const held = new Set();
+document.querySelectorAll("#pad [data-nav]").forEach(b => {
+  const off = () => held.delete(b.dataset.nav);
+  b.addEventListener("pointerdown", e => { e.preventDefault(); controls.autoRotate = false; held.add(b.dataset.nav); });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(t => b.addEventListener(t, off));
+  b.addEventListener("contextmenu", e => e.preventDefault());
+});
+controls.listenToKeyEvents(window);  // arrow keys pan on desktop
+const UP = new THREE.Vector3(0, 1, 0);
+let navLast = 0;
+function nav(t) {
+  const dt = Math.min(0.1, (t - navLast) / 1000); navLast = t;   // per second, independent of frame rate
+  if (!held.size) return;
+  const off = camera.position.clone().sub(controls.target);
+  const fwd = new THREE.Vector3(-off.x, 0, -off.z).normalize();
+  const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
+  const move = new THREE.Vector3();
+  if (held.has("f")) move.add(fwd); if (held.has("b")) move.sub(fwd);
+  if (held.has("r")) move.add(right); if (held.has("l")) move.sub(right);
+  controls.target.add(move.multiplyScalar(off.length() * 0.6 * dt));
+  if (held.has("rl")) off.applyAxisAngle(UP, -1.0 * dt);
+  if (held.has("rr")) off.applyAxisAngle(UP, 1.0 * dt);
+  const d = off.length(), z = Math.pow(2, dt);   // zoom: factor 2 per second
+  if (held.has("in")) off.setLength(Math.max(controls.minDistance, d / z));
+  if (held.has("out")) off.setLength(Math.min(controls.maxDistance, d * z));
+  camera.position.copy(controls.target).add(off);
+}
+renderer.setAnimationLoop(t => { nav(t); controls.update(); renderer.render(scene, camera); placeLabels(); });
 </script>
 </body>
 </html>
