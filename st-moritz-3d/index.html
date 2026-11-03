@@ -97,7 +97,7 @@
   </div>
   <svg id="hist" preserveAspectRatio="none"></svg>
   <input id="slider" type="range" min="1800" max="2026" step="1" value="2026" aria-label="Jahr">
-  <div class="axis"><span style="left:0">vor 1800</span><span style="left:22.1%">1850</span><span style="left:44.2%">1900</span><span style="left:66.4%">1950</span><span style="left:88.5%">2000</span><span style="right:0">heute</span></div>
+  <div class="axis" id="axis"></div>
   <div id="legend"></div>
   <details>
     <summary>Was ist gemessen, was nicht?</summary>
@@ -239,6 +239,8 @@ const START = ORT.start;
 document.title = `${ORT.name} 3D`;
 document.querySelectorAll(".ortname").forEach(e => { e.textContent = ORT.name; });
 document.getElementById("areatext").textContent = ORT.area_text;
+// first year of slider and histogram: places with few old buildings start later (everything older is in the first bar)
+const T0 = ORT.start_year || 1800;
 
 // municipal boundary (cut to the terrain)
 for (const ln of B.boundary_lines) {
@@ -351,21 +353,21 @@ function legend() {
 // histogram of build years per decade
 const known = meta.filter(m => m.year >= 0);
 const decades = [];
-const bucket = y => y < 1810 ? 1800 : Math.floor(y / 10) * 10;   // first bar: everything up to 1809
-for (let d = 1800; d <= 2020; d += 10) decades.push({ d, n: known.filter(m => bucket(m.year) === d).length });
+const bucket = y => y < T0 + 10 ? T0 : Math.floor(y / 10) * 10;   // first bar: everything up to T0 + 9
+for (let d = T0; d <= 2020; d += 10) decades.push({ d, n: known.filter(m => bucket(m.year) === d).length });
 function hist() {
   const svg = $("hist"), max = Math.max(...decades.map(x => x.n)), W = 1000, H = 46, y = uniforms.uYear.value;
-  const span = NOW - 1800;
+  const span = NOW - T0;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   svg.innerHTML = decades.map(({ d, n }) => {
-    const x = (d - 1800) / span * W, w = 10 / span * W - 1.5, h = Math.max(1, n / max * (H - 2));
+    const x = (d - T0) / span * W, w = 10 / span * W - 1.5, h = Math.max(1, n / max * (H - 2));
     const c = d <= y ? yearColor(d + 5).getStyle() : "rgba(0,0,0,.1)";
-    return `<rect x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${c}"><title>${d === 1800 ? "bis 1809" : d + "er"}: ${n} Gebäude</title></rect>`;
+    return `<rect x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${c}"><title>${d === T0 ? "bis " + (T0 + 9) : d + "er"}: ${n} Gebäude</title></rect>`;
   }).join("");
 }
 function setYear(y) {
   uniforms.uYear.value = y;
-  $("yearlabel").textContent = y >= NOW ? "heute" : y <= 1800 ? "1800" : y;
+  $("yearlabel").textContent = y >= NOW ? "heute" : y <= T0 ? T0 : y;
   $("slider").value = y;
   const n = known.filter(m => m.year <= y).length;
   $("count").textContent = y >= NOW
@@ -382,7 +384,7 @@ let playing = null;
 function stopPlay() { if (playing) { cancelAnimationFrame(playing); playing = null; $("play").textContent = "▶ Zeitreise"; uniforms.uFresh.value = 0; } }
 $("play").addEventListener("click", () => {
   if (playing) return stopPlay();
-  let y = uniforms.uYear.value >= NOW ? 1800 : uniforms.uYear.value, last = performance.now();
+  let y = uniforms.uYear.value >= NOW ? T0 : uniforms.uYear.value, last = performance.now();
   $("play").textContent = "❚❚ Pause";
   uniforms.uFresh.value = 6;
   const step = t => {
@@ -459,6 +461,13 @@ function placeLabels() {
 
 home();
 paint();
+$("slider").min = T0;
+{
+  const tick = T0 >= 1900 ? 25 : 50, pct = y => ((y - T0) / (NOW - T0) * 100).toFixed(1) + "%";
+  let h = `<span style="left:0">vor ${T0}</span>`;
+  for (let y = T0 + tick; y <= NOW - 15; y += tick) h += `<span style="left:${pct(y)}">${y}</span>`;
+  $("axis").innerHTML = h + `<span style="right:0">heute</span>`;
+}
 setYear(NOW);
 $("loading").remove();
 
