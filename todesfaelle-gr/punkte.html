@@ -128,8 +128,9 @@ function layout() {
   while (svg.lastChild && svg.lastChild.nodeName !== "desc") svg.removeChild(svg.lastChild);
   dots = owner.map((o, i) => {
     const e = document.createElementNS(NS, "circle");
-    e.setAttribute("cx", (i % cols + 0.5) * pitch);
-    e.setAttribute("cy", (Math.floor(i / cols) + 0.5) * pitch);
+    // column-major, bottom to top: each cause becomes a vertical block, read left to right
+    e.setAttribute("cx", (Math.floor(i / rows) + 0.5) * pitch);
+    e.setAttribute("cy", (rows - 1 - i % rows + 0.5) * pitch);
     e.setAttribute("r", r);
     svg.appendChild(e);
     return e;
