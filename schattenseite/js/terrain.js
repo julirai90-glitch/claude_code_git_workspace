@@ -33,6 +33,12 @@ export class Terrain {
       this.zf[i] = Math.min(1, Math.max(0, (Z[i] - 400) / 3200));
     }
     this.H = new Float32Array(N); this.S = new Uint8Array(N);
+    // soft fade towards the edges of the elevation model
+    this.edge = new Uint8Array(N); const F = 70;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const d = Math.min(r, c, rows - 1 - r, cols - 1 - c) / F;
+      this.edge[r * cols + c] = 255 * Math.min(1, d * d * (3 - 2 * Math.min(1, d)));
+    }
     this.canvas = document.createElement('canvas'); this.canvas.width = cols; this.canvas.height = rows;
     this.ctx = this.canvas.getContext('2d'); this.img = this.ctx.createImageData(cols, rows);
   }
@@ -92,8 +98,8 @@ export class Terrain {
           r = mix(r, mix(C.sunLo[0], sunHi[0], k), 0.92); g = mix(g, mix(C.sunLo[1], sunHi[1], k), 0.92); b = mix(b, mix(C.sunLo[2], sunHi[2], k), 0.92);
         }
       }
-      if (!this.inside[i]) { r = mix(r, C.bg[0], 0.62); g = mix(g, C.bg[1], 0.62); b = mix(b, C.bg[2], 0.62); }
-      const j = i * 4; px[j] = r; px[j + 1] = g; px[j + 2] = b; px[j + 3] = 255;
+      if (!this.inside[i]) { const l = (r + g + b) / 3; r = mix(mix(r, l, 0.55), C.bg[0], 0.6); g = mix(mix(g, l, 0.55), C.bg[1], 0.6); b = mix(mix(b, l, 0.55), C.bg[2] + 8, 0.6); }
+      const j = i * 4; px[j] = r; px[j + 1] = g; px[j + 2] = b; px[j + 3] = this.edge[i];
     }
     this.ctx.putImageData(this.img, 0, 0);
   }

@@ -44,11 +44,8 @@
     <button id="play" class="play" aria-label="Tagesablauf abspielen"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M8 5v14l11-7z"/><path class="i-pause" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
     <div class="sliders">
       <div class="row1"><span id="clock" class="clock">–</span><span id="sunpos" class="muted"></span></div>
-      <label class="vh" for="time">Uhrzeit</label><input id="time" type="range" min="420" max="1080" step="1">
-      <div class="row2">
-        <label class="vh" for="day">Datum</label><input id="day" type="range" min="0" max="364" step="1">
-        <span id="daylabel" class="daylabel"></span>
-      </div>
+      <div class="srow"><label for="time">Zeit</label><input id="time" type="range" min="420" max="1080" step="1"></div>
+      <div class="srow"><label for="day">Datum</label><div class="dayw"><input id="day" type="range" min="0" max="364" step="1"><div class="months" aria-hidden="true"><span>Juli</span><span>Aug.</span><span>Sept.</span><span>Okt.</span><span>Nov.</span><span>Dez.</span><span>Jan.</span><span>Feb.</span><span>März</span><span>Apr.</span><span>Mai</span><span>Juni</span></div></div></div>
       <div class="quick"><button data-day="today">Heute</button><button data-day="12-21">21. Dez.</button><button data-day="2-1">1. Feb.</button><button data-day="3-20">20. März</button><button data-day="6-21">21. Juni</button></div>
     </div>
     <div class="legend" aria-label="Legende">

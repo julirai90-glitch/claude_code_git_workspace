@@ -23,7 +23,9 @@ export class Panorama {
     return pts;
   }
   geom() {
-    const W = this.cv.clientWidth, H = this.cv.clientHeight, v = VIEWS[this.viewName];
+    const W = this.cv.clientWidth, H = this.cv.clientHeight, v = { ...VIEWS[this.viewName] };
+    let mx = 0; for (let a = v.a0; a <= v.a1; a += 1) mx = Math.max(mx, horizonAt(this.place.hz, a));
+    v.e1 = Math.min(80, Math.max(v.e1, Math.ceil((mx + 8) / 5) * 5));
     const padB = 24, padT = 8;
     return { W, H, v, x: a => (a - v.a0) / (v.a1 - v.a0) * W, y: e => padT + (v.e1 - e) / (v.e1 - v.e0) * (H - padT - padB), padB };
   }
@@ -40,10 +42,6 @@ export class Panorama {
     // grid
     ctx.font = '11px Inter, system-ui, sans-serif'; ctx.textBaseline = 'middle';
     for (let e = 10; e < v.e1; e += 10) { ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.beginPath(); ctx.moveTo(0, y(e)); ctx.lineTo(W, y(e)); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillText(e + '°', 6, y(e) - 7); }
-    // sun paths
-    if (!this.paths) this.paths = { sel: this.path(this.day), refs: this.refDays.map(r => ({ ...r, pts: this.path(r.i) })) };
-    for (const r of this.paths.refs) if (r.i !== this.day) this.drawPath(r.pts, g, 'rgba(255,214,140,.55)', 1.4, r.label);
-    this.drawPath(this.paths.sel, g, '#ffd27a', 2.6, dateLabel(this.day), true);
     // terrain silhouette
     const n = Math.max(200, Math.round(W / 1.5));
     ctx.beginPath(); ctx.moveTo(0, H);
@@ -54,6 +52,10 @@ export class Panorama {
     ctx.beginPath();
     for (let k = 0; k <= n; k++) { const a = v.a0 + (v.a1 - v.a0) * k / n, X = x(a), Y = y(horizonAt(hz, a)); k ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }
     ctx.strokeStyle = 'rgba(214,226,255,.75)'; ctx.lineWidth = 1.2; ctx.stroke();
+    // sun paths
+    if (!this.paths) this.paths = { sel: this.path(this.day), refs: this.refDays.map(r => ({ ...r, pts: this.path(r.i) })) };
+    for (const r of this.paths.refs) if (r.i !== this.day) this.drawPath(r.pts, g, 'rgba(255,214,140,.55)', 1.4, r.label);
+    this.drawPath(this.paths.sel, g, '#ffd27a', 2.6, dateLabel(this.day), true);
     // flat horizon
     ctx.setLineDash([2, 4]); ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.beginPath(); ctx.moveTo(0, y(0)); ctx.lineTo(W, y(0)); ctx.stroke(); ctx.setLineDash([]);
     // current sun
@@ -93,7 +95,7 @@ export class Panorama {
     const top = pts.filter(inView).reduce((m, q) => q.el > (m ? m.el : -99) ? q : m, null);
     if (top && top.el < v.e1 - 2) {
       ctx.font = `${hours ? 600 : 500} 11px Inter, system-ui, sans-serif`; ctx.textAlign = 'center';
-      ctx.fillStyle = hours ? '#ffe2a0' : 'rgba(255,226,160,.7)'; ctx.fillText(label, x(top.az), y(top.el) - (hours ? 24 : 9)); ctx.textAlign = 'left';
+      ctx.fillStyle = hours ? '#ffe2a0' : 'rgba(255,226,160,.7)'; ctx.fillText(label, x(top.az), y(top.el) - (hours ? 30 : 9)); ctx.textAlign = 'left';
     }
   }
   hover(sx) {

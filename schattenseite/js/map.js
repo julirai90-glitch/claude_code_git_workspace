@@ -24,13 +24,18 @@ export class MapView {
     this.W = this.cv.clientWidth; this.H = this.cv.clientHeight; this.dpr = dpr;
     this.cv.width = Math.round(this.W * dpr); this.cv.height = Math.round(this.H * dpr);
   }
+  // free screen area not covered by the floating panels
+  insets() { return this.opts.insets ? this.opts.insets() : { t: 20, r: 20, b: 20, l: 20 }; }
   fit(soft) {
-    const [x0, y0, x1, y1] = this.bounds, pad = this.W < 600 ? 10 : 28;
-    const s = Math.min((this.W - 2 * pad) / (x1 - x0), (this.H - 2 * pad) / (y1 - y0));
-    this.minS = s * 0.9; this.maxS = s * 40;
+    const [x0, y0, x1, y1] = this.bounds, I = this.insets();
+    const fw = this.W - I.l - I.r, fh = this.H - I.t - I.b;
+    const s = Math.min(fw / (x1 - x0), fh / (y1 - y0));
+    this.minS = s * 0.85; this.maxS = s * 40; this.fitS = s;
     if (soft && this.view.s > s) return;
-    this.view = { x: (x0 + x1) / 2, y: (y0 + y1) / 2, s };
+    // centre of the free area expressed as a world-space view centre
+    this.view = { x: (x0 + x1) / 2 - ((I.l - I.r) / 2) / s, y: (y0 + y1) / 2 - ((I.t - I.b) / 2) / s, s };
   }
+  fitView() { const v = this.view; this.fit(); const t = this.view; this.view = v; return t; }
   zoomAt(sx, sy, f) {
     const [X, Y] = this.toWorld(sx, sy);
     const s = Math.min(this.maxS, Math.max(this.minS, this.view.s * f));
@@ -50,7 +55,7 @@ export class MapView {
   }
   clamp() {
     const [x0, y0, x1, y1] = this.bounds, v = this.view;
-    v.x = Math.min(x1, Math.max(x0, v.x)); v.y = Math.min(y1, Math.max(y0, v.y));
+    const m = 30000; v.x = Math.min(x1 + m, Math.max(x0 - m, v.x)); v.y = Math.min(y1 + m, Math.max(y0 - m, v.y));
   }
   bind() {
     const cv = this.cv, pts = new Map(); let moved = 0, last = null, pinch = null;
@@ -89,7 +94,7 @@ export class MapView {
     }
     return best;
   }
-  visible(p) { return p.t !== 'hamlet' || this.view.s > this.minS * 2.2 || p === this.sel; }
+  visible(p) { return p.t !== 'hamlet' || this.view.s > this.fitS * 2.2 || p === this.sel; }
   setHover(p) { if (p !== this.hover) { this.hover = p; this.cv.style.cursor = p ? 'pointer' : ''; this.draw(); } }
   click(sx, sy) {
     const p = this.pick(sx, sy);
@@ -107,18 +112,17 @@ export class MapView {
       ctx.drawImage(tc, x, y, tc.width * this.tdx * v.s, tc.height * this.tdy * v.s);
     }
     const path = rings => { ctx.beginPath(); for (const r of rings) r.forEach(([X, Y], k) => { const [x, y] = this.toScreen(X, Y); k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); };
-    if (v.s > this.minS * 1.8) { path(this.gemPaths); ctx.strokeStyle = 'rgba(200,215,255,.16)'; ctx.lineWidth = 0.7; ctx.stroke(); }
+    if (v.s > this.fitS * 1.8) { path(this.gemPaths); ctx.strokeStyle = 'rgba(200,215,255,.16)'; ctx.lineWidth = 0.7; ctx.stroke(); }
     path(this.cantonPaths); ctx.strokeStyle = 'rgba(235,228,210,.75)'; ctx.lineWidth = 1.3; ctx.stroke();
     // places
-    const z = v.s / this.minS, rad = Math.min(5.5, 2.2 + Math.log2(z) * 0.9);
+    const z = v.s / this.fitS, rad = Math.min(6.5, 3.1 + Math.max(0, Math.log2(z)) * 1.1);
     for (const p of this.places) {
       if (!this.visible(p)) continue;
       const [x, y] = this.toScreen(p.X, p.Y);
       if (x < -10 || y < -10 || x > this.W + 10 || y > this.H + 10) continue;
-      const r = p.t === 'hamlet' ? rad * 0.7 : rad;
+      const r = p.t === 'hamlet' ? rad * 0.68 : rad;
       ctx.beginPath(); ctx.arc(x, y, r, 0, 7);
-      const col = this.dotColor(p);
-      ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(5,8,18,.85)'; ctx.stroke();
+      ctx.fillStyle = this.dotColor(p); ctx.fill(); ctx.lineWidth = 1.4; ctx.strokeStyle = 'rgba(6,9,20,.9)'; ctx.stroke();
     }
     this.drawLabels(ctx, rad);
     if (this.sel) {
@@ -129,7 +133,7 @@ export class MapView {
     if (this.opts.afterPaint) this.opts.afterPaint(ctx);
   }
   drawLabels(ctx, rad) {
-    const z = this.view.s / this.minS, boxes = [];
+    const z = this.view.s / this.fitS, boxes = [];
     const want = this.places.filter(p => p === this.sel || p === this.hover || (this.visible(p) && (p.t === 'town' || (p.pop || 0) > 9000 / z ** 1.6 || (z > 3 && p.t === 'village') || z > 7)));
     want.sort((a, b) => (b === this.sel || b === this.hover) - (a === this.sel || a === this.hover) || (b.pop || 0) - (a.pop || 0) || (a.t === 'hamlet') - (b.t === 'hamlet'));
     ctx.textBaseline = 'middle';

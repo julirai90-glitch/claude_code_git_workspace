@@ -215,6 +215,12 @@ class Terrain {
       this.zf[i] = Math.min(1, Math.max(0, (Z[i] - 400) / 3200));
     }
     this.H = new Float32Array(N); this.S = new Uint8Array(N);
+    // soft fade towards the edges of the elevation model
+    this.edge = new Uint8Array(N); const F = 70;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const d = Math.min(r, c, rows - 1 - r, cols - 1 - c) / F;
+      this.edge[r * cols + c] = 255 * Math.min(1, d * d * (3 - 2 * Math.min(1, d)));
+    }
     this.canvas = document.createElement('canvas'); this.canvas.width = cols; this.canvas.height = rows;
     this.ctx = this.canvas.getContext('2d'); this.img = this.ctx.createImageData(cols, rows);
   }
@@ -274,8 +280,8 @@ class Terrain {
           r = mix(r, mix(C.sunLo[0], sunHi[0], k), 0.92); g = mix(g, mix(C.sunLo[1], sunHi[1], k), 0.92); b = mix(b, mix(C.sunLo[2], sunHi[2], k), 0.92);
         }
       }
-      if (!this.inside[i]) { r = mix(r, C.bg[0], 0.62); g = mix(g, C.bg[1], 0.62); b = mix(b, C.bg[2], 0.62); }
-      const j = i * 4; px[j] = r; px[j + 1] = g; px[j + 2] = b; px[j + 3] = 255;
+      if (!this.inside[i]) { const l = (r + g + b) / 3; r = mix(mix(r, l, 0.55), C.bg[0], 0.6); g = mix(mix(g, l, 0.55), C.bg[1], 0.6); b = mix(mix(b, l, 0.55), C.bg[2] + 8, 0.6); }
+      const j = i * 4; px[j] = r; px[j + 1] = g; px[j + 2] = b; px[j + 3] = this.edge[i];
     }
     this.ctx.putImageData(this.img, 0, 0);
   }
@@ -309,13 +315,18 @@ class MapView {
     this.W = this.cv.clientWidth; this.H = this.cv.clientHeight; this.dpr = dpr;
     this.cv.width = Math.round(this.W * dpr); this.cv.height = Math.round(this.H * dpr);
   }
+  // free screen area not covered by the floating panels
+  insets() { return this.opts.insets ? this.opts.insets() : { t: 20, r: 20, b: 20, l: 20 }; }
   fit(soft) {
-    const [x0, y0, x1, y1] = this.bounds, pad = this.W < 600 ? 10 : 28;
-    const s = Math.min((this.W - 2 * pad) / (x1 - x0), (this.H - 2 * pad) / (y1 - y0));
-    this.minS = s * 0.9; this.maxS = s * 40;
+    const [x0, y0, x1, y1] = this.bounds, I = this.insets();
+    const fw = this.W - I.l - I.r, fh = this.H - I.t - I.b;
+    const s = Math.min(fw / (x1 - x0), fh / (y1 - y0));
+    this.minS = s * 0.85; this.maxS = s * 40; this.fitS = s;
     if (soft && this.view.s > s) return;
-    this.view = { x: (x0 + x1) / 2, y: (y0 + y1) / 2, s };
+    // centre of the free area expressed as a world-space view centre
+    this.view = { x: (x0 + x1) / 2 - ((I.l - I.r) / 2) / s, y: (y0 + y1) / 2 - ((I.t - I.b) / 2) / s, s };
   }
+  fitView() { const v = this.view; this.fit(); const t = this.view; this.view = v; return t; }
   zoomAt(sx, sy, f) {
     const [X, Y] = this.toWorld(sx, sy);
     const s = Math.min(this.maxS, Math.max(this.minS, this.view.s * f));
@@ -335,7 +346,7 @@ class MapView {
   }
   clamp() {
     const [x0, y0, x1, y1] = this.bounds, v = this.view;
-    v.x = Math.min(x1, Math.max(x0, v.x)); v.y = Math.min(y1, Math.max(y0, v.y));
+    const m = 30000; v.x = Math.min(x1 + m, Math.max(x0 - m, v.x)); v.y = Math.min(y1 + m, Math.max(y0 - m, v.y));
   }
   bind() {
     const cv = this.cv, pts = new Map(); let moved = 0, last = null, pinch = null;
@@ -374,7 +385,7 @@ class MapView {
     }
     return best;
   }
-  visible(p) { return p.t !== 'hamlet' || this.view.s > this.minS * 2.2 || p === this.sel; }
+  visible(p) { return p.t !== 'hamlet' || this.view.s > this.fitS * 2.2 || p === this.sel; }
   setHover(p) { if (p !== this.hover) { this.hover = p; this.cv.style.cursor = p ? 'pointer' : ''; this.draw(); } }
   click(sx, sy) {
     const p = this.pick(sx, sy);
@@ -392,18 +403,17 @@ class MapView {
       ctx.drawImage(tc, x, y, tc.width * this.tdx * v.s, tc.height * this.tdy * v.s);
     }
     const path = rings => { ctx.beginPath(); for (const r of rings) r.forEach(([X, Y], k) => { const [x, y] = this.toScreen(X, Y); k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); };
-    if (v.s > this.minS * 1.8) { path(this.gemPaths); ctx.strokeStyle = 'rgba(200,215,255,.16)'; ctx.lineWidth = 0.7; ctx.stroke(); }
+    if (v.s > this.fitS * 1.8) { path(this.gemPaths); ctx.strokeStyle = 'rgba(200,215,255,.16)'; ctx.lineWidth = 0.7; ctx.stroke(); }
     path(this.cantonPaths); ctx.strokeStyle = 'rgba(235,228,210,.75)'; ctx.lineWidth = 1.3; ctx.stroke();
     // places
-    const z = v.s / this.minS, rad = Math.min(5.5, 2.2 + Math.log2(z) * 0.9);
+    const z = v.s / this.fitS, rad = Math.min(6.5, 3.1 + Math.max(0, Math.log2(z)) * 1.1);
     for (const p of this.places) {
       if (!this.visible(p)) continue;
       const [x, y] = this.toScreen(p.X, p.Y);
       if (x < -10 || y < -10 || x > this.W + 10 || y > this.H + 10) continue;
-      const r = p.t === 'hamlet' ? rad * 0.7 : rad;
+      const r = p.t === 'hamlet' ? rad * 0.68 : rad;
       ctx.beginPath(); ctx.arc(x, y, r, 0, 7);
-      const col = this.dotColor(p);
-      ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(5,8,18,.85)'; ctx.stroke();
+      ctx.fillStyle = this.dotColor(p); ctx.fill(); ctx.lineWidth = 1.4; ctx.strokeStyle = 'rgba(6,9,20,.9)'; ctx.stroke();
     }
     this.drawLabels(ctx, rad);
     if (this.sel) {
@@ -414,7 +424,7 @@ class MapView {
     if (this.opts.afterPaint) this.opts.afterPaint(ctx);
   }
   drawLabels(ctx, rad) {
-    const z = this.view.s / this.minS, boxes = [];
+    const z = this.view.s / this.fitS, boxes = [];
     const want = this.places.filter(p => p === this.sel || p === this.hover || (this.visible(p) && (p.t === 'town' || (p.pop || 0) > 9000 / z ** 1.6 || (z > 3 && p.t === 'village') || z > 7)));
     want.sort((a, b) => (b === this.sel || b === this.hover) - (a === this.sel || a === this.hover) || (b.pop || 0) - (a.pop || 0) || (a.t === 'hamlet') - (b.t === 'hamlet'));
     ctx.textBaseline = 'middle';
@@ -457,7 +467,9 @@ class Panorama {
     return pts;
   }
   geom() {
-    const W = this.cv.clientWidth, H = this.cv.clientHeight, v = VIEWS[this.viewName];
+    const W = this.cv.clientWidth, H = this.cv.clientHeight, v = { ...VIEWS[this.viewName] };
+    let mx = 0; for (let a = v.a0; a <= v.a1; a += 1) mx = Math.max(mx, horizonAt(this.place.hz, a));
+    v.e1 = Math.min(80, Math.max(v.e1, Math.ceil((mx + 8) / 5) * 5));
     const padB = 24, padT = 8;
     return { W, H, v, x: a => (a - v.a0) / (v.a1 - v.a0) * W, y: e => padT + (v.e1 - e) / (v.e1 - v.e0) * (H - padT - padB), padB };
   }
@@ -474,10 +486,6 @@ class Panorama {
     // grid
     ctx.font = '11px Inter, system-ui, sans-serif'; ctx.textBaseline = 'middle';
     for (let e = 10; e < v.e1; e += 10) { ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.beginPath(); ctx.moveTo(0, y(e)); ctx.lineTo(W, y(e)); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillText(e + '°', 6, y(e) - 7); }
-    // sun paths
-    if (!this.paths) this.paths = { sel: this.path(this.day), refs: this.refDays.map(r => ({ ...r, pts: this.path(r.i) })) };
-    for (const r of this.paths.refs) if (r.i !== this.day) this.drawPath(r.pts, g, 'rgba(255,214,140,.55)', 1.4, r.label);
-    this.drawPath(this.paths.sel, g, '#ffd27a', 2.6, dateLabel(this.day), true);
     // terrain silhouette
     const n = Math.max(200, Math.round(W / 1.5));
     ctx.beginPath(); ctx.moveTo(0, H);
@@ -488,6 +496,10 @@ class Panorama {
     ctx.beginPath();
     for (let k = 0; k <= n; k++) { const a = v.a0 + (v.a1 - v.a0) * k / n, X = x(a), Y = y(horizonAt(hz, a)); k ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }
     ctx.strokeStyle = 'rgba(214,226,255,.75)'; ctx.lineWidth = 1.2; ctx.stroke();
+    // sun paths
+    if (!this.paths) this.paths = { sel: this.path(this.day), refs: this.refDays.map(r => ({ ...r, pts: this.path(r.i) })) };
+    for (const r of this.paths.refs) if (r.i !== this.day) this.drawPath(r.pts, g, 'rgba(255,214,140,.55)', 1.4, r.label);
+    this.drawPath(this.paths.sel, g, '#ffd27a', 2.6, dateLabel(this.day), true);
     // flat horizon
     ctx.setLineDash([2, 4]); ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.beginPath(); ctx.moveTo(0, y(0)); ctx.lineTo(W, y(0)); ctx.stroke(); ctx.setLineDash([]);
     // current sun
@@ -527,7 +539,7 @@ class Panorama {
     const top = pts.filter(inView).reduce((m, q) => q.el > (m ? m.el : -99) ? q : m, null);
     if (top && top.el < v.e1 - 2) {
       ctx.font = `${hours ? 600 : 500} 11px Inter, system-ui, sans-serif`; ctx.textAlign = 'center';
-      ctx.fillStyle = hours ? '#ffe2a0' : 'rgba(255,226,160,.7)'; ctx.fillText(label, x(top.az), y(top.el) - (hours ? 24 : 9)); ctx.textAlign = 'left';
+      ctx.fillStyle = hours ? '#ffe2a0' : 'rgba(255,226,160,.7)'; ctx.fillText(label, x(top.az), y(top.el) - (hours ? 30 : 9)); ctx.textAlign = 'left';
     }
   }
   hover(sx) {
@@ -643,6 +655,7 @@ async function init() {
   map = new MapView($('#map'), G, window.OUTLINE, places, {
     onPlace: p => select(p, { fly: false }), onPoint: (la, lo) => selectPoint(la, lo),
     wheelZoom: () => state.mapActive,
+    insets: () => innerWidth <= 760 ? { t: 64, r: 12, b: 12, l: 12 } : { t: 70, r: innerWidth > 1100 ? 340 : 330, b: 175, l: 24 },
   });
   map.terrainCanvas = terrain.canvas; map.tdx = terrain.dx; map.tdy = terrain.dy;
   map.dotColor = p => rampColor(dayMinutes.get(p) ?? 0);
@@ -686,7 +699,7 @@ function sunWindow(d) {                      // first/last minute with the sun a
 
 function renderTerrain() {
   const s = sunPosition(t0Of(state.day) + state.minute * 60000, ...CENTER);
-  terrain.render(s.az, s.el); map.draw();
+  const t = performance.now(); terrain.render(s.az, s.el); window.__renderMs = performance.now() - t; map.draw();
   $('#clock').textContent = `${dateLabel(state.day)} · ${clock(state.minute)}`;
   $('#sunpos').textContent = s.el > -0.27 ? `Sonne ${Math.round(s.az)}° · ${s.el.toFixed(1).replace('.', ',')}° hoch` : 'Sonne unter dem Horizont';
   if (pano) pano.setTime(state.day, state.minute);
@@ -697,7 +710,7 @@ function scheduleTerrain() { if (!rt) rt = requestAnimationFrame(() => { rt = 0;
 
 function setDay(d, fromCarpet) {
   state.day = Math.max(0, Math.min(NDAYS - 1, d));
-  $('#day').value = state.day; $('#daylabel').textContent = dateLabel(state.day);
+  $('#day').value = state.day;
   const [a, b] = sunWindow(state.day);
   const tm = $('#time'); tm.min = a - 40; tm.max = b + 40;
   state.minute = Math.max(+tm.min, Math.min(+tm.max, state.minute)); tm.value = state.minute;
@@ -721,8 +734,9 @@ function computeDayMinutes() {
 // ---------- selection ----------
 function select(p, { fly = true, quiet = false } = {}) {
   state.place = p; map.sel = p.X != null ? p : null;
-  if (fly && p.X != null) map.flyTo(p.X, p.Y, Math.max(map.view.s, map.minS * 3.2));
+  if (fly && p.X != null) { const s = Math.max(map.view.s, map.fitS * 3.2), I = map.insets(); map.flyTo(p.X - (I.l - I.r) / 2 / s, p.Y - (I.t - I.b) / 2 / s, s); }
   p.stats = carpet.set(p);
+  if (!p.s) p.s = seasonStats(p.stats);
   pano.set(p, state.day, state.minute, refDays());
   fillCard(); fillDetail(); map.draw();
   if (!quiet) history.replaceState(null, '', p.id ? `#ort=${p.id}-${slug(p.n)}` : `#punkt=${p.la.toFixed(5)},${p.lo.toFixed(5)}`);
@@ -731,17 +745,16 @@ function selectPoint(la, lo, quiet) {
   const z = sample(G, la, lo); if (!(z > 0)) return;
   const h = horizonProfile(G, la, lo);
   const near = places.filter(p => p.t !== 'hamlet').reduce((m, p) => { const d = (p.la - la) ** 2 + ((p.lo - lo) * 0.69) ** 2; return d < m[0] ? [d, p] : m; }, [1e9, null]);
-  const km = Math.sqrt(near[0]) * 111;
-  const p = { id: null, n: km < 1.2 ? `Punkt bei ${near[1].n}` : `Punkt ${la.toFixed(3)}° N, ${lo.toFixed(3)}° O`, g: near[1] && near[1].g, la, lo, z: Math.round(z), hz: h.hz, kind: 'Kartenpunkt', t: 'point' };
+  const km = Math.sqrt(near[0]) * 111, q = near[1];
+  const dir = ['nördlich', 'nordöstlich', 'östlich', 'südöstlich', 'südlich', 'südwestlich', 'westlich', 'nordwestlich'][Math.round(((Math.atan2((lo - q.lo) * 0.69, la - q.la) * 180 / Math.PI + 360) % 360) / 45) % 8];
+  const p = { id: null, n: km < 1 ? `Kartenpunkt bei ${q.n}` : `${km.toFixed(1).replace('.', ',')} km ${dir} von ${q.n}`, g: near[1] && near[1].g, la, lo, z: Math.round(z), hz: h.hz, kind: 'Kartenpunkt', t: 'point' };
   const [X, Y] = map.world(la, lo); p.X = X; p.Y = Y;
-  p.s = seasonStats(p);
   select(p, { fly: false, quiet });
   map.sel = p;
 }
-function seasonStats(p) {
-  const sun = [], hi = [], lo = [];
-  for (let d = 0; d < NDAYS; d++) { const s = dayStats(p.hz, p.la, p.lo, t0Of(d)); sun.push(s.sun); hi.push(s.sunHi); lo.push(s.sunLo); }
-  const run = darkRun(sun), d21 = dayStats(p.hz, p.la, p.lo, t0Of(P.iDec21));
+function seasonStats(days) {             // same figures as the build computes, from the per-day stats
+  const sun = days.map(s => s.sun), hi = days.map(s => s.sunHi), lo = days.map(s => s.sunLo);
+  const run = darkRun(sun), d21 = days[P.iDec21];
   const z = a => a.filter(x => x === 0).length;
   return { d21: d21.sun, d21flat: d21.flat, d21first: d21.first, d21last: d21.last, dark: z(sun), darkLo: z(lo), darkHi: z(hi), run, runHi: darkRun(hi), runLo: darkRun(lo) };
 }
@@ -788,13 +801,20 @@ function fillDetail() {
   const loss = stD21.flat ? Math.round((1 - stD21.sun / stD21.flat) * 100) : 0;
   const tiles = [
     ['Direkte Sonne am 21. Dezember', stD21.sun ? hm(stD21.sun) : 'keine', stD21.sun ? `${clock(stD21.first)} bis ${clock(stD21.last + 1)}${stD21.runs > 1 ? ', mit Unterbruch' : ''}` : `ohne Berge wären es ${hm(stD21.flat)}`],
-    ['Die Berge nehmen', `${loss} %`, `des möglichen Sonnenscheins am kürzesten Tag (ohne Berge ${hm(stD21.flat)})`],
+    loss >= 99 ? ['Warum', `${deg0(noonHz(p))} > ${deg0(stD21.maxEl)}`, `Der Berg im Süden ragt ${deg0(noonHz(p))} auf, die Sonne steigt am 21. Dezember nur ${deg0(stD21.maxEl)} hoch`]
+      : ['Die Berge nehmen', `${loss} %`, `des möglichen Sonnenscheins am kürzesten Tag (ohne Berge ${hm(stD21.flat)})`],
     dt ? ['Ohne direkte Sonne', `${dt.days} Tage`, `${dt.from} bis ${dt.to}${dt.band ? ` · Spannweite ${dt.band} Tage` : ''}`]
        : ['Ohne direkte Sonne', s.darkHi ? 'knapp 0 Tage' : '0 Tage', s.darkHi ? `bei 0,5° höherem Horizont ${s.darkHi} Tage` : 'an keinem Tag des Jahres'],
     dt && dt.ret ? ['Die Sonne kehrt zurück am', dt.ret, 'erster Tag mit direkter Sonne nach der Schattenzeit'] : ['Längster Tag, 21. Juni', hm(p.stats[dayIndexOf(6, 21)].sun), `direkte Sonne (ohne Berge ${hm(p.stats[dayIndexOf(6, 21)].flat)})`],
   ];
   $('#tiles').innerHTML = tiles.map(([k, v, n]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="n">${n}</div></div>`).join('');
   $('#d-sentence').innerHTML = sentence(p, stD21, dt);
+}
+const deg0 = x => Math.round(x) + '°';
+function noonHz(p) {   // horizon height where the sun stands at its highest on 21 December
+  const t0 = t0Of(P.iDec21); let best = { el: -99 };
+  for (let m = 600; m < 900; m += 2) { const s = sunPosition(t0 + m * 60000, p.la, p.lo); if (s.el > best.el) best = s; }
+  return horizonAt(p.hz, best.az);
 }
 function sentence(p, d21, dt) {
   const name = `<b>${p.n}</b>`;
@@ -813,7 +833,7 @@ function writeToday() {
   const v = places.filter(p => p.t !== 'hamlet'), w = places.filter(p => p.t === 'hamlet');
   const nv = v.filter(p => !dayMinutes.get(p)).length, nw = w.filter(p => !dayMinutes.get(p)).length;
   const isToday = state.day === todayIndex();
-  $('#today').innerHTML = `${isToday ? 'Heute' : 'Am'} ${dateLabel(state.day)} ${nv + nw ? `bleiben <b>${nv} Dörfer</b> und <b>${nw} Weiler</b>` : 'bleibt <b>kein Ort</b>'} ohne direkte Sonne.`;
+  $('#today').innerHTML = `${isToday ? 'Heute, ' : 'Am '}${dateLabel(state.day)}${isToday ? ',' : ''} ${nv + nw ? `bleiben <b>${nv} Dörfer</b> und <b>${nw} Weiler</b>` : 'bleibt <b>kein Ort</b>'} ohne direkte Sonne.`;
 }
 
 // ---------- controls ----------
@@ -842,7 +862,7 @@ function bindControls() {
   $$('[data-view]').forEach(b => b.addEventListener('click', () => { $$('[data-view]').forEach(x => x.classList.toggle('on', x === b)); pano.setView(b.dataset.view); }));
   $('#zoom-in').addEventListener('click', () => map.zoomAt(map.W / 2, map.H / 2, 1.8));
   $('#zoom-out').addEventListener('click', () => map.zoomAt(map.W / 2, map.H / 2, 1 / 1.8));
-  $('#zoom-fit').addEventListener('click', () => { const [x0, y0, x1, y1] = map.bounds; map.flyTo((x0 + x1) / 2, (y0 + y1) / 2, map.minS / 0.9); });
+  $('#zoom-fit').addEventListener('click', () => { const v = map.fitView(); map.flyTo(v.x, v.y, v.s); });
   // the map captures the wheel only after a click into it (no scroll trap)
   const mapEl = $('#map');
   mapEl.addEventListener('pointerdown', () => { state.mapActive = true; mapEl.parentElement.classList.add('active'); });
@@ -899,7 +919,7 @@ function gantt(list, edge) {
     const lab = r ? `${s.dark} Tage <span>${dateLabel(r[0], false)} – ${dateLabel(r[1], false)}</span>` : `0 Tage <span>bis ${s.darkHi}</span>`;
     return `<div class="row${p.t === 'hamlet' ? ' ham' : ''}" data-id="${p.id}" tabindex="0"><div class="nm">${p.n}<span>${p.g}</span></div><div class="bar">${outer}${inner}</div><div class="lab">${lab}</div></div>`;
   }).join('');
-  return `<div class="gantt${edge ? ' edge' : ''}"><div class="axis">${ticks.join('')}${sol}${today}</div>${rows}<div class="axis bottom">${ticks.join('')}</div></div>`;
+  return `<div class="gantt${edge ? ' edge' : ''}"><div class="guides">${sol}${today}</div><div class="axis">${ticks.join('')}</div>${rows}<div class="axis bottom">${ticks.join('')}</div></div>`;
 }
 function strip() {
   const v = places.filter(p => p.t !== 'hamlet'), W = 1000, H = 150, max = 480;

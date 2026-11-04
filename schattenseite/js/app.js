@@ -32,6 +32,7 @@ async function init() {
   map = new MapView($('#map'), G, window.OUTLINE, places, {
     onPlace: p => select(p, { fly: false }), onPoint: (la, lo) => selectPoint(la, lo),
     wheelZoom: () => state.mapActive,
+    insets: () => innerWidth <= 760 ? { t: 64, r: 12, b: 12, l: 12 } : { t: 70, r: innerWidth > 1100 ? 340 : 330, b: 175, l: 24 },
   });
   map.terrainCanvas = terrain.canvas; map.tdx = terrain.dx; map.tdy = terrain.dy;
   map.dotColor = p => rampColor(dayMinutes.get(p) ?? 0);
@@ -75,7 +76,7 @@ function sunWindow(d) {                      // first/last minute with the sun a
 
 function renderTerrain() {
   const s = sunPosition(t0Of(state.day) + state.minute * 60000, ...CENTER);
-  terrain.render(s.az, s.el); map.draw();
+  const t = performance.now(); terrain.render(s.az, s.el); window.__renderMs = performance.now() - t; map.draw();
   $('#clock').textContent = `${dateLabel(state.day)} · ${clock(state.minute)}`;
   $('#sunpos').textContent = s.el > -0.27 ? `Sonne ${Math.round(s.az)}° · ${s.el.toFixed(1).replace('.', ',')}° hoch` : 'Sonne unter dem Horizont';
   if (pano) pano.setTime(state.day, state.minute);
@@ -86,7 +87,7 @@ function scheduleTerrain() { if (!rt) rt = requestAnimationFrame(() => { rt = 0;
 
 function setDay(d, fromCarpet) {
   state.day = Math.max(0, Math.min(NDAYS - 1, d));
-  $('#day').value = state.day; $('#daylabel').textContent = dateLabel(state.day);
+  $('#day').value = state.day;
   const [a, b] = sunWindow(state.day);
   const tm = $('#time'); tm.min = a - 40; tm.max = b + 40;
   state.minute = Math.max(+tm.min, Math.min(+tm.max, state.minute)); tm.value = state.minute;
@@ -110,8 +111,9 @@ function computeDayMinutes() {
 // ---------- selection ----------
 function select(p, { fly = true, quiet = false } = {}) {
   state.place = p; map.sel = p.X != null ? p : null;
-  if (fly && p.X != null) map.flyTo(p.X, p.Y, Math.max(map.view.s, map.minS * 3.2));
+  if (fly && p.X != null) { const s = Math.max(map.view.s, map.fitS * 3.2), I = map.insets(); map.flyTo(p.X - (I.l - I.r) / 2 / s, p.Y - (I.t - I.b) / 2 / s, s); }
   p.stats = carpet.set(p);
+  if (!p.s) p.s = seasonStats(p.stats);
   pano.set(p, state.day, state.minute, refDays());
   fillCard(); fillDetail(); map.draw();
   if (!quiet) history.replaceState(null, '', p.id ? `#ort=${p.id}-${slug(p.n)}` : `#punkt=${p.la.toFixed(5)},${p.lo.toFixed(5)}`);
@@ -120,17 +122,16 @@ function selectPoint(la, lo, quiet) {
   const z = sample(G, la, lo); if (!(z > 0)) return;
   const h = horizonProfile(G, la, lo);
   const near = places.filter(p => p.t !== 'hamlet').reduce((m, p) => { const d = (p.la - la) ** 2 + ((p.lo - lo) * 0.69) ** 2; return d < m[0] ? [d, p] : m; }, [1e9, null]);
-  const km = Math.sqrt(near[0]) * 111;
-  const p = { id: null, n: km < 1.2 ? `Punkt bei ${near[1].n}` : `Punkt ${la.toFixed(3)}° N, ${lo.toFixed(3)}° O`, g: near[1] && near[1].g, la, lo, z: Math.round(z), hz: h.hz, kind: 'Kartenpunkt', t: 'point' };
+  const km = Math.sqrt(near[0]) * 111, q = near[1];
+  const dir = ['nördlich', 'nordöstlich', 'östlich', 'südöstlich', 'südlich', 'südwestlich', 'westlich', 'nordwestlich'][Math.round(((Math.atan2((lo - q.lo) * 0.69, la - q.la) * 180 / Math.PI + 360) % 360) / 45) % 8];
+  const p = { id: null, n: km < 1 ? `Kartenpunkt bei ${q.n}` : `${km.toFixed(1).replace('.', ',')} km ${dir} von ${q.n}`, g: near[1] && near[1].g, la, lo, z: Math.round(z), hz: h.hz, kind: 'Kartenpunkt', t: 'point' };
   const [X, Y] = map.world(la, lo); p.X = X; p.Y = Y;
-  p.s = seasonStats(p);
   select(p, { fly: false, quiet });
   map.sel = p;
 }
-function seasonStats(p) {
-  const sun = [], hi = [], lo = [];
-  for (let d = 0; d < NDAYS; d++) { const s = dayStats(p.hz, p.la, p.lo, t0Of(d)); sun.push(s.sun); hi.push(s.sunHi); lo.push(s.sunLo); }
-  const run = darkRun(sun), d21 = dayStats(p.hz, p.la, p.lo, t0Of(P.iDec21));
+function seasonStats(days) {             // same figures as the build computes, from the per-day stats
+  const sun = days.map(s => s.sun), hi = days.map(s => s.sunHi), lo = days.map(s => s.sunLo);
+  const run = darkRun(sun), d21 = days[P.iDec21];
   const z = a => a.filter(x => x === 0).length;
   return { d21: d21.sun, d21flat: d21.flat, d21first: d21.first, d21last: d21.last, dark: z(sun), darkLo: z(lo), darkHi: z(hi), run, runHi: darkRun(hi), runLo: darkRun(lo) };
 }
@@ -177,13 +178,20 @@ function fillDetail() {
   const loss = stD21.flat ? Math.round((1 - stD21.sun / stD21.flat) * 100) : 0;
   const tiles = [
     ['Direkte Sonne am 21. Dezember', stD21.sun ? hm(stD21.sun) : 'keine', stD21.sun ? `${clock(stD21.first)} bis ${clock(stD21.last + 1)}${stD21.runs > 1 ? ', mit Unterbruch' : ''}` : `ohne Berge wären es ${hm(stD21.flat)}`],
-    ['Die Berge nehmen', `${loss} %`, `des möglichen Sonnenscheins am kürzesten Tag (ohne Berge ${hm(stD21.flat)})`],
+    loss >= 99 ? ['Warum', `${deg0(noonHz(p))} > ${deg0(stD21.maxEl)}`, `Der Berg im Süden ragt ${deg0(noonHz(p))} auf, die Sonne steigt am 21. Dezember nur ${deg0(stD21.maxEl)} hoch`]
+      : ['Die Berge nehmen', `${loss} %`, `des möglichen Sonnenscheins am kürzesten Tag (ohne Berge ${hm(stD21.flat)})`],
     dt ? ['Ohne direkte Sonne', `${dt.days} Tage`, `${dt.from} bis ${dt.to}${dt.band ? ` · Spannweite ${dt.band} Tage` : ''}`]
        : ['Ohne direkte Sonne', s.darkHi ? 'knapp 0 Tage' : '0 Tage', s.darkHi ? `bei 0,5° höherem Horizont ${s.darkHi} Tage` : 'an keinem Tag des Jahres'],
     dt && dt.ret ? ['Die Sonne kehrt zurück am', dt.ret, 'erster Tag mit direkter Sonne nach der Schattenzeit'] : ['Längster Tag, 21. Juni', hm(p.stats[dayIndexOf(6, 21)].sun), `direkte Sonne (ohne Berge ${hm(p.stats[dayIndexOf(6, 21)].flat)})`],
   ];
   $('#tiles').innerHTML = tiles.map(([k, v, n]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="n">${n}</div></div>`).join('');
   $('#d-sentence').innerHTML = sentence(p, stD21, dt);
+}
+const deg0 = x => Math.round(x) + '°';
+function noonHz(p) {   // horizon height where the sun stands at its highest on 21 December
+  const t0 = t0Of(P.iDec21); let best = { el: -99 };
+  for (let m = 600; m < 900; m += 2) { const s = sunPosition(t0 + m * 60000, p.la, p.lo); if (s.el > best.el) best = s; }
+  return horizonAt(p.hz, best.az);
 }
 function sentence(p, d21, dt) {
   const name = `<b>${p.n}</b>`;
@@ -202,7 +210,7 @@ function writeToday() {
   const v = places.filter(p => p.t !== 'hamlet'), w = places.filter(p => p.t === 'hamlet');
   const nv = v.filter(p => !dayMinutes.get(p)).length, nw = w.filter(p => !dayMinutes.get(p)).length;
   const isToday = state.day === todayIndex();
-  $('#today').innerHTML = `${isToday ? 'Heute' : 'Am'} ${dateLabel(state.day)} ${nv + nw ? `bleiben <b>${nv} Dörfer</b> und <b>${nw} Weiler</b>` : 'bleibt <b>kein Ort</b>'} ohne direkte Sonne.`;
+  $('#today').innerHTML = `${isToday ? 'Heute, ' : 'Am '}${dateLabel(state.day)}${isToday ? ',' : ''} ${nv + nw ? `bleiben <b>${nv} Dörfer</b> und <b>${nw} Weiler</b>` : 'bleibt <b>kein Ort</b>'} ohne direkte Sonne.`;
 }
 
 // ---------- controls ----------
@@ -231,7 +239,7 @@ function bindControls() {
   $$('[data-view]').forEach(b => b.addEventListener('click', () => { $$('[data-view]').forEach(x => x.classList.toggle('on', x === b)); pano.setView(b.dataset.view); }));
   $('#zoom-in').addEventListener('click', () => map.zoomAt(map.W / 2, map.H / 2, 1.8));
   $('#zoom-out').addEventListener('click', () => map.zoomAt(map.W / 2, map.H / 2, 1 / 1.8));
-  $('#zoom-fit').addEventListener('click', () => { const [x0, y0, x1, y1] = map.bounds; map.flyTo((x0 + x1) / 2, (y0 + y1) / 2, map.minS / 0.9); });
+  $('#zoom-fit').addEventListener('click', () => { const v = map.fitView(); map.flyTo(v.x, v.y, v.s); });
   // the map captures the wheel only after a click into it (no scroll trap)
   const mapEl = $('#map');
   mapEl.addEventListener('pointerdown', () => { state.mapActive = true; mapEl.parentElement.classList.add('active'); });
@@ -288,7 +296,7 @@ function gantt(list, edge) {
     const lab = r ? `${s.dark} Tage <span>${dateLabel(r[0], false)} – ${dateLabel(r[1], false)}</span>` : `0 Tage <span>bis ${s.darkHi}</span>`;
     return `<div class="row${p.t === 'hamlet' ? ' ham' : ''}" data-id="${p.id}" tabindex="0"><div class="nm">${p.n}<span>${p.g}</span></div><div class="bar">${outer}${inner}</div><div class="lab">${lab}</div></div>`;
   }).join('');
-  return `<div class="gantt${edge ? ' edge' : ''}"><div class="axis">${ticks.join('')}${sol}${today}</div>${rows}<div class="axis bottom">${ticks.join('')}</div></div>`;
+  return `<div class="gantt${edge ? ' edge' : ''}"><div class="guides">${sol}${today}</div><div class="axis">${ticks.join('')}</div>${rows}<div class="axis bottom">${ticks.join('')}</div></div>`;
 }
 function strip() {
   const v = places.filter(p => p.t !== 'hamlet'), W = 1000, H = 150, max = 480;

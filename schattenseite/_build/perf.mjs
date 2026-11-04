@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ executablePath: process.env.HOME + '/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome', args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disk-cache-size=1', '--disk-cache-dir=/dev/shm/schatten-cache'] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const t0 = Date.now(); await page.goto(process.argv[2]); await page.waitForFunction(() => document.body.classList.contains('ready'));
+console.log('ready after', Date.now() - t0, 'ms');
+const r = await page.evaluate(async () => { const a = []; for (let i = 0; i < 20; i++) { await new Promise(r => requestAnimationFrame(r)); a.push(window.__renderMs); } return a; });
+console.log('terrain render ms', r.map(x => x && x.toFixed(0)).join(' '));
+const sel = await page.evaluate(() => { const t = performance.now(); document.querySelector('[data-id]').click(); return performance.now() - t; });
+console.log('select from list ms', sel.toFixed(0));
+const pt = await page.evaluate(() => { const c = document.querySelector('#map'); const t = performance.now(); const b = c.getBoundingClientRect(); c.dispatchEvent(new PointerEvent('pointerdown', { clientX: b.left + 500, clientY: b.top + 300, pointerId: 1, bubbles: true })); c.dispatchEvent(new PointerEvent('pointerup', { clientX: b.left + 500, clientY: b.top + 300, pointerId: 1, bubbles: true })); return [performance.now() - t, document.querySelector('#card-name').textContent]; });
+console.log('click point ms', pt);
+await browser.close();
