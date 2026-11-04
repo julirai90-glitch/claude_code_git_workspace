@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Die Schattenseite – wo in Graubünden im Winter die Sonne fehlt</title>
 <meta name="description" content="Für 799 Bündner Orte berechnet: wie viel direkte Sonne die Berge am kürzesten Tag übrig lassen – und wo sie wochenlang ganz ausbleibt.">
+<meta property="og:title" content="Die Schattenseite – wo in Graubünden im Winter die Sonne fehlt">
+<meta property="og:description" content="Für 799 Bündner Orte berechnet: wie viel direkte Sonne die Berge am kürzesten Tag übrig lassen.">
+<meta property="og:image" content="share.jpg">
+<meta name="theme-color" content="#0b1020">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,6 +19,7 @@
   <h1>Die Schattenseite</h1>
   <p class="dek">Am kürzesten Tag steht die Sonne über Graubünden mittags gut 20 Grad hoch. Wo ein Berg höher ist, bleibt es Schatten. Für <span id="n-places">799</span> Orte ist hier berechnet, wie viel Sonne die Berge übrig lassen.</p>
   <p class="today" id="today" aria-live="polite">&nbsp;</p>
+  <div id="finds" class="finds" aria-label="Entdeckungen in den Daten"></div>
 </header>
 
 <section id="karte" class="mapwrap" aria-label="Karte">
@@ -35,6 +40,8 @@
       <p id="card-sub"></p>
     </div>
     <div class="card-num"><span class="lbl">Direkte Sonne am <span id="card-day"></span></span><strong id="card-sun">–</strong><span id="card-flat" class="muted"></span></div>
+    <canvas id="spark" class="spark" title="Direkte Sonne pro Tag, Juli bis Juni – Klick wählt das Datum" aria-label="Jahreskurve der direkten Sonne"></canvas>
+    <div class="spark-ax" aria-hidden="true"><span>Juli</span><span>Jan.</span><span>Juni</span></div>
     <p id="card-now" class="now"></p>
     <p id="card-dark" class="dark"></p>
     <button id="to-detail" class="link">Horizont und Jahreskalender ↓</button>
@@ -73,14 +80,14 @@
   </figure>
 
   <figure class="fig">
-    <figcaption><h3>Das Sonnenjahr</h3><p>Jede Spalte ist ein Tag von Juli bis Juni, von oben nach unten die Uhrzeit. <i class="sw sun"></i>direkte Sonne <i class="sw shade"></i>Tag, aber Schatten <i class="sw night"></i>Nacht. Klick wählt das Datum.</p></figcaption>
+    <figcaption><h3>Das Sonnenjahr</h3><p>Jede Spalte ist ein Tag von Juli bis Juni, von oben nach unten die Uhrzeit. <i class="sw sun"></i>direkte Sonne <i class="sw shade"></i>Tag, aber Schatten <i class="sw night"></i>Nacht. Die Sprünge Ende Oktober und Ende März sind die Zeitumstellung. Klick wählt das Datum.</p></figcaption>
     <div class="canvaswrap"><canvas id="carpet" class="carpet" aria-label="Kalender der direkten Sonne über das ganze Jahr"></canvas><div id="carpet-tip" class="tip" hidden></div></div>
   </figure>
 </section>
 
 <section id="liste" class="lists">
   <h2>Die Schattenliste</h2>
-  <p class="intro">In <span id="n-dark">–</span> von <span id="n-vil">248</span> Dörfern erreicht laut Rechnung mindestens einen Tag lang kein direkter Sonnenstrahl den Ortspunkt. Am längsten dauert es in <span id="lead-top">–</span>: <span id="lead-top-days">–</span> Tage. Die blasse Verlängerung zeigt, wie sich die Zeitspanne verschiebt, wenn der Horizont 0,5 Grad höher liegt – so gross ist die typische Ungenauigkeit des Höhenmodells.</p>
+  <p class="intro">In <span id="n-dark">–</span> von <span id="n-vil">248</span> Dörfern erreicht laut Rechnung mindestens einen Tag lang kein direkter Sonnenstrahl den Ortspunkt. Am längsten dauert es in <span id="lead-top">–</span>: <span id="lead-top-days">–</span> Tage. Die blasse Verlängerung zeigt, wie sich die Zeitspanne verschiebt, wenn der Horizont 0,5 Grad höher liegt – so gross ist die typische Ungenauigkeit des Höhenmodells. Zum Abgleich: SRF Meteo nennt für Vicosoprano «Mitte November» bis «Ende Januar», diese Rechnung ergibt 16. November bis 25. Januar.</p>
   <div class="opts"><label><input type="checkbox" id="with-ham"> auch <span id="n-ham">551</span> Weiler zeigen</label><span id="gantt-n" class="muted"></span></div>
   <div id="gantt"></div>
 
@@ -122,6 +129,7 @@
   <p class="src"><b>Quellen:</b> Copernicus GLO-30 DEM © DLR e.V. 2010–2014 und © Airbus Defence and Space GmbH 2014–2018, bereitgestellt im Rahmen von COPERNICUS durch die Europäische Union und die ESA (abgerufen am 4.11.2026) · Bodenhöhen und Kontrollprofile: Bundesamt für Landestopografie swisstopo, api3.geo.admin.ch · Orte und Grenzen: © OpenStreetMap-Mitwirkende, ODbL (Stand 4.11.2026) · Sonnenstand: NOAA Solar Calculator. Rechenskripte im Ordner <code>_build/</code>.</p>
 </section>
 
+<p class="embed-credit">Die Schattenseite · Modellrechnung aus Copernicus-Höhenmodell, swisstopo, OpenStreetMap · <a href="./" target="_blank" rel="noopener">ganze Geschichte öffnen</a></p>
 <footer>
   <p>Die Schattenseite · Konzept und Umsetzung: Julian Reich mit Claude (KI) · Prototyp, nicht publiziert · Schriften: Fraunces, Inter (SIL Open Font License)</p>
 </footer>

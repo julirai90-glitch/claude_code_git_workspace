@@ -1,4 +1,4 @@
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-core';
 const browser = await chromium.launch({ executablePath: process.env.HOME + '/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome', args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disk-cache-size=1', '--disk-cache-dir=/dev/shm/schatten-cache'] });
 const page = await browser.newPage({ viewport: { width: +(process.argv[3] || 390), height: 844 } });
 await page.goto(process.argv[2]); await page.waitForFunction(() => document.body.classList.contains('ready'));

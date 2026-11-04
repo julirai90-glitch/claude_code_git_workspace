@@ -1,5 +1,5 @@
 // Screenshot of the page after scrolling to a selector; optional actions. node view.mjs url out.png w h selector [js]
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-core';
 const [url, out, w = 1440, h = 900, sel = 'body', js = '', scale = 1] = process.argv.slice(2);
 const browser = await chromium.launch({ executablePath: process.env.HOME + '/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome', args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disk-cache-size=1', '--disk-cache-dir=/dev/shm/schatten-cache'] });
 const page = await browser.newPage({ viewport: { width: +w, height: +h }, deviceScaleFactor: +scale });

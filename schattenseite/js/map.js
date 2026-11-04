@@ -130,7 +130,17 @@ export class MapView {
       ctx.beginPath(); ctx.arc(x, y, rad + 6, 0, 7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
       ctx.beginPath(); ctx.arc(x, y, rad + 9, 0, 7); ctx.strokeStyle = 'rgba(0,0,0,.5)'; ctx.lineWidth = 1.5; ctx.stroke();
     }
+    this.drawScale(ctx);
     if (this.opts.afterPaint) this.opts.afterPaint(ctx);
+  }
+  drawScale(ctx) {
+    const I = this.insets(), target = 110 / this.view.s;            // metres for ~110 px
+    const nice = [1, 2, 5, 10, 20, 50].map(k => k * 1000).reduce((a, b) => Math.abs(b - target) < Math.abs(a - target) ? b : a);
+    const w = nice * this.view.s, x = I.l + 4, y = this.H - I.b - 18;
+    ctx.strokeStyle = 'rgba(240,236,226,.85)'; ctx.lineWidth = 1.5; ctx.beginPath();
+    ctx.moveTo(x, y - 5); ctx.lineTo(x, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y - 5); ctx.stroke();
+    ctx.font = '500 11px Inter, system-ui, sans-serif'; ctx.fillStyle = 'rgba(240,236,226,.85)'; ctx.textBaseline = 'bottom';
+    ctx.fillText(`${nice / 1000} km`, x + w + 6, y + 4);
   }
   drawLabels(ctx, rad) {
     const z = this.view.s / this.fitS, boxes = [];
@@ -140,13 +150,14 @@ export class MapView {
     for (const p of want) {
       const strong = p === this.sel || p === this.hover;
       ctx.font = `${strong ? 600 : 500} ${strong ? 14 : p.t === 'town' ? 13 : 12}px Inter, system-ui, sans-serif`;
-      const [x, y] = this.toScreen(p.X, p.Y), w = ctx.measureText(p.n).width;
+      const txt = p === this.hover && this.opts.hoverInfo ? `${p.n} · ${this.opts.hoverInfo(p)}` : p.n;
+      const [x, y] = this.toScreen(p.X, p.Y), w = ctx.measureText(txt).width;
       const bx = x + rad + 5, box = [bx - 2, y - 9, bx + w + 2, y + 9];
       if (box[2] > this.W || box[0] < 0 || y < 8 || y > this.H - 8) continue;
       if (!strong && boxes.some(b => !(box[2] < b[0] || box[0] > b[2] || box[3] < b[1] || box[1] > b[3]))) continue;
       boxes.push(box);
-      ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(8,12,26,.85)'; ctx.lineJoin = 'round'; ctx.strokeText(p.n, bx, y);
-      ctx.fillStyle = strong ? '#fff' : 'rgba(240,236,226,.92)'; ctx.fillText(p.n, bx, y);
+      ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(8,12,26,.85)'; ctx.lineJoin = 'round'; ctx.strokeText(txt, bx, y);
+      ctx.fillStyle = strong ? '#fff' : 'rgba(240,236,226,.92)'; ctx.fillText(txt, bx, y);
     }
   }
 }

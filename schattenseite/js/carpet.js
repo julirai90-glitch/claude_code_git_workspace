@@ -57,7 +57,7 @@ export class Carpet {
     this.hd = d; this.draw();
     const s = this.stats[d], g = this.geom();
     let t = `<b>${dateLabel(d)}</b><br>Direkte Sonne: <span class="sun">${hm(s.sun)}</span>`;
-    if (s.sun > 0) t += ` (${clock(s.first)}–${clock(s.last + 1)}${s.runs > 1 ? ', mit Unterbruch' : ''})`;
+    if (s.sun > 0) t += ` (${clock(s.first)}–${clock(s.last + 1)}${s.runs > 2 ? `, ${s.runs - 1} Unterbrüche` : s.runs > 1 ? ', ein Unterbruch' : ''})`;
     t += `<br><span class="muted">Ohne Berge: ${hm(s.flat)}</span>`;
     this.tip.innerHTML = t; this.tip.hidden = false;
     const tw = this.tip.offsetWidth; this.tip.style.left = Math.max(0, Math.min(g.W - tw, sx + 14)) + 'px'; this.tip.style.top = Math.max(0, sy - 60) + 'px';

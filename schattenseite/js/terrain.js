@@ -34,7 +34,7 @@ export class Terrain {
     }
     this.H = new Float32Array(N); this.S = new Uint8Array(N);
     // soft fade towards the edges of the elevation model
-    this.edge = new Uint8Array(N); const F = 70;
+    this.edge = new Uint8Array(N); const F = 45;
     for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
       const d = Math.min(r, c, rows - 1 - r, cols - 1 - c) / F;
       this.edge[r * cols + c] = 255 * Math.min(1, d * d * (3 - 2 * Math.min(1, d)));

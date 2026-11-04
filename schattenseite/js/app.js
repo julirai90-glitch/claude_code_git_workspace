@@ -24,6 +24,8 @@ let G, P, places, terrain, map, pano, carpet, dayMinutes = new Map();
 
 init().catch(err => { console.error(err); $('#loading').textContent = 'Die Daten konnten nicht geladen werden. Bitte einen aktuellen Browser verwenden.'; });
 
+const EMBED = new URLSearchParams(location.search).get('embed');
+if (EMBED) document.documentElement.classList.add('embed', 'embed-' + EMBED);
 async function init() {
   [G, P] = await Promise.all([loadDem(), loadPlaces()]);
   places = P.places;
@@ -32,6 +34,7 @@ async function init() {
   map = new MapView($('#map'), G, window.OUTLINE, places, {
     onPlace: p => select(p, { fly: false }), onPoint: (la, lo) => selectPoint(la, lo),
     wheelZoom: () => state.mapActive,
+    hoverInfo: p => { const m = dayMinutes.get(p); return m ? hm(m) + ' Sonne' : 'keine Sonne'; },
     insets: () => innerWidth <= 760 ? { t: 64, r: 12, b: 12, l: 12 } : { t: 70, r: innerWidth > 1100 ? 340 : 330, b: 175, l: 24 },
   });
   map.terrainCanvas = terrain.canvas; map.tdx = terrain.dx; map.tdy = terrain.dy;
@@ -49,11 +52,39 @@ async function init() {
   renderTerrain();
   $('#loading').remove(); document.body.classList.add('ready');
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !fromHash) play(true);
-  writeLead();
+  writeLead(); finds();
 }
 
+// Data-driven entry points into the story (all figures computed from the data, nothing hard-coded
+// except the SRF comparison, which is cited with its source).
+function spoken(min) {
+  const h = Math.round(min / 30) / 2;
+  if (min < 50) return `${Math.round(min / 5) * 5} Minuten`;
+  return 'rund ' + ({ 1: 'eine Stunde', 1.5: 'anderthalb Stunden', 2: 'zwei Stunden', 2.5: 'zweieinhalb Stunden', 3: 'drei Stunden' }[h] || `${String(h).replace('.', ',')} Stunden`);
+}
+function finds() {
+  const v = places.filter(p => p.t !== 'hamlet'), td = todayIndex();
+  const byName = n => v.find(p => p.n === n);
+  const top = v.slice().sort((a, b) => b.s.dark - a.s.dark)[0];
+  const gap = p => p.s.d21runs > 1 ? p.s.d21last + 1 - p.s.d21first - p.s.d21 : 0;
+  const noon = v.filter(p => gap(p) >= 30).sort((a, b) => (b.pop || 0) - (a.pop || 0))[0];
+  const sunny = v.slice().sort((a, b) => b.s.d21 - a.s.d21)[0];
+  // next event relative to today: a dark period starting or ending
+  const ev = v.filter(p => p.s.run).flatMap(p => [{ p, d: p.s.run[0], k: 'off' }, { p, d: p.s.run[1] + 1, k: 'on' }]).filter(e => e.d >= td).sort((a, b) => a.d - b.d)[0];
+  const cards = [];
+  if (ev) cards.push([ev.p, ev.k === 'off' ? 'Als Nächstes' : 'Bald zurück', ev.k === 'off' ? `${ev.d === td ? 'Heute' : 'Am ' + dateLabel(ev.d)} verschwindet die Sonne in ${ev.p.n} – für ${ev.p.s.dark} Tage.` : `${ev.d === td ? 'Heute' : 'Am ' + dateLabel(ev.d)} kehrt die Sonne nach ${ev.p.s.dark} Tagen nach ${ev.p.n} zurück.`, ev.d]);
+  cards.push([top, 'Am längsten im Schatten', `${top.n}: ${top.s.dark} Tage ohne direkte Sonne, ${dateLabel(top.s.run[0])} bis ${dateLabel(top.s.run[1])}.`, P.iDec21]);
+  if (noon) cards.push([noon, 'Mittagsschatten', `In ${noon.n} verschwindet die Sonne am 21. Dezember über Mittag ${spoken(gap(noon))} lang hinter einem Berg.`, P.iDec21]);
+  cards.push([sunny, 'Sonnenterrasse', `${sunny.n} hat am kürzesten Tag ${hm(sunny.s.d21)} direkte Sonne – am meisten aller Dörfer.`, P.iDec21]);
+  const vic = byName('Vicosoprano');
+  if (vic && vic.s.run) cards.push([vic, 'Gegengeprüft', `SRF Meteo: in Vicosoprano Sonne weg von «Mitte November» bis «Ende Januar». Hier: ${dateLabel(vic.s.run[0])} bis ${dateLabel(vic.s.run[1])}.`, P.iDec21]);
+  $('#finds').innerHTML = cards.map(([p, k, t], i) => `<button class="find" data-i="${i}"><span class="fk">${k}</span><span class="ft">${t}</span></button>`).join('');
+  $$('#finds .find').forEach(b => b.addEventListener('click', () => { const [p, , , d] = cards[+b.dataset.i]; stop(); setDay(d); state.minute = solarNoonMinute(d); scheduleTerrain(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); }));
+}
+
+let terrainMaskCanvas;
 function cantonMask() {
-  const c = document.createElement('canvas'); c.width = G.cols; c.height = G.rows;
+  const c = terrainMaskCanvas = document.createElement('canvas'); c.width = G.cols; c.height = G.rows;
   const x = c.getContext('2d'); x.fillStyle = '#fff'; x.beginPath();
   for (const ring of window.OUTLINE.canton) ring.forEach(([lo, la], k) => { const X = (lo - G.w) / G.dLon, Y = (G.n - la) / G.dLat; k ? x.lineTo(X, Y) : x.moveTo(X, Y); });
   x.fill();
@@ -74,9 +105,25 @@ function sunWindow(d) {                      // first/last minute with the sun a
   return [a, b];
 }
 
+// On slow devices the animation switches to a half-resolution terrain (300 m cells, 4x fewer).
+let slowFrames = 0, lowRes = false;
+function halfGrid(g) {
+  const cols = g.cols >> 1, rows = g.rows >> 1, d = new Int16Array(cols * rows);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const i = 2 * r * g.cols + 2 * c; d[r * cols + c] = (g.data[i] + g.data[i + 1] + g.data[i + g.cols] + g.data[i + g.cols + 1]) / 4; }
+  return { data: d, cols, rows, w: g.w, n: g.n, dLon: g.dLon * 2, dLat: g.dLat * 2 };
+}
+function goLowRes() {
+  lowRes = true; const G2 = halfGrid(G);
+  const m = document.createElement('canvas'); m.width = G2.cols; m.height = G2.rows; const x = m.getContext('2d');
+  x.drawImage(terrainMaskCanvas, 0, 0, G2.cols, G2.rows);
+  const a = x.getImageData(0, 0, G2.cols, G2.rows).data, mask = new Uint8Array(G2.cols * G2.rows);
+  for (let i = 0; i < mask.length; i++) mask[i] = a[i * 4 + 3] > 127;
+  terrain = new Terrain(G2, mask); map.terrainCanvas = terrain.canvas; map.tdx = terrain.dx; map.tdy = terrain.dy;
+}
 function renderTerrain() {
   const s = sunPosition(t0Of(state.day) + state.minute * 60000, ...CENTER);
-  const t = performance.now(); terrain.render(s.az, s.el); window.__renderMs = performance.now() - t; map.draw();
+  const t = performance.now(); terrain.render(s.az, s.el); const ms = window.__renderMs = performance.now() - t; map.draw();
+  if (!lowRes && state.playing) { slowFrames = ms > 55 ? slowFrames + 1 : Math.max(0, slowFrames - 1); if (slowFrames > 6) goLowRes(); }
   $('#clock').textContent = `${dateLabel(state.day)} · ${clock(state.minute)}`;
   $('#sunpos').textContent = s.el > -0.27 ? `Sonne ${Math.round(s.az)}° · ${s.el.toFixed(1).replace('.', ',')}° hoch` : 'Sonne unter dem Horizont';
   if (pano) pano.setTime(state.day, state.minute);
@@ -109,13 +156,18 @@ function computeDayMinutes() {
 }
 
 // ---------- selection ----------
-function select(p, { fly = true, quiet = false } = {}) {
-  state.place = p; map.sel = p.X != null ? p : null;
+function select(p, opts = {}) {
+  // immediate feedback, the year computation follows in the next frame
+  state.place = p; map.sel = p.X != null ? p : null; map.draw();
+  $('#card-name').textContent = p.n; document.body.classList.add('busy');
+  requestAnimationFrame(() => setTimeout(() => { selectNow(p, opts); document.body.classList.remove('busy'); }, 0));
+}
+function selectNow(p, { fly = true, quiet = false } = {}) {
   if (fly && p.X != null) { const s = Math.max(map.view.s, map.fitS * 3.2), I = map.insets(); map.flyTo(p.X - (I.l - I.r) / 2 / s, p.Y - (I.t - I.b) / 2 / s, s); }
   p.stats = carpet.set(p);
   if (!p.s) p.s = seasonStats(p.stats);
   pano.set(p, state.day, state.minute, refDays());
-  fillCard(); fillDetail(); map.draw();
+  fillCard(); fillDetail(); map.draw(); markStrip();
   if (!quiet) history.replaceState(null, '', p.id ? `#ort=${p.id}-${slug(p.n)}` : `#punkt=${p.la.toFixed(5)},${p.lo.toFixed(5)}`);
 }
 function selectPoint(la, lo, quiet) {
@@ -161,7 +213,19 @@ function fillCard() {
   $('#card-flat').textContent = `ohne Berge ${hm(st.flat)}`;
   const dt = darkText(s);
   $('#card-dark').innerHTML = dt ? `<b>${dt.days} Tage</b> ohne direkte Sonne · ${dt.from} bis ${dt.to}` : s.darkHi ? `Knapp: je nach Genauigkeit bis ${s.darkHi} Tage ohne Sonne` : `Jeden Tag des Jahres mindestens kurz Sonne`;
-  updateCardNow();
+  updateCardNow(); spark();
+}
+function spark() {
+  const p = state.place, cv = $('#spark'); if (!p || !cv.clientWidth) return;
+  const dpr = Math.min(devicePixelRatio || 1, 2.5), W = cv.clientWidth, H = cv.clientHeight, ctx = cv.getContext('2d');
+  cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const bw = W / NDAYS, k = (H - 3) / 900;
+  ctx.fillStyle = 'rgba(255,255,255,.07)';
+  p.stats.forEach((s, d) => ctx.fillRect(d * bw, H - s.flat * k, bw + .3, s.flat * k));
+  ctx.fillStyle = '#ffc861';
+  p.stats.forEach((s, d) => s.sun && ctx.fillRect(d * bw, H - s.sun * k, bw + .3, s.sun * k));
+  if (p.s.run) { ctx.fillStyle = 'rgba(160,125,220,.85)'; ctx.fillRect(p.s.run[0] * bw, H - 2, (p.s.run[1] - p.s.run[0] + 1) * bw, 2); }
+  ctx.fillStyle = '#fff'; ctx.fillRect(state.day * bw - .75, 0, 1.5, H);
 }
 function updateCardNow() {
   const p = state.place; if (!p) return;
@@ -177,7 +241,7 @@ function fillDetail() {
   const stD21 = p.stats[P.iDec21];
   const loss = stD21.flat ? Math.round((1 - stD21.sun / stD21.flat) * 100) : 0;
   const tiles = [
-    ['Direkte Sonne am 21. Dezember', stD21.sun ? hm(stD21.sun) : 'keine', stD21.sun ? `${clock(stD21.first)} bis ${clock(stD21.last + 1)}${stD21.runs > 1 ? ', mit Unterbruch' : ''}` : `ohne Berge wären es ${hm(stD21.flat)}`],
+    ['Direkte Sonne am 21. Dezember', stD21.sun ? hm(stD21.sun) : 'keine', stD21.sun ? `${clock(stD21.first)} bis ${clock(stD21.last + 1)}${stD21.runs > 2 ? `, ${stD21.runs - 1} Unterbrüche` : stD21.runs > 1 ? ', ein Unterbruch' : ''}` : `ohne Berge wären es ${hm(stD21.flat)}`],
     loss >= 99 ? ['Warum', `${deg0(noonHz(p))} > ${deg0(stD21.maxEl)}`, `Der Berg im Süden ragt ${deg0(noonHz(p))} auf, die Sonne steigt am 21. Dezember nur ${deg0(stD21.maxEl)} hoch`]
       : ['Die Berge nehmen', `${loss} %`, `des möglichen Sonnenscheins am kürzesten Tag (ohne Berge ${hm(stD21.flat)})`],
     dt ? ['Ohne direkte Sonne', `${dt.days} Tage`, `${dt.from} bis ${dt.to}${dt.band ? ` · Spannweite ${dt.band} Tage` : ''}`]
@@ -197,7 +261,9 @@ function sentence(p, d21, dt) {
   const name = `<b>${p.n}</b>`;
   if (dt) return `In ${name} verschwindet die Sonne laut Modellrechnung am ${dt.from} hinter den Bergen und kehrt ${dt.ret ? `am ${dt.ret}` : 'erst im Sommer'} zurück. Dazwischen liegen ${dt.days} Tage ohne einen einzigen direkten Sonnenstrahl.`;
   if (d21.sun < 60) return `Am kürzesten Tag erreicht die Sonne ${name} nur während ${hm(d21.sun)} – ohne Berge wären es ${hm(d21.flat)}.`;
-  return `Am 21. Dezember scheint die Sonne in ${name} von ${clock(d21.first)} bis ${clock(d21.last + 1)} Uhr${d21.runs > 1 ? ' mit Unterbrüchen' : ''}, insgesamt ${hm(d21.sun)}.`;
+  const gap = d21.last + 1 - d21.first - d21.sun;
+  if (d21.runs > 1 && gap >= 5) return `Am 21. Dezember erreicht die Sonne ${name} um ${clock(d21.first)} Uhr und verschwindet um ${clock(d21.last + 1)} Uhr. Dazwischen steht sie ${gap < 60 ? `${gap} Minuten` : hm(gap)} lang hinter ${d21.runs > 2 ? 'Bergen' : 'einem Berg'}: ${hm(d21.sun)} direkte Sonne, ohne Berge wären es ${hm(d21.flat)}.`;
+  return `Am 21. Dezember scheint die Sonne in ${name} von ${clock(d21.first)} bis ${clock(d21.last + 1)} Uhr, insgesamt ${hm(d21.sun)} – ohne Berge wären es ${hm(d21.flat)}.`;
 }
 function writeLead() {
   const v = places.filter(p => p.t !== 'hamlet'), w = places.filter(p => p.t === 'hamlet');
@@ -262,6 +328,7 @@ function bindControls() {
     else if (e.key === 'Escape') { hits = []; render(); }
   });
   list.addEventListener('pointerdown', e => { const li = e.target.closest('li'); if (li) { e.preventDefault(); choose(hits[+li.dataset.k]); } });
+  $('#spark').addEventListener('click', e => { stop(); setDay(Math.floor(e.offsetX / e.currentTarget.clientWidth * NDAYS)); });
   $('#to-detail').addEventListener('click', () => $('#ort').scrollIntoView({ behavior: 'smooth' }));
   $('#share').addEventListener('click', async () => {
     const url = location.href; try { await navigator.clipboard.writeText(url); $('#share').textContent = 'Link kopiert'; } catch { prompt('Link zu diesem Ort:', url); }
@@ -281,6 +348,7 @@ function buildLists() {
     $('#gantt-n').textContent = `${dark.length} ${withHam ? 'Orte' : 'Dörfer'}`;
   };
   $('#with-ham').addEventListener('change', render); render();
+  $('#gantt').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { const r = e.target.closest('[data-id]'); if (r) { e.preventDefault(); r.click(); } } });
   $('#gantt').addEventListener('click', e => { const r = e.target.closest('[data-id]'); if (r) { const p = places.find(x => String(x.id) === r.dataset.id); stop(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); } });
   strip();
 }
@@ -298,6 +366,10 @@ function gantt(list, edge) {
   }).join('');
   return `<div class="gantt${edge ? ' edge' : ''}"><div class="guides">${sol}${today}</div><div class="axis">${ticks.join('')}</div>${rows}<div class="axis bottom">${ticks.join('')}</div></div>`;
 }
+function markStrip() {
+  const c = state.place && state.place.id && document.querySelector(`#strip circle[data-id="${state.place.id}"]`), m = $('#strip-sel');
+  if (!m) return; if (c) { m.setAttribute('cx', c.getAttribute('cx')); m.setAttribute('cy', c.getAttribute('cy')); } else m.setAttribute('cx', -20);
+}
 function strip() {
   const v = places.filter(p => p.t !== 'hamlet'), W = 1000, H = 150, max = 480;
   const x = m => 20 + m / max * (W - 40);
@@ -307,8 +379,9 @@ function strip() {
     while (placed.some(q => Math.abs(q[0] - cx) < 7.4 && Math.abs(q[1] - cy) < 7.4)) { k++; cy = (k % 2 ? 1 : -1) * Math.ceil(k / 2) * 7.5; }
     placed.push([cx, cy]); dots.push(`<circle cx="${cx.toFixed(1)}" cy="${(H / 2 - 8 + cy).toFixed(1)}" r="3.4" fill="${rampColor(p.s.d21)}" data-id="${p.id}"><title>${p.n} (${p.g}): ${p.s.d21 ? hm(p.s.d21) : 'keine Sonne'}</title></circle>`);
   }
+  const n0 = v.filter(p => !p.s.d21).length;
   const ticks = [0, 60, 120, 180, 240, 300, 360, 420, 480].map(m => `<g transform="translate(${x(m)},${H - 14})"><line y1="-6" y2="0"/><text y="12">${m / 60} h</text></g>`).join('');
-  $('#strip').innerHTML = `<svg viewBox="0 0 ${W} ${H + 4}" role="img" aria-label="${v.length} Dörfer nach Minuten direkter Sonne am 21. Dezember">${dots.join('')}<g class="ticks">${ticks}</g></svg>`;
+  $('#strip').innerHTML = `<svg viewBox="0 0 ${W} ${H + 4}" role="img" aria-label="${v.length} Dörfer nach Minuten direkter Sonne am 21. Dezember">${dots.join('')}<g class="ticks">${ticks}</g><text class="ann" x="${x(0) + 10}" y="${H / 2 - 52}">${n0} Dörfer ohne Sonne</text><circle id="strip-sel" r="6.5" fill="none" stroke="#fff" stroke-width="2" cx="-20" cy="-20"/></svg>`;
   $('#strip').addEventListener('click', e => { const c = e.target.closest('[data-id]'); if (c) { const p = places.find(x => String(x.id) === c.dataset.id); stop(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); } });
   const chur = v.find(p => p.n === 'Chur');
   $('#strip-note').innerHTML = `Zum Vergleich: Chur ${hm(chur.s.d21)}. Am meisten Sonne: ${v.slice().sort((a, b) => b.s.d21 - a.s.d21).slice(0, 3).map(p => `${p.n} (${hm(p.s.d21)})`).join(', ')}.`;
