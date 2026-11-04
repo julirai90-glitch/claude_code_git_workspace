@@ -58,8 +58,21 @@
   details summary { cursor: pointer; }
   details p { margin: 4px 0; }
   #tools { position: fixed; right: 12px; bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
-  #tools .tool { background: var(--panel); width: 36px; height: 36px; padding: 0; font-size: 16px; }
-  #pad { position: fixed; right: 12px; bottom: 60px; display: grid; grid-template-columns: repeat(3, 36px); gap: 4px; }
+  #tools .tool { background: var(--panel); width: 36px; height: 36px; padding: 0; font-size: 16px;
+    display: grid; place-items: center; }
+  #tools .eye-off, body.ui-off #tools .eye { display: none; }
+  body.ui-off #tools .eye-off { display: block; }
+  #tools .tool[aria-pressed="false"]#padtoggle { color: var(--muted); opacity: .6; }
+  #fold { padding: 2px 9px; }
+  /* the source stays visible when the panels are hidden */
+  #credit2 { position: fixed; left: 8px; bottom: 6px; display: none; font-size: 10.5px; color: var(--muted);
+    background: rgba(255,255,255,.75); padding: 1px 6px; border-radius: 3px; }
+  body.ui-off #credit2 { display: block; }
+  /* panels the viewer switched off; !important beats the inline display set by showInfo */
+  body.ui-off #head, body.ui-off #bottom, body.ui-off #info, body.ui-off #pad, body.pad-off #pad { display: none !important; }
+  body.bottom-min #hist, body.bottom-min #axis, body.bottom-min #legend, body.bottom-min #more,
+  body.bottom-min #bottom details { display: none !important; }
+  #pad { position: fixed; right: 12px; bottom: 138px; display: grid; grid-template-columns: repeat(3, 36px); gap: 4px; }
   #pad .tool { background: var(--panel); width: 36px; height: 36px; padding: 0; font-size: 16px;
     touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   #labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
@@ -80,7 +93,7 @@
     #head { right: 12px; max-width: none; padding: 8px 12px; }
     #head p { display: none; }
     #info { top: auto; bottom: 12px; left: 12px; right: 12px; width: auto; max-height: 55vh; overflow-y: auto; }
-    body.info-open #bottom, body.info-open #tools { display: none; }
+    body.info-open #bottom, body.info-open:not(.ui-off) #tools { display: none; }
     #more { display: block; }
     #bottom:not(.more) #legend, #bottom:not(.more) details { display: none; }
     #bottom { right: 60px; padding: 8px 10px 6px; }
@@ -127,6 +140,7 @@
       <button data-mode="year">Baujahr</button>
       <button data-mode="use">Nutzung</button>
     </span>
+    <button id="fold" class="tool" title="Feld verkleinern" aria-label="Feld verkleinern">▾</button>
   </div>
   <svg id="hist" preserveAspectRatio="none"></svg>
   <input id="slider" type="range" min="1800" max="2026" step="1" value="2026" aria-label="Jahr">
@@ -169,7 +183,10 @@
   <button class="tool" data-nav="b" title="Zurück" aria-label="Zurück">↓</button>
   <button class="tool" data-nav="in" title="Hineinzoomen" aria-label="Hineinzoomen">+</button>
 </div>
+<div id="credit2">© swisstopo · BFS (GWR) · AV GR</div>
 <div id="tools">
+  <button class="tool" id="uitoggle" title="Bedienfelder ausblenden" aria-label="Bedienfelder ausblenden" aria-pressed="false"><svg class="eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></button>
+  <button class="tool" id="padtoggle" title="Steuerkreuz ein- oder ausblenden" aria-label="Steuerkreuz ein- oder ausblenden" aria-pressed="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg></button>
   <button class="tool" id="spin" title="Drehen" aria-label="Automatisch drehen">⟳</button>
 </div>
 
@@ -575,6 +592,24 @@ addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
+// ---------- panels on/off, remembered in this browser only
+const UI = (() => { try { return JSON.parse(localStorage.getItem("k3d-ui")) || {}; } catch (e) { return {}; } })();
+function applyUI() {
+  document.body.classList.toggle("ui-off", !!UI.off);
+  document.body.classList.toggle("pad-off", !!UI.nopad);
+  document.body.classList.toggle("bottom-min", !!UI.min);
+  const t = UI.off ? "Bedienfelder einblenden" : "Bedienfelder ausblenden";
+  $("uitoggle").title = t; $("uitoggle").setAttribute("aria-label", t); $("uitoggle").setAttribute("aria-pressed", !!UI.off);
+  $("padtoggle").setAttribute("aria-pressed", !UI.nopad);
+  $("fold").textContent = UI.min ? "▴" : "▾";
+  $("fold").title = UI.min ? "Feld vergrössern" : "Feld verkleinern"; $("fold").setAttribute("aria-label", $("fold").title);
+  try { localStorage.setItem("k3d-ui", JSON.stringify(UI)); } catch (e) {}
+}
+$("uitoggle").addEventListener("click", () => { UI.off = !UI.off; if (UI.off) closeInfo(); applyUI(); });
+$("padtoggle").addEventListener("click", () => { UI.nopad = !UI.nopad; if (UI.off) { UI.off = false; } applyUI(); });
+$("fold").addEventListener("click", () => { UI.min = !UI.min; applyUI(); });
+applyUI();
+
 // ---------- address search: runs on the loaded data only, nothing typed leaves the device
 const norm = t => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
   .replace(/str\.?(?=\s|\d|$)/g, "strasse").replace(/([a-z])(\d)/g, "$1 $2").replace(/[^a-z0-9]+/g, " ").trim();

@@ -158,3 +158,6 @@ Playwright: nur `chromium-1243` vorhanden.
   Build speichert jetzt alle Adressen pro Gebäude (vorher max. 3): Chur 5025, Davos 3083, St. Moritz 1839.
   Nicht auffindbar: Gebäude ohne GWR-Eintrag. «ue» statt «ü» wird nicht erkannt. Kein teilbarer Link pro Haus (bewusst).
 
+- **Felder ein-/ausblenden (04.11.2026):** Auge-Knopf blendet alle Felder aus (kleine Quellenzeile bleibt), Kreuz-Knopf
+  das Steuerkreuz, ▾ im unteren Feld verkleinert es auf Zeile + Schieber + Quelle. Zustand in localStorage `k3d-ui`
+  (nur dieser Browser).
