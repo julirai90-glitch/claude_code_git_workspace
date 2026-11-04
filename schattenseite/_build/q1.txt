@@ -1,0 +1,4 @@
+[out:json][timeout:120];
+area["ISO3166-2"="CH-GR"]->.gr;
+node(area.gr)[place~"^(city|town|village|hamlet)$"];
+out tags center;

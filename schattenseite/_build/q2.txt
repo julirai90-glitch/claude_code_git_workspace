@@ -1,0 +1,4 @@
+[out:json][timeout:180];
+area["ISO3166-2"="CH-GR"]->.gr;
+rel(area.gr)["boundary"="administrative"]["admin_level"~"^(4|8)$"];
+out geom;
