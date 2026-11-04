@@ -69,7 +69,7 @@
     #head { right: 12px; max-width: none; padding: 8px 12px; }
     #head p { display: none; }
     #info { top: auto; bottom: 12px; left: 12px; right: 12px; width: auto; max-height: 55vh; overflow-y: auto; }
-    body.info-open #bottom { display: none; }
+    body.info-open #bottom, body.info-open #tools { display: none; }
     #more { display: block; }
     #bottom:not(.more) #legend, #bottom:not(.more) details { display: none; }
     #bottom { right: 60px; padding: 8px 10px 6px; }
@@ -97,6 +97,7 @@
   <button class="close" aria-label="Schliessen">×</button>
   <h2 id="i-title"></h2>
   <dl id="i-list"></dl>
+  <div id="i-notes"></div>
   <p class="hint">Quelle: Gebäude- und Wohnungsregister (GWR), BFS; Form: swissBUILDINGS3D, swisstopo; Grundrisse: amtliche Vermessung GR</p>
 </div>
 
@@ -481,11 +482,15 @@ function showInfo(i) {
   if (m.g) rows.push(["Geschosse", m.g]);
   rows.push(["Höhe", `${m.h.toLocaleString("de-CH")} m (Modell)`]);
   if (m.ad && m.ad.length > 1 && !m.ys) rows.push(["Adressen", m.ad.join(", ")]);
-  if (m.n) rows.push(["Hinweis", "Das 3D-Modell führt diese Häuser als einen Körper. Er erscheint in der Zeitreise mit dem ältesten Baujahr; Nutzung und Geschosse gelten für dieses."]);
-  if (m.v) rows.push(["Hinweis", "Aus einem grösseren 3D-Körper herausgeschnitten, entlang des Hausgrundrisses der amtlichen Vermessung."]);
+  // method notes stay folded: they matter for checking, not for reading the building
+  const notes = [];
+  if (m.n) notes.push("Das 3D-Modell führt diese Häuser als einen Körper. Er erscheint in der Zeitreise mit dem ältesten Baujahr; Nutzung und Geschosse gelten für dieses.");
+  if (m.v) notes.push("Aus einem grösseren 3D-Körper herausgeschnitten, entlang des Hausgrundrisses der amtlichen Vermessung.");
   if (m.e) rows.push([m.ys ? "EGID (ältestes)" : "EGID", m.e]);
   if (!m.e) rows.push(["Register", "kein GWR-Eintrag zugeordnet"]);
   $("i-list").innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
+  $("i-notes").innerHTML = notes.length
+    ? `<details><summary>Hinweis</summary>${notes.map(t => `<p>${t}</p>`).join("")}</details>` : "";
   $("info").style.display = "block";
   document.body.classList.add("info-open");
 }
