@@ -28,6 +28,7 @@ Standardisierung: direkte Methode, Europäische Standardbevölkerung 2010. Spalt
 |---|---|---|
 | Geburten vs. Todesfälle 1971–2025 («Schere») | Datawrapper [4jwwv](https://datawrapper.dwcdn.net/4jwwv/) | `daten/dw_schere.csv` |
 | Kantonsvergleich standardisierte Mortalität, Mittel 2020–2024 | Datawrapper [Z7OP4](https://datawrapper.dwcdn.net/Z7OP4/) | `obsan_mortalitaet_kantone.csv`, Mittelwert der fünf Jahresraten (eigene Berechnung) |
+| Punktraster «1995 Menschen», Todesursachen 2022 in Schritten | `punkte.html` ([live](https://julirai90-glitch.github.io/claude_code_git_workspace/todesfaelle-gr/punkte.html)) | Obsan-Report GR 2025, G 2.4 (Anteile nach Geschlecht) × Todesfälle 2022 nach Geschlecht (975 F / 1020 M), Restgrössen-Rundung → Summe 1995 |
 | Uhr «Alle 4 Std. 36 Min. ein Todesfall», mit Jahresregler | `uhr.html` ([live](https://julirai90-glitch.github.io/claude_code_git_workspace/todesfaelle-gr/uhr.html)) | Werte inline aus `bfs_bilanz_gr.csv` |
 
 Uhr-Rechnung: Stunden des Jahres (Schaltjahre berücksichtigt) × 60 / Anzahl Ereignisse, auf ganze

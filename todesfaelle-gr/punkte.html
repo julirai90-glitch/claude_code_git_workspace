@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Woran die Menschen in Graubünden 2022 gestorben sind</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap">
+<script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<style>
+:root{
+  --surface:#ffffff; --rule:#dde4e9;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f; --off:#e6ebef;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink); font-size:16px; line-height:1.5}
+.wrap{padding:12px 16px 16px; max-width:696px; margin:0 auto}
+h1{font-size:22px; line-height:1.25; margin:0 0 4px; font-weight:700}
+.intro{margin:0 0 14px; font-size:15px; color:var(--ink-2)}
+
+.card{border-top:3px solid var(--ink); padding:10px 0 12px; min-height:132px}
+@media (max-width:520px){ .card{min-height:178px} }
+.card .kat{font-size:15px; font-weight:700}
+.card .num{font-size:clamp(28px, 7vw, 40px); font-weight:800; line-height:1.1; font-variant-numeric:tabular-nums}
+.card .num small{font-size:0.5em; font-weight:600; color:var(--ink-3); margin-left:0.3em}
+.card .txt{font-size:15px; color:var(--ink-2); margin-top:2px}
+
+svg{display:block; width:100%; height:auto}
+svg circle{transition:fill .35s ease, opacity .35s ease}
+
+.nav{display:flex; align-items:center; gap:10px; margin-top:12px}
+.nav button{appearance:none; font:inherit; font-size:15px; font-weight:600; border:1px solid var(--ink);
+  background:#fff; color:var(--ink); border-radius:3px; padding:7px 14px; cursor:pointer}
+.nav button.primary{background:var(--ink); color:#fff}
+.nav button:disabled{opacity:.3; cursor:default}
+.prog{flex:1; display:flex; gap:4px; justify-content:center}
+.prog span{width:7px; height:7px; border-radius:50%; background:var(--off)}
+.prog span.on{background:var(--ink-2)}
+
+.legend{display:none; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:4px 16px;
+  margin:12px 0 0; padding:0; list-style:none; font-size:14px}
+.legend.show{display:grid}
+.legend li{display:flex; align-items:center; gap:7px}
+.legend i{width:11px; height:11px; border-radius:50%; flex:none}
+.legend b{margin-left:auto; font-variant-numeric:tabular-nums; font-weight:600}
+
+.note{font-size:12.5px; color:var(--ink-3); margin:14px 0 0; line-height:1.45}
+.note a{color:var(--ink-3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>1995 Menschen sind 2022 in Graubünden gestorben – jeder Punkt steht für einen davon</h1>
+  <p class="intro">Todesursachen der Bündner Wohnbevölkerung im Jahr 2022, zusammengestellt nach den
+    Gruppen des Schweizerischen Gesundheitsobservatoriums. Mit «Weiter» kommt eine Ursache nach der anderen dazu.</p>
+
+  <div class="card" aria-live="polite">
+    <div class="kat" id="kat">&nbsp;</div>
+    <div class="num" id="num">&nbsp;</div>
+    <div class="txt" id="txt">&nbsp;</div>
+  </div>
+
+  <svg id="grid" role="img" aria-labelledby="grid-desc"><desc id="grid-desc"></desc></svg>
+
+  <ul class="legend" id="legend"></ul>
+
+  <div class="nav">
+    <button id="back" type="button">Zurück</button>
+    <div class="prog" id="prog" aria-hidden="true"></div>
+    <button id="next" type="button" class="primary">Weiter</button>
+  </div>
+
+  <p class="note">Anzahl je Ursache hochgerechnet aus den Anteilen im Obsan-Gesundheitsreport Graubünden 2025
+    (Grafik G 2.4, Werte auf eine Nachkommastelle gerundet) und der Zahl der Todesfälle von Frauen (975)
+    und Männern (1020). Die Zahlen sind deshalb als «rund» zu lesen; Abweichungen um wenige Fälle sind möglich.
+    Daten: <a href="https://www.gr.ch/DE/institutionen/verwaltung/djsg/ga/ueberuns/leitbilder/Documents/OBSAN-Gesundheitsreport-GR-2025.pdf" target="_blank" rel="noopener">Obsan, Gesundheit im Kanton Graubünden (2025)</a>;
+    <a href="https://ind.obsan.admin.ch/indicator/obsan/mortalitaet-und-todesursachen" target="_blank" rel="noopener">Obsan-Indikator Mortalität</a>
+    (BFS – CoD, STATPOP).<br>
+    Hilfe in Krisen: Die Dargebotene Hand, Telefon 143, <a href="https://www.143.ch" target="_blank" rel="noopener">www.143.ch</a>.</p>
+</div>
+
+<script>
+// Estimated deaths by cause, GR 2022 (Obsan shares x deaths by sex, largest-remainder rounding).
+// Order = story order; "Übrige" comes last as the remainder.
+const CATS = [
+  { k: "Herz-Kreislauf-Krankheiten", n: 580, c: "#0068a4",
+    t: "Etwa Herzinfarkt, Hirnschlag oder Herzschwäche: die häufigste Todesursache. Bei Frauen ist der Anteil höher (32 %) als bei Männern (27 %)." },
+  { k: "Krebs", n: 471, c: "#ee7733",
+    t: "Davon rund 107 Lungen- und Bronchienkrebs und 30 Brustkrebs. Bei Männern ist der Anteil höher (26 %) als bei Frauen (21 %)." },
+  { k: "Krankheiten der Atmungsorgane", n: 125, c: "#009988",
+    t: "Zum Beispiel chronische Lungenkrankheiten und Lungenentzündung." },
+  { k: "Covid-19", n: 101, c: "#882255",
+    t: "Fälle mit Covid-19 als Haupttodesursache." },
+  { k: "Unfälle", n: 94, c: "#ddaa33",
+    t: "Alle Unfallarten zusammen, etwa Stürze und Verkehrsunfälle." },
+  { k: "Suizide", n: 27, c: "#cc3311",
+    t: "Der Anteil ist bei Männern rund doppelt so hoch wie bei Frauen." },
+  { k: "Infektionskrankheiten (ohne Covid-19)", n: 24, c: "#33bbee", t: "" },
+  { k: "Alkoholische Leberzirrhose", n: 15, c: "#aa4499", t: "" },
+  { k: "Übrige Todesursachen", n: 558, c: "#8c9aa5",
+    t: "Darunter fallen unter anderem Demenz und Diabetes, die in dieser Auswertung nicht separat ausgewiesen sind." },
+];
+const TOTAL = CATS.reduce((s, c) => s + c.n, 0);  // 1995
+const NS = "http://www.w3.org/2000/svg";
+const svg = document.getElementById("grid");
+const OFF = "#e6ebef";
+
+// category index per dot, contiguous blocks in story order
+const owner = [];
+CATS.forEach((c, i) => { for (let j = 0; j < c.n; j++) owner.push(i); });
+
+let dots = [], step = -1;  // -1 = intro (all grey), CATS.length = overview
+const LAST = CATS.length;
+
+const pct = n => Math.round(n / TOTAL * 100);
+const fmt = n => n.toLocaleString("de-CH");
+
+function layout() {
+  const w = Math.max(300, Math.round(svg.parentNode.clientWidth || 664));
+  const cols = w >= 520 ? 70 : 42;
+  const pitch = w / cols, r = pitch * 0.36;
+  const rows = Math.ceil(TOTAL / cols);
+  svg.setAttribute("viewBox", `0 0 ${w} ${rows * pitch}`);
+  while (svg.lastChild && svg.lastChild.nodeName !== "desc") svg.removeChild(svg.lastChild);
+  dots = owner.map((o, i) => {
+    const e = document.createElementNS(NS, "circle");
+    e.setAttribute("cx", (i % cols + 0.5) * pitch);
+    e.setAttribute("cy", (Math.floor(i / cols) + 0.5) * pitch);
+    e.setAttribute("r", r);
+    svg.appendChild(e);
+    return e;
+  });
+  paint();
+}
+
+function paint() {
+  dots.forEach((d, i) => {
+    const o = owner[i];
+    let fill = OFF, op = 1;
+    if (step === LAST) fill = CATS[o].c;
+    else if (o < step) { fill = CATS[o].c; op = 0.3; }
+    else if (o === step) fill = CATS[o].c;
+    d.setAttribute("fill", fill);
+    d.setAttribute("opacity", op);
+  });
+}
+
+function render() {
+  const kat = document.getElementById("kat"), num = document.getElementById("num"), txt = document.getElementById("txt");
+  if (step === -1) {
+    kat.textContent = "2022 in Graubünden";
+    kat.style.color = "";
+    num.innerHTML = `${fmt(TOTAL)}<small>Todesfälle</small>`;
+    txt.textContent = "Woran sind diese Menschen gestorben?";
+  } else if (step === LAST) {
+    kat.textContent = "Alle Ursachen";
+    kat.style.color = "";
+    num.innerHTML = `${fmt(TOTAL)}<small>Todesfälle</small>`;
+    txt.textContent = "Herz-Kreislauf-Krankheiten und Krebs machen zusammen über die Hälfte aus.";
+  } else {
+    const c = CATS[step];
+    kat.textContent = c.k;
+    kat.style.color = c.c;
+    num.innerHTML = `rund ${fmt(c.n)}<small>${pct(c.n)} %</small>`;
+    txt.textContent = c.t || " ";
+  }
+  document.getElementById("legend").classList.toggle("show", step === LAST);
+  document.getElementById("back").disabled = step === -1;
+  const next = document.getElementById("next");
+  next.textContent = step === LAST ? "Von vorne" : step === -1 ? "Start" : "Weiter";
+  [...document.getElementById("prog").children].forEach((s, i) => s.classList.toggle("on", i <= step));
+  document.getElementById("grid-desc").textContent = CATS.map(c => `${c.k}: rund ${c.n}`).join("; ");
+  paint();
+}
+
+// legend and progress markers
+const lg = document.getElementById("legend");
+CATS.forEach(c => {
+  const li = document.createElement("li");
+  li.innerHTML = `<i style="background:${c.c}"></i><span>${c.k}</span><b>${fmt(c.n)}</b>`;
+  lg.appendChild(li);
+});
+const prog = document.getElementById("prog");
+for (let i = 0; i <= LAST; i++) prog.appendChild(document.createElement("span"));
+
+document.getElementById("next").addEventListener("click", () => { step = step === LAST ? -1 : step + 1; render(); });
+document.getElementById("back").addEventListener("click", () => { if (step > -1) { step--; render(); } });
+
+let lastW = 0;
+function relayout() {
+  const w = Math.round(svg.parentNode.clientWidth);
+  if (w !== lastW) { lastW = w; layout(); }
+}
+window.addEventListener("resize", relayout);
+relayout();
+render();
+</script>
+</body>
+</html>
