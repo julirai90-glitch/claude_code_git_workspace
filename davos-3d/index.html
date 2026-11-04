@@ -17,9 +17,20 @@
   #scene { position: fixed; inset: 0; }
   .panel { position: fixed; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08);
     backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  #head { top: 12px; left: 12px; padding: 10px 14px; max-width: 340px; }
+  #head { top: 12px; left: 12px; padding: 10px 14px; max-width: 340px; z-index: 4; }   /* hit list above the pad */
   #head h1 { margin: 0; font-size: 18px; letter-spacing: .01em; }
   #head p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+  #search { position: relative; margin-top: 8px; }
+  /* 16px keeps iOS from zooming into the field */
+  #q { width: 100%; font: inherit; font-size: 16px; padding: 5px 10px; color: var(--ink); background: #fff;
+    border: 1px solid var(--line); border-radius: 6px; }
+  #hits { position: absolute; left: 0; right: 0; top: 100%; margin: 4px 0 0; padding: 4px 0; list-style: none; display: none;
+    background: #fff; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    max-height: 50vh; overflow-y: auto; z-index: 5; }
+  #hits li { padding: 6px 10px; cursor: pointer; font-size: 13.5px; display: flex; justify-content: space-between; gap: 10px; }
+  #hits li.on, #hits li:hover { background: #eef2f5; }
+  #hits li .y { color: var(--muted); }
+  #hits li.none { color: var(--muted); cursor: default; background: none; }
   #info { top: 12px; right: 12px; width: 280px; padding: 12px 14px; display: none; }
   #info h2 { margin: 0 24px 6px 0; font-size: 15px; }
   #info dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 13px; }
@@ -76,7 +87,7 @@
     #yearlabel { font-size: 22px; min-width: 60px; }
     #count { min-width: 0; font-size: 12px; }
     .axis span:nth-child(2), .axis span:nth-child(5) { display: none; }
-    #pad { top: 64px; bottom: auto; }
+    #pad { top: 104px; bottom: auto; }
     #pad .tool { width: 40px; height: 40px; }
     #pad { grid-template-columns: repeat(3, 40px); }
   }
@@ -91,6 +102,11 @@
 <div id="head" class="panel">
   <h1><span class="ortname">Davos</span> 3D <span style="font-weight:400;color:var(--muted);font-size:12px">Prototyp</span></h1>
   <p>Alle Gebäude von <span class="ortname">Davos</span>. Ebene «Baujahr» wählen und den Schieber ziehen: Wann wurden die heutigen Gebäude gebaut? Abgerissene fehlen. Gebäude antippen für Details.</p>
+  <div id="search">
+    <input id="q" type="search" placeholder="Adresse suchen, z. B. Poststrasse 33" autocomplete="off" spellcheck="false"
+      aria-label="Adresse suchen" role="combobox" aria-expanded="false" aria-controls="hits" aria-autocomplete="list">
+    <ul id="hits" role="listbox"></ul>
+  </div>
 </div>
 
 <div id="info" class="panel">
@@ -132,7 +148,8 @@
       (Annahme, nicht bestätigt); diese <span id="sammel"></span> Gebäude stehen deshalb ebenfalls in jedem Jahr. Wo das 3D-Modell mehrere Häuser als einen Körper führt (Häuserzeilen), ist er entlang der Hausgrundrisse
       der amtlichen Vermessung geteilt (<span id="geteilt"></span>). Die Schnitte und Trennwände sind daraus
       abgeleitet, nicht gemessen; an den Hausgrenzen kann ein Dachstück dem Nachbarhaus zufallen.
-      Das 3D-Modell stammt von 2022: Neubauten danach fehlen oder zeigen noch den Vorgängerbau.</p>
+      Das 3D-Modell stammt von 2022: Neubauten danach fehlen oder zeigen noch den Vorgängerbau.
+      Die Adresssuche findet nur Gebäude mit Registereintrag; sie läuft im Browser, Eingaben werden nicht übermittelt.</p>
     <p><b>Gestaltet:</b> Farben, Kamera, Höhen nicht überhöht. Altbauten erscheinen im Baujahr gemäss Register,
       das bei sehr alten Häusern oft geschätzt ist.</p>
     <p>Diese Informationen der amtlichen Vermessung erfolgen ohne Gewähr und haben keinerlei Rechtswirkung.
@@ -481,7 +498,8 @@ function showInfo(i) {
   if (m.k) rows.push(["Nutzung", m.k]);
   if (m.g) rows.push(["Geschosse", m.g]);
   rows.push(["Höhe", `${m.h.toLocaleString("de-CH")} m (Modell)`]);
-  if (m.ad && m.ad.length > 1 && !m.ys) rows.push(["Adressen", m.ad.join(", ")]);
+  if (m.ad && m.ad.length > 1 && !m.ys)
+    rows.push(["Adressen", m.ad.slice(0, 4).join(", ") + (m.ad.length > 4 ? ` und ${m.ad.length - 4} weitere` : "")]);
   // method notes stay folded: they matter for checking, not for reading the building
   const notes = [];
   if (m.n) notes.push("Das 3D-Modell führt diese Häuser als einen Körper. Er erscheint in der Zeitreise mit dem ältesten Baujahr; Nutzung und Geschosse gelten für dieses.");
@@ -557,6 +575,72 @@ addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
+// ---------- address search: runs on the loaded data only, nothing typed leaves the device
+const norm = t => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  .replace(/str\.?(?=\s|\d|$)/g, "strasse").replace(/([a-z])(\d)/g, "$1 $2").replace(/[^a-z0-9]+/g, " ").trim();
+const ADDR = [];
+meta.forEach((m, i) => (m.ad || []).forEach(a => { const n = norm(a); ADDR.push({ a, n, w: n.split(" "), i }); }));
+const collator = new Intl.Collator("de-CH", { numeric: true });
+let hits = [], hitOn = -1;
+function findAddr(text) {
+  const t = norm(text);
+  if (t.length < 2) return [];
+  const toks = t.split(" ");
+  return ADDR.filter(x => toks.every(k => x.w.some(w => w.startsWith(k))))
+    .sort((a, b) => (b.n.startsWith(t) - a.n.startsWith(t)) || collator.compare(a.a, b.a))
+    .slice(0, 8);
+}
+function renderHits() {
+  const ul = $("hits"), open = $("q").value.trim().length >= 2;
+  ul.innerHTML = hits.length
+    ? hits.map((h, k) => {
+        const m = meta[h.i], y = m.sx ? "1900 (unsicher)" : m.s === "j" ? m.y : m.s === "p" ? m.p : "–";
+        return `<li role="option" data-k="${k}" class="${k === hitOn ? "on" : ""}"><span>${h.a}</span><span class="y">${y}</span></li>`;
+      }).join("")
+    : `<li class="none">Keine Adresse gefunden</li>`;
+  ul.style.display = open ? "block" : "none";
+  $("q").setAttribute("aria-expanded", open);
+}
+let fly = null;
+function flyTo(i) {
+  const b = bbox[i], m = meta[i];
+  stopPlay();
+  if (m.year > uniforms.uYear.value) setYear(NOW);   // otherwise the house is not built yet
+  const to = toLocal((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, b[4]);
+  const off = camera.position.clone().sub(controls.target).setLength(Math.max(220, (b[5] - b[4]) * 6));
+  controls.autoRotate = false;
+  fly = { t0: performance.now(), fromT: controls.target.clone(), fromC: camera.position.clone(), toT: to, toC: to.clone().add(off) };
+  showInfo(i);
+}
+function flyStep(t) {
+  if (!fly) return;
+  const k = Math.min(1, (t - fly.t0) / 1200), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+  controls.target.lerpVectors(fly.fromT, fly.toT, e);
+  camera.position.lerpVectors(fly.fromC, fly.toC, e);
+  if (k >= 1) fly = null;
+}
+function pick(k) {
+  const h = hits[k];
+  if (!h) return;
+  $("q").value = h.a; hits = []; $("hits").style.display = "none"; $("q").setAttribute("aria-expanded", false);
+  $("q").blur();   // closes the phone keyboard
+  flyTo(h.i);
+}
+$("q").addEventListener("input", () => { hits = findAddr($("q").value); hitOn = hits.length ? 0 : -1; renderHits(); });
+$("q").addEventListener("keydown", e => {
+  e.stopPropagation();   // arrow keys belong to the field, not to the map
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    if (hits.length) { hitOn = (hitOn + (e.key === "ArrowDown" ? 1 : hits.length - 1)) % hits.length; renderHits(); }
+  } else if (e.key === "Enter") { e.preventDefault(); pick(Math.max(0, hitOn)); }
+  else if (e.key === "Escape") { $("hits").style.display = "none"; }
+});
+$("hits").addEventListener("pointerdown", e => {
+  const li = e.target.closest("li[data-k]");
+  if (li) { e.preventDefault(); pick(+li.dataset.k); }
+});
+document.addEventListener("pointerdown", e => { if (!e.target.closest("#search")) $("hits").style.display = "none"; });
+
 // on-screen navigation: hold a button to keep moving (phones: two-finger gestures are hard to discover)
 const held = new Set();
 document.querySelectorAll("#pad [data-nav]").forEach(b => {
@@ -585,7 +669,7 @@ function nav(t) {
   if (held.has("out")) off.setLength(Math.min(controls.maxDistance, d * z));
   camera.position.copy(controls.target).add(off);
 }
-renderer.setAnimationLoop(t => { nav(t); controls.update(); renderer.render(scene, camera); placeLabels(); });
+renderer.setAnimationLoop(t => { nav(t); flyStep(t); controls.update(); renderer.render(scene, camera); placeLabels(); });
 </script>
 </body>
 </html>

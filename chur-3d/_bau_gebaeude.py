@@ -443,7 +443,7 @@ def main():
                 m["g"] = int(r0["GASTW"])
             ads = sorted({a for r in rs for a in addr.get(r["EGID"], [])})
             if ads:
-                m["ad"] = ads[:3]
+                m["ad"] = ads  # all of them: the address search needs every entrance
             if len(rs) > 1:
                 m["n"] = len(rs)
                 # every register entry of this solid: [year or null, period label or null, first address]

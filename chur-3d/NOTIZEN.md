@@ -152,4 +152,9 @@ Playwright: nur `chromium-1243` vorhanden.
 - Offen aus der Prüfung: EGID doppelt (ein Haus in zwei 3D-Körpern; Chur 20), Höhe am Hang ab tiefstem Punkt,
   Stichprobe ~20 Gebäude/Ort (verdächtig: Davos Promenade 159 «Hotel 1420»), Ladegrösse (Chur ~4,8 MB + three.js),
   three.js selbst hosten, Textalternative.
+- **Adresssuche (04.11.2026):** Feld im Kopf, Vorschläge ab 2 Zeichen (Wortanfänge, «str»/«str.» = «strasse»,
+  Umlaute egal), Enter/Klick fliegt zum Haus und öffnet die Infobox; liegt das Haus nach dem gewählten Jahr, springt
+  die Zeit auf heute. Läuft nur im Browser auf den geladenen Daten, kein externer Dienst, keine Protokollierung.
+  Build speichert jetzt alle Adressen pro Gebäude (vorher max. 3): Chur 5025, Davos 3083, St. Moritz 1839.
+  Nicht auffindbar: Gebäude ohne GWR-Eintrag. «ue» statt «ü» wird nicht erkannt. Kein teilbarer Link pro Haus (bewusst).
 
