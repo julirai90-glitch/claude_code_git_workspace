@@ -6,12 +6,12 @@
 <title>Wie oft in Graubünden ein Mensch stirbt und ein Kind geboren wird</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap">
 <script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 <style>
 :root{
-  --surface:#ffffff; --rule:#dde4e9;
+  --surface:#ffffff; --rule:#dde4e9; --rule-soft:#eef2f5;
   --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
   --geb:#0068a4; --tod:#ee7733;
 }
@@ -20,48 +20,55 @@ html,body{margin:0;padding:0;background:var(--surface)}
 body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
   color:var(--ink); font-size:16px; line-height:1.5}
 .wrap{padding:12px 16px 16px; max-width:696px; margin:0 auto}
-h1{font-size:22px; line-height:1.25; margin:0 0 6px; font-weight:700}
-.intro{margin:0 0 14px; font-size:15px; color:var(--ink-2)}
-.main{display:grid; grid-template-columns:minmax(0,300px) 1fr; gap:18px; align-items:center}
-@media (max-width:520px){ .main{grid-template-columns:1fr} svg{max-width:300px; margin:0 auto} }
-svg{display:block; width:100%; height:auto}
-.stat{margin:0 0 16px}
-.stat .lab{font-size:14px; color:var(--ink-2); font-weight:600}
-.stat .big{font-size:30px; font-weight:700; line-height:1.15; font-variant-numeric:tabular-nums}
-.stat .sub{font-size:14px; color:var(--ink-3); font-variant-numeric:tabular-nums}
+h1{font-size:22px; line-height:1.25; margin:0 0 4px; font-weight:700}
+.intro{margin:0 0 18px; font-size:15px; color:var(--ink-2)}
+
+.stats{display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:3px solid var(--ink); }
+.stat{padding:12px 0 14px}
+.stat + .stat{padding-left:18px; border-left:1px solid var(--rule)}
+.stat .lab{font-size:14px; font-weight:600; color:var(--ink-2)}
+.stat .big{font-size:clamp(34px, 9vw, 52px); font-weight:800; line-height:1.05;
+  font-variant-numeric:tabular-nums; letter-spacing:-0.01em}
+.stat .big small{font-size:0.45em; font-weight:700; margin:0 0.25em 0 0.05em}
+.stat .sub{font-size:14px; color:var(--ink-3); font-variant-numeric:tabular-nums; margin-top:2px}
 .tod .big{color:var(--tod)} .geb .big{color:var(--geb)}
+
+.day{margin:6px 0 0}
+.day .cap{font-size:14px; font-weight:600; color:var(--ink-2); margin:0 0 4px}
+svg{display:block; width:100%; height:auto; overflow:visible}
+
+.saldo{font-size:16px; margin:14px 0 0}
+.saldo b{font-variant-numeric:tabular-nums}
 .ctrl{margin-top:14px; border-top:1px solid var(--rule); padding-top:12px}
-.ctrl label{font-size:13px; font-weight:600; color:var(--ink-2); display:block; margin-bottom:4px}
-.row{display:flex; align-items:center; gap:10px}
-input[type=range]{flex:1; accent-color:var(--ink-2)}
-.yr{font-size:18px; font-weight:700; min-width:3.2em; text-align:right; font-variant-numeric:tabular-nums}
-.saldo{font-size:15px; margin:10px 0 0; color:var(--ink)}
-.note{font-size:12.5px; color:var(--ink-3); margin:12px 0 0}
+.ctrl label{font-size:13px; font-weight:600; color:var(--ink-2); display:block; margin-bottom:2px}
+.row{display:flex; align-items:center; gap:12px}
+input[type=range]{flex:1; accent-color:var(--ink)}
+.yr{font-size:20px; font-weight:700; min-width:2.6em; text-align:right; font-variant-numeric:tabular-nums}
+.note{font-size:12.5px; color:var(--ink-3); margin:12px 0 0; line-height:1.45}
 .note a{color:var(--ink-3)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1 id="titel">Alle 4 Stunden und 36 Minuten stirbt in Graubünden ein Mensch</h1>
-  <p class="intro">Durchschnittlicher Abstand zwischen zwei Todesfällen und zwei Geburten in der Bündner
-    Wohnbevölkerung. Die Uhr zeigt einen Tag: Jeder Strich entspricht im Schnitt einem Ereignis.</p>
+  <p class="intro" id="intro">Durchschnittlicher Abstand zwischen zwei Todesfällen und zwei Geburten in der Bündner Wohnbevölkerung.</p>
 
-  <div class="main">
-    <svg id="uhr" viewBox="0 0 300 300" role="img" aria-labelledby="uhr-desc">
-      <desc id="uhr-desc"></desc>
-    </svg>
-    <div>
-      <div class="stat tod">
-        <div class="lab">Ein Todesfall alle</div>
-        <div class="big" id="tod-int">–</div>
-        <div class="sub" id="tod-sub">–</div>
-      </div>
-      <div class="stat geb">
-        <div class="lab">Eine Geburt alle</div>
-        <div class="big" id="geb-int">–</div>
-        <div class="sub" id="geb-sub">–</div>
-      </div>
+  <div class="stats">
+    <div class="stat tod">
+      <div class="lab">Ein Todesfall alle</div>
+      <div class="big" id="tod-int">–</div>
+      <div class="sub" id="tod-sub">–</div>
     </div>
+    <div class="stat geb">
+      <div class="lab">Eine Geburt alle</div>
+      <div class="big" id="geb-int">–</div>
+      <div class="sub" id="geb-sub">–</div>
+    </div>
+  </div>
+
+  <div class="day">
+    <p class="cap">Ein durchschnittlicher Tag</p>
+    <svg id="tag" viewBox="0 0 664 118" role="img" aria-labelledby="tag-desc"><desc id="tag-desc"></desc></svg>
   </div>
 
   <p class="saldo" id="saldo"></p>
@@ -74,8 +81,8 @@ input[type=range]{flex:1; accent-color:var(--ink-2)}
     </div>
   </div>
 
-  <p class="note">Rechnung: Stunden des Jahres geteilt durch die Zahl der Todesfälle bzw. Lebendgeburten.
-    Das ist ein Durchschnitt – die Ereignisse verteilen sich in Wirklichkeit unregelmässig über Tage und
+  <p class="note">Rechnung: Minuten des Jahres geteilt durch die Zahl der Todesfälle bzw. Lebendgeburten.
+    Das ist ein Durchschnitt – in Wirklichkeit verteilen sich die Ereignisse unregelmässig über Tage und
     Jahreszeiten. Ständige Wohnbevölkerung des Kantons Graubünden.
     Daten: <a href="https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_101/" target="_blank" rel="noopener">BFS,
     Demografische Bilanz nach Kanton</a>, abgerufen 4.11.2026.</p>
@@ -86,21 +93,18 @@ input[type=range]{flex:1; accent-color:var(--ink-2)}
 const DATA = [[1971,2728,1572],[1972,2522,1446],[1973,2429,1497],[1974,2268,1510],[1975,2116,1446],[1976,2149,1503],[1977,2033,1517],[1978,1979,1565],[1979,2073,1453],[1980,2054,1508],[1981,2127,1562],[1982,2080,1581],[1983,2122,1544],[1984,2155,1522],[1985,2153,1503],[1986,2166,1485],[1987,2165,1598],[1988,2269,1567],[1989,2272,1567],[1990,2240,1634],[1991,2345,1596],[1992,2433,1599],[1993,2280,1617],[1994,2088,1569],[1995,2135,1603],[1996,2176,1598],[1997,2013,1598],[1998,2040,1640],[1999,2028,1589],[2000,2011,1598],[2001,1767,1639],[2002,1644,1632],[2003,1689,1652],[2004,1660,1572],[2005,1528,1632],[2006,1533,1588],[2007,1599,1685],[2008,1597,1631],[2009,1619,1701],[2010,1602,1608],[2011,1724,1614],[2012,1645,1703],[2013,1764,1721],[2014,1803,1704],[2015,1748,1734],[2016,1806,1624],[2017,1712,1746],[2018,1794,1789],[2019,1630,1748],[2020,1637,1800],[2021,1793,1825],[2022,1641,1995],[2023,1538,1866],[2024,1504,1867],[2025,1421,1906]];
 const BY_YEAR = Object.fromEntries(DATA.map(d => [d[0], d]));
 const NS = "http://www.w3.org/2000/svg";
-const svg = document.getElementById("uhr");
-const C = 150, R = 118;
+const svg = document.getElementById("tag");
+
+// timeline geometry in CSS pixels; width follows the container so text stays readable on phones
+const LANE_TOD = 30, LANE_GEB = 74, AXIS = 104, H = 118;
+let W = 664, X0 = 96, X1 = 652, R = 11;
+const xAt = min => X0 + (X1 - X0) * min / 1440;
 
 const isLeap = y => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
 const fmtNum = n => n.toLocaleString("de-CH");
-
-// interval in minutes, rounded to whole minutes
-function interval(year, count) {
-  const hours = (isLeap(year) ? 366 : 365) * 24;
-  return Math.round(hours * 60 / count);
-}
-function fmtInt(min, long) {
-  const h = Math.floor(min / 60), m = min % 60;
-  return long ? `${h} Stunden und ${m} Minuten` : `${h} Std. ${m} Min.`;
-}
+const fmtDec = n => n.toFixed(1).replace(".", ",");
+const minutesOf = y => (isLeap(y) ? 366 : 365) * 1440;
+const interval = (y, n) => Math.round(minutesOf(y) / n);  // whole minutes
 
 function el(name, attrs, parent) {
   const e = document.createElementNS(NS, name);
@@ -108,64 +112,79 @@ function el(name, attrs, parent) {
   (parent || svg).appendChild(e);
   return e;
 }
-function polar(hours, r) {
-  const a = (hours / 24) * 2 * Math.PI - Math.PI / 2;
-  return [C + r * Math.cos(a), C + r * Math.sin(a)];
+function text(x, y, s, attrs, parent) { const t = el("text", { x, y, ...attrs }, parent); t.textContent = s; return t; }
+
+let marks;
+function frame() {
+  W = Math.max(300, Math.round(svg.parentNode.clientWidth || 664));
+  const narrow = W < 460;
+  X0 = narrow ? 78 : 96; X1 = W - 12; R = narrow ? 8 : 11;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  while (svg.lastChild && svg.lastChild.nodeName !== "desc") svg.removeChild(svg.lastChild);
+  // lane labels, baselines, hour axis
+[[LANE_TOD, "Todesfälle", "#ee7733"], [LANE_GEB, "Geburten", "#0068a4"]].forEach(([y, s, c]) => {
+  el("line", { x1: X0, y1: y, x2: X1, y2: y, stroke: "#eef2f5", "stroke-width": 2 });
+  text(0, y, s, { "dominant-baseline": "middle", "font-size": narrow ? 14 : 15, "font-weight": 700, fill: c });
+});
+for (let h = 0; h <= 24; h += narrow ? 6 : 3) {
+  const x = xAt(h * 60);
+  el("line", { x1: x, y1: AXIS - 6, x2: x, y2: AXIS - 2, stroke: "#b8c4cc", "stroke-width": 1 });
+  text(x, AXIS + 10, h === 24 ? "24 Uhr" : String(h), { "text-anchor": h === 24 ? "end" : "middle",
+    "font-size": 13, fill: "#71838f" });
+}
+el("line", { x1: X0, y1: AXIS - 4, x2: X1, y2: AXIS - 4, stroke: "#dde4e9", "stroke-width": 1 });
+marks = el("g", {});
 }
 
-// static clock face (24h, midnight at top)
-el("circle", { cx: C, cy: C, r: R, fill: "none", stroke: "#dde4e9", "stroke-width": 1 });
-for (let h = 0; h < 24; h++) {
-  const [x1, y1] = polar(h, R - (h % 6 === 0 ? 7 : 3));
-  const [x2, y2] = polar(h, R);
-  el("line", { x1, y1, x2, y2, stroke: "#b8c4cc", "stroke-width": 1 });
-}
-[[0, "0 Uhr"], [6, "6"], [12, "12"], [18, "18"]].forEach(([h, t]) => {
-  const [x, y] = polar(h, R - 20);
-  const tx = el("text", { x, y, "text-anchor": "middle", "dominant-baseline": "middle",
-    "font-size": 12, fill: "#71838f" });
-  tx.textContent = t;
-});
-const marks = el("g", {});
-const legend = el("g", {});
-[["Todesfälle", "#ee7733", 132], ["Geburten", "#0068a4", 158]].forEach(([t, c, y]) => {
-  el("line", { x1: 108, y1: y, x2: 122, y2: y, stroke: c, "stroke-width": 3, "stroke-linecap": "round" }, legend);
-  const tx = el("text", { x: 128, y, "dominant-baseline": "middle", "font-size": 13, fill: "#4a5b68" }, legend);
-  tx.textContent = t;
-});
-
-function drawMarks(minutes, color, rIn, rOut) {
-  for (let t = 0; t < 24 * 60; t += minutes) {
-    const [x1, y1] = polar(t / 60, rIn), [x2, y2] = polar(t / 60, rOut);
-    el("line", { x1, y1, x2, y2, stroke: color, "stroke-width": 4, "stroke-linecap": "round" }, marks);
+function lane(minutes, y, color) {
+  // first event placed half an interval after midnight, so the row is centred in the day
+  for (let t = minutes / 2; t < 1440; t += minutes) {
+    el("circle", { cx: xAt(t), cy: y, r: R, fill: color }, marks);
   }
+}
+
+function fmtBig(min) {
+  const h = Math.floor(min / 60), m = min % 60;
+  return `${h}<small>Std.</small>${m}<small>Min.</small>`;
+}
+function fmtLong(min) {
+  const h = Math.floor(min / 60), m = min % 60;
+  return `${h} Stunden und ${m} Minuten`;
 }
 
 function render(year) {
   const [, geb, tod] = BY_YEAR[year];
   const iTod = interval(year, tod), iGeb = interval(year, geb);
+  const days = minutesOf(year) / 1440;
   document.getElementById("jahr-out").textContent = year;
   document.getElementById("titel").textContent =
-    `Alle ${fmtInt(iTod, true)} ${year === 2025 ? "stirbt" : "starb"} in Graubünden ein Mensch`;
-  document.getElementById("tod-int").textContent = fmtInt(iTod);
-  document.getElementById("geb-int").textContent = fmtInt(iGeb);
-  document.getElementById("tod-sub").textContent = `${fmtNum(tod)} Todesfälle im Jahr ${year}`;
-  document.getElementById("geb-sub").textContent = `${fmtNum(geb)} Geburten im Jahr ${year}`;
+    `Alle ${fmtLong(iTod)} ${year === 2025 ? "stirbt" : "starb"} in Graubünden ein Mensch`;
+  document.getElementById("tod-int").innerHTML = fmtBig(iTod);
+  document.getElementById("geb-int").innerHTML = fmtBig(iGeb);
+  document.getElementById("tod-sub").textContent = `${fmtNum(tod)} Todesfälle, ${fmtDec(tod / days)} pro Tag`;
+  document.getElementById("geb-sub").textContent = `${fmtNum(geb)} Geburten, ${fmtDec(geb / days)} pro Tag`;
   const diff = geb - tod;
-  document.getElementById("saldo").textContent = diff < 0
-    ? `${year}: ${fmtNum(-diff)} Todesfälle mehr als Geburten.`
-    : diff > 0 ? `${year}: ${fmtNum(diff)} Geburten mehr als Todesfälle.`
-    : `${year}: gleich viele Geburten wie Todesfälle.`;
+  document.getElementById("saldo").innerHTML = diff < 0
+    ? `${year} starben <b>${fmtNum(-diff)}</b> Menschen mehr, als Kinder geboren wurden.`
+    : diff > 0 ? `${year} kamen <b>${fmtNum(diff)}</b> Kinder mehr zur Welt, als Menschen starben.`
+    : `${year} gab es gleich viele Geburten wie Todesfälle.`;
   while (marks.firstChild) marks.removeChild(marks.firstChild);
-  drawMarks(iTod, "#ee7733", R + 6, R + 24);
-  drawMarks(iGeb, "#0068a4", R - 44, R - 28);
-  document.getElementById("uhr-desc").textContent =
-    `24-Stunden-Uhr für ${year}: im Schnitt alle ${fmtInt(iTod, true)} ein Todesfall, alle ${fmtInt(iGeb, true)} eine Geburt.`;
+  lane(iTod, LANE_TOD, "#ee7733");
+  lane(iGeb, LANE_GEB, "#0068a4");
+  document.getElementById("tag-desc").textContent =
+    `Durchschnittlicher Tag ${year}: alle ${fmtLong(iTod)} ein Todesfall, alle ${fmtLong(iGeb)} eine Geburt.`;
 }
 
 const slider = document.getElementById("jahr");
 slider.addEventListener("input", () => render(+slider.value));
-render(+slider.value);
+let lastW = 0;
+function layout() {
+  const w = Math.round(svg.parentNode.clientWidth);
+  if (w === lastW) return;
+  lastW = w; frame(); render(+slider.value);
+}
+window.addEventListener("resize", layout);
+layout();
 </script>
 </body>
 </html>
