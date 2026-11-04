@@ -22,6 +22,28 @@ Standardisierung: direkte Methode, Europäische Standardbevölkerung 2010. Spalt
 
 **Gegenprobe:** Obsan-`n` für GR 2023/2024 (1866/1867) = BFS-Todesfälle in `bfs_bilanz_gr.csv`.
 
+## Grafiken
+
+| Grafik | Wo | Daten |
+|---|---|---|
+| Geburten vs. Todesfälle 1971–2025 («Schere») | Datawrapper [4jwwv](https://datawrapper.dwcdn.net/4jwwv/) | `daten/dw_schere.csv` |
+| Kantonsvergleich standardisierte Mortalität, Mittel 2020–2024 | Datawrapper [Z7OP4](https://datawrapper.dwcdn.net/Z7OP4/) | `obsan_mortalitaet_kantone.csv`, Mittelwert der fünf Jahresraten (eigene Berechnung) |
+| Uhr «Alle 4 Std. 36 Min. ein Todesfall», mit Jahresregler | `uhr.html` ([live](https://julirai90-glitch.github.io/claude_code_git_workspace/todesfaelle-gr/uhr.html)) | Werte inline aus `bfs_bilanz_gr.csv` |
+
+Uhr-Rechnung: Stunden des Jahres (Schaltjahre berücksichtigt) × 60 / Anzahl Ereignisse, auf ganze
+Minuten gerundet. 2025: 525 600 / 1906 = 276 min = 4 h 36 min.
+
+Einbettung der Uhr:
+```html
+<iframe id="todesfaelle-uhr"
+  src="https://julirai90-glitch.github.io/claude_code_git_workspace/todesfaelle-gr/uhr.html"
+  title="Wie oft in Graubünden ein Mensch stirbt und ein Kind geboren wird"
+  loading="lazy" scrolling="no"
+  style="width:0; min-width:100%; border:none; display:block;"></iframe>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.min.js"></script>
+<script>iFrameResize({ checkOrigin: false, heightCalculationMethod: 'documentElementScroll' }, '#todesfaelle-uhr');</script>
+```
+
 ## Was offen nicht verfügbar ist
 
 - **Todesursachen-Verteilung GR nach Jahr** (Krebs, Herz-Kreislauf, Unfälle, Demenz …): nur als
