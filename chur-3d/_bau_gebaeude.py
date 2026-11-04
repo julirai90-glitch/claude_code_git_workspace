@@ -371,7 +371,8 @@ def main():
             ov = g.intersection(foot).area
             if ov > 4 and (ov > 0.5 * g.area or ov > 0.5 * foot.area):
                 over.append((g, e, ov > 0.5 * g.area))
-        inside = [(g, e) for g, e, mostly in over if mostly]
+        # only footprints with an EGID are houses of their own; annexes without one go to the nearest house
+        inside = [(g, e) for g, e, mostly in over if mostly and e]
         if len(inside) >= 2:
             cells = cells_for(foot, [g for g, _ in inside])
             n_split += 1
@@ -425,6 +426,10 @@ def main():
                 year, src = (hi if lo is None else lo), "p"
         r0 = min(rs, key=lambda r: int(r["GBAUJ"] or 9999)) if rs else None
         m = {"y": year, "s": src, "h": round(float(t[:, :, 2].max()) - b["zmin"], 1), "a": b["art"]}
+        if src == "j" and year == 1900:
+            # GBAUJ 1900 is a catch-all in the GR register (Davos: 1395 entries, 1899/1901: 0/1),
+            # so it is shown like the period "before 1919", not as an exact year
+            m["sx"] = 1
         if u["split"]:
             m["v"] = 1  # cut out of a larger solid along the survey footprint
         if i in by_egid:
@@ -477,7 +482,8 @@ def main():
         "stats": {"buildings": len(meta), "baujahr": with_year, "bauperiode": with_period,
                   "ohne": len(meta) - with_year - with_period, "gwr_abgebrochen": demolished,
                   "koerper": len(buildings), "geteilt": n_split,
-                  "egid": sum(1 for m in meta if m.get("j") == "e")},
+                  "egid": sum(1 for m in meta if m.get("j") == "e"),
+                  "sammel1900": sum(1 for m in meta if m.get("sx"))},
         "sources": {"swissbuildings3d": "swisstopo swissBUILDINGS3D 3.0, Ausgabe " + "/".join(map(str, years)),
                     "gwr": "BFS GWR, Export " + (rows[0]["GEXPDAT"] if rows else "?"),
                     "av": f"Amtliche Vermessung (AV), Kanton Graubünden, {av_date}",

@@ -135,3 +135,21 @@ Playwright: nur `chromium-1243` vorhanden.
 - Auf echtem Handy nicht getestet (Ladezeit ca. 2 MB, 220 000 Dreiecke).
 - Lizenz: swisstopo- und GWR-Daten gelten als OGD (frei mit Quellenangabe); GWR-Lizenz `license.pdf` im ZIP nicht gelesen.
 - Nächste Ebenen (Phase 2+): ÖV (transport.opendata.ch), Wetter, Verkehr (Astra-Webhook), Ortsnamen.
+
+## Überarbeitung 04.11.2026 (nach Gesamtprüfung)
+- Titeltext: «So ist X gewachsen» war falsch (nur heutiger Bestand, Abgerissene fehlen) → «Wann wurden die heutigen
+  Gebäude gebaut? Abgerissene fehlen.» Videotexte haben dasselbe Problem, Video nicht neu gerendert.
+- **GBAUJ 1900 = Sammelwert** (Annahme, nicht beim BFS/Kanton bestätigt): GWR GR, lebende Gebäude, Davos 1395× 1900,
+  1899: 0, 1901: 1; Chur 417× (Nachbarjahre 3–8); ähnlich in vielen GR-Gemeinden. Build setzt `sx: 1`, Seite zeigt sie
+  wie «vor 1919» (stehen in jedem Jahr, Farbe von 1900, erster Histogrammbalken). Betroffen: Chur 111, Davos 604, St. Moritz 39.
+- Aufteilung nur noch nach AV-Grundrissen **mit EGID**; Anbauten ohne EGID gehen per Voronoi ans nächste Haus.
+  Chur: 515 Körper → 1654 Häuser, 5235 Gebäude, ohne Baujahr 662 (vorher 1030, vor der Aufteilung 678).
+- Handy: Infobox ersetzt während der Anzeige das untere Feld; Legende und Methode einklappbar; Quellenzeile immer sichtbar.
+- Einbettung (iframe oder `?embed`): Karte erst nach Antippen bedienbar, sperrt sich wieder, wenn sie aus dem Bild
+  gescrollt wird. Getestet mit Mausrad in Chromium (gesperrt scrollt die Seite, entsperrt zoomt die Karte); Touch auf
+  echtem Handy nicht getestet.
+- Fehleranzeige statt ewigem «Wird geladen»: ohne WebGL, alter Browser (DecompressionStream/Importmap), Download-Fehler.
+- Offen aus der Prüfung: EGID doppelt (ein Haus in zwei 3D-Körpern; Chur 20), Höhe am Hang ab tiefstem Punkt,
+  Stichprobe ~20 Gebäude/Ort (verdächtig: Davos Promenade 159 «Hotel 1420»), Ladegrösse (Chur ~4,8 MB + three.js),
+  three.js selbst hosten, Textalternative.
+

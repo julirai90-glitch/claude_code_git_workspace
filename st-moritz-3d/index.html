@@ -58,11 +58,20 @@
   #labels .l::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: 14px; background: rgba(0,0,0,.45); }
   #labels .q { color: #4a5157; font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
     text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff; }
-  #loading { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 14px; }
+  #loading { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 14px; padding: 24px; text-align: center; }
+  #loading.err { color: var(--ink); background: var(--bg); z-index: 10; }
+  #credit { margin: 4px 0 0; color: var(--muted); font-size: 10.5px; }
+  #more { display: none; margin-top: 6px; background: none; border: 0; padding: 0; color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; }
+  #gate { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; cursor: pointer; touch-action: pan-y; }
+  #gate span { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 8px 14px; font-size: 13px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.12); }
   @media (max-width: 760px) {
     #head { right: 12px; max-width: none; padding: 8px 12px; }
     #head p { display: none; }
-    #info { top: auto; bottom: 230px; left: 12px; right: 12px; width: auto; }
+    #info { top: auto; bottom: 12px; left: 12px; right: 12px; width: auto; max-height: 55vh; overflow-y: auto; }
+    body.info-open #bottom { display: none; }
+    #more { display: block; }
+    #bottom:not(.more) #legend, #bottom:not(.more) details { display: none; }
     #bottom { right: 60px; padding: 8px 10px 6px; }
     #yearlabel { font-size: 22px; min-width: 60px; }
     #count { min-width: 0; font-size: 12px; }
@@ -77,10 +86,11 @@
 <div id="scene"></div>
 <div id="labels"></div>
 <div id="loading">Wird geladen …</div>
+<div id="gate" role="button" tabindex="0"><span>Antippen, um die Karte zu bewegen</span></div>
 
 <div id="head" class="panel">
   <h1><span class="ortname">St. Moritz</span> 3D <span style="font-weight:400;color:var(--muted);font-size:12px">Prototyp</span></h1>
-  <p>Alle Gebäude von <span class="ortname">St. Moritz</span>. Ebene «Baujahr» wählen und den Schieber ziehen: So ist <span class="ortname">St. Moritz</span> gewachsen. Gebäude antippen für Details.</p>
+  <p>Alle Gebäude von <span class="ortname">St. Moritz</span>. Ebene «Baujahr» wählen und den Schieber ziehen: Wann wurden die heutigen Gebäude gebaut? Abgerissene fehlen. Gebäude antippen für Details.</p>
 </div>
 
 <div id="info" class="panel">
@@ -105,6 +115,7 @@
   <input id="slider" type="range" min="1800" max="2026" step="1" value="2026" aria-label="Jahr">
   <div class="axis" id="axis"></div>
   <div id="legend"></div>
+  <button id="more" aria-expanded="false">Legende und Methode ▾</button>
   <details>
     <summary>Was ist gemessen, was nicht?</summary>
     <p><b>Gemessen:</b> Gebäudeformen aus swissBUILDINGS3D 3.0 (swisstopo, Ausgabe 2022), Gelände aus swissALTI3D
@@ -115,7 +126,9 @@
       also mehr, als hier zu sehen ist. Baujahr und Gebäude sind bei <span id="egidanteil"></span> Gebäuden über die
       Gebäudenummer (EGID) der amtlichen Vermessung verknüpft, sonst über die Lage (Registerpunkt im Grundriss); bei <span id="nojahr"></span> Gebäuden fehlt ein Baujahr, sie bleiben grau
       und stehen in jedem Jahr. Bei <span id="nurperiode"></span> Gebäuden kennt das Register nur eine Bauperiode;
-      sie erscheinen zu Beginn der Periode (Periode «vor 1919»: in jedem Jahr). Wo das 3D-Modell mehrere Häuser als einen Körper führt (Häuserzeilen), ist er entlang der Hausgrundrisse
+      sie erscheinen zu Beginn der Periode (Periode «vor 1919»: in jedem Jahr). Das Baujahr 1900 ist im Register
+      auffällig oft eingetragen und dürfte meist ein Sammelwert für ältere Häuser ohne genaues Jahr sein
+      (Annahme, nicht bestätigt); diese <span id="sammel"></span> Gebäude stehen deshalb ebenfalls in jedem Jahr. Wo das 3D-Modell mehrere Häuser als einen Körper führt (Häuserzeilen), ist er entlang der Hausgrundrisse
       der amtlichen Vermessung geteilt (<span id="geteilt"></span>). Die Schnitte und Trennwände sind daraus
       abgeleitet, nicht gemessen; an den Hausgrenzen kann ein Dachstück dem Nachbarhaus zufallen.
       Das 3D-Modell stammt von 2022: Neubauten danach fehlen oder zeigen noch den Vorgängerbau.</p>
@@ -124,6 +137,7 @@
     <p>Diese Informationen der amtlichen Vermessung erfolgen ohne Gewähr und haben keinerlei Rechtswirkung.
       Verbindlich sind einzig die vom Nachführungsgeometer erstellten und beglaubigten Auszüge.</p>
   </details>
+  <p id="credit">Daten: swisstopo · BFS (GWR) · Amtliche Vermessung GR, <span id="creditdate"></span></p>
 </div>
 
 <div id="pad" aria-label="Navigation">
@@ -147,7 +161,27 @@
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
 } }
 </script>
+<script>
+// feature check and error display: without this an unsupported browser shows "Wird geladen" forever
+(function () {
+  var why = null, c = document.createElement("canvas");
+  try { if (!(c.getContext("webgl2") || c.getContext("webgl"))) why = "Dieses Gerät kann keine 3D-Grafik (WebGL) anzeigen."; }
+  catch (e) { why = "Dieses Gerät kann keine 3D-Grafik (WebGL) anzeigen."; }
+  if (!why && (typeof DecompressionStream === "undefined" || !(HTMLScriptElement.supports && HTMLScriptElement.supports("importmap"))))
+    why = "Dieser Browser ist zu alt für die 3D-Ansicht. Bitte aktualisieren (z. B. iOS ab 16.4).";
+  window.fail3d = function (msg) {
+    var l = document.getElementById("loading");
+    if (l) { l.textContent = msg; l.className = "err"; }
+  };
+  window.nogo3d = !!why;
+  if (why) document.addEventListener("DOMContentLoaded", function () { window.fail3d(why); });
+  var generic = "Die 3D-Ansicht konnte nicht geladen werden. Bitte die Seite neu laden.";
+  window.addEventListener("error", function () { if (!window.nogo3d) window.fail3d(generic); }, true);
+  window.addEventListener("unhandledrejection", function () { if (!window.nogo3d) window.fail3d(generic); });
+})();
+</script>
 <script type="module">
+if (window.nogo3d) await new Promise(() => {});   // unsupported: the message is already shown
 import * as THREE from "three";
 import { MapControls } from "three/addons/controls/MapControls.js";
 
@@ -219,7 +253,11 @@ const [B, T, PLACES, ORT, bBuf, tBuf] = await Promise.all([
   fetch("ort.json").then(r => r.json()),
   inflate("gebaeude.bin.gz"),
   inflate("gelaende.bin.gz"),
-]);
+]).catch(e => {
+  // a failed download must not leave "Wird geladen" on screen forever
+  window.fail3d("Die Daten konnten nicht geladen werden. Bitte die Seite neu laden.");
+  return new Promise(() => {});
+});
 const [OX, OY] = B.origin_lv95;
 const ZB = T.zmin;
 const toLocal = (e, n, h) => new THREE.Vector3(e - OX, h - ZB, -(n - OY));
@@ -274,7 +312,7 @@ const meta = B.buildings;
 const bbox = meta.map(() => [Infinity, Infinity, -Infinity, -Infinity, Infinity, -Infinity]);
 meta.forEach(m => {
   // period "before 1919" has no usable year: treat as present from the start
-  m.year = m.y == null ? -1 : (m.s === "p" && m.p === "Vor 1919" ? 0 : m.y);
+  m.year = m.y == null ? -1 : ((m.s === "p" && m.p === "Vor 1919") || m.sx ? 0 : m.y);
   m.use = useGroup(m.k);
 });
 for (let i = 0; i < N; i++) {
@@ -331,7 +369,7 @@ function paint() {
   uniforms.uStripe.value = mode === "year" ? 1 : 0;
   const pal = meta.map(m => {
     const c = mode === "map" ? new THREE.Color(ROOF)
-      : mode === "year" ? (m.year < 0 ? new THREE.Color(UNKNOWN) : yearColor(m.year || 1700))
+      : mode === "year" ? (m.year < 0 ? new THREE.Color(UNKNOWN) : yearColor(m.year || (m.sx ? 1900 : 1700)))
       : new THREE.Color(USE[m.use][1]);
     return [c.r * 255, c.g * 255, c.b * 255];
   });
@@ -348,6 +386,13 @@ $("gwrdate").textContent = B.sources.gwr.replace(/.*Export /, "").split("-").rev
 $("nojahr").textContent = B.stats.ohne.toLocaleString("de-CH");
 $("nurperiode").textContent = B.stats.bauperiode.toLocaleString("de-CH");
 $("avdate").textContent = (B.sources.av || "").replace(/.*, /, "");
+$("sammel").textContent = (B.stats.sammel1900 || 0).toLocaleString("de-CH");
+$("creditdate").textContent = "Stand " + (B.sources.av || "").replace(/.*, /, "");
+$("more").addEventListener("click", () => {
+  const on = $("bottom").classList.toggle("more");
+  $("more").setAttribute("aria-expanded", on);
+  $("more").textContent = on ? "Legende und Methode ▴" : "Legende und Methode ▾";
+});
 $("egidanteil").textContent = (B.stats.egid || 0).toLocaleString("de-CH");
 $("geteilt").textContent = `${(B.stats.geteilt || 0).toLocaleString("de-CH")} Körper in ${meta.filter(m => m.v).length.toLocaleString("de-CH")} Häuser`;
 function legend() {
@@ -378,7 +423,7 @@ function hist() {
   svg.innerHTML = decades.map(({ d, n }) => {
     const x = (d - T0) / span * W, w = 10 / span * W - 1.5, h = Math.max(1, n / max * (H - 2));
     const c = d <= y ? yearColor(d + 5).getStyle() : "rgba(0,0,0,.1)";
-    return `<rect x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${c}"><title>${d === T0 ? "bis " + (T0 + 9) : d + "er"}: ${n} Gebäude</title></rect>`;
+    return `<rect x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${c}"><title>${d === T0 ? "bis " + (T0 + 9) + " oder ohne genaues Jahr (vor 1919, Sammelwert 1900)" : d + "er"}: ${n} Gebäude</title></rect>`;
   }).join("");
 }
 function setYear(y) {
@@ -387,7 +432,7 @@ function setYear(y) {
   $("slider").value = y;
   const n = known.filter(m => m.year <= y).length;
   $("count").textContent = y >= NOW
-    ? `${meta.length.toLocaleString("de-CH")} Gebäude, ${known.length.toLocaleString("de-CH")} mit bekanntem Baujahr`
+    ? `${meta.length.toLocaleString("de-CH")} Gebäude, ${known.length.toLocaleString("de-CH")} mit Baujahr oder Bauperiode`
     : `${n.toLocaleString("de-CH")} der heutigen Gebäude standen schon (${Math.round(n / known.length * 100)} %)`;
   hist();
 }
@@ -430,7 +475,8 @@ function showInfo(i) {
   $("i-title").textContent = m.ys ? `${m.n} Gebäude in einem Modellkörper` : m.ad ? m.ad[0] : (m.k || "Gebäude");
   const rows = [];
   if (m.ys) rows.push(["Baujahre", m.ys.map(([y, p, a]) => `${y ?? (p ? "Periode " + p : "unbekannt")}${a ? " · " + a : ""}`).join("<br>")]);
-  else rows.push(["Baujahr", m.s === "j" ? m.y : m.s === "p" ? `Periode ${m.p}` : "nicht erfasst"]);
+  else rows.push(["Baujahr", m.sx ? "1900 laut Register, oft ein Sammelwert für ältere Häuser ohne genaues Jahr"
+    : m.s === "j" ? m.y : m.s === "p" ? `Periode ${m.p}` : "nicht erfasst"]);
   if (m.k) rows.push(["Nutzung", m.k]);
   if (m.g) rows.push(["Geschosse", m.g]);
   rows.push(["Höhe", `${m.h.toLocaleString("de-CH")} m (Modell)`]);
@@ -441,8 +487,9 @@ function showInfo(i) {
   if (!m.e) rows.push(["Register", "kein GWR-Eintrag zugeordnet"]);
   $("i-list").innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
   $("info").style.display = "block";
+  document.body.classList.add("info-open");
 }
-function closeInfo() { $("info").style.display = "none"; uniforms.uSel.value = -1; }
+function closeInfo() { $("info").style.display = "none"; uniforms.uSel.value = -1; document.body.classList.remove("info-open"); }
 document.querySelector("#info .close").addEventListener("click", closeInfo);
 
 // camera
@@ -486,6 +533,20 @@ $("slider").min = T0;
 }
 setYear(NOW);
 $("loading").remove();
+
+// embedded in an article: the map only takes gestures after a tap, so the page keeps scrolling past it
+const EMBED = window.self !== window.top || new URLSearchParams(location.search).has("embed");
+function lockMap(lock) {
+  controls.enabled = !lock;
+  $("gate").style.display = lock ? "flex" : "none";
+}
+if (EMBED) {
+  lockMap(true);
+  $("gate").addEventListener("click", () => lockMap(false));
+  $("gate").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") lockMap(false); });
+  // lock again once the map has been scrolled out of view
+  new IntersectionObserver(([e]) => { if (!e.isIntersecting) lockMap(true); }).observe(document.body);
+}
 
 addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
