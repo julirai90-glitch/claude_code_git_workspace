@@ -54,3 +54,17 @@ Ausserdem: Gantt-Zeilen per Tastatur wählbar; Abgleich mit SRF im Text der Scha
 | 8 | Favicon fehlte (404 in der Konsole) | Inline-SVG-Favicon, Konsole jetzt fehlerfrei |
 | 9 | Keine automatischen Tests | `_build/test_consistency.mjs`: Browser-Rechnung = Vorberechnung (33 Orte nachgerechnet, 799 auf Invarianten, Zeitumstellung) · `_build/test_e2e.mjs`: 18 Browser-Tests (Suche, Hash-Links, Regler-Extremwerte, Kartenklicks, Embeds, Mobil) – alle grün |
 | 10 | Suchliste blieb nach Fokusverlust offen | Schliesst beim Verlassen |
+
+## Runde 4 – Schlussabnahme (5.11., ca. 06:30)
+
+Geprüft: ganze Seite Desktop und Mobil, Öffnen per Doppelklick (`file://`) funktioniert, Konsole fehlerfrei,
+alle Tests grün. Behoben: Vorschaubild (`share.jpg`) für geteilte Links, Rechenkette vollständig als Skripte
+(`fetch_osm.sh` ergänzt), Daten committet.
+
+Verbleibende Schwächen – bewusst nicht behoben, keine davon peinlich, alle in GUTEN-MORGEN.md offen genannt:
+
+1. 3,2 MB Daten (Gelände) – Kachel-Nachladen wäre die nächste technische Stufe.
+2. Oberflächenmodell: grosse Wälder zählen als Hindernis.
+3. Kartenschatten = Veranschaulichung mit dem Sonnenstand der Kantonsmitte.
+4. Nur in Chromium getestet, nicht auf echtem iPhone/Safari.
+5. Befunde sind Modellrechnung und vor Publikation vor Ort zu verifizieren.
