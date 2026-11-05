@@ -13,9 +13,16 @@ Dateien: `datenseite_A4.pdf` (Vorlage/Korrekturabzug), `datenseite_vorschau.png`
 | −410 m seit 2015 | Perioden nach 17.10.2015 (= nach Aufnahme Inventar SGI 2016) |
 | 5 Vorstösse, +27,3 m | 2 + 5 + 8 + 2 + 10,3 |
 | −61 m/Jahr 2010–2019 | `02_…csv` |
-| 20,2 → 14,9 km², −1,12 km³, −55 m | GLAMOS volumechange, direkter Vergleich 1850–2015 (sieg-map → sa3d-2018), inkl. Vadret Pers |
+| 20,2 → 14,3 km² (1850 → 2022) | SGI 2023 (release 2026): E22-03 Morteratsch 7,679 + E22-16 Vadret Pers 6,583 = 14,262 km², Aufnahme 2022 |
+| −1,12 km³, −55 m | GLAMOS volumechange, direkter Vergleich 1850–2015 (sieg-map → sa3d-2018), inkl. Vadret Pers |
 | ≈ 310 m Haltestelle ↔ Zunge 1850 | Luftlinie LV95: 312 m, gerundet |
 | +2,5 °C Sommer Samedan | Mittel JJA-Abweichung 2016–2025 vs. 1871–1900 = +2,52; 2026 weggelassen (unvollständig) |
+
+## Inventar SGI 2023 (neu, 05.11.2026)
+- `https://doi.glamos.ch/data/inventory/inventory_sgi2023_r2026.zip`, doi:10.18750/inventory.2023.r2026, **Lizenz CC BY 4.0** (kommerziell mit Quellenangabe erlaubt).
+- Extrakt: `../05b_umriss_sgi2023_lv95.geojson` (Felder `sgi_id`, `name`, `year_acq`, `area_km2`).
+- **Keine Zungenspitze 2022 markiert:** Der nördlichste Punkt des Umrisses liegt auf einem schmalen Eisstreifen am Westrand, nördlicher als die Spitze 2015. Er ist keine sinnvolle «Zungenspitze». Was der Streifen ist (z. B. schuttbedecktes Eis), ist ungeprüft.
+- Die Lizenz gilt nur für dieses Inventar. Für Längen-/Volumenänderung GLAMOS-Lizenz weiterhin klären.
 
 ## Bewusst weggelassen
 - 0-Grad-Grenze im Jahresmittel: Methode noch nicht von MeteoSchweiz geprüft.

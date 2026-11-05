@@ -27,6 +27,7 @@ DEK = rd('02_laengenaenderung_dekaden.csv')
 V = [r for r in rd('03_volumen_flaeche.csv') if r['jahr_start'] == '1850' and r['jahr_ende'] == '2015'][0]
 A0, A1, dV, dH = float(V['flaeche_start_km2']), float(V['flaeche_ende_km2']), float(V['volumenaenderung_km3']), float(V['mittl_dickenaenderung_m'])
 
+A22 = sum(f['properties']['area_km2'] for f in json.load(open(os.path.join(D, '05b_umriss_sgi2023_lv95.geojson')))['features'])  # Morteratsch + Pers 2022
 # ---------- Klima Samedan (MeteoSchweiz NBCN homogen), Sommer JJA, Abw. ggü. 1871–1900; 2026 unvollständig -> weg ----------
 K = [r for r in rd('08_klima_samedan_homogen.csv') if int(r['jahr']) <= 2025 and r['abw_sommer_vs_1871_1900']]
 s10 = sum(float(r['abw_sommer_vs_1871_1900']) for r in K if int(r['jahr']) >= 2016) / 10  # Mittel 2016–2025
@@ -45,12 +46,19 @@ def t(x, y, s, size=2.6, anchor='start', fill=INK, weight=400, extra=''):
     return f'<text x="{x:.2f}" y="{y:.2f}" font-size="{size}" text-anchor="{anchor}" fill="{fill}" font-weight="{weight}" style="{F}" {extra}>{s}</text>'
 
 # --- Karte (LV95, Norden oben) ---
+def bg(x, y, txt, size, anchor):
+    w = len(txt) * size * 0.5 + 0.6; x0 = x - 0.4 if anchor == 'start' else x - w + 0.4
+    return f'<rect x="{x0:.2f}" y="{y - size*0.82:.2f}" width="{w:.2f}" height="{size*1.08:.2f}" fill="#fff" opacity="0.85"/>'
 def karte(W=80):
     E0, E1, N0, N1 = 2789650, 2795700, 1137900, 1147750
     k = W / (E1 - E0); H = (N1 - N0) * k
     X = lambda e: (e - E0) * k; Y = lambda n: (N1 - n) * k
     g = json.load(open(os.path.join(D, '05_umrisse_inventare_lv95.geojson')))
-    cols = {1850: '#e3eef6', 1931: '#c3dbec', 1973: '#93bedc', 2010: '#5d9ec9', 2016: ICE}
+    cols = {1850: '#e3eef6', 1931: '#c3dbec', 1973: '#93bedc', 2010: '#6aa6cf', 2016: '#2f80b8', 2022: '#003E62'}
+    # SGI 2023 (release 2026, CC BY 4.0): Morteratsch E22-03 + Vadret Pers E22-16, Aufnahme 2022
+    g23 = json.load(open(os.path.join(D, '05b_umriss_sgi2023_lv95.geojson')))
+    for f in g23['features']: f['properties']['jahr'] = 2022
+    g['features'] += g23['features']
     b = f'<rect width="{W}" height="{H:.1f}" fill="#f5f5f3"/>'
     for f in sorted(g['features'], key=lambda f: f['properties']['jahr']):
         j = f['properties']['jahr']; d = ''
@@ -60,11 +68,14 @@ def karte(W=80):
         b += f'<path d="{d}" fill="{cols[j]}" stroke="#fff" stroke-width="0.15" fill-rule="evenodd"/>'
     # Zungenspitzen
     lab = {1850: ('1850', 2.2, 0.9), 1931: ('1931', 2.2, 0.9), 1973: ('1973', 2.2, 0.9), 2010: ('2010', 2.2, 0.2), 2016: ('2015', -2.2, 2.4)}
+    dots = []
     for j, r in T.items():
         x, y = X(float(r['E_lv95'])), Y(float(r['N_lv95']))
         s, dx, dy = lab[j]
-        b += f'<circle cx="{x:.2f}" cy="{y:.2f}" r="0.75" fill="{INK}" stroke="#fff" stroke-width="0.3"/>'
-        b += t(x + dx, y + dy, s, 2.6, 'start' if dx > 0 else 'end', INK, 700, 'stroke="#fff" stroke-width="0.6" paint-order="stroke"')
+        dots.append(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="0.75" fill="{INK}" stroke="#fff" stroke-width="0.3"/>')
+        b += bg(x + dx, y + dy, s, 2.6, 'start' if dx > 0 else 'end')
+        b += t(x + dx, y + dy, s, 2.6, 'start' if dx > 0 else 'end', INK, 700)
+    b += ''.join(dots)
     # Orte
     for name, lbl, dx, anchor in [('Haltestelle Morteratsch (RhB)', 'Haltestelle Morteratsch', 1.6, 'start'),
                                   ('Chamanna da Boval CAS', 'Bovalhütte', -1.6, 'end'),
@@ -77,14 +88,15 @@ def karte(W=80):
             b += f'<path d="M{x:.2f},{y-1:.2f}l1,1.7h-2z" fill="{INK}"/>'
         else:
             b += f'<circle cx="{x:.2f}" cy="{y:.2f}" r="0.7" fill="#fff" stroke="{INK}" stroke-width="0.35"/>'
-        b += t(x + dx, y + 0.9, lbl, 2.4, anchor, INK, 600 if name.startswith('Halte') else 400, 'stroke="#fff" stroke-width="0.6" paint-order="stroke"')
+        b += bg(x + dx, y + 0.9, lbl, 2.4, anchor)
+        b += t(x + dx, y + 0.9, lbl, 2.4, anchor, INK, 600 if name.startswith('Halte') else 400)
     # Massstab, Norden
     b += f'<rect x="{W-4-1000*k:.2f}" y="{H-4:.2f}" width="{1000*k:.2f}" height="0.6" fill="{INK}"/>' + t(W - 4 - 500*k, H - 5, '1 km', 2.2, 'middle')
     b += f'<path d="M4,6l1.4,-3.6l1.4,3.6l-1.4,-1z" fill="{INK}"/>' + t(5.4, 8.8, 'N', 2.2, 'middle', INK, 700)
     # Legende
-    ly = 16
-    b += f'<rect x="2.5" y="{ly-3.5}" width="27" height="27.5" fill="#fff" opacity="0.88"/>' + t(4, ly, 'Gletscherfläche', 2.3, weight=700)
-    for i, (j, s) in enumerate([(1850, '1850 (rekonstruiert)'), (1931, '1931'), (1973, '1973'), (2010, '2010'), (2016, '2015')]):
+    ly = 13.4
+    b += f'<rect x="2.5" y="{ly-3.5}" width="27" height="28.6" fill="#fff" opacity="0.88"/>' + t(4, ly, 'Gletscherfläche', 2.3, weight=700)
+    for i, (j, s) in enumerate([(1850, '1850 (rekonstruiert)'), (1931, '1931'), (1973, '1973'), (2010, '2010'), (2016, '2015'), (2022, '2022')]):
         b += f'<rect x="{4}" y="{ly+2+i*3.6:.2f}" width="3.2" height="2.6" fill="{cols[j]}"/>' + t(8.5, ly + 4.2 + i*3.6, s, 2.3)
     return svg(W, round(H, 1), b), H
 
@@ -150,7 +162,7 @@ for k, v in parts.items():
     open(os.path.join(OUT, f'{k}.svg'), 'w', encoding='utf-8').write(v)
 
 Z = dict(tot=de(tot), n=len(L), vor=len(vor), vorsum=de(sum(float(r['laengenaenderung_m']) for r in vor), 1),
-         s2000=de(tot - cum(2000)), s2015=de(seit2015), A0=de(A0, 1), A1=de(A1, 1), dV=de(dV, 2), dH=de(dH),
+         s2000=de(tot - cum(2000)), s2015=de(seit2015), A0=de(A0, 1), A1=de(A1, 1), A22=de(A22, 1), dV=de(dV, 2), dH=de(dH),
          s10='+' + de(s10, 1), dst=f'{round(d_st1850,-1):.0f}', tot_abs=de(-tot), s2015_abs=de(-seit2015), dek=de(float([r for r in DEK if r['dekade_nach_endjahr'].startswith('2010')][0]['mittel_m_pro_jahr'])))
 json.dump(Z, open(os.path.join(OUT, 'zahlen_datenseite.json'), 'w'), ensure_ascii=False, indent=1)
 print(Z, round(mapH, 1))
