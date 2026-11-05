@@ -124,7 +124,7 @@ def karte(W=80):
     return svg(W, round(H, 1), b), H
 
 # --- Kumulierte Längenänderung ---
-def linie(W=98, H=44):
+def linie(W=90, H=33):
     l, r, tp, bt = 9, 4, 6, 7; iw, ih = W - l - r, H - tp - bt
     X = lambda y: l + (y - 1878) / (2024 - 1878) * iw; Y = lambda v: tp + (-v) / 3200 * ih
     b = ''
@@ -141,7 +141,7 @@ def linie(W=98, H=44):
     return svg(W, H, b)
 
 # --- Dekaden m/Jahr ---
-def dekaden(W=98, H=35):
+def dekaden(W=90, H=31):
     l, r, tp, bt = 9, 2, 4, 7; iw, ih = W - l - r, H - tp - bt
     n = len(DEK); bw = iw / n
     Y = lambda v: tp + (-v) / 65 * ih
@@ -162,7 +162,7 @@ def dekaden(W=98, H=35):
     return svg(W, H, b)
 
 # --- Sommer Samedan ---
-def sommer(W=186, H=22):
+def sommer(W=90, H=24):
     l, r, tp, bt = 9, 2, 3, 6; iw, ih = W - l - r, H - tp - bt
     yrs = [int(k['jahr']) for k in K]; y0, y1 = yrs[0], yrs[-1]
     bw = iw / (y1 - y0 + 1); Y0 = tp + ih * 4 / 6; sc = ih / 6
@@ -175,12 +175,39 @@ def sommer(W=186, H=22):
         v = float(k['abw_sommer_vs_1871_1900']); x = l + (int(k['jahr']) - y0) * bw
         h = abs(v) * sc; y = Y0 - h if v > 0 else Y0
         b += f'<rect x="{x:.2f}" y="{y:.2f}" width="{bw*0.8:.2f}" height="{h:.2f}" fill="{RED if v>0 else ICE}"/>'
-    for y in (1870, 1900, 1950, 2000, 2025):
+    for y in (1870, 1925, 1975, 2025):
         b += t(l + (y - y0) * bw + bw * 0.4, H - 1.6, str(y), 2.0, 'middle', GREY)
     return svg(W, H, b)
 
-map_svg, mapH = karte()
-parts = {'karte': map_svg, 'laenge_kumuliert': linie(), 'dekaden': dekaden(), 'sommer_samedan': sommer()}
+# --- Beschriftung 3D-Luftbild (Vektor-Overlay, Positionen aus build_luftbild3d.py) ---
+def bild3d(W=186):
+    P = json.load(open(os.path.join(OUT, 'luftbild3d_punkte.json'), encoding='utf-8'))
+    H = W * P['H'] / P['W']; pt = P['punkte']
+    LC = {1850: '#ffffff', 1931: '#ffe08a', 1973: '#ffb347', 2016: '#ee3329'}
+    b = f'<image href="luftbild3d.jpg" x="0" y="0" width="{W}" height="{H:.2f}" preserveAspectRatio="none"/>'
+    def lab(x, y, txt, col, size=3.2, anchor='start', weight=700, dot=True):
+        o = ''
+        if dot: o += f'<circle cx="{x:.2f}" cy="{y:.2f}" r="0.8" fill="{col}" stroke="#1a1a1a" stroke-width="0.3"/>'
+        w = len(txt) * size * 0.5 + 1.2; x0 = x + 1.6 if anchor == 'start' else x - 1.6 - w
+        o += f'<rect x="{x0:.2f}" y="{y - size*0.78:.2f}" width="{w:.2f}" height="{size*1.25:.2f}" rx="0.6" fill="#1a1a1a" opacity="0.72"/>'
+        o += t(x0 + 0.7, y + size * 0.3, txt, size, 'start', col, weight)
+        return o
+    for j, side in ((1850, 'end'), (1931, 'end'), (1973, 'end'), (2016, 'start')):
+        q = pt[f'Zunge {j}']
+        b += lab(q['x'] * W, q['y'] * H, '2015' if j == 2016 else str(j), LC[j], anchor=side)
+    for key, txt, side in (('Haltestelle Morteratsch (RhB)', 'Haltestelle Morteratsch', 'start'), ('Isla Persa', 'Isla Persa', 'start'),
+                           ('Chamanna da Boval CAS', 'Bovalhütte', 'start')):
+        q = pt[key]
+        if q['visible'] and 0 < q['y'] < 1: b += lab(q['x'] * W, q['y'] * H, txt, '#ffffff', 2.8, side, 500)
+    # Legende
+    lx, ly = W - 52, H - 25
+    b += f'<rect x="{lx}" y="{ly}" width="49" height="22" rx="0.8" fill="#1a1a1a" opacity="0.72"/>' + t(lx + 2.5, ly + 4.6, 'Rand der Gletscherzunge', 2.8, 'start', '#fff', 700)
+    for i, (j, s_) in enumerate(((1850, '1850 (rekonstruiert)'), (1931, '1931'), (1973, '1973'), (2016, '2015'))):
+        yy = ly + 8.6 + i * 3.6
+        b += f'<line x1="{lx+2.5}" x2="{lx+7.5}" y1="{yy-0.9:.2f}" y2="{yy-0.9:.2f}" stroke="{LC[j]}" stroke-width="0.8"/>' + t(lx + 9, yy, s_, 2.6, 'start', '#fff', 400)
+    return svg(W, round(H, 2), b)
+
+parts = {'bild3d': bild3d(),  'laenge_kumuliert': linie(), 'dekaden': dekaden(), 'sommer_samedan': sommer()}
 for k, v in parts.items():
     open(os.path.join(OUT, f'{k}.svg'), 'w', encoding='utf-8').write(v)
 
@@ -188,7 +215,7 @@ Z = dict(tot=de(tot), n=len(L), vor=len(vor), vorsum=de(sum(float(r['laengenaend
          s2000=de(tot - cum(2000)), s2015=de(seit2015), A0=de(A0, 1), A1=de(A1, 1), A22=de(A22, 1), dV=de(dV, 2), dH=de(dH),
          s10='+' + de(s10, 1), dst=f'{round(d_st1850,-1):.0f}', tot_abs=de(-tot), s2015_abs=de(-seit2015), dek=de(float([r for r in DEK if r['dekade_nach_endjahr'].startswith('2010')][0]['mittel_m_pro_jahr'])))
 json.dump(Z, open(os.path.join(OUT, 'zahlen_datenseite.json'), 'w'), ensure_ascii=False, indent=1)
-print(Z, round(mapH, 1))
+print(Z)
 
 html = open(os.path.join(os.path.dirname(__file__), 'datenseite_template.html'), encoding='utf-8').read()
 for k, v in parts.items(): html = html.replace('{{' + k + '}}', v)

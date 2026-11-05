@@ -18,6 +18,12 @@ Dateien: `datenseite_A4.pdf` (Vorlage/Korrekturabzug), `datenseite_vorschau.png`
 | ≈ 310 m Haltestelle ↔ Zunge 1850 | Luftlinie LV95: 312 m, gerundet |
 | +2,5 °C Sommer Samedan | Mittel JJA-Abweichung 2016–2025 vs. 1871–1900 = +2,52; 2026 weggelassen (unvollständig) |
 
+## 3D-Luftbild (ersetzt Karte, 05.11.2026)
+- `python3 -I python/build_luftbild3d.py <workdir> morteratsch-print-daten/datenseite 2800 1490` → `luftbild3d.jpg` (ohne Text) + `luftbild3d_punkte.json` (Bildposition der Beschriftungen).
+- workdir: `dem.npy` (swissALTI3D 2 m, E 2786–2796, N 1138–1154 km) und `tex/img2025.png` (SWISSIMAGE Flugjahr 2025, 2 m) – erzeugt mit `fetch_data.alti3d_tiles`/`mosaic_dem` und `tiles.mosaic` (siehe Kopf von build_luftbild3d.py). Nicht im Repo (~200 MB).
+- Raycaster `render_m.py` (numba), Gelände **nicht überhöht**. Linien = Umrisse SGI 1850/1931/1973/2016, nur nördlich N 1143000; Verdeckung pro Bildpunkt korrekt.
+- Beschriftung als Vektor (`bild3d.svg`), im Layout editierbar.
+
 ## Inventar SGI 2023 (neu, 05.11.2026)
 - `https://doi.glamos.ch/data/inventory/inventory_sgi2023_r2026.zip`, doi:10.18750/inventory.2023.r2026, **Lizenz CC BY 4.0** (kommerziell mit Quellenangabe erlaubt).
 - Extrakt: `../05b_umriss_sgi2023_lv95.geojson` (Felder `sgi_id`, `name`, `year_acq`, `area_km2`).
