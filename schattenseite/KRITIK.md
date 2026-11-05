@@ -68,3 +68,30 @@ Verbleibende Schwächen – bewusst nicht behoben, keine davon peinlich, alle in
 3. Kartenschatten = Veranschaulichung mit dem Sonnenstand der Kantonsmitte.
 4. Nur in Chromium getestet, nicht auf echtem iPhone/Safari.
 5. Befunde sind Modellrechnung und vor Publikation vor Ort zu verifizieren.
+
+## Runde 5 – Optimierung nach Messung (5.11.)
+
+Gemessen auf dem Server (Headless-Chromium), alt = live vor der Änderung, neu = danach:
+
+| | alt | neu |
+|---|---|---|
+| Ortswahl, Desktop | 380–430 ms | 180–210 ms |
+| Ortswahl, CPU 4× gedrosselt (Handy-ähnlich) | 1,6–2,5 s | 0,7–1,4 s |
+| Datumswechsel (Karte, 799 Orte neu gefärbt), gedrosselt | ~1,8 s | ~0,9 s |
+| Horizont-Daten (übertragen) | 514 kB | 299 kB |
+| Neuberechnung der Statistik (`build_stats.mjs`) | 81 s | 40 s |
+
+Massnahmen:
+1. Sonnenstand pro Tag: Deklination und Zeitgleichung nur am Tagesanfang und -ende rechnen und
+   dazwischen interpolieren; Azimut nur, wenn er für den Horizontvergleich nötig ist; Azimut neu mit
+   `atan2` (die alte `acos`-Form war genau im Süden schlecht konditioniert). Abweichung zur vollen
+   Rechnung max. 0,001°, zu SunCalc weiterhin max. 0,015°. Gewinn: Faktor ~2,3 – weniger als die
+   vorher geschätzten Faktor 6, weil Horizontabfrage und Winkelfunktionen pro Minute bleiben.
+2. Horizonte in 0,05°-Schritten statt 0,01° gespeichert (Rundungsfehler ≤ 0,025°, ein Zwanzigstel der
+   Modellgenauigkeit). Statistik aus genau diesen Werten neu gerechnet: 5 von 799 Orten verschieben
+   sich um ±1 sonnenlosen Tag (u. a. Küblis 61 → 60), alle im Text genannten Kernzahlen unverändert.
+3. Vorschau für geteilte Links mit absoluter Bild-URL (Open Graph, Twitter Card, canonical).
+4. Schriften vorgeladen.
+
+Tests: `test_sun`, `test_fastsun` (neu), `test_consistency`, `test_e2e` – alle grün.
+Nicht umgesetzt (offen): Rechnen im Web Worker, verlustfreie Geländekompression, WebGL-Schatten.

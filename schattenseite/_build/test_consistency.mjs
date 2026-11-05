@@ -12,8 +12,8 @@ ok(days.length === meta.days, 'season length');
 const pick = meta.places.filter((_, i) => i % 27 === 0).concat(meta.places.filter(p => ['Stampa', 'Chur', 'Vicosoprano'].includes(p.n)));
 for (const p of pick) {
   const k = meta.places.indexOf(p); const hz = new Float32Array(720); let acc = 0;
-  for (let a = 0; a < 720; a++) { acc += d[k * 720 + a]; hz[a] = acc / 100; }
-  const orig = H.get(p.id); ok(orig.every((v, a) => Math.abs(v / 100 - hz[a]) < 1e-4), `horizon decode ${p.n}`);
+  for (let a = 0; a < 720; a++) { acc += d[k * 720 + a]; hz[a] = acc * win.HORIZONS_Q / 100; }
+  const orig = H.get(p.id); ok(orig.every((v, a) => Math.abs(v / 100 - hz[a]) <= 0.0251), `horizon decode ${p.n} (quantisation <= 0.025 deg)`);
   const sun = days.map(dd => dayStats(hz, p.la, p.lo, localMidnight(...dd)).sun);
   ok(sun.filter(x => x === 0).length === p.s.dark, `dark days ${p.n}`);
   ok(sun[meta.iDec21] === p.s.d21, `21 Dec ${p.n}`);

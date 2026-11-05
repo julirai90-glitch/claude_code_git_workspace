@@ -1,6 +1,6 @@
 // 360-degree horizon panorama with the sun's paths through the year.
 import { horizonAt } from './horizon.js';
-import { sunPosition, localMidnight } from './sun.js';
+import { sunPosition, daySun, localMidnight } from './sun.js';
 import { ymd, dateLabel, clock, deg } from './fmt.js';
 
 const DIRS = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'];
@@ -18,8 +18,8 @@ export class Panorama {
   setTime(day, minute) { if (day !== this.day) this.paths = null; this.day = day; this.minute = minute; this.draw(); }
   setView(v) { this.viewName = v; this.draw(); }
   path(i) {
-    const p = this.place, t0 = localMidnight(...ymd(i)), pts = [];
-    for (let m = 0; m <= 1440; m += 3) { const s = sunPosition(t0 + m * 60000, p.la, p.lo); if (s.el > -2) pts.push({ m, az: s.az, el: s.el, vis: s.el > horizonAt(p.hz, s.az) && s.el > -0.27 }); }
+    const p = this.place, sunAt = daySun(localMidnight(...ymd(i)), p.la, p.lo), pts = [];
+    for (let m = 0; m <= 1440; m += 3) { const s = sunAt(m); if (s.el > -2) pts.push({ m, az: s.az, el: s.el, vis: s.el > horizonAt(p.hz, s.az) && s.el > -0.27 }); }
     return pts;
   }
   geom() {

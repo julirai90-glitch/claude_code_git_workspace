@@ -19,8 +19,8 @@ export async function loadPlaces() {
   const raw = await gunzipB64(window.HORIZONS_B64);
   const d = new Int16Array(raw.buffer, raw.byteOffset, raw.byteLength / 2);
   meta.places.forEach((p, k) => {
-    const hz = new Float32Array(720); let acc = 0;
-    for (let a = 0; a < 720; a++) { acc += d[k * 720 + a]; hz[a] = acc / 100; }
+    const hz = new Float32Array(720), q = window.HORIZONS_Q || 1; let acc = 0;
+    for (let a = 0; a < 720; a++) { acc += d[k * 720 + a]; hz[a] = acc * q / 100; }
     p.hz = hz; p.kind = p.t === 'hamlet' ? 'Weiler' : p.t === 'town' ? 'Stadt' : 'Dorf';
   });
   return meta;

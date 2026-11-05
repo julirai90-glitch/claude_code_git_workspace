@@ -65,8 +65,8 @@ function horizonAt(hz, az) {
 
 const RAD = Math.PI / 180;
 
-// t: UTC milliseconds. Returns azimuth (deg from north, clockwise) and apparent elevation (deg).
-function sunPosition(t, lat, lon) {
+// Slowly varying solar parameters at time t (UTC ms): declination (rad) and equation of time (min).
+function solarParams(t) {
   const jc = (t / 86400000 + 2440587.5 - 2451545) / 36525;
   const L0 = (280.46646 + jc * (36000.76983 + jc * 0.0003032)) % 360;
   const M = 357.52911 + jc * (35999.05029 - 0.0001537 * jc);
@@ -79,16 +79,37 @@ function sunPosition(t, lat, lon) {
   const decl = Math.asin(Math.sin(eps * RAD) * Math.sin(lambda * RAD));
   const y = Math.tan(eps * RAD / 2) ** 2;
   const eqt = 4 / RAD * (y * Math.sin(2 * L0 * RAD) - 2 * e * Math.sin(M * RAD) + 4 * e * y * Math.sin(M * RAD) * Math.cos(2 * L0 * RAD) - 0.5 * y * y * Math.sin(4 * L0 * RAD) - 1.25 * e * e * Math.sin(2 * M * RAD));
+  return { decl, eqt };
+}
+
+// Position from the parameters: azimuth (deg from north, clockwise), apparent elevation (deg).
+// azLo/azHi: the azimuth is only needed while the elevation lies in [azLo, azHi] (else az = NaN)
+function position(decl, eqt, t, sinLa, cosLa, lon, sd = Math.sin(decl), cd = Math.cos(decl), azLo = -90, azHi = 90) {
   const minutes = ((t / 60000) % 1440 + 1440) % 1440;
   const tst = minutes + eqt + 4 * lon;
   const ha = (tst / 4 < 0 ? tst / 4 + 180 : tst / 4 - 180) * RAD;
-  const la = lat * RAD;
-  const cosZ = Math.sin(la) * Math.sin(decl) + Math.cos(la) * Math.cos(decl) * Math.cos(ha);
-  const zen = Math.acos(Math.max(-1, Math.min(1, cosZ)));
-  let az = Math.acos(Math.max(-1, Math.min(1, (Math.sin(la) * Math.cos(zen) - Math.sin(decl)) / (Math.cos(la) * Math.sin(zen))))) / RAD;
-  az = ha > 0 ? (az + 180) % 360 : (540 - az) % 360;
+  const cosZ = sinLa * sd + cosLa * cd * Math.cos(ha);
+  if (cosZ < -0.0349) return { az: NaN, el: 90 - Math.acos(Math.max(-1, cosZ)) / RAD };   // sun well below the horizon
+  const zen = Math.acos(Math.min(1, cosZ)), el0 = 90 - zen / RAD;
+  if (el0 < azLo || el0 > azHi) return { az: NaN, el: el0 + refraction(el0) };
+  // atan2 form: well conditioned also near due south (acos is not)
+  const az = (Math.atan2(Math.sin(ha), Math.cos(ha) * sinLa - sd / cd * cosLa) / RAD + 540) % 360;
   const el = 90 - zen / RAD;
   return { az, el: el + refraction(el) };
+}
+
+// t: UTC milliseconds. Returns azimuth (deg from north, clockwise) and apparent elevation (deg).
+function sunPosition(t, lat, lon) {
+  const { decl, eqt } = solarParams(t);
+  return position(decl, eqt, t, Math.sin(lat * RAD), Math.cos(lat * RAD), lon);
+}
+
+// Fast sun for one day starting at t0: declination and equation of time are evaluated at both ends
+// of the day and interpolated linearly (error < 0.001 deg), so each minute costs only the hour-angle part.
+function daySun(t0, lat, lon, azLo, azHi) {
+  const a = solarParams(t0), b = solarParams(t0 + 864e5), sinLa = Math.sin(lat * RAD), cosLa = Math.cos(lat * RAD);
+  const sa = Math.sin(a.decl), sb = Math.sin(b.decl), ca = Math.cos(a.decl), cb = Math.cos(b.decl);
+  return m => { const f = m / 1440; return position(0, a.eqt + (b.eqt - a.eqt) * f, t0 + m * 60000, sinLa, cosLa, lon, sa + (sb - sa) * f, ca + (cb - ca) * f, azLo, azHi); };
 }
 
 // Saemundsson: true -> apparent altitude, degrees
@@ -110,20 +131,27 @@ function localMidnight(y, m, d) {
   return Date.UTC(y, m - 1, d) - zurichOffset(guess) * 60000;
 }
 
+const RANGES = new WeakMap();
+function hzRange(hz) {
+  let r = RANGES.get(hz);
+  if (!r) { let lo = 90, hi = -90; for (const v of hz) { if (v < lo) lo = v; if (v > hi) hi = v; } RANGES.set(hz, r = [lo, hi]); }
+  return r;
+}
+
 // Direct sun on one local day. Minute resolution.
 // Returns minutes of direct sun, minutes of sun above a flat sea-level horizon (astronomical day),
 // first/last direct sun as local minutes after midnight (null if none), and the sun's maximum elevation.
 function dayStats(hz, lat, lon, t0, shift = 0) {
   let sun = 0, sunLo = 0, sunHi = 0, flat = 0, first = null, last = null, maxEl = -90, runs = 0, prev = false;
-  const off = zurichOffset(t0 + 12 * 3600000);
+  const r = hzRange(hz);   // outside this elevation band the sun is visible/hidden regardless of azimuth
+  const off = zurichOffset(t0 + 12 * 3600000), sunAt = daySun(t0, lat, lon, r[0] + shift - 1.5, r[1] + shift + 1.5);
   for (let i = 0; i < 1440; i++) {
-    const t = t0 + i * 60000;
     // cheap reject of night: skip in 10 min strides while sun is far below the horizon
-    const p = sunPosition(t, lat, lon);
+    const p = sunAt(i);
     if (p.el > maxEl) maxEl = p.el;
     if (p.el < -1.5) { if (p.el < -8 && i % 10 === 0 && i + 10 < 1440) { i += 9; } prev = false; continue; }
     if (p.el > -0.2667) flat++;          // upper limb above a sea-level horizon (apparent elevation)
-    const hh = horizonAt(hz, p.az) + shift, up = p.el > -0.2667;
+    const hh = p.az === p.az ? horizonAt(hz, p.az) + shift : (p.el > r[1] + shift ? -90 : 90), up = p.el > -0.2667;
     const vis = up && p.el > hh;
     if (up && p.el > hh - 0.5) sunLo++;   // sensitivity: horizon 0.5 deg lower / higher
     if (up && p.el > hh + 0.5) sunHi++;
@@ -173,8 +201,8 @@ async function loadPlaces() {
   const raw = await gunzipB64(window.HORIZONS_B64);
   const d = new Int16Array(raw.buffer, raw.byteOffset, raw.byteLength / 2);
   meta.places.forEach((p, k) => {
-    const hz = new Float32Array(720); let acc = 0;
-    for (let a = 0; a < 720; a++) { acc += d[k * 720 + a]; hz[a] = acc / 100; }
+    const hz = new Float32Array(720), q = window.HORIZONS_Q || 1; let acc = 0;
+    for (let a = 0; a < 720; a++) { acc += d[k * 720 + a]; hz[a] = acc * q / 100; }
     p.hz = hz; p.kind = p.t === 'hamlet' ? 'Weiler' : p.t === 'town' ? 'Stadt' : 'Dorf';
   });
   return meta;
@@ -473,8 +501,8 @@ class Panorama {
   setTime(day, minute) { if (day !== this.day) this.paths = null; this.day = day; this.minute = minute; this.draw(); }
   setView(v) { this.viewName = v; this.draw(); }
   path(i) {
-    const p = this.place, t0 = localMidnight(...ymd(i)), pts = [];
-    for (let m = 0; m <= 1440; m += 3) { const s = sunPosition(t0 + m * 60000, p.la, p.lo); if (s.el > -2) pts.push({ m, az: s.az, el: s.el, vis: s.el > horizonAt(p.hz, s.az) && s.el > -0.27 }); }
+    const p = this.place, sunAt = daySun(localMidnight(...ymd(i)), p.la, p.lo), pts = [];
+    for (let m = 0; m <= 1440; m += 3) { const s = sunAt(m); if (s.el > -2) pts.push({ m, az: s.az, el: s.el, vis: s.el > horizonAt(p.hz, s.az) && s.el > -0.27 }); }
     return pts;
   }
   geom() {
@@ -589,8 +617,9 @@ class Carpet {
     for (let d = 0; d < NDAYS; d++) {
       const t0 = localMidnight(...ymd(d));
       stats.push(dayStats(place.hz, place.la, place.lo, t0));
+      const sunAt = daySun(t0, place.la, place.lo);
       for (let k = 0; k < H; k++) {
-        const s = sunPosition(t0 + (M0 + k * STEP + 1) * 60000, place.la, place.lo);
+        const s = sunAt(M0 + k * STEP + 1);
         let c;
         if (s.el < -6) c = [10, 15, 31];
         else if (s.el < -0.27) c = [22, 30, 54];

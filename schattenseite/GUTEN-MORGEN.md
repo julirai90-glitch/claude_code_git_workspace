@@ -30,7 +30,7 @@ nennt für Vicosoprano «Mitte November bis Ende Januar», das Modell 16. Novemb
 | Entdeckungen | 5 Einstiege, alle aus den Daten berechnet, das erste ändert sich mit dem Datum («Als Nächstes verschwindet die Sonne in Tavanasa, 8. November») |
 | Horizont | 360°-Panorama mit Bergsilhouette, Sonnenbahnen 21.6./20.3./21.12. und gewählter Tag, Uhrzeiten |
 | Sonnenjahr | Jeder Tag × jede Uhrzeit: Sonne / Schatten / Nacht – das «Loch» im Winter wird sichtbar |
-| Schattenliste | 19 Dörfer (77 mit Weilern) mit Schattenzeit als Zeitbalken, inkl. Unsicherheitsband |
+| Schattenliste | 19 Dörfer (72 Orte mit Weilern) mit Schattenzeit als Zeitbalken, inkl. Unsicherheitsband |
 | Methode | Quellen, Prüfungen, Grenzen – im Stück selbst |
 
 ![Chur](screenshots/02-chur-horizont-sonnenjahr.jpg)

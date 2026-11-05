@@ -3,7 +3,10 @@ import fs from 'fs';
 import zlib from 'zlib';
 import { dayStats, localMidnight } from '../js/sun.js';
 const P = JSON.parse(fs.readFileSync('cache/places.json'));
-const H = new Map(JSON.parse(fs.readFileSync('cache/horizons.json')).map(h => [h.id, h]));
+// Horizons are stored in steps of 0.05 deg (Q = 5 hundredths); the statistics are computed from exactly
+// these quantised values so that the browser reproduces them.
+const Q = 5;
+const H = new Map(JSON.parse(fs.readFileSync('cache/horizons.json')).map(h => [h.id, { ...h, hz: h.hz.map(v => Math.round(v / Q) * Q) }]));
 const days = []; for (let t = Date.UTC(2026, 6, 1); t <= Date.UTC(2027, 5, 30); t += 864e5) { const d = new Date(t); days.push([d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()]); }
 const iDec21 = days.findIndex(d => d[1] === 12 && d[2] === 21), iJun21 = days.findIndex(d => d[0] === 2027 && d[1] === 6 && d[2] === 21);
 const t0 = Date.now(); const out = [];
@@ -44,9 +47,9 @@ const payload = { season: days[0], days: days.length, iDec21, generated: new Dat
 const gz = zlib.gzipSync(Buffer.from(JSON.stringify(payload)), { level: 9 });
 // horizons: Int16 in 0.01 deg, 720 per place in the order of `places`, delta-encoded along azimuth
 const hzAll = new Int16Array(out.length * 720);
-out.forEach((p, k) => { const h = H.get(p.id).hz; for (let a = 0; a < 720; a++) hzAll[k * 720 + a] = a ? h[a] - h[a - 1] : h[a]; });
+out.forEach((p, k) => { const h = H.get(p.id).hz; for (let a = 0; a < 720; a++) hzAll[k * 720 + a] = (a ? h[a] - h[a - 1] : h[a]) / Q; });
 const hzGz = zlib.gzipSync(Buffer.from(hzAll.buffer), { level: 9 });
-fs.writeFileSync('../data/places.js', `// Computed by _build/build_stats.mjs. Places (c) OpenStreetMap contributors, ODbL. Terrain: Copernicus GLO-30 (c) DLR/Airbus, provided under COPERNICUS by the EU and ESA; ground heights swisstopo.\nwindow.PLACES_B64="${gz.toString('base64')}";\nwindow.HORIZONS_B64="${hzGz.toString('base64')}";\n`);
+fs.writeFileSync('../data/places.js', `// Computed by _build/build_stats.mjs. Places (c) OpenStreetMap contributors, ODbL. Terrain: Copernicus GLO-30 (c) DLR/Airbus, provided under COPERNICUS by the EU and ESA; ground heights swisstopo.\nwindow.PLACES_B64="${gz.toString('base64')}";\nwindow.HORIZONS_Q=${Q};\nwindow.HORIZONS_B64="${hzGz.toString('base64')}";\n`);
 console.log('meta gz', (gz.length / 1e3).toFixed(0), 'kB, horizons gz', (hzGz.length / 1e3).toFixed(0), 'kB');
 fs.writeFileSync('cache/stats_summary.json', JSON.stringify(out.map(({ hz, sun, ...r }) => r)));
 console.log('places.js', (gz.length / 1e6).toFixed(2), 'MB gz');

@@ -1,6 +1,6 @@
 // "Sonnenteppich": every day of the season (x) by time of day (y): night, shade, direct sun.
 import { horizonAt } from './horizon.js';
-import { sunPosition, localMidnight, dayStats } from './sun.js';
+import { daySun, localMidnight, dayStats } from './sun.js';
 import { ymd, dateLabel, hm, clock, NDAYS, MON3 } from './fmt.js';
 
 const M0 = 3 * 60, M1 = 23 * 60, STEP = 2;                  // local time window and resolution (min)
@@ -21,8 +21,9 @@ export class Carpet {
     for (let d = 0; d < NDAYS; d++) {
       const t0 = localMidnight(...ymd(d));
       stats.push(dayStats(place.hz, place.la, place.lo, t0));
+      const sunAt = daySun(t0, place.la, place.lo);
       for (let k = 0; k < H; k++) {
-        const s = sunPosition(t0 + (M0 + k * STEP + 1) * 60000, place.la, place.lo);
+        const s = sunAt(M0 + k * STEP + 1);
         let c;
         if (s.el < -6) c = [10, 15, 31];
         else if (s.el < -0.27) c = [22, 30, 54];
