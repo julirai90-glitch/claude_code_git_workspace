@@ -12,7 +12,9 @@ export class Panorama {
     this.place = null; this.day = 0; this.minute = 720; this.refDays = [];
     new ResizeObserver(() => this.draw()).observe(canvas);
     canvas.addEventListener('pointermove', e => this.hover(e.offsetX, e.offsetY));
-    canvas.addEventListener('pointerleave', () => { this.hx = null; this.tip.hidden = true; this.draw(); });
+    // touch has no hover: show the tooltip on tap and hide it again after a moment
+    canvas.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { this.hover(e.offsetX, e.offsetY); clearTimeout(this._tt); this._tt = setTimeout(() => { this.tip.hidden = true; }, 3500); } });
+    canvas.addEventListener('pointerleave', e => { if (e.pointerType !== 'mouse') return; this.hx = null; this.tip.hidden = true; this.draw(); });
   }
   set(place, day, minute, refDays) { this.place = place; this.day = day; this.minute = minute; this.refDays = refDays; this.paths = null; this.draw(); }
   setTime(day, minute) { if (day !== this.day) this.paths = null; this.day = day; this.minute = minute; this.draw(); }

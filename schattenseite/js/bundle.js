@@ -377,27 +377,36 @@ class MapView {
     const m = 30000; v.x = Math.min(x1 + m, Math.max(x0 - m, v.x)); v.y = Math.min(y1 + m, Math.max(y0 - m, v.y));
   }
   bind() {
-    const cv = this.cv, pts = new Map(); let moved = 0, last = null, pinch = null;
-    cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.offsetX, e.offsetY]); moved = 0; last = [e.offsetX, e.offsetY]; if (pts.size === 2) pinch = null; });
+    // Mouse: drag pans, wheel zooms (after a click into the map). Touch: one finger scrolls the page
+    // (touch-action: pan-y), a tap selects, two fingers pan and pinch-zoom the map.
+    const cv = this.cv, pts = new Map(); let moved = 0, last = null, pinch = null, touchPan = false;
+    cv.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'touch') cv.setPointerCapture(e.pointerId);
+      pts.set(e.pointerId, [e.offsetX, e.offsetY, e.pointerType]); last = [e.offsetX, e.offsetY];
+      if (pts.size === 1) { moved = 0; touchPan = false; }
+      if (pts.size === 2) { pinch = null; moved = 99; touchPan = true; }
+    });
     cv.addEventListener('pointermove', e => {
-      if (!pts.has(e.pointerId)) { this.setHover(this.pick(e.offsetX, e.offsetY)); return; }
-      const prev = pts.get(e.pointerId); pts.set(e.pointerId, [e.offsetX, e.offsetY]);
+      if (!pts.has(e.pointerId)) { if (e.pointerType === 'mouse') this.setHover(this.pick(e.offsetX, e.offsetY)); return; }
+      const prev = pts.get(e.pointerId); pts.set(e.pointerId, [e.offsetX, e.offsetY, e.pointerType]);
+      const dx = e.offsetX - prev[0], dy = e.offsetY - prev[1];
       if (pts.size === 1) {
-        const dx = e.offsetX - prev[0], dy = e.offsetY - prev[1]; moved += Math.abs(dx) + Math.abs(dy);
+        moved += Math.abs(dx) + Math.abs(dy);
+        if (e.pointerType === 'touch') { if (moved > 12 && !touchPan && this.opts.onTouchHint) this.opts.onTouchHint(); return; }
         if (moved > 4) { this.view.x -= dx / this.view.s; this.view.y -= dy / this.view.s; this.clamp(); this.draw(); cv.classList.add('dragging'); }
       } else if (pts.size === 2) {
         const [a, b] = [...pts.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
         if (pinch) { this.view.x -= (mx - pinch.mx) / this.view.s; this.view.y -= (my - pinch.my) / this.view.s; this.zoomAt(mx, my, d / pinch.d); }
-        pinch = { d, mx, my }; moved = 99;
+        pinch = { d, mx, my };
       }
     });
-    const up = e => {
+    const end = (e, cancelled) => {
       if (!pts.has(e.pointerId)) return;
       pts.delete(e.pointerId); cv.classList.remove('dragging'); if (pts.size < 2) pinch = null;
-      if (pts.size === 0 && moved <= 4 && last) this.click(last[0], last[1]);
+      if (!cancelled && pts.size === 0 && moved <= (e.pointerType === 'touch' ? 12 : 4) && last) this.click(last[0], last[1]);
     };
-    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-    cv.addEventListener('pointerleave', () => this.setHover(null));
+    cv.addEventListener('pointerup', e => end(e, false)); cv.addEventListener('pointercancel', e => end(e, true));
+    cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') this.setHover(null); });
     cv.addEventListener('wheel', e => {
       if (!e.ctrlKey && !this.opts.wheelZoom()) return;          // let the page scroll unless the map is "active"
       e.preventDefault(); this.zoomAt(e.offsetX, e.offsetY, Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0018)));
@@ -495,7 +504,9 @@ class Panorama {
     this.place = null; this.day = 0; this.minute = 720; this.refDays = [];
     new ResizeObserver(() => this.draw()).observe(canvas);
     canvas.addEventListener('pointermove', e => this.hover(e.offsetX, e.offsetY));
-    canvas.addEventListener('pointerleave', () => { this.hx = null; this.tip.hidden = true; this.draw(); });
+    // touch has no hover: show the tooltip on tap and hide it again after a moment
+    canvas.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { this.hover(e.offsetX, e.offsetY); clearTimeout(this._tt); this._tt = setTimeout(() => { this.tip.hidden = true; }, 3500); } });
+    canvas.addEventListener('pointerleave', e => { if (e.pointerType !== 'mouse') return; this.hx = null; this.tip.hidden = true; this.draw(); });
   }
   set(place, day, minute, refDays) { this.place = place; this.day = day; this.minute = minute; this.refDays = refDays; this.paths = null; this.draw(); }
   setTime(day, minute) { if (day !== this.day) this.paths = null; this.day = day; this.minute = minute; this.draw(); }
@@ -607,7 +618,9 @@ class Carpet {
     this.day = 0; this.stats = null;
     new ResizeObserver(() => this.draw()).observe(canvas);
     canvas.addEventListener('pointermove', e => this.hover(e.offsetX, e.offsetY));
-    canvas.addEventListener('pointerleave', () => { this.tip.hidden = true; this.hd = null; this.draw(); });
+    // touch has no hover: show the tooltip on tap and hide it again after a moment
+    canvas.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { this.hover(e.offsetX, e.offsetY); clearTimeout(this._tt); this._tt = setTimeout(() => { this.tip.hidden = true; }, 3500); } });
+    canvas.addEventListener('pointerleave', e => { if (e.pointerType !== 'mouse') return; this.tip.hidden = true; this.hd = null; this.draw(); });
     canvas.addEventListener('click', e => { const d = this.dayAt(e.offsetX); if (d != null) this.onDay(d); });
   }
   set(place) {
@@ -697,6 +710,7 @@ async function init() {
   map = new MapView($('#map'), G, window.OUTLINE, places, {
     onPlace: p => select(p, { fly: false }), onPoint: (la, lo) => selectPoint(la, lo),
     wheelZoom: () => state.mapActive,
+    onTouchHint: () => { const h = $('#touchhint'); h.classList.add('show'); clearTimeout(h._t); h._t = setTimeout(() => h.classList.remove('show'), 1600); },
     hoverInfo: p => { const m = dayMinutes.get(p); return m ? hm(m) + ' Sonne' : 'keine Sonne'; },
     insets: () => innerWidth <= 760 ? { t: 64, r: 12, b: 12, l: 12 } : { t: 70, r: innerWidth > 1100 ? 340 : 330, b: 175, l: 24 },
   });

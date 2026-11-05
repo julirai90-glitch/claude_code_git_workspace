@@ -95,3 +95,20 @@ Massnahmen:
 
 Tests: `test_sun`, `test_fastsun` (neu), `test_consistency`, `test_e2e` – alle grün.
 Nicht umgesetzt (offen): Rechnen im Web Worker, verlustfreie Geländekompression, WebGL-Schatten.
+
+## Runde 6 – Mobil-Funktionstest (5.11.)
+
+Emuliert: iPhone 13 und Pixel 7 (Touch, Playwright). Funktionierte schon: Suche mit Bildschirmtastatur,
+Regler, Schnellwahl-Knöpfe, Play, Kalender-Tipp setzt das Datum, Listenzeile springt zur Karte, kein
+horizontales Scrollen, keine Fehler.
+
+| # | Schwäche | Massnahme |
+|---|---|---|
+| 1 | **Scroll-Falle:** Wischen auf der Karte (62 % der Bildschirmhöhe) verschob die Karte statt die Seite | Ein Finger scrollt die Seite (`touch-action: pan-y`), Tippen wählt, zwei Finger verschieben/zoomen; Hinweis in der Karte und beim Wischversuch |
+| 2 | Tooltips in Panorama und Sonnenjahr gab es nur bei Maus-Hover | Erscheinen beim Antippen, verschwinden nach 3,5 s |
+| 3 | Touch-Ziele zu klein (Schnellwahl 29 px, Regler 26 px, Checkbox 13 px, «Horizont ↓» 21 px) | Mobil mind. 38–40 px, grössere Reglergriffe |
+
+Getestet: Tippen wählt Ort, Pinch zoomt ohne versehentliche Auswahl, Tooltips per Tipp, keine Ziele unter 36 px.
+**Nicht verifizierbar im Headless-Browser:** echtes Scrollen per Wischgeste (synthetische Gesten scrollen dort
+auch auf reinem Text nicht). Die Einstellung folgt dem Standard (`pan-y`), muss aber auf einem echten Handy
+bestätigt werden.

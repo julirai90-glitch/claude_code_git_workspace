@@ -11,7 +11,9 @@ export class Carpet {
     this.day = 0; this.stats = null;
     new ResizeObserver(() => this.draw()).observe(canvas);
     canvas.addEventListener('pointermove', e => this.hover(e.offsetX, e.offsetY));
-    canvas.addEventListener('pointerleave', () => { this.tip.hidden = true; this.hd = null; this.draw(); });
+    // touch has no hover: show the tooltip on tap and hide it again after a moment
+    canvas.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { this.hover(e.offsetX, e.offsetY); clearTimeout(this._tt); this._tt = setTimeout(() => { this.tip.hidden = true; }, 3500); } });
+    canvas.addEventListener('pointerleave', e => { if (e.pointerType !== 'mouse') return; this.tip.hidden = true; this.hd = null; this.draw(); });
     canvas.addEventListener('click', e => { const d = this.dayAt(e.offsetX); if (d != null) this.onDay(d); });
   }
   set(place) {
