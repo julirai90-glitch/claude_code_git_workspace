@@ -90,6 +90,29 @@ def karte(W=80):
             b += f'<circle cx="{x:.2f}" cy="{y:.2f}" r="0.7" fill="#fff" stroke="{INK}" stroke-width="0.35"/>'
         b += bg(x + dx, y + 0.9, lbl, 2.4, anchor)
         b += t(x + dx, y + 0.9, lbl, 2.4, anchor, INK, 600 if name.startswith('Halte') else 400)
+    # Ausschnitt Zunge (vergrössert), oben rechts in der leeren Fläche
+    iE0, iE1, iN0, iN1 = 2790950, 2792250, 1143650, 1145150
+    iw = 26.0; ik = iw / (iE1 - iE0); ih = (iN1 - iN0) * ik; ox, oy = W - iw - 2.5, 10.5
+    iX = lambda e: ox + (e - iE0) * ik; iY = lambda n: oy + (iN1 - n) * ik
+    b += f'<rect x="{X(iE0):.2f}" y="{Y(iN1):.2f}" width="{(iE1-iE0)*k:.2f}" height="{(iN1-iN0)*k:.2f}" fill="none" stroke="{INK}" stroke-width="0.25"/>'
+    b += f'<line x1="{X(iE1):.2f}" y1="{Y(iN1):.2f}" x2="{ox:.2f}" y2="{oy+ih:.2f}" stroke="{INK}" stroke-width="0.15"/>'
+    b += f'<clipPath id="ic"><rect x="{ox}" y="{oy}" width="{iw}" height="{ih:.2f}"/></clipPath><rect x="{ox}" y="{oy}" width="{iw}" height="{ih:.2f}" fill="#f5f5f3" stroke="{INK}" stroke-width="0.3"/><g clip-path="url(#ic)">'
+    for f in sorted(g['features'], key=lambda f: f['properties']['jahr']):
+        j = f['properties']['jahr']
+        if j < 1973: continue
+        d = ''
+        for poly in f['geometry']['coordinates']:
+            for ring in poly:
+                d += 'M' + 'L'.join(f'{iX(p[0]):.2f},{iY(p[1]):.2f}' for p in ring) + 'Z'
+        b += f'<path d="{d}" fill="{cols[j]}" stroke="#fff" stroke-width="0.2" fill-rule="evenodd"/>'
+    b += '</g>'
+    for j in (2010, 2016):
+        r = T[j]; x, y = iX(float(r['E_lv95'])), iY(float(r['N_lv95']))
+        b += f'<circle cx="{x:.2f}" cy="{y:.2f}" r="0.6" fill="{INK}" stroke="#fff" stroke-width="0.25"/>'
+        lbl = '2015' if j == 2016 else '2010'
+        b += bg(x + 1.4, y + 0.8, lbl, 2.2, 'start') + t(x + 1.4, y + 0.8, lbl, 2.2, 'start', INK, 700)
+        b += f'<rect x="{ox+iw-1.5-500*ik:.2f}" y="{oy+3:.2f}" width="{500*ik:.2f}" height="0.5" fill="{INK}"/>' + t(ox + iw - 1.5 - 250*ik, oy + 2.3, '500 m', 2.0, 'middle')
+    b += t(ox, oy - 1, 'Zunge vergrössert', 2.2, 'start', INK, 700)
     # Massstab, Norden
     b += f'<rect x="{W-4-1000*k:.2f}" y="{H-4:.2f}" width="{1000*k:.2f}" height="0.6" fill="{INK}"/>' + t(W - 4 - 500*k, H - 5, '1 km', 2.2, 'middle')
     b += f'<path d="M4,6l1.4,-3.6l1.4,3.6l-1.4,-1z" fill="{INK}"/>' + t(5.4, 8.8, 'N', 2.2, 'middle', INK, 700)
