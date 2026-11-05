@@ -1,0 +1,51 @@
+// Browser tests (headless Chromium): interactions, edge cases, embed modes, mobile layout.
+import { chromium } from 'playwright-core';
+const BASE = process.argv[2] || 'http://127.0.0.1:8731/index.html';
+const browser = await chromium.launch({ executablePath: process.env.HOME + '/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome', args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--disk-cache-size=1', '--disk-cache-dir=/dev/shm/schatten-cache'] });
+let fail = 0; const ok = (c, m) => { console.log(c ? '  ok  ' : '  FAIL', m); if (!c) fail++; };
+async function open(url, vp = { width: 1440, height: 900 }) {
+  const page = await browser.newPage({ viewport: vp }); const errs = [];
+  page.on('pageerror', e => errs.push(e.message)); page.on('console', m => m.type() === 'error' && errs.push(m.text()));
+  await page.goto(url); await page.waitForFunction(() => document.body.classList.contains('ready'), null, { timeout: 20000 });
+  await page.waitForTimeout(400); page.errs = errs; return page;
+}
+const txt = (pg, s) => pg.$eval(s, e => e.textContent);
+let pg = await open(BASE);
+ok(pg.errs.length === 0, 'no console errors on load ' + pg.errs.join('; '));
+ok((await txt(pg, '#card-name')) === 'Stampa', 'default place = longest dark period');
+ok((await pg.$$('#finds .find')).length >= 4, 'findings rendered');
+await pg.fill('#q', 'bondo'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(500);
+ok((await txt(pg, '#card-name')) === 'Bondo', 'search + Enter selects Bondo');
+ok((await pg.evaluate(() => location.hash)).startsWith('#ort='), 'hash updated');
+await pg.fill('#q', 'xyzxyz'); await pg.waitForTimeout(100);
+ok((await txt(pg, '#q-list')).includes('Kein Ort'), 'empty search message');
+for (const v of ['0', '364', '173']) { await pg.$eval('#day', (e, v) => { e.value = v; e.dispatchEvent(new Event('input')); }, v); await pg.waitForTimeout(150); }
+ok(pg.errs.length === 0, 'date slider extremes without errors');
+ok((await txt(pg, '#clock')).startsWith('21. Dezember'), 'day 173 = 21 December');
+const n0 = (await pg.$$('#gantt .row')).length; await pg.click('#with-ham'); const n1 = (await pg.$$('#gantt .row')).length;
+ok(n1 > n0, `hamlet toggle adds rows (${n0} -> ${n1})`);
+const b = await pg.$eval('#map', e => { const r = e.getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; });
+await pg.mouse.click(b[0] + b[2] * 0.42, b[1] + b[3] * 0.48); await pg.waitForTimeout(700);
+ok(/von|bei|[A-Z]/.test(await txt(pg, '#card-name')), 'map click selects something: ' + await txt(pg, '#card-name'));
+await pg.mouse.click(b[0] + 5, b[1] + b[3] - 5); await pg.waitForTimeout(500);
+ok(pg.errs.length === 0, 'click at the map corner does not throw');
+await pg.close();
+pg = await open(BASE + '#ort=999');
+ok((await txt(pg, '#card-name')) === 'Stampa', 'invalid hash falls back');
+await pg.close();
+pg = await open(BASE + '#punkt=46.6,9.3'); await pg.waitForTimeout(500);
+ok((await txt(pg, '#card-name')).includes('von') || (await txt(pg, '#card-name')).includes('bei'), 'point hash: ' + await txt(pg, '#card-name'));
+await pg.close();
+pg = await open(BASE + '?embed=karte');
+ok(await pg.$eval('.hero', e => getComputedStyle(e).display === 'none'), 'embed=karte hides hero');
+ok(await pg.$eval('#ort', e => getComputedStyle(e).display === 'none'), 'embed=karte hides detail');
+await pg.close();
+pg = await open(BASE + '?embed=ort#ort=1577255384-chur');
+ok((await txt(pg, '#d-name')) === 'Chur', 'embed=ort shows Chur');
+await pg.close();
+pg = await open(BASE, { width: 390, height: 844 });
+ok(await pg.evaluate(() => document.documentElement.scrollWidth <= 390), 'mobile: no horizontal overflow');
+ok(pg.errs.length === 0, 'mobile: no errors');
+await pg.close();
+await browser.close();
+console.log(fail ? `${fail} FAILED` : 'all browser tests passed'); process.exit(fail ? 1 : 0);

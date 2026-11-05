@@ -9,20 +9,20 @@
 <meta property="og:description" content="Für 799 Bündner Orte berechnet: wie viel direkte Sonne die Berge am kürzesten Tag übrig lassen.">
 <meta property="og:image" content="share.jpg">
 <meta name="theme-color" content="#0b1020">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%230b1020%22/%3E%3Ccircle cx=%2216%22 cy=%2220%22 r=%229%22 fill=%22%23ffc861%22/%3E%3Cpath d=%22M0 22l8-8 6 5 7-9 11 12v10H0z%22 fill=%22%232a3c63%22/%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="loading" role="status">Gelände wird geladen …</div>
 
 <header class="hero">
   <p class="kicker">Graubünden in Zahlen · Modellrechnung</p>
   <h1>Die Schattenseite</h1>
   <p class="dek">Am kürzesten Tag steht die Sonne über Graubünden mittags gut 20 Grad hoch. Wo ein Berg höher ist, bleibt es Schatten. Für <span id="n-places">799</span> Orte ist hier berechnet, wie viel Sonne die Berge übrig lassen.</p>
   <p class="today" id="today" aria-live="polite">&nbsp;</p>
-  <div id="finds" class="finds" aria-label="Entdeckungen in den Daten"></div>
 </header>
 
 <section id="karte" class="mapwrap" aria-label="Karte">
+  <div id="loading" role="status">Gelände wird geladen …</div>
   <div class="search">
     <label for="q" class="vh">Ort suchen</label>
     <input id="q" type="search" placeholder="Ort suchen, z. B. Bondo" autocomplete="off" role="combobox" aria-controls="q-list" aria-expanded="false">
@@ -62,6 +62,11 @@
       <span class="lt2"><i class="sw sun"></i>Gelände in der Sonne <i class="sw shade"></i>im Schatten</span>
     </div>
   </div>
+</section>
+
+<section class="findswrap" aria-label="Entdeckungen in den Daten">
+  <h2 class="fh">Entdeckungen</h2>
+  <div id="finds" class="finds"></div>
 </section>
 
 <section id="ort" class="detail">

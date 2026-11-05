@@ -39,3 +39,18 @@ Messwerte: Seite bereit nach 1,3 s (lokal), Schattenberechnung + Relief pro Bild
 | 10 | Kein Weg ins CMS | Einbettmodi `?embed=karte` und `?embed=ort#ort=…`, Teilen-Link pro Ort, Open-Graph-Angaben |
 
 Ausserdem: Gantt-Zeilen per Tastatur wählbar; Abgleich mit SRF im Text der Schattenliste.
+
+## Runde 3 – erster Eindruck, Robustheit, Tests (5.11., ca. 00:50)
+
+| # | Schwäche | Massnahme |
+|---|---|---|
+| 1 | Auf 1440×900 sah man über der Falzlinie fast nur Text, die Karte (das Wow) begann zuunterst | Entdeckungen unter die Karte verschoben, Kopf gestrafft: Karte nimmt jetzt rund zwei Drittel des ersten Bildschirms ein |
+| 2 | Ladebildschirm verdeckte die ganze Seite | Lädt nur noch im Kartenbereich; Titel und Text sind sofort lesbar |
+| 3 | Tagesanimation lief endlos weiter, auch wenn man weiter unten liest (Akku, CPU) | Pausiert ausserhalb des Bildes, läuft beim Zurückscrollen weiter |
+| 4 | Höhenmodell endet sichtbar rechts im Bild (Rand 30 km um den Kanton) | Absichtlicher Verlauf zum Hintergrund hinter der Ortskarte |
+| 5 | Tiefes Zoomen zeigt nur noch verschwommene 150-m-Pixel | Zoom auf 9-fach begrenzt |
+| 6 | Suche ohne Treffer: keine Rückmeldung | «Kein Ort gefunden – oder direkt in die Karte klicken» |
+| 7 | Klick ausserhalb des Kantons ohne Hinweis | Kennzeichnung «Kartenpunkt ausserhalb Graubündens» |
+| 8 | Favicon fehlte (404 in der Konsole) | Inline-SVG-Favicon, Konsole jetzt fehlerfrei |
+| 9 | Keine automatischen Tests | `_build/test_consistency.mjs`: Browser-Rechnung = Vorberechnung (33 Orte nachgerechnet, 799 auf Invarianten, Zeitumstellung) · `_build/test_e2e.mjs`: 18 Browser-Tests (Suche, Hash-Links, Regler-Extremwerte, Kartenklicks, Embeds, Mobil) – alle grün |
+| 10 | Suchliste blieb nach Fokusverlust offen | Schliesst beim Verlassen |

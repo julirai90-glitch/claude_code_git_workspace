@@ -321,7 +321,7 @@ class MapView {
     const [x0, y0, x1, y1] = this.bounds, I = this.insets();
     const fw = this.W - I.l - I.r, fh = this.H - I.t - I.b;
     const s = Math.min(fw / (x1 - x0), fh / (y1 - y0));
-    this.minS = s * 0.85; this.maxS = s * 40; this.fitS = s;
+    this.minS = s * 0.85; this.maxS = s * 9; this.fitS = s;
     if (soft && this.view.s > s) return;
     // centre of the free area expressed as a world-space view centre
     this.view = { x: (x0 + x1) / 2 - ((I.l - I.r) / 2) / s, y: (y0 + y1) / 2 - ((I.t - I.b) / 2) / s, s };
@@ -654,7 +654,7 @@ function rampColor(min) {
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const state = { day: todayIndex(), minute: 600, place: null, playing: false, mapActive: false };
-let G, P, places, terrain, map, pano, carpet, dayMinutes = new Map();
+let insideMask, G, P, places, terrain, map, pano, carpet, dayMinutes = new Map();
 
 init().catch(err => { console.error(err); $('#loading').textContent = 'Die Daten konnten nicht geladen werden. Bitte einen aktuellen Browser verwenden.'; });
 
@@ -664,7 +664,7 @@ async function init() {
   [G, P] = await Promise.all([loadDem(), loadPlaces()]);
   places = P.places;
   const byId = new Map(places.map(p => [String(p.id), p]));
-  terrain = new Terrain(G, cantonMask());
+  insideMask = cantonMask(); terrain = new Terrain(G, insideMask);
   map = new MapView($('#map'), G, window.OUTLINE, places, {
     onPlace: p => select(p, { fly: false }), onPoint: (la, lo) => selectPoint(la, lo),
     wheelZoom: () => state.mapActive,
@@ -686,6 +686,12 @@ async function init() {
   renderTerrain();
   $('#loading').remove(); document.body.classList.add('ready');
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !fromHash) play(true);
+  // pause the autoplay while the map is scrolled out of view (battery), resume when back
+  let resume = false;
+  new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting && state.playing) { resume = true; stop(); }
+    else if (e.isIntersecting && resume) { resume = false; play(); }
+  }, { threshold: 0.15 }).observe($('#karte'));
   writeLead(); finds();
 }
 
@@ -806,11 +812,12 @@ function selectNow(p, { fly = true, quiet = false } = {}) {
 }
 function selectPoint(la, lo, quiet) {
   const z = sample(G, la, lo); if (!(z > 0)) return;
+  const c = Math.floor((lo - G.w) / G.dLon), r = Math.floor((G.n - la) / G.dLat), outside = !insideMask[r * G.cols + c];
   const h = horizonProfile(G, la, lo);
   const near = places.filter(p => p.t !== 'hamlet').reduce((m, p) => { const d = (p.la - la) ** 2 + ((p.lo - lo) * 0.69) ** 2; return d < m[0] ? [d, p] : m; }, [1e9, null]);
   const km = Math.sqrt(near[0]) * 111, q = near[1];
   const dir = ['nördlich', 'nordöstlich', 'östlich', 'südöstlich', 'südlich', 'südwestlich', 'westlich', 'nordwestlich'][Math.round(((Math.atan2((lo - q.lo) * 0.69, la - q.la) * 180 / Math.PI + 360) % 360) / 45) % 8];
-  const p = { id: null, n: km < 1 ? `Kartenpunkt bei ${q.n}` : `${km.toFixed(1).replace('.', ',')} km ${dir} von ${q.n}`, g: near[1] && near[1].g, la, lo, z: Math.round(z), hz: h.hz, kind: 'Kartenpunkt', t: 'point' };
+  const p = { id: null, n: km < 1 ? `Kartenpunkt bei ${q.n}` : `${km.toFixed(1).replace('.', ',')} km ${dir} von ${q.n}`, g: near[1] && near[1].g, la, lo, z: Math.round(z), hz: h.hz, kind: outside ? 'Kartenpunkt ausserhalb Graubündens' : 'Kartenpunkt', t: 'point' };
   const [X, Y] = map.world(la, lo); p.X = X; p.Y = Y;
   select(p, { fly: false, quiet });
   map.sel = p;
@@ -947,7 +954,10 @@ function bindControls() {
   // search
   const q = $('#q'), list = $('#q-list'); let hits = [], hi = 0;
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  const render = () => { list.innerHTML = hits.map((p, k) => `<li role="option" class="${k === hi ? 'on' : ''}" data-k="${k}"><b>${p.n}</b><span>${p.kind} · ${p.g}</span></li>`).join(''); list.hidden = !hits.length; };
+  const render = () => {
+    q.setAttribute('aria-expanded', String(hits.length > 0 || q.value.trim().length >= 2));
+    if (!hits.length && q.value.trim().length >= 2) { list.innerHTML = '<li class="empty">Kein Ort gefunden – oder direkt in die Karte klicken</li>'; list.hidden = false; return; }
+    list.innerHTML = hits.map((p, k) => `<li role="option" class="${k === hi ? 'on' : ''}" data-k="${k}"><b>${p.n}</b><span>${p.kind} · ${p.g}</span></li>`).join(''); list.hidden = !hits.length; };
   q.addEventListener('input', () => {
     const t = norm(q.value.trim()); hi = 0;
     hits = t.length < 2 ? [] : places.filter(p => norm(p.n).includes(t) || norm(p.g || '').startsWith(t))
@@ -961,7 +971,8 @@ function bindControls() {
     else if (e.key === 'Enter' && hits[hi]) choose(hits[hi]);
     else if (e.key === 'Escape') { hits = []; render(); }
   });
-  list.addEventListener('pointerdown', e => { const li = e.target.closest('li'); if (li) { e.preventDefault(); choose(hits[+li.dataset.k]); } });
+  q.addEventListener('blur', () => setTimeout(() => { list.hidden = true; }, 150));
+  list.addEventListener('pointerdown', e => { const li = e.target.closest('li[data-k]'); if (li) { e.preventDefault(); choose(hits[+li.dataset.k]); } });
   $('#spark').addEventListener('click', e => { stop(); setDay(Math.floor(e.offsetX / e.currentTarget.clientWidth * NDAYS)); });
   $('#to-detail').addEventListener('click', () => $('#ort').scrollIntoView({ behavior: 'smooth' }));
   $('#share').addEventListener('click', async () => {

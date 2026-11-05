@@ -30,7 +30,7 @@ export class MapView {
     const [x0, y0, x1, y1] = this.bounds, I = this.insets();
     const fw = this.W - I.l - I.r, fh = this.H - I.t - I.b;
     const s = Math.min(fw / (x1 - x0), fh / (y1 - y0));
-    this.minS = s * 0.85; this.maxS = s * 40; this.fitS = s;
+    this.minS = s * 0.85; this.maxS = s * 9; this.fitS = s;
     if (soft && this.view.s > s) return;
     // centre of the free area expressed as a world-space view centre
     this.view = { x: (x0 + x1) / 2 - ((I.l - I.r) / 2) / s, y: (y0 + y1) / 2 - ((I.t - I.b) / 2) / s, s };
