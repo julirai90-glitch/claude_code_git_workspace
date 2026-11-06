@@ -94,3 +94,40 @@
 - [ ] Fotos 11–13 mit Neuschnee: Aufnahmedatum klären (Bildlegende)
 - [ ] Hinweis Einsturzgefahr Eishöhle im Text/Bildlegende
 - [ ] Artikel (Reportage Wanderung + Sage + Klimadaten) in neuer Session; Daten: `morteratsch-print-daten/`, `kennzahlen.json`
+
+---
+
+# Session 05.–06.11.2026 – Artikel-Vorbereitung TG Dezember (Datenseite, Bilder, Kästen)
+
+## Datasets, Felder, Abrufdatum (zusätzlich)
+| Dataset | Zugriff | Inhalt | Abruf |
+|---|---|---|---|
+| GLAMOS Inventar SGI 2023 (release 2026) | `doi.glamos.ch/data/inventory/inventory_sgi2023_r2026.zip`, doi:10.18750/inventory.2023.r2026, **CC BY 4.0** | E22-03 Morteratsch 7,679 km², E22-16 Vadret Pers 6,583 km², Aufnahme 2022 → `morteratsch-print-daten/05b_umriss_sgi2023_lv95.geojson` | 05.11.2026 |
+| swissALTI3D 2 m + SWISSIMAGE 2025 (2 m) | `fetch_data.alti3d_tiles/mosaic_dem`, `tiles.mosaic`, Block E 2786–2796, N 1138–1154 km | 3D-Luftbild (nicht im Repo, ~200 MB) | 05.11.2026 |
+| LK25-Blätter | api3 identify `ch.swisstopo.pixelkarte-pk25.metadata` | Haltestelle: 1257 St. Moritz, Zunge: 1277 Piz Bernina | 06.11.2026 |
+| Geplante Route | `morteratsch.gpx` (swisstopo-App, Planung 24.10.2026, nicht im Repo) | 3,98 km, 1898→2155 m → `10_route_km.csv` | 06.11.2026 |
+| Web: glaciersalive.ch, goodbye-glaciers.info, de.wikipedia.org | curl (WebFetch scheiterte an DNS) | Kastentext Gletscherrettung | 06.11.2026 |
+
+## Ergebnisse
+- **Datenseite A4** `morteratsch-print-daten/datenseite/` (v6): 3D-Luftbild mit Zungenrändern 1850/1931/1973/2015, Km-Leiste «Wandern durch die Zeit» (inkl. 1946 abgeleitet, 2026 = Routenende), Länge kumuliert, Dekaden, 4 Kennzahlen, Sommer Samedan. Generator: `python/build_datenseite.py`, `build_luftbild3d.py`, `build_route_km.py`, `render_datenseite.js`. Grafikpaket-ZIP lokal erzeugbar (siehe `datenseite/grafikpaket/LIESMICH.txt`, nicht im Repo).
+- **Bildauswahl 15** (Kontaktbogen Artifact https://claude.ai/artifact/J1pCc7U7p7YYxioS8Nry4w), Originale kopiert nach Drive `Inbox/Morteratsch/Auswahl` als `Morteratsch_2026-10-28_<Nr>_<Original>`. Auftakt hoch: _1250548.
+- **Kastentexte** (im Chat): «Schnee für den Gletscher» (~1000 Z.), Service Wanderung (~670 Z.).
+- **Einstieg** vom Autor geschrieben; Redigier-Hinweise und Faktenkorrekturen im Chat (18 m/J = 1878–2014; 2014–2024 57 m/J; Messbeginn 1878; 1946→2024 −2160 m; Zunge 1946 ≈ km 1,4 der Route).
+
+## Gelernt
+- Drive-Connector: Download ≤ 10 MB; Antworten > ~6,5 MB Datei brechen die Verbindung → max. 8 Downloads pro Runde, grosse Handyfotos ausfallen lassen/Export nutzen.
+- **Vor Teilmengen nachfragen**, wenn ein Tool nur einen Teil des Auftrags schafft (Kritik Julian: Bildauswahl erst auf halber Basis).
+- PDF-Text: `paint-order`-Halo verdoppelt Text in Chromium-PDFs → Hintergrund-Rechteck statt Halo.
+- Inventar-Zungenspitze nicht als Max-N des Umrisses bestimmen (2022: schmaler Eisstreifen am Westrand).
+- goodbye-glaciers.info Seite Morteratsch widersprüchlich (Kopf 16 %/35 %, Text 35 %/35 %).
+- Pers/Morteratsch laut Wikipedia seit Sommer 2015 getrennt (Sekundärquelle).
+
+## Offen
+- [ ] GLAMOS-Lizenz Längen-/Volumendaten (SGI 2023 ist CC BY)
+- [ ] Autorzeile «Grafik: Julian Reich» bestätigen
+- [ ] Sage-Quelle MF48: Heft/Jahr
+- [ ] Jahrespfähle/rosa Pfahl: Bedeutung; Tafeln bei Abschrankung _1250574
+- [ ] Einverständnis Person _1250609; Einsturzhinweis Bildlegende
+- [ ] Service-Kasten: Winterbetrieb Haltestelle/Weg/Restaurant, Link pontresina.ch prüfen
+- [ ] Gegenstimme zu Schneiseil/MortAlive (GLAMOS/ETH), Stand 2026 bei Felix Keller
+- [ ] Persgletscher getrennt? (Einstieg «eng verbunden» 1946 ok, aber «heute getrennt» belegen)
