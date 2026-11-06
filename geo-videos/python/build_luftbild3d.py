@@ -41,13 +41,17 @@ c = np.clip((geo['hx'] / CELL).astype(int), 0, nc - 1); r = np.clip(((nr * CELL 
 LINE = {1850: (1.0, 1.0, 1.0), 1931: (1.0, 0.88, 0.54), 1973: (1.0, 0.70, 0.28), 2016: (0.93, 0.20, 0.16)}  # hell = alt, rot = jung
 lw = max(1, round(W / 900))
 from scipy.ndimage import binary_dilation
+base = img.copy(); layer = np.zeros((H, W, 4), np.uint8)
 for j, col in LINE.items():
     inside = masks[j][r, c] & hit
     e = binary_dilation(inside, iterations=lw) & ~inside & hit
     shadow = binary_dilation(e, iterations=lw) & ~e
     img[shadow] = img[shadow] * 0.45
     img[e] = col
+    layer[shadow] = (0, 0, 0, 110); layer[e, :3] = (np.array(col) * 255).astype(np.uint8); layer[e, 3] = 255
 Image.fromarray((img * 255).astype(np.uint8)).save(os.path.join(out, 'luftbild3d.jpg'), quality=92)
+Image.fromarray((base * 255).astype(np.uint8)).save(os.path.join(out, 'luftbild3d_ohne_linien.tif'))
+Image.fromarray(layer, 'RGBA').save(os.path.join(out, 'luftbild3d_linien.png'))
 
 # Beschriftungspunkte projizieren (mit Verdeckungsprüfung)
 cam, f, rr, u = camera(POS, TGT); tanf = np.tan(np.radians(FOV) / 2); asp = H / W

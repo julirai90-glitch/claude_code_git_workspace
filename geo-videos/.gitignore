@@ -7,3 +7,5 @@ remotion-gr/out/
 *.nc
 *.tif
 __pycache__/
+morteratsch-print-daten/datenseite/*.zip
+morteratsch-print-daten/datenseite/grafikpaket/
