@@ -162,7 +162,7 @@ def dekaden(W=90, H=27):
     return svg(W, H, b)
 
 # --- Sommer Samedan ---
-def sommer(W=90, H=22):
+def sommer(W=186, H=22):
     l, r, tp, bt = 9, 2, 3, 6; iw, ih = W - l - r, H - tp - bt
     yrs = [int(k['jahr']) for k in K]; y0, y1 = yrs[0], yrs[-1]
     bw = iw / (y1 - y0 + 1); Y0 = tp + ih * 4 / 6; sc = ih / 6
@@ -175,14 +175,14 @@ def sommer(W=90, H=22):
         v = float(k['abw_sommer_vs_1871_1900']); x = l + (int(k['jahr']) - y0) * bw
         h = abs(v) * sc; y = Y0 - h if v > 0 else Y0
         b += f'<rect x="{x:.2f}" y="{y:.2f}" width="{bw*0.8:.2f}" height="{h:.2f}" fill="{RED if v>0 else ICE}"/>'
-    for y in (1870, 1925, 1975, 2025):
+    for y in (1870, 1900, 1950, 2000, 2025):
         b += t(l + (y - y0) * bw + bw * 0.4, H - 1.6, str(y), 2.0, 'middle', GREY)
     return svg(W, H, b)
 
 # --- Beschriftung 3D-Luftbild (Vektor-Overlay, Positionen aus build_luftbild3d.py) ---
 def bild3d(W=186):
     P = json.load(open(os.path.join(OUT, 'luftbild3d_punkte.json'), encoding='utf-8'))
-    CROP = 0.10                                   # oberen Bildrand abschneiden (Platz)
+    CROP = 0.06                                   # oberen Bildrand abschneiden (Platz)
     H0 = W * P['H'] / P['W']; H = H0 * (1 - CROP); pt = {k: dict(v, y=(v['y'] - CROP) / (1 - CROP)) for k, v in P['punkte'].items()}
     LC = {1850: '#ffffff', 1931: '#ffe08a', 1973: '#ffb347', 2016: '#ee3329'}
     b = f'<clipPath id="c3"><rect width="{W}" height="{H:.2f}"/></clipPath><image href="luftbild3d.jpg" x="0" y="{-CROP*H0:.2f}" width="{W}" height="{H0:.2f}" preserveAspectRatio="none" clip-path="url(#c3)"/>'
@@ -223,7 +223,10 @@ def kmleiste(W=186, H=14):
     q = [x for x in RK if x['jahr'] == '1946'][0]; a = float(q['km'])
     b += f'<circle cx="{X(a):.2f}" cy="{y0+1.3}" r="0.9" fill="#fff" stroke="{RED}" stroke-width="0.4"/>' + t(X(a), y0 - 2.3, '1946*', 2.5, 'middle', RED, 600)
     b += t(l - 1.5, y0 + 2.2, 'Haltestelle', 2.4, 'end', INK, 600) + t(l - 1.5, y0 + 5.2, f"{RM['hoehe_start']:.0f} m", 2.2, 'end', GREY)
-    b += t(W - r + 1.5, y0 + 2.2, 'Ende Route', 2.4, 'start', INK, 600) + t(W - r + 1.5, y0 + 5.2, f"km {de(Lk, 1)} · {RM['hoehe_ende']:.0f} m", 2.2, 'start', GREY)
+    # Ende Route = Gletscherrand bei der Begehung 28.10.2026 (Beobachtung Autor, nicht gemessen)
+    b += f'<line x1="{X(Lk):.2f}" x2="{X(Lk):.2f}" y1="{y0-1.6}" y2="{y0+2.6}" stroke="{INK}" stroke-width="0.3"/>'
+    b += t(X(Lk), y0 - 2.3, '2026', 2.7, 'middle', INK, 700) + t(X(Lk), y0 + 6, f"km {de(Lk, 1)}", 2.3, 'middle', GREY)
+    b += t(W - r + 2.5, y0 + 2.2, 'Gletscher', 2.4, 'start', INK, 600) + t(W - r + 4.5, y0 + 6, f"{RM['hoehe_ende']:.0f} m", 2.2, 'start', GREY)
     return svg(W, H, b)
 
 parts = {'bild3d': bild3d(), 'kmleiste': kmleiste(),  'laenge_kumuliert': linie(), 'dekaden': dekaden(), 'sommer_samedan': sommer()}
