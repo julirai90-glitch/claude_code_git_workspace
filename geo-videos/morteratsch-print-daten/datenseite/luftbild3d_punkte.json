@@ -1,6 +1,6 @@
 {
  "W": 2800,
- "H": 1490,
+ "H": 1360,
  "pos": [
   6150.0,
   15000.0,
@@ -15,67 +15,67 @@
  "punkte": {
   "Zunge 1850": {
    "x": 0.352,
-   "y": 0.8484,
+   "y": 0.8817,
    "visible": true
   },
   "Zunge 1931": {
    "x": 0.4139,
-   "y": 0.7223,
+   "y": 0.7435,
    "visible": true
   },
   "Zunge 1973": {
    "x": 0.4565,
-   "y": 0.5668,
+   "y": 0.5732,
    "visible": true
   },
   "Zunge 2010": {
    "x": 0.4826,
-   "y": 0.493,
+   "y": 0.4924,
    "visible": true
   },
   "Zunge 2016": {
    "x": 0.5217,
-   "y": 0.4781,
+   "y": 0.476,
    "visible": true
   },
   "Haltestelle Morteratsch (RhB)": {
    "x": 0.4033,
-   "y": 0.8984,
+   "y": 0.9365,
    "visible": true
   },
   "Hotel-Restaurant Morteratsch": {
    "x": 0.3917,
-   "y": 0.9057,
+   "y": 0.9444,
    "visible": true
   },
   "Chamanna da Boval CAS": {
    "x": 0.5997,
-   "y": 0.2358,
+   "y": 0.2106,
    "visible": false
   },
   "Isla Persa": {
    "x": 0.3938,
-   "y": 0.1793,
+   "y": 0.1486,
    "visible": true
   },
   "Munt Pers": {
    "x": 0.1685,
-   "y": 0.0046,
+   "y": -0.0428,
    "visible": false
   },
   "Vadret da Morteratsch (Namenpunkt)": {
    "x": 0.5284,
-   "y": 0.0318,
-   "visible": true
+   "y": -0.013,
+   "visible": false
   },
   "Vadret Pers (Namenpunkt)": {
    "x": 0.1286,
-   "y": 0.0381,
-   "visible": true
+   "y": -0.0061,
+   "visible": false
   },
   "Piz Bernina": {
    "x": 0.714,
-   "y": -0.2995,
+   "y": -0.3759,
    "visible": false
   }
  }

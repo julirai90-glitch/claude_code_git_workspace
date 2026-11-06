@@ -24,6 +24,12 @@ Dateien: `datenseite_A4.pdf` (Vorlage/Korrekturabzug), `datenseite_vorschau.png`
 - Raycaster `render_m.py` (numba), Gelände **nicht überhöht**. Linien = Umrisse SGI 1850/1931/1973/2016, nur nördlich N 1143000; Verdeckung pro Bildpunkt korrekt.
 - Beschriftung als Vektor (`bild3d.svg`), im Layout editierbar.
 
+## Km-Leiste «Wandern durch die Zeit» (06.11.2026)
+- `python3 -I python/build_route_km.py <morteratsch.gpx>` → `../10_route_km.csv`, `../10_route_meta.json`. GPX = **Planung** swisstopo-App (24.10.2026), keine Aufzeichnung; nicht im Repo.
+- Route 3,98 km (Haltestelle 1898 m → 2155 m). Erster Routenpunkt innerhalb Umriss: 1850 km 0,37 · 1931 km 1,13 · 1973 km 2,44 · 2010 km 2,99 · 2015 km 3,40 · 2022: Route endet vor dem Eis.
+- 1946 (kein Inventar): Zunge 2015 + GLAMOS-Summe 1946–2015 (1750 m) entlang Talachse → km ≈ 1,4, ±100 m.
+- Bild oben um 10 % beschnitten (Platz).
+
 ## Inventar SGI 2023 (neu, 05.11.2026)
 - `https://doi.glamos.ch/data/inventory/inventory_sgi2023_r2026.zip`, doi:10.18750/inventory.2023.r2026, **Lizenz CC BY 4.0** (kommerziell mit Quellenangabe erlaubt).
 - Extrakt: `../05b_umriss_sgi2023_lv95.geojson` (Felder `sgi_id`, `name`, `year_acq`, `area_km2`).

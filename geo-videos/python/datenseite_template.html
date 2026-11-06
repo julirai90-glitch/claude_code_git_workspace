@@ -3,7 +3,7 @@
 @page{size:A4;margin:0}
 *{box-sizing:border-box}
 html,body{margin:0;background:#fff;color:#1a1a1a}
-.page{width:210mm;height:297mm;padding:11mm 12mm 9mm;font-family:Inter,Arial,sans-serif;font-size:8.2pt;line-height:1.35;display:flex;flex-direction:column;gap:2.6mm;overflow:hidden}
+.page{width:210mm;height:297mm;padding:11mm 12mm 9mm;font-family:Inter,Arial,sans-serif;font-size:8.2pt;line-height:1.35;display:flex;flex-direction:column;gap:2.2mm;overflow:hidden}
 .serif{font-family:'Bitstream Charter',Charter,Georgia,serif}
 .kicker{color:#CC0000;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:7.5pt}
 h1{font-family:'Bitstream Charter',Georgia,serif;font-size:28pt;line-height:1;margin:1.2mm 0 2mm;font-weight:700}
@@ -18,14 +18,15 @@ h2{font-size:9pt;margin:0 0 .6mm;font-weight:700}
 .box{background:#f3f3f3;padding:2.6mm 3mm;align-self:start}
 .box .cols{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
 .box h3{font-size:7.2pt;text-transform:uppercase;letter-spacing:.05em;margin:0 0 1mm;color:#CC0000}
-.box p{margin:0}
+.box p{margin:0;font-size:7.8pt}
+.box p.cap{font-size:6.9pt}
 .quote{font-family:'Bitstream Charter',Georgia,serif;font-style:italic;font-size:8pt}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;border-top:.35mm solid #1a1a1a;border-bottom:.2mm solid #ccc;padding:2mm 0}
 .num{font-family:'Bitstream Charter',Georgia,serif;font-size:18pt;font-weight:700;line-height:1;color:#0068A4;white-space:nowrap}
 .num.red{color:#CC0000}
 .num small{font-size:11pt}
 .tl{font-size:7.2pt;color:#333;margin-top:1mm}
-footer{margin-top:auto;border-top:.2mm solid #ccc;padding-top:1.6mm;font-size:6.2pt;color:#666;line-height:1.35}
+footer{margin-top:auto;border-top:.2mm solid #ccc;padding-top:1.4mm;font-size:5.9pt;color:#666;line-height:1.35}
 footer b{color:#1a1a1a}
 svg{display:block}
 </style></head><body><div class="page">
@@ -39,7 +40,11 @@ svg{display:block}
  <h2>Wo das Eis lag</h2>
  <p class="sub">Blick von Norden ins Val Morteratsch, Luftbild 2025 auf dem Gelände; Linien: Rand der Gletscherzunge in den Inventaren 1850–2015</p>
  {{bild3d}}
- <p class="cap">3D-Ansicht, nicht massstäblich; Gelände nicht überhöht. Umriss 1850 aus Karten und Moränen rekonstruiert. 2015: Jahr der Luftbilder für das Inventar SGI 2016. Seither ging die Zunge laut Messreihe um weitere {{s2015_abs}} m zurück.</p>
+ <p class="cap">3D-Ansicht, Gelände nicht überhöht. 1850 rekonstruiert; 2015 = Luftbilder für Inventar SGI 2016. Seither ging die Zunge um weitere {{s2015_abs}} m zurück (Messreihe).</p>
+ <h2 style="margin-top:2mm">Wandern durch die Zeit</h2>
+ <p class="sub">Geplante Route von der Haltestelle zum Gletscher ({{rlen}} km): Ab diesem Wegkilometer lag der Boden im jeweiligen Jahr noch unter Eis</p>
+ {{kmleiste}}
+ <p class="cap">Route: Planung swisstopo-App, geschnitten mit den Inventarumrissen. *1946: aus der Messreihe abgeleitet, ±100 m.</p>
 </div>
 <div class="two">
  <div>
@@ -68,8 +73,8 @@ svg{display:block}
   </div>
  </div>
  <div>
-  <h2>Die Sommer werden wärmer</h2>
-  <p class="sub">Juni–August in Samedan, Abweichung vom Mittel 1871–1900 (Klima der Region)</p>
+  <h2>Die Sommer in Samedan werden wärmer</h2>
+  <p class="sub">Juni–August, Abweichung vom Mittel 1871–1900</p>
   {{sommer_samedan}}
  </div>
 </div>
