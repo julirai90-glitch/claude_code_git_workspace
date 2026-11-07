@@ -1,2 +1,4 @@
 data/raw/
 node_modules/
+abstimmungen.json
+screenshots/*.png

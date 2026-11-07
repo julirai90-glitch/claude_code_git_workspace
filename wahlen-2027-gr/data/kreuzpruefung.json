@@ -1,0 +1,36 @@
+{
+ "nr": {
+  "same": 540607,
+  "only_pd": 11040,
+  "diff": 4,
+  "only_opd": 198,
+  "opd_person_unknown": 11042
+ },
+ "nr_votings_compared": 2760,
+ "nr_diff_examples": [
+  [
+   34924,
+   "1109",
+   "Ja"
+  ],
+  [
+   34924,
+   "4323",
+   "Ja"
+  ],
+  [
+   34925,
+   "1109",
+   "Nein"
+  ],
+  [
+   34925,
+   "4323",
+   "Ja"
+  ]
+ ],
+ "sr_2026SS": {
+  "same": 6970
+ },
+ "text": "Kreuzprüfung: Für die 2’760 Nationalratsabstimmungen, die in beiden Quellen vorhanden sind, stimmen 540’607 Einzelstimmen überein, 4 weichen ab; 11’238 liessen sich nicht zuordnen (meist fehlende Personendatensätze bei OpenParlData). Ständerat, Sommersession 2026: 6’970 von 6’970 Einzelstimmen in der offiziellen Excel-Liste und bei OpenParlData identisch."
+}

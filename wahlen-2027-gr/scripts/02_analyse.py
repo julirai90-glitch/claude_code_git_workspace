@@ -37,8 +37,15 @@ FRACTION = {  # many spellings across sources -> short name
 }
 PD_DECISION = {  # ws.parlament.ch Voting.DecisionText
     "Ja": "yes", "Nein": "no", "Enthaltung": "abstention",
-    "Hat nicht teilgenommen": "absent", "Entschuldigt": "absent_excused",
+    "Hat nicht teilgenommen": "absent", "Entschuldigt": "absent_excused", "Entschuldigt gemäss Art. 57 Abs. 4": "absent_excused",
     "Die Präsidentin/der Präsident stimmt nicht": "abstention_president",
+}
+
+
+SUBJECT_DE = {  # standard procedural terms the webservice delivers in French for some votes
+    "Vote sur l'ensemble": "Gesamtabstimmung", "Vote final": "Schlussabstimmung",
+    "Entrer en matière": "Eintreten", "Entrée en matière": "Eintreten",
+    "Renvoi au Conseil fédéral": "Rückweisung an den Bundesrat",
 }
 
 
@@ -60,7 +67,7 @@ def load_nr():
             "council": "NR", "ref": v["ID"], "date": odate(v["VoteEnd"]),
             "session": v["SessionName"], "business": v["BusinessShortNumber"],
             "affair": (v["BusinessTitle"] or "").strip(), "bill": v.get("BillTitle"),
-            "subject": v.get("Subject"), "yes_means": v.get("MeaningYes"),
+            "subject": SUBJECT_DE.get(v.get("Subject"), v.get("Subject")), "yes_means": v.get("MeaningYes"),
             "no_means": v.get("MeaningNo"),
             "link": CURIA.format(v["BusinessNumber"]) if v.get("BusinessNumber") else None}
     rows, unknown = [], collections.Counter()

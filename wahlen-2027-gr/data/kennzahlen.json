@@ -1,0 +1,327 @@
+{
+ "generated_utc": "2026-11-07T22:17:01+00:00",
+ "unknown_decisions": {},
+ "nr_retrieved": "2026-11-07T22:06:21+00:00",
+ "check_text": "Kreuzprüfung: Für die 2’760 Nationalratsabstimmungen, die in beiden Quellen vorhanden sind, stimmen 540’607 Einzelstimmen überein, 4 weichen ab; 11’238 liessen sich nicht zuordnen (meist fehlende Personendatensätze bei OpenParlData). Ständerat, Sommersession 2026: 6’970 von 6’970 Einzelstimmen in der offiziellen Excel-Liste und bei OpenParlData identisch.",
+ "votings": {
+  "NR": 4201,
+  "SR": 2058
+ },
+ "date_range": {
+  "NR": [
+   "2023-12-04",
+   "2026-10-02"
+  ],
+  "SR": [
+   "2023-12-05",
+   "2026-10-02"
+  ]
+ },
+ "members": {
+  "Martin Candinas": {
+   "council": "NR",
+   "fraction": "Mitte",
+   "votings": 4201,
+   "abstention_president": 6,
+   "yes": 3098,
+   "participated": 4112,
+   "fraction_defined": 4108,
+   "yesno_decided": 4047,
+   "majority_side": 3660,
+   "deviated": 175,
+   "no": 949,
+   "abstention": 65,
+   "absent": 83
+  },
+  "Magdalena Martullo-Blocher": {
+   "council": "NR",
+   "fraction": "SVP",
+   "votings": 4201,
+   "yes": 1807,
+   "participated": 3637,
+   "fraction_defined": 3635,
+   "yesno_decided": 3610,
+   "majority_side": 2102,
+   "no": 1803,
+   "abstention": 27,
+   "absent": 564,
+   "deviated": 88
+  },
+  "Anna Giacometti": {
+   "council": "NR",
+   "fraction": "FDP",
+   "votings": 4201,
+   "yes": 2944,
+   "participated": 4146,
+   "fraction_defined": 4140,
+   "yesno_decided": 3985,
+   "majority_side": 3417,
+   "no": 1041,
+   "abstention": 161,
+   "deviated": 314,
+   "absent": 55
+  },
+  "Jon Pult": {
+   "council": "NR",
+   "fraction": "SP",
+   "votings": 4201,
+   "no": 1593,
+   "participated": 3989,
+   "fraction_defined": 3988,
+   "yesno_decided": 3968,
+   "majority_side": 2185,
+   "yes": 2375,
+   "absent": 48,
+   "abstention": 21,
+   "deviated": 24,
+   "absent_excused": 164
+  },
+  "Roman Hug": {
+   "council": "NR",
+   "fraction": "SVP",
+   "votings": 4201,
+   "yes": 2117,
+   "participated": 4129,
+   "fraction_defined": 4127,
+   "yesno_decided": 4125,
+   "majority_side": 2445,
+   "no": 2008,
+   "abstention": 4,
+   "deviated": 42,
+   "absent": 72
+  },
+  "Martin Schmid": {
+   "council": "SR",
+   "fraction": "FDP",
+   "votings": 2058,
+   "yes": 1326,
+   "participated": 1740,
+   "fraction_defined": 1716,
+   "yesno_decided": 1713,
+   "majority_side": 1374,
+   "no": 392,
+   "deviated": 139,
+   "absent": 318,
+   "abstention": 22
+  },
+  "Stefan Engler": {
+   "council": "SR",
+   "fraction": "Mitte",
+   "votings": 2058,
+   "abstention_president": 662,
+   "yes": 1011,
+   "participated": 1276,
+   "fraction_defined": 1262,
+   "yesno_decided": 1260,
+   "majority_side": 1111,
+   "no": 250,
+   "absent_excused": 23,
+   "deviated": 128,
+   "further_option": 1,
+   "absent": 96,
+   "abstention": 15
+  }
+ },
+ "pairs": [
+  {
+   "a": "Anna Giacometti",
+   "b": "Jon Pult",
+   "both": 3936,
+   "same": 1791
+  },
+  {
+   "a": "Anna Giacometti",
+   "b": "Magdalena Martullo-Blocher",
+   "both": 3596,
+   "same": 2093
+  },
+  {
+   "a": "Anna Giacometti",
+   "b": "Martin Candinas",
+   "both": 4059,
+   "same": 3077
+  },
+  {
+   "a": "Anna Giacometti",
+   "b": "Roman Hug",
+   "both": 4076,
+   "same": 2402
+  },
+  {
+   "a": "Jon Pult",
+   "b": "Magdalena Martullo-Blocher",
+   "both": 3446,
+   "same": 455
+  },
+  {
+   "a": "Jon Pult",
+   "b": "Martin Candinas",
+   "both": 3904,
+   "same": 1991
+  },
+  {
+   "a": "Jon Pult",
+   "b": "Roman Hug",
+   "both": 3921,
+   "same": 544
+  },
+  {
+   "a": "Magdalena Martullo-Blocher",
+   "b": "Martin Candinas",
+   "both": 3556,
+   "same": 1988
+  },
+  {
+   "a": "Magdalena Martullo-Blocher",
+   "b": "Roman Hug",
+   "both": 3592,
+   "same": 3501
+  },
+  {
+   "a": "Martin Candinas",
+   "b": "Roman Hug",
+   "both": 4042,
+   "same": 2302
+  },
+  {
+   "a": "Martin Schmid",
+   "b": "Stefan Engler",
+   "both": 1045,
+   "same": 812
+  }
+ ],
+ "nr_delegation": {
+  "members": [
+   "Anna Giacometti",
+   "Jon Pult",
+   "Magdalena Martullo-Blocher",
+   "Martin Candinas",
+   "Roman Hug"
+  ],
+  "full_participation": 3287,
+  "closed": 305,
+  "closed_bridge": 14
+ },
+ "canton_cohesion_nr": [
+  {
+   "canton": "SZ",
+   "pairs": 24037,
+   "agree": 0.6875650039522403,
+   "seats": 4
+  },
+  {
+   "canton": "BS",
+   "pairs": 23530,
+   "agree": 0.6390990225244368,
+   "seats": 4
+  },
+  {
+   "canton": "TG",
+   "pairs": 60704,
+   "agree": 0.5741137322087506,
+   "seats": 6
+  },
+  {
+   "canton": "VS",
+   "pairs": 111629,
+   "agree": 0.5717152352883211,
+   "seats": 8
+  },
+  {
+   "canton": "VD",
+   "pairs": 660839,
+   "agree": 0.5700571546170853,
+   "seats": 19
+  },
+  {
+   "canton": "SG",
+   "pairs": 264566,
+   "agree": 0.562755607296478,
+   "seats": 12
+  },
+  {
+   "canton": "LU",
+   "pairs": 146355,
+   "agree": 0.5614908954255065,
+   "seats": 9
+  },
+  {
+   "canton": "ZH",
+   "pairs": 2367750,
+   "agree": 0.5584056593812692,
+   "seats": 36
+  },
+  {
+   "canton": "AG",
+   "pairs": 456234,
+   "agree": 0.5561268997926503,
+   "seats": 16
+  },
+  {
+   "canton": "FR",
+   "pairs": 75267,
+   "agree": 0.5535493642632229,
+   "seats": 7
+  },
+  {
+   "canton": "TI",
+   "pairs": 109982,
+   "agree": 0.5422978305540906,
+   "seats": 8
+  },
+  {
+   "canton": "BE",
+   "pairs": 1064789,
+   "agree": 0.5380079997069842,
+   "seats": 24
+  },
+  {
+   "canton": "GE",
+   "pairs": 251797,
+   "agree": 0.5315234097308547,
+   "seats": 12
+  },
+  {
+   "canton": "GR",
+   "pairs": 38128,
+   "agree": 0.5283256399496433,
+   "seats": 5
+  },
+  {
+   "canton": "BL",
+   "pairs": 72511,
+   "agree": 0.4948076843513398,
+   "seats": 7
+  },
+  {
+   "canton": "SO",
+   "pairs": 56260,
+   "agree": 0.48522929257020975,
+   "seats": 6
+  },
+  {
+   "canton": "NE",
+   "pairs": 24286,
+   "agree": 0.4486123692662439,
+   "seats": 4
+  },
+  {
+   "canton": "ZG",
+   "pairs": 11543,
+   "agree": 0.37815126050420167,
+   "seats": 3
+  },
+  {
+   "canton": "JU",
+   "pairs": 3069,
+   "agree": 0.17302052785923755,
+   "seats": 2
+  },
+  {
+   "canton": "SH",
+   "pairs": 4067,
+   "agree": 0.1448241947381362,
+   "seats": 2
+  }
+ ]
+}

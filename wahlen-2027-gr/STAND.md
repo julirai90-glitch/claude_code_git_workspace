@@ -3,14 +3,13 @@
 Start: 2026-11-07 23:00 CET. Übergabe: 2026-11-08 06:30 in GUTEN-MORGEN.md.
 
 ## Aktueller Schritt
-5 – Daten holen (23:10)
-- OpenParlData geholt (persons, votings_all, votes_leg52, votes_gr)
-- Befund: OpenParlData NR nur 2760 Abstimmungen bis 19.06.2026; parlament.ch OData hat 4201 inkl. Herbst 2026
-  -> NR aus ws.parlament.ch (01b), SR aus OpenParlData + Excel Herbst 2026 (01c)
-- SR-Kreuzcheck Sommer 2026: 6970/6970 Einzelstimmen Excel = OpenParlData
+6 – Kritikrunde 1 (ab ca. 23:20)
+- Daten komplett: NR 4201 Abst./839'717 Stimmen (parlament.ch), SR 2058 Abst. (OPD + Excel HS26)
+- Kreuzprüfung: NR 540'607 gleich / 4 abweichend; SR SS26 6970/6970
+- Seite läuft lokal (http.server :8765, PID in /dev/shm/wtest/http.pid), Test 05_test.js grün
 
 ## Nächster Schritt
-02_analyse.py auf neue Quellen umbauen, NR-Kreuzcheck PD vs OPD
+Kritikrunden 1–3 (KRITIK.md), dann Push, GUTEN-MORGEN.md
 
 ## Offene Probleme
 - Südostschweiz-Artikel Schmid: im Somedia-Archiv gefunden (06.11.2026), Archiv liefert keine URL

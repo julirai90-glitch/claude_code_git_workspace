@@ -2,6 +2,7 @@
 (async function () {
   const COL = { SVP: 'var(--svp)', SP: 'var(--sp)', FDP: 'var(--fdp)', Mitte: 'var(--mitte)', 'Grüne': 'var(--gruene)', GLP: 'var(--glp)' };
   const CODE = { Y: 'yes', N: 'no', E: 'abstention' };
+  const OTHER = { P: 'stimmt als Ratspräsident nicht', '-': 'nicht teilgenommen' };
   const WORD = { yes: 'Ja', no: 'Nein', abstention: 'Enthaltung' };
   const pct = (x, d = 0) => (100 * x).toLocaleString('de-CH', { minimumFractionDigits: d, maximumFractionDigits: d }) + ' %';
   const n = x => x.toLocaleString('de-CH');
@@ -36,14 +37,15 @@
   // tooltip
   const tip = document.createElement('div'); tip.className = 'tip'; document.body.appendChild(tip);
   const showTip = (el, html) => {
-    tip.innerHTML = html; tip.style.opacity = 1;
+    tip.innerHTML = html; tip.style.opacity = 1; shownAt = Date.now();
     const r = el.getBoundingClientRect();
     const x = Math.min(window.innerWidth - tip.offsetWidth - 8, Math.max(8, r.left + r.width / 2 - tip.offsetWidth / 2));
     const y = r.top - tip.offsetHeight - 8 < 0 ? r.bottom + 8 : r.top - tip.offsetHeight - 8;
     tip.style.left = x + 'px'; tip.style.top = y + 'px';
   };
+  let shownAt = 0;
   const hideTip = () => { tip.style.opacity = 0; };
-  window.addEventListener('scroll', hideTip, { passive: true });
+  window.addEventListener('scroll', () => { if (Date.now() - shownAt > 400) hideTip(); }, { passive: true });
 
   // matrix
   const nr = P.filter(p => p.council === 'NR');
@@ -138,7 +140,7 @@
         <div class="meta"><span>${dmy(v[2])}</span><span>${v[1] === 'NR' ? 'Nationalrat' : 'Ständerat'}</span>${v[3] ? `<span>${esc(v[3])}</span>` : ''}<span>Ja ${v[7]} · Nein ${v[8]} · Enth. ${v[9]}</span></div>
         <div class="t">${v[6] ? `<a href="${esc(v[6])}" target="_blank" rel="noopener">${esc(v[4])}</a>` : esc(v[4])}</div>
         <div class="s">${esc(v[5] || '')}</div>
-        <div class="gr">${people.map(([name, c, dev]) => `<span class="vote ${CODE[c] || ''} ${dev ? 'dev' : ''}" title="${dev ? 'anders als die eigene Fraktion' : ''}"><i></i>${esc(short(name))}: ${CODE[c] ? WORD[CODE[c]] : 'nicht teilgenommen'}</span>`).join('')}</div>
+        <div class="gr">${people.map(([name, c, dev]) => `<span class="vote ${CODE[c] || ''} ${dev ? 'dev' : ''}" title="${dev ? 'anders als die eigene Fraktion' : ''}"><i></i>${esc(short(name))}: ${CODE[c] ? WORD[CODE[c]] : OTHER[c]}</span>`).join('')}</div>
       </li>`;
     }).join('');
     $('#more').hidden = list.length <= shown;

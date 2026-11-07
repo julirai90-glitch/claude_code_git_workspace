@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parent.parent
 K = json.loads((ROOT / "data" / "kennzahlen.json").read_text())
 A = json.loads((ROOT / "data" / "abstimmungen.json").read_text())
 POS = ("yes", "no", "abstention")
-CODE = {"yes": "Y", "no": "N", "abstention": "E"}
+CODE = {"yes": "Y", "no": "N", "abstention": "E", "abstention_president": "P"}
 
 CANTON = {"ZH": "Zürich", "BE": "Bern", "LU": "Luzern", "UR": "Uri", "SZ": "Schwyz", "OW": "Obwalden",
           "NW": "Nidwalden", "GL": "Glarus", "ZG": "Zug", "FR": "Freiburg", "SO": "Solothurn",
@@ -30,6 +30,11 @@ def pct(x, d=0):
 
 def num(x):
     return f"{x:,}".replace(",", "’")
+
+
+def busnr(b):  # '20260033' -> '26.033' (Curia Vista short form); short forms pass through
+    b = str(b or "")
+    return f"{b[2:4]}.{b[4:]}" if len(b) == 8 and b.isdigit() else b
 
 
 def dmy(s):
@@ -63,7 +68,7 @@ for v in reversed(A):  # newest first
                 flags += "b"; bridge.append(v)
         else:
             flags += "s"; split += 1
-    votes.append([v["key"], v["council"], v["date"], v["business"] or "", v["affair"] or "",
+    votes.append([v["key"], v["council"], v["date"], busnr(v["business"]), v["affair"] or "",
                   v["subject"] or "", v["link"] or "", v["yes"], v["no"], v["abst"], codes, devm, flags])
 assert closed == K["nr_delegation"]["closed"] and len(bridge) == K["nr_delegation"]["closed_bridge"]
 
