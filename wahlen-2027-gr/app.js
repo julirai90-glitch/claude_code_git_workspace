@@ -2,7 +2,7 @@
 (async function () {
   const COL = { SVP: 'var(--svp)', SP: 'var(--sp)', FDP: 'var(--fdp)', Mitte: 'var(--mitte)', 'Grüne': 'var(--gruene)', GLP: 'var(--glp)' };
   const CODE = { Y: 'yes', N: 'no', E: 'abstention' };
-  const OTHER = { P: 'stimmt als Ratspräsident nicht', '-': 'nicht teilgenommen' };
+  const OTHER = { P: 'Vorsitz, stimmt nicht', '-': 'nicht teilgenommen' };
   const WORD = { yes: 'Ja', no: 'Nein', abstention: 'Enthaltung' };
   const pct = (x, d = 0) => (100 * x).toLocaleString('de-CH', { minimumFractionDigits: d, maximumFractionDigits: d }) + ' %';
   const n = x => x.toLocaleString('de-CH');
@@ -26,6 +26,7 @@
   $('#kb').innerHTML = D.text.kb.map(k => `<div class="kbi"><b>${esc(k.v)}</b><span>${esc(k.l)}</span></div>`).join('');
   const P = D.people;
   const byName = Object.fromEntries(P.map(p => [p.name, p]));
+  const last = name => name.split(' ').slice(-1)[0].replace('Martullo-Blocher', 'Martullo');
   const short = name => name.replace('Magdalena ', 'M. ').replace('Martullo-Blocher', 'Martullo');
 
   // people strip
@@ -59,7 +60,7 @@
     const l = 95 - t * 62;
     return `hsl(203 ${45 + t * 40}% ${l}%)`;
   };
-  $('#matrix').innerHTML = `<thead><tr><th class="row"></th>${nr.map(p => `<th scope="col">${esc(short(p.name))}<br><span class="muted">${esc(p.fraction)}</span></th>`).join('')}</tr></thead>
+  $('#matrix').innerHTML = `<thead><tr><th class="row"></th>${nr.map(p => `<th scope="col"><span class="fn">${esc(p.name.split(' ')[0])} </span>${esc(last(p.name))}<br><span class="muted">${esc(p.fraction)}</span></th>`).join('')}</tr></thead>
     <tbody>${nr.map(a => `<tr><th class="row" scope="row">${esc(a.name)}</th>${nr.map(b => {
       if (a === b) return '<td class="self">–</td>';
       const q = pair[a.name + '|' + b.name]; const v = q.same / q.both;
@@ -111,11 +112,22 @@
     return `<li><span class="d">${dmy(v[2])}</span> ${v[6] ? `<a href="${esc(v[6])}" target="_blank" rel="noopener">${esc(v[4])}</a>` : esc(v[4])}${v[5] ? ` <span class="muted">(${esc(v[5])})</span>` : ''}<br><span class="small">Alle fünf: <b>${word}</b> · gegen die eigene Fraktion: ${devs.map(esc).join(', ')}</span></li>`;
   }).join('');
 
+  // topics
+  const dot = c => `<i class="dot ${CODE[c] || (c === 'P' ? 'chair' : '')}" title="${CODE[c] ? WORD[CODE[c]] : (OTHER[c] || '')}"></i>`;
+  $('#topics').innerHTML = D.topics.map(t => `
+    <details class="topic"><summary><b>${esc(t.name)}</b> <span class="muted">${t.nr} im Nationalrat · ${t.sr} im Ständerat</span></summary>
+      <p class="small muted">Suchbegriffe im Geschäftstitel: ${esc(t.words)}</p>
+      <div class="tgrid" role="table">
+        <div class="trow th" role="row"><span role="columnheader">Abstimmung</span><span class="tdots" role="columnheader">${D.order.map(nm => `<abbr title="${esc(nm)}">${esc(nm.split(' ').map(w => w[0]).join('').slice(0, 2))}</abbr>`).join('')}</span></div>
+        ${t.idx.map(i => { const v = D.votes[i]; return `<div class="trow" role="row"><span role="cell"><span class="muted small">${dmy(v[2])} · ${v[1]}</span><br>${v[6] ? `<a href="${esc(v[6])}" target="_blank" rel="noopener">${esc(v[4])}</a>` : esc(v[4])}${v[5] ? ` <span class="muted small">(${esc(v[5])})</span>` : ''}</span><span class="tdots" role="cell">${[...v[10]].map(c => c === '.' ? '<i class="dot none"></i>' : dot(c)).join('')}</span></div>`; }).join('')}
+      </div>
+    </details>`).join('');
+
   // vote browser
   const V = D.votes; // [key, council, date, business, affair, subject, link, yes, no, abst, codes, devmask, flags]
   const order = D.order; // names in code order
   let filter = 'all', q = '', shown = 30;
-  const chips = [['all', 'Alle'], ['closed', 'Bündner NR geschlossen'], ['bridge', 'Geschlossen über Fraktionsgrenzen'], ['split', 'Bündner NR gespalten'], ['sr', 'Ständerat']];
+  const chips = [['all', 'Alle'], ['nr', 'Nationalrat'], ['closed', 'Bündner NR geschlossen'], ['bridge', 'Geschlossen über Fraktionsgrenzen'], ['split', 'Bündner NR gespalten'], ['sr', 'Ständerat']];
   $('#chips').innerHTML = chips.map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${k === filter}">${l}</button>`).join('');
   $('#chips').addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return;
@@ -134,6 +146,7 @@
     if (filter === 'bridge' && !f.includes('b')) return false;
     if (filter === 'split' && !f.includes('s')) return false;
     if (filter === 'sr' && v[1] !== 'SR') return false;
+    if (filter === 'nr' && v[1] !== 'NR') return false;
     if (q) {
       const hay = (v[3] + ' ' + v[4] + ' ' + v[5]).toLowerCase();
       return q.split(/\s+/).every(w => hay.includes(w));

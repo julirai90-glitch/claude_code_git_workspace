@@ -16,3 +16,16 @@ Zehn grösste Schwächen:
 10. Kantonsvergleich: Kantone mit 2 Sitzen (Jura, Schaffhausen) erzeugen Extremwerte ohne Hinweis.
 
 Behebung: siehe Commit nach dieser Runde.
+
+## Runde 2 – 23:21
+Zehn grösste Schwächen:
+1. Ständerat Herbst 2026: Geschäftsnummer falsch gekürzt (26.0033 statt 26.033) – behoben.
+2. Abstimmungsliste: «stimmt als Ratspräsident nicht» – ersetzt durch «Vorsitz, stimmt nicht».
+3. Matrix-Kopfzeile auf dem Handy: Namen überlappen – auf Nachnamen und Umbruch reduziert.
+4. Keine thematische Einordnung: neuer Abschnitt «Bündner Themen» mit offengelegten Suchbegriffen und Einzelabstimmungen (keine Prozentwerte wegen kleiner Fallzahlen).
+5. Themen-Spaltenköpfe (Can/Mar/…) überlappen auf dem Handy – Initialen plus Legende.
+6. Kein Filter nur für den Nationalrat – Chip «Nationalrat» ergänzt.
+7. Themenauswahl kann Fremdtreffer enthalten (z. B. «Shoppingtourismus») – transparent gemacht: Suchbegriffe stehen beim Thema, Auswahl als redaktionelle Eingrenzung bezeichnet.
+8. Kernbefunde nennen «9 %» ohne Kontext, dass Fraktionen generell gegeneinander stimmen – Kantonsvergleich liefert den Kontext (Abschnitt 5). Offen: ggf. Satz im Lead.
+9. Lange Seite ohne Navigation – offen.
+10. Tooltip bleibt in der Handy-Emulation nach Hover stehen; schliesst bei Tipp daneben (Runde 1) – akzeptiert.

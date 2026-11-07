@@ -1,6 +1,6 @@
 """Build data/page.json for index.html from data/kennzahlen.json and data/abstimmungen.json.
 All numbers in the page text are computed here; no hand-typed figures."""
-import json
+import json, re
 from datetime import datetime
 from pathlib import Path
 
@@ -34,7 +34,7 @@ def num(x):
 
 def busnr(b):  # '20260033' -> '26.033' (Curia Vista short form); short forms pass through
     b = str(b or "")
-    return f"{b[2:4]}.{b[4:]}" if len(b) == 8 and b.isdigit() else b
+    return f"{b[2:4]}.{int(b[4:]):03d}" if len(b) == 8 and b.isdigit() else b
 
 
 def dmy(s):
@@ -71,6 +71,20 @@ for v in reversed(A):  # newest first
     votes.append([v["key"], v["council"], v["date"], busnr(v["business"]), v["affair"] or "",
                   v["subject"] or "", v["link"] or "", v["yes"], v["no"], v["abst"], codes, devm, flags])
 assert closed == K["nr_delegation"]["closed"] and len(bridge) == K["nr_delegation"]["closed_bridge"]
+
+# topics: keyword match on the business title (patterns published on the page)
+TOPICS = [
+    ("Wolf und Grossraubtiere", r"\bwolf|\bwölf|grossraubtier|\bbär(en)?\b|\bluchs", "Wolf, Wölfe, Grossraubtier, Bär, Luchs"),
+    ("Tourismus", r"tourismus|touristi|beherbergung", "Tourismus, touristisch, Beherbergung"),
+    ("Zweitwohnungen", r"zweitwohnung", "Zweitwohnung"),
+    ("Wasserkraft", r"wasserzins|wasserkraft", "Wasserzins, Wasserkraft"),
+    ("Berggebiet und Alpwirtschaft", r"berggebiet|bergregion|bergland|alpwirtschaft|sömmerung", "Berggebiet, Bergregion, Bergland, Alpwirtschaft, Sömmerung"),
+]
+topics = []
+for name, pat, words in TOPICS:
+    idx = [i for i, v in enumerate(votes) if re.search(pat, v[4].lower())]
+    topics.append({"name": name, "words": words, "idx": idx,
+                   "nr": sum(votes[i][1] == "NR" for i in idx), "sr": sum(votes[i][1] == "SR" for i in idx)})
 
 leaving = []
 for n in ["Stefan Engler", "Martin Schmid", "Anna Giacometti"]:
@@ -135,7 +149,7 @@ text = {
     "check": K.get("check_text", ""),
 }
 
-page = {"text": text, "people": people, "pairs": pairs, "cohesion": coh_out, "leaving": leaving,
+page = {"text": text, "topics": topics, "people": people, "pairs": pairs, "cohesion": coh_out, "leaving": leaving,
         "order": ORDER, "votes": votes}
 (ROOT / "data" / "page.json").write_text(json.dumps(page, ensure_ascii=False, separators=(",", ":")))
 print(json.dumps(text, ensure_ascii=False, indent=1))
