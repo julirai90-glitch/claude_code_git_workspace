@@ -43,3 +43,17 @@ Zehn grösste Schwächen:
 8. «Auf der Seite der Mehrheit» berücksichtigt kein qualifiziertes Mehr – in Methodik offengelegt (akzeptiert).
 9. Datei page.json ca. 1,7 MB – GitHub Pages liefert komprimiert; Ladezeit live prüfen.
 10. Fraktionsposition schliesst die Person selbst ein – übliche Definition, in Methodik als «unter den teilnehmenden Fraktionsmitgliedern» beschrieben (akzeptiert).
+
+## Runde 4 – 23:40 (Textlektorat am gerenderten Seitentext + Zusatz Rückblick)
+Neu: Abschnitt «Früher geschlossener?» (Legislaturen 48–52, ws.parlament.ch; Leg. 52 per Assert identisch mit Hauptanalyse).
+Zehn grösste Schwächen:
+1. Balken (Kantonsvergleich, Rückblick) wurden nicht gefüllt (span ohne display:block) – auch in der bereits gepushten Fassung. Behoben.
+2. «Nationalrat» bei Martullo-Blocher und Giacometti – jetzt «Nationalrätin».
+3. Tausendertrennzeichen uneinheitlich (2'058 vs. 3’287) – einheitlich ’.
+4. «kein exakter «Siegquote»» – grammatisch korrigiert.
+5. Datenstand doppelt genannt – zusammengefasst («beide Räte bis 2.10.2026»).
+6. Behauptung «Webservice bietet keine Ständerats-Einzelstimmen» war nicht direkt belegt – ersetzt durch überprüfte Aussage (4’201 Abstimmungen mit je rund 200 Stimmen = Nationalrat).
+7. Seite ist öffentlich, aber nicht redaktionell geprüft – Hinweis «Entwurf» oben und Urheberangabe im Fuss.
+8. Historische Fraktionscodes im Webservice teils rückwirkend vereinheitlicht (Candinas 2011–15 als «M-E») – im Rückblick deshalb keine Fraktionsangaben, nur Namen.
+9. Legislatur 2003–07 im Webservice unvollständig (1’462 Abstimmungen) – nicht dargestellt, offengelegt.
+10. Rückblick lädt zur Personen-Interpretation ein – Hinweis «kein Vergleich von Personen» direkt unter der Grafik.

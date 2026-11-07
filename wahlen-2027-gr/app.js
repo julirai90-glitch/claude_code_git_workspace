@@ -5,7 +5,7 @@
   const OTHER = { P: 'Vorsitz, stimmt nicht', '-': 'nicht teilgenommen' };
   const WORD = { yes: 'Ja', no: 'Nein', abstention: 'Enthaltung' };
   const pct = (x, d = 0) => (100 * x).toFixed(d).replace('.', ',') + ' %';
-  const n = x => x.toLocaleString('de-CH');
+  const n = x => String(x).replace(/\B(?=(\d{3})+(?!\d))/g, '’');
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const dmy = s => s.split('-').reverse().join('.');
   const $ = s => document.querySelector(s);
@@ -32,7 +32,7 @@
   // people strip
   $('#people').innerHTML = P.map(p => `
     <div class="person" style="--c:${COL[p.fraction] || '#999'}">
-      <b>${esc(p.name)}</b><span>${p.council === 'NR' ? 'Nationalrat' : 'Ständerat'} · ${esc(p.fraction)}</span>
+      <b>${esc(p.name)}</b><span>${esc(p.role)} · ${esc(p.fraction)}</span>
       ${p.status ? `<div class="tag out">${esc(p.status)}</div>` : ''}
     </div>`).join('');
 

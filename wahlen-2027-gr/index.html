@@ -14,6 +14,7 @@
 </head>
 <body>
 <header class="hero wrap">
+  <p class="draft">Entwurf · noch nicht redaktionell geprüft</p>
   <p class="kicker">Wahlen 2027 · Graubünden in Bern</p>
   <h1>Wie <em>bündnerisch</em> stimmt Bern?</h1>
   <p class="dek">Sieben Personen vertreten Graubünden im Bundeshaus. Drei von ihnen hören auf. Bevor die Delegation neu zusammengesetzt wird: Wer hat bisher mit wem gestimmt – und wie oft gemeinsam?</p>
@@ -117,7 +118,7 @@
       <li><b>Teilnahme:</b> Ja, Nein oder Enthaltung. Wer abwesend oder entschuldigt war oder den Vorsitz führte (die vorsitzende Person stimmt nur bei Stimmengleichheit), zählt bei der Übereinstimmung nicht.</li>
       <li><b>Übereinstimmung zweier Personen:</b> Anteil der Abstimmungen mit identischer Stimme, gerechnet über alle Abstimmungen, an denen beide teilnahmen.</li>
       <li><b>Position der Fraktion:</b> die häufigste Stimme (Ja, Nein oder Enthaltung) unter den teilnehmenden Fraktionsmitgliedern. Bei Gleichstand gibt es keine Position; diese Abstimmungen zählen bei «anders als die Fraktion» nicht.</li>
-      <li><b>Seite der Mehrheit:</b> Ja oder Nein auf der Seite mit mehr Stimmen (einfache Auszählung). Abstimmungen mit qualifiziertem Mehr (z. B. Ausgabenbremse) sind nicht gesondert behandelt; der Wert ist deshalb kein exakter «Siegquote».</li>
+      <li><b>Seite der Mehrheit:</b> Ja oder Nein auf der Seite mit mehr Stimmen (einfache Auszählung). Abstimmungen mit qualifiziertem Mehr (z. B. Ausgabenbremse) sind nicht gesondert behandelt; der Wert ist deshalb keine exakte «Siegquote».</li>
       <li><b>Bündner Nationalratsdelegation geschlossen:</b> alle fünf haben teilgenommen und identisch gestimmt.</li>
       <li><b>Kantonsvergleich:</b> durchschnittliche paarweise Übereinstimmung aller Nationalratsmitglieder eines Kantons, nur Kantone mit mindestens zwei Sitzen. Die Werte hängen stark davon ab, welche Parteien ein Kanton nach Bern schickt.</li>
       <li>Rechenkette und Rohdaten-Abruf sind als Skripte im <a href="https://github.com/julirai90-glitch/claude_code_git_workspace/tree/gh-pages/wahlen-2027-gr">Projektordner</a> abgelegt.</li>
@@ -126,14 +127,14 @@
     <ul>
       <li>Nationalrat: Parlamentsdienste, Webservice <a href="https://ws.parlament.ch/odata.svc/">ws.parlament.ch</a> (Abstimmungen und Einzelstimmen), <span data-k="nr_retrieved"></span>.</li>
       <li>Ständerat: <a href="https://openparldata.ch">OpenParlData.ch</a> (CC BY 4.0) bis Sommersession 2026; Herbstsession 2026 aus der offiziellen Abstimmungsliste der Parlamentsdienste (<a href="https://www.parlament.ch/centers/documents/de/Abstimmungen_SR_2026HS_DE.xlsx">Excel</a>).</li>
-      <li>Warum zwei Quellen: OpenParlData enthält Nationalratsabstimmungen derzeit nur bis zur Herbstsession 2025 (Abruf 7.11.2026), der Webservice der Parlamentsdienste bis zur Herbstsession 2026. Für den Ständerat bietet der Webservice keine Einzelstimmen.</li>
+      <li>Warum zwei Quellen: OpenParlData enthält Nationalratsabstimmungen derzeit nur bis zur Herbstsession 2025 (Abruf 7.11.2026), der Webservice der Parlamentsdienste bis zur Herbstsession 2026. Für die 52. Legislatur enthält der Webservice nur Nationalratsabstimmungen (4’201 Abstimmungen mit je rund 200 Stimmen), deshalb stammt der Ständerat aus OpenParlData.</li>
       <li data-k="check"></li>
     </ul>
   </section>
 </div>
 </main>
 <footer class="wrap">
-  <p>Datenauswertung: Julian Reich. Source: OpenParlData.ch; Parlamentsdienste der Bundesversammlung.</p>
+  <p>Datenauswertung und Umsetzung: Claude (KI-Assistent) im Auftrag von Julian Reich; redaktionelle Prüfung ausstehend. Source: OpenParlData.ch; Parlamentsdienste der Bundesversammlung.</p>
 </footer>
 <script src="app.js" defer></script>
 </body>

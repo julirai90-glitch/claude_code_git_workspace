@@ -45,7 +45,9 @@ M = K["members"]
 missing = set(M) ^ set(ORDER)
 assert not missing, f"member mismatch: {missing}"
 
+FEMALE = {"Magdalena Martullo-Blocher", "Anna Giacometti"}
 people = [{"name": n, "council": M[n]["council"], "fraction": M[n]["fraction"],
+           "role": ("Nationalrätin" if n in FEMALE else "Nationalrat") if M[n]["council"] == "NR" else "Ständerat",
            "status": STATUS.get(n)} for n in ORDER]
 pairs = [p for p in K["pairs"] if M[p["a"]]["council"] == "NR" and M[p["b"]]["council"] == "NR"]
 sr_pair = next(p for p in K["pairs"] if {p["a"], p["b"]} == {"Stefan Engler", "Martin Schmid"})
@@ -126,7 +128,8 @@ dev_rates = sorted(((M[n]["deviated"] / M[n]["fraction_defined"], n) for n in OR
 eng = M["Stefan Engler"]
 
 text = {
-    "stand": f"Datenstand: Nationalrat bis {dmy(nr_to)}, Ständerat bis {dmy(sr_to)}",
+    "stand": (f"Datenstand: beide Räte bis {dmy(nr_to)} (Ende Herbstsession 2026)" if nr_to == sr_to == "2026-10-02"
+              else f"Datenstand: Nationalrat bis {dmy(nr_to)}, Ständerat bis {dmy(sr_to)}"),
     "period": (f"52. Legislatur, Nationalrat {dmy(nr_from)} bis {dmy(nr_to)} ({num(K['votings']['NR'])} Abstimmungen), "
                f"Ständerat {dmy(sr_from)} bis {dmy(sr_to)} ({num(K['votings']['SR'])} Abstimmungen). "
                "Christian Rathgeb ist noch nicht enthalten, er war in diesem Zeitraum nicht im Rat."),
