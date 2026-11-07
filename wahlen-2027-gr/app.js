@@ -23,6 +23,7 @@
     if (v !== undefined) el.textContent = v;
   });
 
+  $('#kb').innerHTML = D.text.kb.map(k => `<div class="kbi"><b>${esc(k.v)}</b><span>${esc(k.l)}</span></div>`).join('');
   const P = D.people;
   const byName = Object.fromEntries(P.map(p => [p.name, p]));
   const short = name => name.replace('Magdalena ', 'M. ').replace('Martullo-Blocher', 'Martullo');
@@ -45,6 +46,7 @@
   };
   let shownAt = 0;
   const hideTip = () => { tip.style.opacity = 0; };
+  document.addEventListener('click', e => { if (!e.target.closest('[data-tip]')) hideTip(); });
   window.addEventListener('scroll', () => { if (Date.now() - shownAt > 400) hideTip(); }, { passive: true });
 
   // matrix
@@ -90,16 +92,24 @@
       <h3>${esc(p.name)}</h3>
       <div class="role">${esc(p.role)}</div>
       <dl class="kv">
-        <dt>Abstimmungen im Rat (Zeitraum)</dt><dd>${n(p.votings)}</dd>
-        <dt>davon teilgenommen</dt><dd>${pct(p.participated / p.votings)}</dd>
-        ${p.president ? `<dt>als Ratspräsident nicht gestimmt</dt><dd>${n(p.president)}</dd>` : ''}
+        <dt>Abstimmungen im Rat</dt><dd>${n(p.votings)}</dd>
+        ${p.president ? `<dt>davon mit Vorsitz (stimmt nicht)</dt><dd>${n(p.president)}</dd>` : ''}
+        <dt>teilgenommen${p.president ? ' (ohne Vorsitz)' : ''}</dt><dd>${pct(p.participated / (p.votings - p.president))}</dd>
         <dt>anders als die eigene Fraktion</dt><dd>${pct(p.deviated / p.fraction_defined, 1)}</dd>
         <dt>auf der Seite der Mehrheit</dt><dd>${pct(p.majority_side / p.yesno_decided)}</dd>
       </dl>
       ${p.dev_list.length ? `<details><summary>Abweichungen von der Fraktion (${n(p.deviated)}) – die jüngsten ${p.dev_list.length}</summary><ol>
-        ${p.dev_list.map(v => `<li>${dmy(v.date)}: ${v.link ? `<a href="${esc(v.link)}" target="_blank" rel="noopener">${esc(v.affair)}</a>` : esc(v.affair)} – <span class="muted">${esc(v.subject || '')}</span>. Stimmte <b>${WORD[v.vote]}</b>, Fraktion mehrheitlich ${WORD[v.fpos]}.</li>`).join('')}
+        ${p.dev_list.map(v => `<li>${dmy(v.date)}: ${v.link ? `<a href="${esc(v.link)}" target="_blank" rel="noopener">${esc(v.affair)}</a>` : esc(v.affair)} ${v.subject ? ` – <span class="muted">${esc(v.subject)}</span>` : ''}. Stimmte <b>${WORD[v.vote]}</b>, Fraktion mehrheitlich ${WORD[v.fpos]}.</li>`).join('')}
       </ol></details>` : ''}
     </article>`).join('');
+
+  // bridge list (closed across fraction lines)
+  const BR = D.votes.filter(v => v[12].includes('b'));
+  $('#bridge').innerHTML = BR.map(v => {
+    const devs = D.order.filter((nm, i) => v[11][i] === '1');
+    const word = { Y: 'Ja', N: 'Nein', E: 'Enthaltung' }[v[10][0]];
+    return `<li><span class="d">${dmy(v[2])}</span> ${v[6] ? `<a href="${esc(v[6])}" target="_blank" rel="noopener">${esc(v[4])}</a>` : esc(v[4])}${v[5] ? ` <span class="muted">(${esc(v[5])})</span>` : ''}<br><span class="small">Alle fünf: <b>${word}</b> · gegen die eigene Fraktion: ${devs.map(esc).join(', ')}</span></li>`;
+  }).join('');
 
   // vote browser
   const V = D.votes; // [key, council, date, business, affair, subject, link, yes, no, abst, codes, devmask, flags]

@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wie bündnerisch stimmt Bern? Die Bündner Delegation im Bundeshaus</title>
 <meta name="description" content="Wer aus der Bündner Delegation stimmt mit wem? Alle Abstimmungen der laufenden Legislatur im National- und Ständerat, ausgewertet vor den Wahlen 2027.">
+<meta property="og:title" content="Wie bündnerisch stimmt Bern?">
+<meta property="og:description" content="Die Bündner Delegation im Bundeshaus: wer mit wem stimmt – alle Abstimmungen der 52. Legislatur, vor den Wahlen 2027.">
+<meta property="og:type" content="article">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%230068A4%22/%3E%3C/svg%3E">
 <link rel="preload" href="fonts/fraunces-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
@@ -20,6 +23,7 @@
 <main>
 <div class="wrap">
   <div id="loading">Daten werden geladen …</div>
+  <div id="kb" class="kb" aria-label="Kernbefunde"></div>
 
   <section aria-labelledby="h-lage">
     <h2 id="h-lage"><span class="num">1</span>Die Ausgangslage</h2>
@@ -40,7 +44,7 @@
     <h2 id="h-wer"><span class="num">2</span>Wer stimmt mit wem?</h2>
     <p data-k="matrix_intro"></p>
     <table id="matrix" class="matrix"><caption class="vh">Übereinstimmung der Bündner Nationalratsmitglieder, paarweise</caption></table>
-    <div class="legend"><span id="ramp-lo"></span><span id="ramp" class="ramp"></span><span id="ramp-hi"></span><span>gleich gestimmt (Ja, Nein oder Enthaltung), wenn beide teilnahmen</span></div>
+    <div class="legend"><span>Farbskala:</span><span id="ramp-lo"></span><span id="ramp" class="ramp"></span><span id="ramp-hi"></span></div>
     <p style="margin-top:16px" data-k="matrix_text"></p>
     <p data-k="sr_text"></p>
   </section>
@@ -49,6 +53,7 @@
     <h2 id="h-gesch"><span class="num">3</span>Wie oft ziehen alle am selben Strick?</h2>
     <p data-k="closed_text"></p>
     <p data-k="bridge_text"></p>
+    <ol id="bridge" class="blist"></ol>
   </section>
 </div>
 
@@ -90,7 +95,7 @@
     <h2 id="h-meth">So wurde gerechnet</h2>
     <ul>
       <li><b>Zeitraum:</b> <span data-k="period"></span></li>
-      <li><b>Teilnahme:</b> Ja, Nein oder Enthaltung. Wer abwesend, entschuldigt oder als Ratspräsident nicht stimmberechtigt war, zählt bei der Übereinstimmung nicht.</li>
+      <li><b>Teilnahme:</b> Ja, Nein oder Enthaltung. Wer abwesend oder entschuldigt war oder den Vorsitz führte (die vorsitzende Person stimmt nur bei Stimmengleichheit), zählt bei der Übereinstimmung nicht.</li>
       <li><b>Übereinstimmung zweier Personen:</b> Anteil der Abstimmungen mit identischer Stimme, gerechnet über alle Abstimmungen, an denen beide teilnahmen.</li>
       <li><b>Position der Fraktion:</b> die häufigste Stimme (Ja, Nein oder Enthaltung) unter den teilnehmenden Fraktionsmitgliedern. Bei Gleichstand gibt es keine Position; diese Abstimmungen zählen bei «anders als die Fraktion» nicht.</li>
       <li><b>Seite der Mehrheit:</b> Ja oder Nein auf der Seite mit mehr Stimmen (einfache Auszählung). Abstimmungen mit qualifiziertem Mehr (z. B. Ausgabenbremse) sind nicht gesondert behandelt; der Wert ist deshalb kein exakter «Siegquote».</li>
@@ -102,6 +107,7 @@
     <ul>
       <li>Nationalrat: Parlamentsdienste, Webservice <a href="https://ws.parlament.ch/odata.svc/">ws.parlament.ch</a> (Abstimmungen und Einzelstimmen), <span data-k="nr_retrieved"></span>.</li>
       <li>Ständerat: <a href="https://openparldata.ch">OpenParlData.ch</a> (CC BY 4.0) bis Sommersession 2026; Herbstsession 2026 aus der offiziellen Abstimmungsliste der Parlamentsdienste (<a href="https://www.parlament.ch/centers/documents/de/Abstimmungen_SR_2026HS_DE.xlsx">Excel</a>).</li>
+      <li>Warum zwei Quellen: OpenParlData enthält Nationalratsabstimmungen derzeit nur bis zur Herbstsession 2025 (Abruf 7.11.2026), der Webservice der Parlamentsdienste bis zur Herbstsession 2026. Für den Ständerat bietet der Webservice keine Einzelstimmen.</li>
       <li data-k="check"></li>
     </ul>
   </section>

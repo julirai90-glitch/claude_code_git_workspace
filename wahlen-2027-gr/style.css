@@ -124,3 +124,12 @@ footer { padding: 30px 0 60px; font-size: .78rem; color: var(--muted); border-to
   .matrix td { height: 46px; font-size: .78rem; }
   .bar-row { grid-template-columns: 8.4em 1fr 3em; font-size: .78rem; }
 }
+
+/* key findings */
+.kb { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 26px 0 4px; }
+.kbi { border-top: 3px solid var(--ink); padding-top: 8px; }
+.kbi b { display: block; font-family: var(--serif); font-size: 2.1rem; font-weight: 600; line-height: 1.05; color: var(--blue); }
+.kbi span { display: block; font-size: .8rem; color: var(--muted); line-height: 1.35; margin-top: 4px; }
+.blist { padding-left: 1.4em; margin: 10px 0 0; font-size: .9rem; }
+.blist li { margin-bottom: 10px; line-height: 1.4; }
+.blist .d { color: var(--muted); font-variant-numeric: tabular-nums; }

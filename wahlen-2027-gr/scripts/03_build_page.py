@@ -111,21 +111,26 @@ text = {
                     f"am seltensten {low['a']} und {low['b']} ({pct(low['same'] / low['both'])})."),
     "sr_text": (f"Im Ständerat stimmten Stefan Engler und Martin Schmid in {pct(sr_pair['same'] / sr_pair['both'])} "
                 f"der {num(sr_pair['both'])} Abstimmungen gleich, an denen beide teilnahmen. "
-                f"Engler stimmte in {num(eng.get('abstention_president', 0))} Abstimmungen als Ratspräsident nicht mit."),
+                f"In {num(eng.get('abstention_president', 0))} Abstimmungen führte Engler den Vorsitz und stimmte deshalb nicht mit."),
     "closed_text": (f"In {num(full)} Nationalratsabstimmungen haben alle fünf Bündner Mitglieder teilgenommen. "
                     f"In {num(closed)} davon ({pct(closed / full)}) stimmten alle fünf gleich, in {num(split)} "
                     f"({pct(split / full)}) war die Delegation gespalten."),
     "bridge_text": (f"Besonders sind jene {num(len(bridge))} Abstimmungen, in denen alle fünf gleich stimmten, obwohl "
                     "ihre Fraktionen (SVP, Mitte, FDP, SP) nicht alle dieselbe Position hatten – mindestens "
-                    "ein Bündner Mitglied wich also von der eigenen Fraktion ab. Sie lassen sich unten mit dem Filter "
-                    "«Geschlossen über Fraktionsgrenzen» anzeigen."),
+                    "ein Bündner Mitglied wich also von der eigenen Fraktion ab:"),
     "cohesion_intro": ("Wie einig sind die Nationalratsdelegationen der Kantone? Der Wert zeigt die durchschnittliche "
                        "paarweise Übereinstimmung aller Mitglieder eines Kantons (Zahl in Klammern: Sitze)."),
     "cohesion_note": (f"Graubünden liegt mit {pct(gr_coh['agree'])} auf Rang {gr_rank} von {len(coh_out)} Kantonen "
-                      "mit mindestens zwei Nationalratssitzen. Der Wert hängt vor allem von der Parteizusammensetzung "
+                      "mit mindestens zwei Nationalratssitzen. Bei Kantonen mit zwei oder drei Sitzen beruht der Wert auf wenigen Personenpaaren. Der Wert hängt vor allem von der Parteizusammensetzung "
                       "einer Delegation ab und ist keine Aussage über Geschlossenheit aus regionalem Interesse."),
     "leaving_intro": ("Kennzahlen für die laufende Legislatur. «Anders als die eigene Fraktion» bezieht sich auf "
                       "Abstimmungen, in denen die Fraktion eine klare Mehrheitsposition hatte."),
+    "kb": [
+        {"v": pct(closed / full), "l": f"der {num(full)} Nationalratsabstimmungen mit allen fünf Bündnern: alle stimmten gleich"},
+        {"v": num(len(bridge)), "l": "davon über Fraktionsgrenzen hinweg – mindestens eine Person wich von der eigenen Fraktion ab"},
+        {"v": pct(high["same"] / high["both"]), "l": f"Übereinstimmung {high['a']} und {high['b']} – das engste Paar"},
+        {"v": pct(sr_pair["same"] / sr_pair["both"]), "l": "Übereinstimmung der beiden abtretenden Ständeräte Engler und Schmid"},
+    ],
     "nr_retrieved": f"abgerufen am {dmy(K['nr_retrieved'][:10])}",
     "check": K.get("check_text", ""),
 }
