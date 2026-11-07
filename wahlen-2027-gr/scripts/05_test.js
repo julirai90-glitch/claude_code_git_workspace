@@ -17,7 +17,8 @@ const [url, out] = process.argv.slice(2);
     page.on('pageerror', e => errors.push(String(e)));
     const t0 = Date.now();
     await page.goto(url, { waitUntil: 'networkidle' });
-    await page.waitForSelector('.vitem');
+    try { await page.waitForSelector('.vitem', { timeout: 15000 }); }
+    catch (e) { results.push({ label, fatal: 'page did not render', errors }); await ctx.close(); continue; }
     const loadMs = Date.now() - t0;
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     const small = await page.evaluate(() => [...document.querySelectorAll('button, .chip, input, select, summary')]

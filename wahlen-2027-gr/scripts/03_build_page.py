@@ -86,6 +86,20 @@ for name, pat, words in TOPICS:
     topics.append({"name": name, "words": words, "idx": idx,
                    "nr": sum(votes[i][1] == "NR" for i in idx), "sr": sum(votes[i][1] == "SR" for i in idx)})
 
+# authored businesses (ws.parlament.ch BusinessRole 'Urheber(-in)'), 52nd legislature
+VS = json.loads((ROOT / "data" / "raw" / "vorstoesse.json").read_text())
+TYPES = ["Motion", "Postulat", "Parlamentarische Initiative", "Interpellation", "Anfrage", "Fragestunde. Frage"]
+vor = {n: {t: 0 for t in TYPES} for n in ORDER}
+vor_list = {n: [] for n in ORDER}
+for b in sorted(VS["items"], key=lambda b: b["SubmissionDate"], reverse=True):
+    t = b["BusinessTypeName"]
+    vor[b["author"]][t] = vor[b["author"]].get(t, 0) + 1
+    vor_list[b["author"]].append({"nr": b["BusinessShortNumber"], "type": t, "title": b["Title"],
+                                  "status": b["BusinessStatusText"],
+                                  "link": f"https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId={b['ID']}"})
+extra = sorted({t for n in vor for t in vor[n]} - set(TYPES))
+assert not extra, f"unexpected business types: {extra}"
+
 leaving = []
 for n in ["Stefan Engler", "Martin Schmid", "Anna Giacometti"]:
     s = M[n]
@@ -93,7 +107,7 @@ for n in ["Stefan Engler", "Martin Schmid", "Anna Giacometti"]:
     leaving.append({"name": n, "fraction": s["fraction"], "role": ROLE[n], "votings": s["votings"],
                     "participated": s["participated"], "president": s.get("abstention_president", 0),
                     "deviated": s["deviated"], "fraction_defined": s["fraction_defined"],
-                    "majority_side": s["majority_side"], "yesno_decided": s["yesno_decided"],
+                    "majority_side": s["majority_side"], "yesno_decided": s["yesno_decided"], "vor_list": vor_list[n],
                     "dev_list": [{"date": v["date"], "affair": v["affair"], "subject": v["subject"],
                                   "link": v["link"], "vote": v["gr"][n],
                                   "fpos": v["fpos"][s["fraction"]]} for v in devs]})
@@ -145,11 +159,12 @@ text = {
         {"v": pct(high["same"] / high["both"]), "l": f"Übereinstimmung {high['a']} und {high['b']} – das engste Paar"},
         {"v": pct(sr_pair["same"] / sr_pair["both"]), "l": "Übereinstimmung der beiden abtretenden Ständeräte Engler und Schmid"},
     ],
+    "vor_src": f"Quelle: Parlamentsdienste, ws.parlament.ch (Geschäfte und Urheberschaft), abgerufen am {dmy(VS['retrieved_utc'][:10])}.",
     "nr_retrieved": f"abgerufen am {dmy(K['nr_retrieved'][:10])}",
     "check": K.get("check_text", ""),
 }
 
-page = {"text": text, "topics": topics, "people": people, "pairs": pairs, "cohesion": coh_out, "leaving": leaving,
+page = {"text": text, "vor": {"types": TYPES, "by": vor, "retrieved": dmy(VS["retrieved_utc"][:10])}, "topics": topics, "people": people, "pairs": pairs, "cohesion": coh_out, "leaving": leaving,
         "order": ORDER, "votes": votes}
 (ROOT / "data" / "page.json").write_text(json.dumps(page, ensure_ascii=False, separators=(",", ":")))
 print(json.dumps(text, ensure_ascii=False, indent=1))

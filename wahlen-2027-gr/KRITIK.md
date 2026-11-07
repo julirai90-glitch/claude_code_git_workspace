@@ -29,3 +29,17 @@ Zehn grösste Schwächen:
 8. Kernbefunde nennen «9 %» ohne Kontext, dass Fraktionen generell gegeneinander stimmen – Kantonsvergleich liefert den Kontext (Abschnitt 5). Offen: ggf. Satz im Lead.
 9. Lange Seite ohne Navigation – offen.
 10. Tooltip bleibt in der Handy-Emulation nach Hover stehen; schliesst bei Tipp daneben (Runde 1) – akzeptiert.
+
+## Runde 3 – 23:25
+Neu seit Runde 2: Vorstösse aller sieben (Urheberschaft, ws.parlament.ch) in Tabelle und Karten.
+Zehn grösste Schwächen:
+1. JS-Fehler nach Einbau der Vorstösse (fehlendes Feld) – Seite blieb leer; behoben, Test fängt das jetzt ab.
+2. Dezimaltrennzeichen uneinheitlich (10.1 % in Karten, 97 % mit Komma aus Python) – einheitlich Komma.
+3. Suche «Wolf» fand «Wölfe» nicht – Umlaute werden für die Suche normalisiert (11 → 24 Treffer).
+4. Punkte im Themenabschnitt nur farbcodiert – jetzt mit aria-label/Tooltip «Name: Ja/Nein».
+5. Vorstoss-Tabelle auf dem Handy abgeschnitten – scrollt seitlich, Hinweis «seitlich wischen».
+6. Spaltenkopf «Person» rechtsbündig – linksbündig.
+7. Ständerat hat keine Fragestunde – Hinweis zur eingeschränkten Vergleichbarkeit steht über der Tabelle.
+8. «Auf der Seite der Mehrheit» berücksichtigt kein qualifiziertes Mehr – in Methodik offengelegt (akzeptiert).
+9. Datei page.json ca. 1,7 MB – GitHub Pages liefert komprimiert; Ladezeit live prüfen.
+10. Fraktionsposition schliesst die Person selbst ein – übliche Definition, in Methodik als «unter den teilnehmenden Fraktionsmitgliedern» beschrieben (akzeptiert).
