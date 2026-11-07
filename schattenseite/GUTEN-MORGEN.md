@@ -1,5 +1,8 @@
 # Guten Morgen, Julian
 
+> **Historisch – Übergabe vom 5.11.2026 früh.** Seither: live auf GitHub Pages, schneller, mobil überarbeitet,
+> Server-Festplatte aufgeräumt. Aktueller Stand und Einstieg: [`README.md`](README.md).
+
 ## In drei Sätzen
 
 Ich habe **«Die Schattenseite»** gebaut: eine interaktive Datengeschichte, die für 799 Bündner Orte
