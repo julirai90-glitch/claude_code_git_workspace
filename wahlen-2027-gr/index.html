@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wie bündnerisch stimmt Bern? Die Bündner Delegation im Bundeshaus</title>
+<meta name="description" content="Wer aus der Bündner Delegation stimmt mit wem? Alle Abstimmungen der laufenden Legislatur im National- und Ständerat, ausgewertet vor den Wahlen 2027.">
+<link rel="preload" href="fonts/fraunces-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero wrap">
+  <p class="kicker">Wahlen 2027 · Graubünden in Bern</p>
+  <h1>Wie <em>bündnerisch</em> stimmt Bern?</h1>
+  <p class="dek">Sieben Personen vertreten Graubünden im Bundeshaus. Drei von ihnen hören auf. Bevor die Delegation neu zusammengesetzt wird: Wer hat bisher mit wem gestimmt – und wie oft gemeinsam?</p>
+  <p class="byline">Auswertung aller elektronischen Abstimmungen der 52. Legislatur · <span data-k="stand"></span></p>
+</header>
+
+<main>
+<div class="wrap">
+  <div id="loading">Daten werden geladen …</div>
+
+  <section aria-labelledby="h-lage">
+    <h2 id="h-lage"><span class="num">1</span>Die Ausgangslage</h2>
+    <div id="people" class="people"></div>
+    <div class="facts">
+      <h3>Was bisher bekannt ist</h3>
+      <ul>
+        <li>Ständerat <b>Stefan Engler</b> (Mitte) tritt 2027 nicht mehr an. Er hatte dies im Mai 2026 angekündigt; derzeit präsidiert er den Ständerat.</li>
+        <li>Ständerat <b>Martin Schmid</b> (FDP) kandidiert 2027 ebenfalls nicht mehr; angekündigt am 6. November 2026. Damit werden beide Bündner Ständeratssitze frei.</li>
+        <li>Nationalrätin <b>Anna Giacometti</b> (FDP) tritt per Ende November 2026 zurück; die Herbstsession 2026 war ihre letzte. Für sie rückt der frühere Regierungsrat <b>Christian Rathgeb</b> nach.</li>
+        <li>Graubünden stellt ab den Wahlen 2027 nur noch <b>vier statt fünf</b> Nationalratsmitglieder.</li>
+      </ul>
+      <p class="src">Quellen: Keystone-SDA, 24.09.2026 (<a href="https://www.swissinfo.ch/ger/b%C3%BCndner-fdp-nationalr%C3%A4tin-giacometti-tritt-ende-november-zur%C3%BCck/92114371">swissinfo.ch</a>); Südostschweiz, 06.11.2026 («Überraschender Rücktritt: Martin Schmid kandidiert 2027 nicht mehr für den Ständerat» und «So viel hatte Graubünden lange nicht zu wählen»).</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-wer">
+    <h2 id="h-wer"><span class="num">2</span>Wer stimmt mit wem?</h2>
+    <p data-k="matrix_intro"></p>
+    <table id="matrix" class="matrix"><caption class="vh">Übereinstimmung der Bündner Nationalratsmitglieder, paarweise</caption></table>
+    <div class="legend"><span id="ramp-lo"></span><span id="ramp" class="ramp"></span><span id="ramp-hi"></span><span>gleich gestimmt (Ja, Nein oder Enthaltung), wenn beide teilnahmen</span></div>
+    <p style="margin-top:16px" data-k="matrix_text"></p>
+    <p data-k="sr_text"></p>
+  </section>
+
+  <section aria-labelledby="h-gesch">
+    <h2 id="h-gesch"><span class="num">3</span>Wie oft ziehen alle am selben Strick?</h2>
+    <p data-k="closed_text"></p>
+    <p data-k="bridge_text"></p>
+  </section>
+</div>
+
+<div class="wrap">
+  <section aria-labelledby="h-kt">
+    <h2 id="h-kt"><span class="num">4</span>Im Vergleich mit den anderen Kantonen</h2>
+    <p data-k="cohesion_intro"></p>
+    <div id="cohesion" class="bars" role="list"></div>
+    <p class="small muted" data-k="cohesion_note"></p>
+  </section>
+</div>
+
+<div class="wide">
+  <section aria-labelledby="h-geh">
+    <div class="wrap" style="padding:0"><h2 id="h-geh"><span class="num">5</span>Die drei, die gehen</h2>
+    <p data-k="leaving_intro"></p></div>
+    <div id="leaving" class="cards"></div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section aria-labelledby="h-alle">
+    <h2 id="h-alle"><span class="num">6</span>Alle Abstimmungen durchsuchen</h2>
+    <p>Jede Abstimmung der Legislatur mit den Stimmen der Bündner Mitglieder. Suchen Sie nach einem Thema, etwa «Wolf», «Zweitwohnung» oder «Wasserzins».</p>
+    <div class="controls">
+      <label class="vh" for="q">Suche</label>
+      <input id="q" type="search" placeholder="Stichwort, z. B. Wolf" autocomplete="off">
+      <label class="vh" for="sort">Sortierung</label>
+      <select id="sort"><option value="new">neueste zuerst</option><option value="old">älteste zuerst</option></select>
+    </div>
+    <div id="chips" class="chips" role="group" aria-label="Filter"></div>
+    <div class="vkey"><span class="vote yes"><i></i>Ja</span><span class="vote no"><i></i>Nein</span><span class="vote abstention"><i></i>Enthaltung</span><span class="vote"><i></i>nicht teilgenommen</span><span><u style="text-decoration-style:dotted">unterstrichen</u> = anders als die eigene Fraktion</span></div>
+    <p id="count" class="count" aria-live="polite"></p>
+    <ul id="vlist" class="vlist"></ul>
+    <button id="more" class="more" hidden>Weitere anzeigen</button>
+  </section>
+
+  <section class="method" aria-labelledby="h-meth">
+    <h2 id="h-meth">So wurde gerechnet</h2>
+    <ul>
+      <li><b>Zeitraum:</b> <span data-k="period"></span></li>
+      <li><b>Teilnahme:</b> Ja, Nein oder Enthaltung. Wer abwesend, entschuldigt oder als Ratspräsident nicht stimmberechtigt war, zählt bei der Übereinstimmung nicht.</li>
+      <li><b>Übereinstimmung zweier Personen:</b> Anteil der Abstimmungen mit identischer Stimme, gerechnet über alle Abstimmungen, an denen beide teilnahmen.</li>
+      <li><b>Position der Fraktion:</b> die häufigste Stimme (Ja, Nein oder Enthaltung) unter den teilnehmenden Fraktionsmitgliedern. Bei Gleichstand gibt es keine Position; diese Abstimmungen zählen bei «anders als die Fraktion» nicht.</li>
+      <li><b>Seite der Mehrheit:</b> Ja oder Nein auf der Seite mit mehr Stimmen (einfache Auszählung). Abstimmungen mit qualifiziertem Mehr (z. B. Ausgabenbremse) sind nicht gesondert behandelt; der Wert ist deshalb kein exakter «Siegquote».</li>
+      <li><b>Bündner Nationalratsdelegation geschlossen:</b> alle fünf haben teilgenommen und identisch gestimmt.</li>
+      <li><b>Kantonsvergleich:</b> durchschnittliche paarweise Übereinstimmung aller Nationalratsmitglieder eines Kantons, nur Kantone mit mindestens zwei Sitzen. Die Werte hängen stark davon ab, welche Parteien ein Kanton nach Bern schickt.</li>
+      <li>Rechenkette und Rohdaten-Abruf sind als Skripte im <a href="https://github.com/julirai90-glitch/claude_code_git_workspace/tree/gh-pages/wahlen-2027-gr">Projektordner</a> abgelegt.</li>
+    </ul>
+    <h3>Quellen</h3>
+    <ul>
+      <li>Nationalrat: Parlamentsdienste, Webservice <a href="https://ws.parlament.ch/odata.svc/">ws.parlament.ch</a> (Abstimmungen und Einzelstimmen), <span data-k="nr_retrieved"></span>.</li>
+      <li>Ständerat: <a href="https://openparldata.ch">OpenParlData.ch</a> (CC BY 4.0) bis Sommersession 2026; Herbstsession 2026 aus der offiziellen Abstimmungsliste der Parlamentsdienste (<a href="https://www.parlament.ch/centers/documents/de/Abstimmungen_SR_2026HS_DE.xlsx">Excel</a>).</li>
+      <li data-k="check"></li>
+    </ul>
+  </section>
+</div>
+</main>
+<footer class="wrap">
+  <p>Datenauswertung: Julian Reich. Source: OpenParlData.ch; Parlamentsdienste der Bundesversammlung.</p>
+</footer>
+<script src="app.js" defer></script>
+</body>
+</html>

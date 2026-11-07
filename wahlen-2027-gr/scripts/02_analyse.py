@@ -1,166 +1,232 @@
-"""Analyse how the Graubünden delegation votes in the federal parliament.
+"""Analyse how the Graubünden delegation votes in the federal parliament,
+52nd legislature (from the winter session 2023).
 
-Input:  data/raw/ (from 01_fetch.py)
-Output: data/analyse.json (everything the web page shows) and printed summary.
+Sources (see QUELLEN.md):
+  National Council: ws.parlament.ch (01b_fetch_parlament.py)
+  Council of States: OpenParlData (01_fetch.py) up to summer session 2026,
+                     official Excel of the autumn session 2026 (01c_parse_sr_excel.py)
 
-Definitions (also shown on the page):
-- participation = vote is yes, no or abstention (absent/excused etc. = not participating)
-- fraction position = most frequent of yes/no/abstention among the fraction's
-  participating members; no position on a tie
-- deviation = member participates and votes differently from a defined fraction position
-- delegation closed (NR) = all five Bündner members participate and vote identically
+Output: data/analyse.json (page data) and data/kennzahlen.json (summary, printed)
+
+Definitions (shown on the page as well):
+- participation: vote is yes, no or abstention
+- fraction position: most frequent of yes/no/abstention among the fraction's
+  participating members in that vote; none on a tie
+- deviation: member participates and votes differently from the fraction position
+- majority side: member voted yes or no and is on the side with more yes/no votes
+  (simple count; ties skipped; qualified-majority rules not modelled)
+- delegation closed (NR): all Bündner NR members participate and vote identically
 """
-import csv, gzip, json, collections
+import csv, gzip, json, collections, statistics
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
-POS = {"yes", "no", "abstention"}
-LEG_START = "2023-12-04"
+POS = ("yes", "no", "abstention")
+CURIA = "https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId={}"
 
-# Fraction labels appear in several spellings ('Fraktion M-E', 'Die Mitte', 'V', ...).
-FRACTION_MAP = {
-    "Fraktion V": "SVP", "V": "SVP", "SVP": "SVP",
-    "Fraktion S": "SP", "S": "SP", "SP": "SP",
-    "Fraktion RL": "FDP", "RL": "FDP", "FDP": "FDP",
-    "Fraktion M-E": "Mitte", "M-E": "Mitte", "Die Mitte": "Mitte", "EVP": "Mitte",
-    "Fraktion G": "Grüne", "G": "Grüne", "Grüne": "Grüne",
-    "Fraktion GL": "GLP", "GL": "GLP", "GLP": "GLP",
+FRACTION = {  # many spellings across sources -> short name
+    "V": "SVP", "Fraktion V": "SVP", "SVP": "SVP",
+    "S": "SP", "Fraktion S": "SP", "SP": "SP",
+    "RL": "FDP", "Fraktion RL": "FDP", "FDP": "FDP",
+    "M-E": "Mitte", "Fraktion M-E": "Mitte", "Die Mitte": "Mitte", "EVP": "Mitte",
+    "G": "Grüne", "Fraktion G": "Grüne", "Grüne": "Grüne",
+    "GL": "GLP", "Fraktion GL": "GLP", "GLP": "GLP",
+    "-": "fraktionslos", "Fraktionslos": "fraktionslos",
+}
+PD_DECISION = {  # ws.parlament.ch Voting.DecisionText
+    "Ja": "yes", "Nein": "no", "Enthaltung": "abstention",
+    "Hat nicht teilgenommen": "absent", "Entschuldigt": "absent_excused",
+    "Die Präsidentin/der Präsident stimmt nicht": "abstention_president",
 }
 
 
-def load():
-    persons = json.loads((RAW / "persons.json").read_text())
-    votings = {v["id"]: v for v in json.loads((RAW / "votings_all.json").read_text())}
-
-    def read(name):
-        with gzip.open(RAW / name, "rt") as f:
-            for r in csv.DictReader(f):
-                r["voting_id"] = int(r["voting_id"]); r["person_id"] = int(r["person_id"])
-                yield r
-    return persons, votings, read
-
-
-def council(v):
-    return {"Council_1": "NR", "Council_2": "SR"}.get(v["group_external_id"])
+def odate(s):  # '/Date(1790934036907)/' -> 'YYYY-MM-DD' (Swiss local date)
+    ms = int(s[6:-2].split("+")[0])
+    return (datetime.fromtimestamp(ms / 1000, timezone.utc) + timedelta(hours=1)).strftime("%Y-%m-%d")
 
 
 def de(x):
-    return (x or {}).get("de") if isinstance(x, dict) else x
+    return x.get("de") if isinstance(x, dict) else x
+
+
+def load_nr():
+    votes = json.loads((RAW / "pd_votes.json").read_text())
+    sessions = {v["IdSession"]: v["SessionName"] for v in votes}
+    meta = {}
+    for v in votes:
+        meta[("NR", v["ID"])] = {
+            "council": "NR", "ref": v["ID"], "date": odate(v["VoteEnd"]),
+            "session": v["SessionName"], "business": v["BusinessShortNumber"],
+            "affair": (v["BusinessTitle"] or "").strip(), "bill": v.get("BillTitle"),
+            "subject": v.get("Subject"), "yes_means": v.get("MeaningYes"),
+            "no_means": v.get("MeaningNo"),
+            "link": CURIA.format(v["BusinessNumber"]) if v.get("BusinessNumber") else None}
+    rows, unknown = [], collections.Counter()
+    with gzip.open(RAW / "pd_votings.csv.gz", "rt") as f:
+        for r in csv.DictReader(f):
+            vote = PD_DECISION.get(r["DecisionText"])
+            if vote is None:
+                unknown[r["DecisionText"]] += 1; continue
+            rows.append((("NR", int(r["IdVote"])), f'{r["FirstName"]} {r["LastName"]}',
+                         r["Canton"] == "GR", FRACTION.get(r["ParlGroupCode"], r["ParlGroupCode"]), vote))
+    return meta, rows, unknown, sessions
+
+
+def load_sr():
+    persons = json.loads((RAW / "persons.json").read_text())
+    gr_names = {p["fullname"] for p in persons if isinstance(p.get("electoral_district"), dict)
+                and p["electoral_district"].get("fr") == "Grisons"}
+    votings = json.loads((RAW / "votings_all.json").read_text())
+    affairs = json.loads((RAW / "sr_affairs.json").read_text())
+    meta = {}
+    for v in votings:
+        if v["group_external_id"] != "Council_2" or v["date"][:10] < "2023-12-04":
+            continue
+        aid = v.get("affair_id"); a = affairs.get(str(aid), {})
+        meta[("SR", v["id"])] = {
+            "council": "SR", "ref": v["id"], "date": v["date"][:10],
+            "session": None, "business": a.get("number"),
+            "affair": de(v.get("affair_title")), "bill": None, "subject": de(v.get("title")),
+            "yes_means": de(v.get("meaning_of_yes")), "no_means": de(v.get("meaning_of_no")),
+            "link": a.get("url")}
+    rows = []
+    with gzip.open(RAW / "votes_leg52.csv.gz", "rt") as f:
+        for r in csv.DictReader(f):
+            k = ("SR", int(r["voting_id"]))
+            if k in meta:
+                rows.append((k, r["person_fullname"], r["person_fullname"] in gr_names,
+                             FRACTION.get(r["group"], r["group"]), r["vote"]))
+    # autumn session 2026 from the official Excel
+    x = json.loads((RAW / "sr_2026HS.json").read_text())
+    for v in x["votings"]:
+        meta[("SR", f'HS26-{v["ref"]}')] = {
+            "council": "SR", "ref": v["ref"], "date": v["date"], "session": "Herbstsession 2026",
+            "business": v["business"], "affair": v["affair"], "bill": v["bill"],
+            "subject": v["subject"], "yes_means": v["yes_means"], "no_means": v["no_means"],
+            "link": CURIA.format(v["business"])}
+    for ref, name, canton, fr, vote in x["votes"]:
+        last, first = name.split(", ", 1)
+        rows.append((("SR", f"HS26-{ref}"), f"{first} {last}", canton == "Graubünden",
+                     FRACTION.get(fr, fr), vote))
+    return meta, rows
 
 
 def main():
-    persons, votings, read = load()
-    gr_ids = {p["id"] for p in persons
-              if isinstance(p.get("electoral_district"), dict)
-              and p["electoral_district"].get("fr") == "Grisons"}
-    pname = {p["id"]: p["fullname"] for p in persons}
-
-    leg = [r for r in read("votes_leg52.csv.gz")]
-    labels = collections.Counter(r["group"] for r in leg)
-    unmapped = {k: n for k, n in labels.items() if k and k not in FRACTION_MAP}
-
-    # fraction of each person = most frequent mapped label in leg52
-    pf = collections.defaultdict(collections.Counter)
-    for r in leg:
-        f = FRACTION_MAP.get(r["group"])
-        if f:
-            pf[r["person_id"]][f] += 1
-    frac = {pid: c.most_common(1)[0][0] for pid, c in pf.items()}
+    nr_meta, nr_rows, unknown, _ = load_nr()
+    sr_meta, sr_rows = load_sr()
+    meta = {**nr_meta, **sr_meta}
+    rows = nr_rows + sr_rows
 
     by_voting = collections.defaultdict(list)
-    for r in leg:
-        by_voting[r["voting_id"]].append(r)
+    for k, name, is_gr, fr, vote in rows:
+        by_voting[k].append((name, is_gr, fr, vote))
 
-    gr_members = collections.defaultdict(set)  # council -> person ids active in leg52
-    for r in leg:
-        if r["person_id"] in gr_ids:
-            gr_members[council(votings[r["voting_id"]])].add(r["person_id"])
+    gr_people = {}  # name -> (council, fraction)
+    for k, vs in by_voting.items():
+        for name, is_gr, fr, vote in vs:
+            if is_gr:
+                gr_people.setdefault(name, collections.Counter())[(k[0], fr)] += 1
+    gr_people = {n: c.most_common(1)[0][0] for n, c in gr_people.items()}
 
-    # per-voting facts
-    rows = []
-    stats = {pid: collections.Counter() for s in gr_members.values() for pid in s}
+    stat = {n: collections.Counter() for n in gr_people}
     pair = collections.defaultdict(collections.Counter)
-    for vid, vs in by_voting.items():
-        v = votings[vid]; c = council(v)
-        fpos = {}
+    canton_pairs = collections.defaultdict(lambda: [0, 0])  # NR only, from PD canton field
+    out_votings = []
+    for k, vs in by_voting.items():
+        m = meta.get(k)
+        if not m:
+            continue
         tally = collections.defaultdict(collections.Counter)
-        for r in vs:
-            if r["vote"] in POS and r["person_id"] in frac:
-                tally[frac[r["person_id"]]][r["vote"]] += 1
-        for f, t in tally.items():
+        for name, _, fr, vote in vs:
+            if vote in POS:
+                tally[fr][vote] += 1
+        fpos = {}
+        for fr, t in tally.items():
             top = t.most_common(2)
             if len(top) == 1 or top[0][1] > top[1][1]:
-                fpos[f] = top[0][0]
-        yes = sum(r["vote"] == "yes" for r in vs); no = sum(r["vote"] == "no" for r in vs)
-        gr = {r["person_id"]: r["vote"] for r in vs if r["person_id"] in gr_ids}
-        for pid, vote in gr.items():
-            s = stats[pid]; s["votings"] += 1
+                fpos[fr] = top[0][0]
+        yes = sum(v[3] == "yes" for v in vs); no = sum(v[3] == "no" for v in vs)
+        abst = sum(v[3] == "abstention" for v in vs)
+        gr = {name: (fr, vote) for name, is_gr, fr, vote in vs if is_gr}
+        dev = []
+        for name, (fr, vote) in gr.items():
+            s = stat[name]; s["votings"] += 1; s[vote] += 1
             if vote not in POS:
                 continue
             s["participated"] += 1
-            fp = fpos.get(frac.get(pid))
-            if fp:
-                s["with_fraction_defined"] += 1
-                if vote != fp:
-                    s["deviated"] += 1
+            if fpos.get(fr):
+                s["fraction_defined"] += 1
+                if vote != fpos[fr]:
+                    s["deviated"] += 1; dev.append(name)
             if yes != no and vote in ("yes", "no"):
                 s["yesno_decided"] += 1
-                if (vote == "yes") == (yes > no):
-                    s["majority_side"] += 1
-        part = {p: x for p, x in gr.items() if x in POS}
-        for a in part:
-            for b in part:
-                if a < b:
-                    pair[(a, b)]["both"] += 1
-                    pair[(a, b)]["same"] += part[a] == part[b]
-        rows.append({
-            "id": vid, "date": v["date"][:10], "council": c,
-            "affair": de(v.get("affair_title")), "title": de(v.get("title")),
-            "yes_means": de(v.get("meaning_of_yes")), "affair_id": v.get("affair_id"),
-            "yes": yes, "no": no, "abst": sum(r["vote"] == "abstention" for r in vs),
-            "decision": v.get("decision"),
-            "url": de(v.get("url_external")),
-            "gr": {str(p): x for p, x in gr.items()},
-            "fpos": fpos,
-        })
+                s["majority_side"] += (vote == "yes") == (yes > no)
+        part = {n: v for n, (fr, v) in gr.items() if v in POS}
+        names = sorted(part)
+        for i, a in enumerate(names):
+            for b in names[i + 1:]:
+                pair[(a, b)]["both"] += 1
+                pair[(a, b)]["same"] += part[a] == part[b]
+        out_votings.append({**m, "key": f"{k[0]}-{k[1]}", "yes": yes, "no": no, "abst": abst,
+                            "gr": {n: v for n, (fr, v) in gr.items()},
+                            "fpos": fpos, "dev": dev})
 
-    # NR delegation: closed / split
-    nr = [r for r in rows if r["council"] == "NR"]
-    nr_ids = sorted(gr_members["NR"])
-    full = [r for r in nr if len([p for p in nr_ids if r["gr"].get(str(p)) in POS]) == len(nr_ids)]
-    closed = [r for r in full if len({r["gr"][str(p)] for p in nr_ids}) == 1]
-    # closed although the Bündner members' own fractions disagree with each other
-    own = {frac[p] for p in nr_ids}
-    bridge = [r for r in closed
-              if len({r["fpos"].get(f) for f in own}) > 1]
-    # closed and at least one member deviates from own fraction to do so
-    against_fraction = [r for r in closed
-                        if any(r["fpos"].get(frac[p]) and r["fpos"][frac[p]] != r["gr"][str(p)]
-                               for p in nr_ids)]
+    # canton cohesion benchmark (NR, PD data has canton per vote)
+    pd_canton = {}
+    with gzip.open(RAW / "pd_votings.csv.gz", "rt") as f:
+        cv = collections.defaultdict(dict)
+        for r in csv.DictReader(f):
+            v = PD_DECISION.get(r["DecisionText"])
+            if v in POS:
+                cv[(r["IdVote"], r["Canton"])][r["PersonNumber"]] = v
+    seats = collections.Counter()
+    with gzip.open(RAW / "pd_votings.csv.gz", "rt") as f:
+        per_vote = collections.defaultdict(set)
+        for r in csv.DictReader(f):
+            per_vote[(r["IdVote"], r["Canton"])].add(r["PersonNumber"])
+    for (vid, canton), ps in per_vote.items():
+        seats[canton] = max(seats[canton], len(ps))
+    for (vid, canton), d in cv.items():
+        vals = list(d.values())
+        for i in range(len(vals)):
+            for j in range(i + 1, len(vals)):
+                canton_pairs[canton][0] += 1
+                canton_pairs[canton][1] += vals[i] == vals[j]
+    cohesion = sorted(({"canton": c, "pairs": n, "agree": s / n, "seats": seats[c]} for c, (n, s) in canton_pairs.items() if n),
+                      key=lambda x: -x["agree"])
 
-    out = {
-        "meta": {
-            "fetch": json.loads((RAW / "fetch_meta.json").read_text()),
-            "leg_start": LEG_START,
-            "last_voting": max(r["date"] for r in rows),
-            "votings_nr": len(nr), "votings_sr": len(rows) - len(nr),
-            "unmapped_fraction_labels": unmapped,
-        },
-        "members": [{
-            "id": pid, "name": pname[pid], "council": c, "fraction": frac.get(pid),
-            **stats[pid]} for c, s in gr_members.items() for pid in sorted(s)],
-        "pairs": [{"a": pname[a], "b": pname[b], **cnt} for (a, b), cnt in pair.items()],
-        "nr": {"full_participation": len(full), "closed": len(closed),
-               "closed_bridge": len(bridge), "closed_against_fraction": len(against_fraction)},
-        "votings": sorted(rows, key=lambda r: (r["date"], r["id"])),
+    nr_names = sorted(n for n, (c, f) in gr_people.items() if c == "NR")
+    nr_v = [v for v in out_votings if v["council"] == "NR"]
+    full = [v for v in nr_v if all(v["gr"].get(n) in POS for n in nr_names)]
+    closed = [v for v in full if len({v["gr"][n] for n in nr_names}) == 1]
+    own = {gr_people[n][1] for n in nr_names}
+    bridge = [v for v in closed if len({v["fpos"].get(f) for f in own}) > 1]
+
+    kennz = {
+        "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "unknown_decisions": dict(unknown),
+        "nr_retrieved": json.loads((RAW / "pd_meta.json").read_text())["retrieved_utc"],
+        "check_text": (json.loads((ROOT / "data" / "kreuzpruefung.json").read_text())["text"]
+                       if (ROOT / "data" / "kreuzpruefung.json").exists() else ""),
+        "votings": {"NR": len(nr_v), "SR": len(out_votings) - len(nr_v)},
+        "date_range": {c: [min(v["date"] for v in out_votings if v["council"] == c),
+                           max(v["date"] for v in out_votings if v["council"] == c)] for c in ("NR", "SR")},
+        "members": {n: {"council": gr_people[n][0], "fraction": gr_people[n][1], **stat[n]} for n in gr_people},
+        "pairs": [{"a": a, "b": b, **c} for (a, b), c in sorted(pair.items())],
+        "nr_delegation": {"members": nr_names, "full_participation": len(full),
+                          "closed": len(closed), "closed_bridge": len(bridge)},
+        "canton_cohesion_nr": cohesion,
     }
     (ROOT / "data").mkdir(exist_ok=True)
-    print(json.dumps({k: out[k] for k in ("meta", "members", "pairs", "nr")},
-                     ensure_ascii=False, indent=1))
-    return out
+    (ROOT / "data" / "kennzahlen.json").write_text(json.dumps(kennz, ensure_ascii=False, indent=1))
+    (ROOT / "data" / "abstimmungen.json").write_text(json.dumps(
+        sorted(out_votings, key=lambda v: (v["date"], str(v["ref"]))), ensure_ascii=False))
+    print(json.dumps({k: v for k, v in kennz.items() if k != "canton_cohesion_nr"}, ensure_ascii=False, indent=1))
+    print("cohesion top/bottom", cohesion[:3], cohesion[-3:], "GR",
+          [c for c in cohesion if c["canton"] == "GR"])
 
 
 if __name__ == "__main__":
-    o = main()
-    (ROOT / "data" / "analyse_full.json").write_text(json.dumps(o, ensure_ascii=False))
+    main()

@@ -4,7 +4,7 @@ Services, https://www.parlament.ch/centers/documents/de/Abstimmungen_SR_<session
 Used for the autumn session 2026 (not yet in OpenParlData) and, as a cross-check,
 for the summer session 2026 (compare with OpenParlData).
 
-Output: data/raw/sr_<session>.json  {votings: [...], votes: [[ref, name, fraction, vote], ...]}
+Output: data/raw/sr_<session>.json  {votings: [...], votes: [[ref, name, canton, fraction, vote], ...]}
 """
 import json, sys, urllib.request
 from pathlib import Path
@@ -24,7 +24,7 @@ def parse(session):
         urllib.request.urlretrieve(URL.format(session), path)
     rows = list(openpyxl.load_workbook(path, read_only=True).worksheets[0].iter_rows(values_only=True))
     find = lambda label: next(r for r in rows if r and len(r) > 10 and r[10] == label)
-    names, fractions = find("Name des Ratsmitglieds"), find("Fraktion")
+    names, cantons, fractions = find("Name des Ratsmitglieds"), find("Kanton"), find("Fraktion")
     cols = [i for i in range(11, len(names)) if names[i]]
     hdr = next(i for i, r in enumerate(rows) if r and r[0] == "Geschäftsnummer")
     votings, votes, unknown, empty = [], [], set(), 0
@@ -41,7 +41,7 @@ def parse(session):
             v = VOTE.get(r[i])
             if v is None:
                 unknown.add(r[i]); continue
-            votes.append([int(r[5]), names[i], fractions[i], v])
+            votes.append([int(r[5]), names[i], cantons[i], fractions[i], v])
     if unknown:
         raise SystemExit(f"unknown vote values in {session}: {unknown}")
     out = {"session": session, "source": URL.format(session),
