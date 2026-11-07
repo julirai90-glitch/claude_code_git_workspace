@@ -2,14 +2,12 @@
 
 Start: 2026-11-07 23:00 CET. Übergabe: 2026-11-08 06:30 in GUTEN-MORGEN.md.
 
-## Aktueller Schritt
-6 – Kritikrunde 1 (ab ca. 23:20)
-- Daten komplett: NR 4201 Abst./839'717 Stimmen (parlament.ch), SR 2058 Abst. (OPD + Excel HS26)
-- Kreuzprüfung: NR 540'607 gleich / 4 abweichend; SR SS26 6970/6970
-- Seite läuft lokal (http.server :8765, PID in /dev/shm/wtest/http.pid), Test 05_test.js grün
+## Aktueller Schritt (23:36)
+- Kritikrunden 1–3 erledigt, gepusht; live: https://julirai90-glitch.github.io/claude_code_git_workspace/wahlen-2027-gr/
+- Zusatz in Arbeit: Rückblick Legislaturen 47–51 (GR-NR-Delegation, ws.parlament.ch), Skript 01f
 
 ## Nächster Schritt
-Kritikrunden 1–3 (KRITIK.md), dann Push, GUTEN-MORGEN.md
+Rückblick einbauen, Kritikrunde 4, GUTEN-MORGEN.md, Aufräumen (Weckrufe löschen, http.server PID beenden, /dev/shm/wtest)
 
 ## Offene Probleme
 - Südostschweiz-Artikel Schmid: im Somedia-Archiv gefunden (06.11.2026), Archiv liefert keine URL
