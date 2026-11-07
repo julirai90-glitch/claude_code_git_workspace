@@ -3,7 +3,7 @@
 Massstab: Würde ich das so einer Jury (Design + Technik) oder einer Chefredaktion zeigen?
 Jede Runde: die zehn grössten Schwächen, was geändert wurde, wie geprüft.
 
-## Runde 1 – nach der ersten lauffähigen Version (4.11., ca. 23:50)
+## Runde 1 – nach der ersten lauffähigen Version (4.11., ca. 23:35)
 
 Geprüft mit Headless-Chromium: Desktop 1440×900, Mobil 390×844, Messung der Renderzeiten.
 
@@ -23,7 +23,7 @@ Geprüft mit Headless-Chromium: Desktop 1440×900, Mobil 390×844, Messung der R
 Messwerte: Seite bereit nach 1,3 s (lokal), Schattenberechnung + Relief pro Bild 43 ms auf dem
 (langsamen) Server – flüssig genug für die Tagesanimation.
 
-## Runde 2 – Jury-Blick auf Inhalt und Bedienung (5.11., ca. 00:30)
+## Runde 2 – Jury-Blick auf Inhalt und Bedienung (4.11., ca. 23:40)
 
 | # | Schwäche | Massnahme |
 |---|---|---|
@@ -40,7 +40,7 @@ Messwerte: Seite bereit nach 1,3 s (lokal), Schattenberechnung + Relief pro Bild
 
 Ausserdem: Gantt-Zeilen per Tastatur wählbar; Abgleich mit SRF im Text der Schattenliste.
 
-## Runde 3 – erster Eindruck, Robustheit, Tests (5.11., ca. 00:50)
+## Runde 3 – erster Eindruck, Robustheit, Tests (begonnen 4.11. ca. 23:40, nach Unterbruch durch das Nutzungslimit abgeschlossen 5.11. ca. 06:20)
 
 | # | Schwäche | Massnahme |
 |---|---|---|
