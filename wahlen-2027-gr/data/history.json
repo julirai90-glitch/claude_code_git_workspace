@@ -1,0 +1,192 @@
+[
+ {
+  "leg": 47,
+  "votes_total": 1462,
+  "votes_with_gr": 1461,
+  "full": 986,
+  "closed": 431,
+  "closed_share": 0.43711967545638947,
+  "pair_agree": 0.7372818874416318,
+  "members": [
+   [
+    "Andrea Hämmerle",
+    "SP"
+   ],
+   [
+    "Brigitta M. Gadient",
+    "SVP"
+   ],
+   [
+    "Duri Bezzola",
+    "FDP"
+   ],
+   [
+    "Hansjörg Hassler",
+    "SVP"
+   ],
+   [
+    "Jürg Michel",
+    "FDP"
+   ],
+   [
+    "Sep Cathomas",
+    "CVP"
+   ]
+  ]
+ },
+ {
+  "leg": 48,
+  "votes_total": 4025,
+  "votes_with_gr": 4025,
+  "full": 3178,
+  "closed": 1260,
+  "closed_share": 0.3964757709251101,
+  "pair_agree": 0.7256978925300673,
+  "members": [
+   [
+    "Andrea Hämmerle",
+    "SP"
+   ],
+   [
+    "Brigitta M. Gadient",
+    "BDP"
+   ],
+   [
+    "Hansjörg Hassler",
+    "BDP"
+   ],
+   [
+    "Sep Cathomas",
+    "CEg"
+   ],
+   [
+    "Tarzisius Caviezel",
+    "FDP"
+   ]
+  ]
+ },
+ {
+  "leg": 49,
+  "votes_total": 4543,
+  "votes_with_gr": 4543,
+  "full": 3546,
+  "closed": 490,
+  "closed_share": 0.13818386914833616,
+  "pair_agree": 0.5825007346459007,
+  "members": [
+   [
+    "Hansjörg Hassler",
+    "BDP"
+   ],
+   [
+    "Heinz Brand",
+    "SVP"
+   ],
+   [
+    "Josias F. Gasser",
+    "GLP"
+   ],
+   [
+    "Martin Candinas",
+    "Mitte"
+   ],
+   [
+    "Silva Semadeni",
+    "SP"
+   ]
+  ]
+ },
+ {
+  "leg": 50,
+  "votes_total": 4470,
+  "votes_with_gr": 4470,
+  "full": 3758,
+  "closed": 425,
+  "closed_share": 0.11309207025013306,
+  "pair_agree": 0.5384337784193431,
+  "members": [
+   [
+    "Duri Campell",
+    "BDP"
+   ],
+   [
+    "Heinz Brand",
+    "SVP"
+   ],
+   [
+    "Magdalena Martullo-Blocher",
+    "SVP"
+   ],
+   [
+    "Martin Candinas",
+    "Mitte"
+   ],
+   [
+    "Silva Semadeni",
+    "SP"
+   ]
+  ]
+ },
+ {
+  "leg": 51,
+  "votes_total": 5814,
+  "votes_with_gr": 5814,
+  "full": 3605,
+  "closed": 516,
+  "closed_share": 0.14313453536754508,
+  "pair_agree": 0.5370246691989815,
+  "members": [
+   [
+    "Anna Giacometti",
+    "FDP"
+   ],
+   [
+    "Jon Pult",
+    "SP"
+   ],
+   [
+    "Magdalena Martullo-Blocher",
+    "SVP"
+   ],
+   [
+    "Martin Candinas",
+    "Mitte"
+   ],
+   [
+    "Sandra Locher Benguerel",
+    "SP"
+   ]
+  ]
+ },
+ {
+  "leg": 52,
+  "votes_total": 4201,
+  "votes_with_gr": 4201,
+  "full": 3287,
+  "closed": 305,
+  "closed_share": 0.09278977791299056,
+  "pair_agree": 0.5283256399496433,
+  "members": [
+   [
+    "Anna Giacometti",
+    "FDP"
+   ],
+   [
+    "Jon Pult",
+    "SP"
+   ],
+   [
+    "Magdalena Martullo-Blocher",
+    "SVP"
+   ],
+   [
+    "Martin Candinas",
+    "Mitte"
+   ],
+   [
+    "Roman Hug",
+    "SVP"
+   ]
+  ]
+ }
+]

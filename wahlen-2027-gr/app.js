@@ -69,13 +69,15 @@
     }).join('')}</tr>`).join('')}</tbody>`;
   $('#ramp').style.background = `linear-gradient(90deg, ${shade(lo)}, ${shade(hi)})`;
   $('#ramp-lo').textContent = pct(lo); $('#ramp-hi').textContent = pct(hi);
-  document.querySelectorAll('[data-tip]').forEach(el => {
+  const bindTips = () => document.querySelectorAll('[data-tip]:not([data-bound])').forEach(el => {
+    el.dataset.bound = 1;
     el.addEventListener('mouseenter', () => showTip(el, el.dataset.tip));
     el.addEventListener('mouseleave', hideTip);
     el.addEventListener('focus', () => showTip(el, el.dataset.tip));
     el.addEventListener('blur', hideTip);
     el.addEventListener('click', () => showTip(el, el.dataset.tip));
   });
+  bindTips();
 
   // canton cohesion
   const coh = D.cohesion;
@@ -111,6 +113,18 @@
         ${p.dev_list.map(v => `<li>${dmy(v.date)}: ${v.link ? `<a href="${esc(v.link)}" target="_blank" rel="noopener">${esc(v.affair)}</a>` : esc(v.affair)} ${v.subject ? ` – <span class="muted">${esc(v.subject)}</span>` : ''}. Stimmte <b>${WORD[v.vote]}</b>, Fraktion mehrheitlich ${WORD[v.fpos]}.</li>`).join('')}
       </ol></details>` : ''}
     </article>`).join('');
+
+  // history
+  const hm = Math.max(...D.hist.map(h => h.share));
+  $('#hist').innerHTML = D.hist.map(h => `
+    <div class="bar-row hist ${h.leg === 52 ? 'hi' : ''}">
+      <span class="lab">${h.years}</span>
+      <span class="track" data-tip="<b>${h.years}</b><br>alle fünf gleich: ${n(h.closed)} von ${n(h.full)} Abstimmungen mit voller Teilnahme<br>${h.names.map(esc).join(', ')}" tabindex="0"><span class="fill" style="width:${(100 * h.share / hm).toFixed(1)}%"></span></span>
+      <span class="val">${pct(h.share)}</span>
+    </div>
+    <div class="hist-names">${h.names.map(esc).join(' · ')}</div>`).join('');
+
+  bindTips();
 
   // bridge list (closed across fraction lines)
   const BR = D.votes.filter(v => v[12].includes('b'));

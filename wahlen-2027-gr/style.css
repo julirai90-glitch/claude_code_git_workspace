@@ -69,7 +69,7 @@ p { margin: 0 0 14px; }
 .bar-row { display: grid; grid-template-columns: 10.5em 1fr 3.4em; align-items: center; gap: 10px; font-size: .86rem; padding: 3px 0; }
 .bar-row .lab { text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bar-row .track { background: #ece8de; height: 14px; border-radius: 2px; position: relative; }
-.bar-row .fill { height: 100%; border-radius: 2px; background: #a9aebb; }
+.bar-row .fill { display: block; height: 100%; border-radius: 2px; background: #a9aebb; }
 .bar-row.hi .fill { background: var(--blue); }
 .bar-row.hi .lab, .bar-row.hi .val { font-weight: 600; color: var(--blue); }
 .bar-row .val { font-variant-numeric: tabular-nums; text-align: right; }
@@ -160,3 +160,5 @@ footer { padding: 30px 0 60px; font-size: .78rem; color: var(--muted); border-to
 
 .swipe { display: none; font-size: .74rem; color: var(--muted); }
 @media (max-width: 600px) { .swipe { display: block; } }
+.hist-names { font-size: .72rem; color: var(--muted); margin: -2px 0 8px 11.5em; line-height: 1.3; }
+@media (max-width: 560px) { .hist-names { margin-left: 0; } }

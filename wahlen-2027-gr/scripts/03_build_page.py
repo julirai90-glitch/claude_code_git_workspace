@@ -164,7 +164,16 @@ text = {
     "check": K.get("check_text", ""),
 }
 
-page = {"text": text, "vor": {"types": TYPES, "by": vor, "retrieved": dmy(VS["retrieved_utc"][:10])}, "topics": topics, "people": people, "pairs": pairs, "cohesion": coh_out, "leaving": leaving,
+HIST = json.loads((ROOT / "data" / "history.json").read_text())
+hist = [{"leg": h["leg"], "years": {47: "2003–07", 48: "2007–11", 49: "2011–15", 50: "2015–19", 51: "2019–23", 52: "2023–26"}[h["leg"]],
+         "full": h["full"], "closed": h["closed"], "share": round(h["closed_share"], 4), "agree": round(h["pair_agree"], 4),
+         "names": [n for n, fr in h["members"]], "votes_total": h["votes_total"]} for h in HIST if h["leg"] >= 48]
+h52 = next(h for h in HIST if h["leg"] == 52)
+assert h52["full"] == full and h52["closed"] == closed, "history leg 52 must match main analysis"
+text["hist_note"] = ("Gleiche Rechnung für frühere Legislaturen (Quelle: ws.parlament.ch). Die Zusammensetzung der Delegation "
+                     "war jeweils eine andere; die Werte sind deshalb kein Vergleich von Personen. Für 2003–2007 enthält der "
+                     "Webservice nur einen Teil der Abstimmungen, diese Legislatur ist nicht dargestellt. 2023–26: bis Herbstsession 2026.")
+page = {"text": text, "hist": hist, "vor": {"types": TYPES, "by": vor, "retrieved": dmy(VS["retrieved_utc"][:10])}, "topics": topics, "people": people, "pairs": pairs, "cohesion": coh_out, "leaving": leaving,
         "order": ORDER, "votes": votes}
 (ROOT / "data" / "page.json").write_text(json.dumps(page, ensure_ascii=False, separators=(",", ":")))
 print(json.dumps(text, ensure_ascii=False, indent=1))
