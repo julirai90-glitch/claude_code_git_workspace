@@ -37,6 +37,14 @@ def busnr(b):  # '20260033' -> '26.033' (Curia Vista short form); short forms pa
     return f"{b[2:4]}.{int(b[4:]):03d}" if len(b) == 8 and b.isdigit() else b
 
 
+def subj(v):
+    base = (v["subject"] or "").strip()
+    y, n = (v.get("yes_means") or "").strip(), (v.get("no_means") or "").strip()
+    if y and n and y.lower() not in ("ja", "oui") and len(y) + len(n) < 140:
+        return f"{base}: {y} gegen {n}" if base else f"{y} gegen {n}"
+    return base
+
+
 def dmy(s):
     return datetime.strptime(s, "%Y-%m-%d").strftime("%-d.%-m.%Y")
 
@@ -71,7 +79,7 @@ for v in reversed(A):  # newest first
         else:
             flags += "s"; split += 1
     votes.append([v["key"], v["council"], v["date"], busnr(v["business"]), v["affair"] or "",
-                  v["subject"] or "", v["link"] or "", v["yes"], v["no"], v["abst"], codes, devm, flags])
+                  subj(v), v["link"] or "", v["yes"], v["no"], v["abst"], codes, devm, flags])
 assert closed == K["nr_delegation"]["closed"] and len(bridge) == K["nr_delegation"]["closed_bridge"]
 
 # topics: keyword match on the business title (patterns published on the page)
@@ -176,7 +184,12 @@ assert h52["full"] == full and h52["closed"] == closed, "history leg 52 must mat
 text["hist_note"] = ("Gleiche Rechnung für frühere Legislaturen (Quelle: ws.parlament.ch). Die Zusammensetzung der Delegation "
                      "war jeweils eine andere; die Werte sind deshalb kein Vergleich von Personen. Für 2003–2007 enthält der "
                      "Webservice nur einen Teil der Abstimmungen, diese Legislatur ist nicht dargestellt. 2023–26: bis Herbstsession 2026.")
-page = {"text": text, "hist": hist, "vor": {"types": TYPES, "by": vor, "retrieved": dmy(VS["retrieved_utc"][:10])}, "topics": topics, "people": people, "pairs": pairs, "cohesion": coh_out, "leaving": leaving,
+part = [{"name": n, "council": M[n]["council"], "votings": M[n]["votings"],
+         "participated": M[n]["participated"], "chair": M[n].get("abstention_president", 0),
+         "absent": M[n].get("absent", 0), "excused": M[n].get("absent_excused", 0),
+         "other": M[n]["votings"] - M[n]["participated"] - M[n].get("abstention_president", 0)
+                  - M[n].get("absent", 0) - M[n].get("absent_excused", 0)} for n in ORDER]
+page = {"text": text, "part": part, "hist": hist, "vor": {"types": TYPES, "by": vor, "retrieved": dmy(VS["retrieved_utc"][:10])}, "topics": topics, "people": people, "pairs": pairs, "cohesion": coh_out, "leaving": leaving,
         "order": ORDER, "votes": votes}
 (ROOT / "data" / "page.json").write_text(json.dumps(page, ensure_ascii=False, separators=(",", ":")))
 print(json.dumps(text, ensure_ascii=False, indent=1))

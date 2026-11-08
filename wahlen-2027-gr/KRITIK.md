@@ -57,3 +57,8 @@ Zehn grösste Schwächen:
 8. Historische Fraktionscodes im Webservice teils rückwirkend vereinheitlicht (Candinas 2011–15 als «M-E») – im Rückblick deshalb keine Fraktionsangaben, nur Namen.
 9. Legislatur 2003–07 im Webservice unvollständig (1’462 Abstimmungen) – nicht dargestellt, offengelegt.
 10. Rückblick lädt zur Personen-Interpretation ein – Hinweis «kein Vergleich von Personen» direkt unter der Grafik.
+
+## Nachtrag 08.11. 09:40 – Rückmeldung Julian
+1. Flugpassagierdatengesetz Art. 18 doppelt? Nein: zwei getrennte Abstimmungen (ID 33787 Mehrheit vs. Minderheit I Andrey, ID 33788 Mehrheit vs. Minderheit II Andrey, 73 s auseinander). Seite zeigt jetzt bei jeder Abstimmung die Varianten (Bedeutung Ja/Nein).
+2. Vorstösse Martullo-Blocher (9) und Hug (8): unabhängig mit OpenParlData (contributors, Rolle author) gegengeprüft – identisch. Mitunterzeichnungen (alle Legislaturen: 85 bzw. 32) nicht gezählt.
+3. Teilnahmequote aller sieben als Tabelle ergänzt (Vorsitz aus dem Nenner herausgenommen).

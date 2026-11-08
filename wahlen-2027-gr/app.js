@@ -95,6 +95,10 @@
     D.order.map(nm => { const r = D.vor.by[nm]; const tot = VT.reduce((a, t) => a + r[t], 0);
       return `<tr><th scope="row">${esc(nm)} <span class="muted small">${byName[nm].council}</span></th>${VT.map(t => `<td>${r[t] || '<span class="muted">–</span>'}</td>`).join('')}<td><b>${tot}</b></td></tr>`; }).join('')}</tbody>`;
 
+  // participation table
+  $('#part').innerHTML = `<thead><tr><th scope="col">Person</th><th scope="col">Abstimmungen</th><th scope="col">teilgenommen</th><th scope="col">nicht teilgenommen</th><th scope="col">entschuldigt</th><th scope="col">Vorsitz</th><th scope="col">Teilnahme</th></tr></thead><tbody>${
+    D.part.map(r => `<tr><th scope="row">${esc(r.name)} <span class="muted small">${r.council}</span></th><td>${n(r.votings)}</td><td>${n(r.participated)}</td><td>${n(r.absent)}</td><td>${r.excused ? n(r.excused) : '<span class="muted">–</span>'}</td><td>${r.chair ? n(r.chair) : '<span class="muted">–</span>'}</td><td><b>${pct(r.participated / (r.votings - r.chair))}</b></td></tr>`).join('')}</tbody>`;
+
   // departing members
   $('#leaving').innerHTML = D.leaving.map(p => `
     <article class="card" style="--c:${COL[p.fraction]}">
