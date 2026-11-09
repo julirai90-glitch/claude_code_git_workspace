@@ -100,13 +100,13 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
       zusammen gut die Hälfte. Covid-19 rund 101, Unfälle rund 94.
       <span class="src">Obsan-Gesundheitsreport GR 2025, G 2.4; eigene Hochrechnung → <a href="#ursachen">Grafik 5</a></span></li>
     <li>Kantonsvergleich (Mittel 2020–2024): standardisierte Sterblichkeit Graubünden <b class="n">816</b>, Schweiz 825.
-      16 Kantone liegen höher, 9 tiefer.
+      16 Kantone liegen höher, 9 tiefer. Der Abstand zum Schweizer Wert ist klein und liegt im Bereich der jährlichen Schwankungen.
       <span class="src">Obsan, Mortalität; eigene Mittelwertbildung → <a href="#kantone">Grafik 6</a></span></li>
     <li>Herz-Kreislauf-Sterblichkeit: von <b class="n">422</b> (2000) auf <b class="n">204</b> pro 100 000 (2024), also etwa halbiert.
       Schweiz 2024: 208. Das sind 2024 in Graubünden 498 Todesfälle.
       <span class="src">Obsan/MonAM, Herz-Kreislauf-Erkrankungen → <a href="#herz">Grafik 7</a></span></li>
     <li>Lebenserwartung bei Geburt 2024: Frauen <b class="n">86,2</b> Jahre (Schweiz 85,8), Männer <b class="n">82,2</b> (Schweiz 82,4).
-      Seit 1998 plus 3,7 Jahre bei den Frauen und plus 5,8 Jahre bei den Männern.
+      Die Abweichungen vom Schweizer Wert sind statistisch nicht gesichert. Seit 1998 plus 3,7 Jahre bei den Frauen und plus 5,8 Jahre bei den Männern.
       <span class="src">Obsan, Lebenserwartung → <a href="#leben">Grafik 8</a></span></li>
     <li>Vorzeitige Todesfälle (vor 75): die verlorenen Lebensjahre sanken von <b class="n">4734</b> (1998) auf <b class="n">2817</b> pro 100 000 (2024);
       Schweiz 2777.
@@ -114,7 +114,8 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
     <li>Suizid und Suizidhilfe (5-Jahres-Mittel): Die Suizidrate ohne Suizidhilfe sank von <b class="n">17,3</b> (1998–2002) auf
       <b class="n">12,1</b> pro 100 000 (2020–2024), im Schnitt 30 bzw. 25 Fälle pro Jahr.
       Die Rate der assistierten Suizide stieg von <b class="n">0,8</b> auf <b class="n">11,1</b> – von 1,2 auf 25,6 Fälle pro Jahr.
-      Seit 2020–2024 sind beide Zahlen in Graubünden etwa gleich gross. Bei der Suizidhilfe liegt Graubünden unter dem Schweizer Wert (17,2).
+      Seit 2020–2024 sind beide Zahlen in Graubünden etwa gleich gross. Bei der Suizidhilfe liegt Graubünden unter dem Schweizer Wert (17,2) –
+      der einzige statistisch gesicherte Unterschied zur Schweiz in dieser Auswertung.
       <span class="src">Obsan, Suizid und Suizidhilfe → <a href="#suizid">Grafik 10</a></span></li>
   </ol>
 </section>
@@ -185,7 +186,7 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
 </section>
 
 <section id="kantone">
-  <h2>6 · Graubünden liegt knapp unter dem Schweizer Wert</h2>
+  <h2>6 · Graubünden liegt im Schweizer Mittel</h2>
   <p class="sub">Standardisierte Sterblichkeit pro 100 000, Mittelwert der Jahre 2020–2024</p>
   <div class="chart" id="c-kant"></div>
   <p class="cap">Mittelwert der fünf Jahresraten, eigene Berechnung. Die Linie zeigt den Bereich der fünf Jahreswerte; in kleinen Kantonen schwanken sie stark.
@@ -202,7 +203,7 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
 </section>
 
 <section id="leben">
-  <h2>8 · Lebenserwartung 2024: Frauen leicht über, Männer leicht unter dem Schweizer Wert</h2>
+  <h2>8 · Die Lebenserwartung entspricht dem Schweizer Wert</h2>
   <p class="sub">Lebenserwartung bei Geburt in Jahren, 1998–2024</p>
   <div class="grid2">
     <div><h3>Frauen</h3><div class="chart" id="c-le-f"></div></div>
@@ -265,6 +266,9 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
     <li>Kantonsmittel 2020–2024 = einfacher Durchschnitt der fünf Jahresraten (eigene Berechnung, nicht vom Obsan ausgewiesen).</li>
     <li>Todesursachen 2022 sind <b>hochgerechnet</b> (Anteile × Fallzahl). Offen: ob «Suizide» im Obsan-Report assistierte Suizide enthält – Anfrage an obsan@bfs.admin.ch.</li>
     <li>Suizidzahlen sind 5-Jahres-Mittel; einzelne Jahre weist das Obsan für Kantone nicht aus.</li>
+    <li>Statistische Sicherheit: Für Graubünden liefert das Obsan 95%-Vertrauensintervalle (Spalten <code>ki_unten</code>, <code>ki_oben</code>).
+      Gesichert sind nur Unterschiede, bei denen der Schweizer Wert ausserhalb dieses Bereichs liegt: 2020 (tiefere Sterblichkeit) und
+      Suizidhilfe 2020–2024 (tiefere Rate). Alle anderen Abweichungen zum Schweizer Wert sind nicht gesichert.</li>
     <li>Nicht verwendet, bewusst: Suizidmethoden (Medienempfehlungen).</li>
   </ul>
   <p style="margin:14px 0 4px; font-weight:700">Recherche-Hinweise</p>
