@@ -29,6 +29,8 @@ function tooltip(host) {
   return t;
 }
 const charts = [];
+// In embed.html the chart fills the iframe height, so a fixed iframe height in the CMS fits exactly.
+const fillH = () => window.EMBED_FILL ? Math.max(200, window.innerHeight - 16) : 0;
 function register(fn) { charts.push(fn); try { fn(); } catch (e) { /* container not on this page */ } }
 let rT; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => charts.forEach(f => { try { f(); } catch (e) {} }), 120); });
 
@@ -36,7 +38,7 @@ let rT; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTime
 // opts: series [{name, color, dash, pts:[[x,y]], width}], yFmt, yDec, xTicks, h, area {a,b} (series indices; fill where b>a), yZero
 function lineChart(host, opts) {
   host.innerHTML = "";
-  const W = Math.max(280, host.clientWidth), H = opts.h || Math.round(Math.min(380, Math.max(240, W * 0.55)));
+  const W = Math.max(280, host.clientWidth), H = fillH() || opts.h || Math.round(Math.min(380, Math.max(240, W * 0.55)));
   const m = { t: 12, r: opts.endLabels === false ? 14 : (opts.rMargin || 92), b: 26, l: 44 };
   if (W < 420 && opts.endLabels !== false) m.r = 70;
   const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" }, host);
@@ -88,7 +90,7 @@ function lineChart(host, opts) {
   ends.sort((a, b) => a.y - b.y);
   for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 30) ends[i].y = ends[i - 1].y + 30;
   ends.forEach(e => {
-    txt(svg, e.x + 8, e.y - 1, e.s.name, { fill: e.s.dash ? C.ink2 : e.s.color, "font-weight": 700, "font-size": 13 });
+    txt(svg, e.x + 8, e.y - 1, (W < 420 && e.s.short) || e.s.name, { fill: e.s.dash ? C.ink2 : e.s.color, "font-weight": 700, "font-size": 13 });
     txt(svg, e.x + 8, e.y + 13, fmt(e.v, opts.yDec || 0), { fill: C.ink2, "font-size": 13 });
   });
   // hover
@@ -111,7 +113,7 @@ function lineChart(host, opts) {
 
 function barsV(host, pts, color, hl) {
   host.innerHTML = "";
-  const W = Math.max(280, host.clientWidth), H = Math.round(Math.min(380, Math.max(240, W * 0.55)));
+  const W = Math.max(280, host.clientWidth), H = fillH() || Math.round(Math.min(380, Math.max(240, W * 0.55)));
   const m = { t: 12, r: 10, b: 26, l: 44 };
   const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, host);
   const y1 = Math.max(...pts.map(p => p[1])) * 1.08;
@@ -232,11 +234,11 @@ function barsV(host, pts, color, hl) {
     // 10 Suizid
     const S1 = "Suizidrate (exkl. Suizidhilfe)", S2 = "Suizidhilferate";
     register(() => lineChart(document.getElementById("c-suiz"), {
-      series: [{ name: "Suizid CH", color: "#9fbfd6", dash: true, pts: ser(suiz, "Schweiz", S1), width: 2 },
-               { name: "Suizidhilfe CH", color: "#f3b48a", dash: true, pts: ser(suiz, "Schweiz", S2), width: 2 },
+      series: [{ name: "Suizid CH", short: "CH", color: "#9fbfd6", dash: true, pts: ser(suiz, "Schweiz", S1), width: 2 },
+               { name: "Suizidhilfe CH", short: "CH", color: "#f3b48a", dash: true, pts: ser(suiz, "Schweiz", S2), width: 2 },
                { name: "Suizid", color: "#0068a4", pts: ser(suiz, "Graubünden", S1), dots: true },
                { name: "Suizidhilfe", color: "#ee7733", pts: ser(suiz, "Graubünden", S2), dots: true }],
-      yZero: true, yDec: 1, tickDec: 0, rMargin: 112, xLabel: y => `${y - 4}–${y}` }));
+      yZero: true, yDec: 1, tickDec: 0, rMargin: 126, xLabel: y => `${y - 4}–${y}` }));
   } catch (e) {
     document.querySelectorAll(".chart").forEach(c => c.innerHTML = `<p class="err">Daten konnten nicht geladen werden (${e.message}). Die Seite muss über einen Webserver geöffnet werden, nicht als Datei.</p>`);
   }

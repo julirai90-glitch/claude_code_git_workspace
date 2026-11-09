@@ -24,7 +24,7 @@ h1{font-size:22px; line-height:1.25; margin:0 0 4px; font-weight:700}
 .intro{margin:0 0 14px; font-size:15px; color:var(--ink-2)}
 
 .card{border-top:3px solid var(--ink); padding:10px 0 12px; min-height:132px}
-@media (max-width:520px){ .card{min-height:178px} }
+@media (max-width:520px){ .card{min-height:178px} .legend{font-size:13px} }
 .card .kat{font-size:15px; font-weight:700}
 .card .num{font-size:clamp(28px, 7vw, 40px); font-weight:800; line-height:1.1; font-variant-numeric:tabular-nums}
 .card .num small{font-size:0.5em; font-weight:600; color:var(--ink-3); margin-left:0.3em}
@@ -42,7 +42,7 @@ svg circle{transition:fill .35s ease, opacity .35s ease}
 .prog span{width:7px; height:7px; border-radius:50%; background:var(--off)}
 .prog span.on{background:var(--ink-2)}
 
-.legend{display:none; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:4px 16px;
+.legend{display:none; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:3px 14px;
   margin:12px 0 0; padding:0; list-style:none; font-size:14px}
 .legend.show{display:grid}
 .legend li{display:flex; align-items:center; gap:7px}
@@ -124,7 +124,7 @@ const fmt = n => n.toLocaleString("de-CH");
 
 function layout() {
   const w = Math.max(300, Math.round(svg.parentNode.clientWidth || 664));
-  const cols = w >= 520 ? 70 : 42;
+  const cols = w >= 520 ? 70 : 50;
   const pitch = w / cols, r = pitch * 0.36;
   const rows = Math.ceil(TOTAL / cols);
   svg.setAttribute("viewBox", `0 0 ${w} ${rows * pitch}`);

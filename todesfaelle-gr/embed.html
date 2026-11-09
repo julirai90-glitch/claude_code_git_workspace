@@ -12,7 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:#fff}
+html,body{margin:0;padding:0;background:#fff;overflow:hidden}
 body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif; color:#14202a; font-size:16px}
 .wrap{padding:8px 4px 4px; max-width:696px; margin:0 auto}
 .chart{position:relative; width:100%}
@@ -27,6 +27,8 @@ body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif; 
 <!-- One chart per URL: embed.html?c=schere | tote | mort | reg | kant | herz | le-f | le-m | ypll | suiz -->
 <div class="wrap"><div class="chart" id="slot"></div></div>
 <script>
+// Line and bar charts fill the iframe height; row charts (reg, kant) have a fixed height.
+window.EMBED_FILL = true;
 const ALLOWED = ["schere", "tote", "mort", "reg", "kant", "herz", "le-f", "le-m", "ypll", "suiz"];
 const c = new URLSearchParams(location.search).get("c");
 const slot = document.getElementById("slot");
