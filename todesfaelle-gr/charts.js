@@ -230,6 +230,14 @@ function barsV(host, pts, color, hl) {
                { name: "GR", color: C.gr, pts: ser(le, "Graubünden", "bei der Geburt", sex) }],
       yDec: 1, yMin: 75, h: 240 })));
 
+    // 8 Lebenserwartung combined: women and men, GR solid, CH dashed
+    register(() => lineChart(document.getElementById("c-le"), {
+      series: [{ name: "Frauen CH", short: "CH", color: "#d9a3bd", dash: true, width: 2, pts: ser(le, "Schweiz", "bei der Geburt", "Frauen") },
+               { name: "Männer CH", short: "CH", color: "#9fbfd6", dash: true, width: 2, pts: ser(le, "Schweiz", "bei der Geburt", "Männer") },
+               { name: "Frauen GR", short: "Frauen", color: "#a23b72", pts: ser(le, "Graubünden", "bei der Geburt", "Frauen") },
+               { name: "Männer GR", short: "Männer", color: "#0068a4", pts: ser(le, "Graubünden", "bei der Geburt", "Männer") }],
+      yDec: 1, tickDec: 0, yTicks: 6, yMin: 75, rMargin: 104 }));
+
     // 9 YPLL
     register(() => lineChart(document.getElementById("c-ypll"), {
       series: [{ name: "Schweiz", color: C.ch, dash: true, pts: ser(ypll, "Schweiz") }, { name: "GR", color: C.gr, pts: ser(ypll, "Graubünden") }],

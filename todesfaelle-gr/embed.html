@@ -25,12 +25,12 @@ body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif; 
 </style>
 </head>
 <body>
-<!-- One chart per URL: embed.html?c=schere | tote | mort | reg | kant | herz | le-f | le-m | ypll | suiz -->
+<!-- One chart per URL: embed.html?c=schere | tote | mort | reg | kant | herz | le | le-f | le-m | ypll | suiz -->
 <div class="wrap"><div class="chart" id="slot"></div><p class="src" id="src"></p></div>
 <script>
 // Line and bar charts fill the iframe height; row charts (reg, kant) have a fixed height.
 window.EMBED_FILL = true;
-const ALLOWED = ["schere", "tote", "mort", "reg", "kant", "herz", "le-f", "le-m", "ypll", "suiz"];
+const ALLOWED = ["schere", "tote", "mort", "reg", "kant", "herz", "le", "le-f", "le-m", "ypll", "suiz"];
 const c = new URLSearchParams(location.search).get("c");
 const slot = document.getElementById("slot");
 const OBSAN = "Obsan (BFS – Todesursachenstatistik, STATPOP)";
@@ -41,6 +41,7 @@ const SRC = {
   "reg": "Quelle: BFS, Demografische Bilanz nach institutionellen Gliederungen; eigene Berechnung",
   "kant": "Quelle: " + OBSAN + ". Mittelwert 2020–2024: eigene Berechnung",
   "herz": "Quelle: Obsan/MonAM (BFS – Todesursachenstatistik, STATPOP)",
+  "le": "Quelle: " + OBSAN,
   "le-f": "Quelle: " + OBSAN,
   "le-m": "Quelle: " + OBSAN,
   "ypll": "Quelle: " + OBSAN,
