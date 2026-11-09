@@ -30,7 +30,11 @@ function tooltip(host) {
 }
 const charts = [];
 // In embed.html the chart fills the iframe height, so a fixed iframe height in the CMS fits exactly.
-const fillH = () => window.EMBED_FILL ? Math.max(200, window.innerHeight - 16) : 0;
+const fillH = () => {
+  if (!window.EMBED_FILL) return 0;
+  const f = document.getElementById("src");
+  return Math.max(200, window.innerHeight - 16 - (f ? f.offsetHeight + 6 : 0));
+};
 function register(fn) { charts.push(fn); try { fn(); } catch (e) { /* container not on this page */ } }
 let rT; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => charts.forEach(f => { try { f(); } catch (e) {} }), 120); });
 
