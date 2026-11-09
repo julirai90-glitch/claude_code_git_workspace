@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap">
+<script>if (/[?&]embed\b/.test(location.search)) document.documentElement.classList.add("embed");</script>
 <script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
 <style>
@@ -46,6 +47,8 @@ input[type=range]{flex:1; accent-color:var(--ink)}
 .yr{font-size:20px; font-weight:700; min-width:2.6em; text-align:right; font-variant-numeric:tabular-nums}
 .note{font-size:12.5px; color:var(--ink-3); margin:12px 0 0; line-height:1.45}
 .note a{color:var(--ink-3)}
+html.embed h1, html.embed .intro, html.embed .note{display:none}
+html.embed .wrap{padding-top:4px}
 </style>
 </head>
 <body>

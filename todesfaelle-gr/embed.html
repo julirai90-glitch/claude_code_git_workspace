@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grafik – Sterben in Graubünden</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<script>window.iFrameResizer = { heightCalculationMethod: "documentElementScroll" };</script>
+<script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#fff}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif; color:#14202a; font-size:16px}
+.wrap{padding:8px 4px 4px; max-width:696px; margin:0 auto}
+.chart{position:relative; width:100%}
+.chart svg{display:block; width:100%; height:auto; overflow:visible}
+.chart text{font-family:"Source Sans 3",system-ui,sans-serif}
+.tip{position:absolute; pointer-events:none; background:#fff; border:1px solid #dde4e9; border-radius:3px;
+  padding:5px 8px; font-size:13px; line-height:1.35; box-shadow:0 2px 6px rgba(20,32,42,.12); white-space:nowrap; display:none; z-index:2}
+.err{color:#b5001e; font-size:14px}
+</style>
+</head>
+<body>
+<!-- One chart per URL: embed.html?c=schere | tote | mort | reg | kant | herz | le-f | le-m | ypll | suiz -->
+<div class="wrap"><div class="chart" id="slot"></div></div>
+<script>
+const ALLOWED = ["schere", "tote", "mort", "reg", "kant", "herz", "le-f", "le-m", "ypll", "suiz"];
+const c = new URLSearchParams(location.search).get("c");
+const slot = document.getElementById("slot");
+if (ALLOWED.includes(c)) slot.id = "c-" + c;
+else slot.innerHTML = '<p class="err">Unbekannte Grafik. Parameter c= einer von: ' + ALLOWED.join(", ") + "</p>";
+</script>
+<script src="charts.js"></script>
+</body>
+</html>
