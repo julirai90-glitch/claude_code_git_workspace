@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sterben in Graubünden – Daten, Grafiken, Quellen</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root{
+  --surface:#ffffff; --page:#f6f8f9; --rule:#dde4e9; --rule-soft:#eef2f5;
+  --ink:#14202a; --ink-2:#4a5b68; --ink-3:#71838f;
+  --gr:#0068a4; --ch:#9aa8b2; --tod:#ee7733; --geb:#0068a4; --neg:#c4502a; --pos:#0068a4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--page)}
+body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif; color:var(--ink);
+  font-size:17px; line-height:1.55}
+a{color:var(--gr)}
+.top{background:var(--ink); color:#fff; padding:28px 20px 30px}
+.top .in{max-width:760px; margin:0 auto}
+.kicker{font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#9fc3dc}
+h1{font-family:"Source Serif 4",Georgia,serif; font-size:clamp(30px,6vw,44px); line-height:1.1; margin:6px 0 10px}
+.top p{margin:0; color:#cfd9e0; font-size:17px}
+.status{display:inline-block; margin-top:14px; font-size:13px; background:#2b3a46; color:#e5edf2; padding:4px 10px; border-radius:3px}
+main{max-width:760px; margin:0 auto; padding:0 20px 60px}
+section{background:var(--surface); margin:22px 0; padding:22px 22px 18px; border-radius:4px;
+  box-shadow:0 1px 0 var(--rule)}
+@media (max-width:520px){ main{padding:0 10px 40px} section{padding:18px 14px 14px} }
+h2{font-size:22px; line-height:1.25; margin:0 0 4px; font-weight:700}
+.sub{font-size:15px; color:var(--ink-2); margin:0 0 12px}
+.cap{font-size:13px; color:var(--ink-3); margin:10px 0 0; line-height:1.45; border-top:1px solid var(--rule-soft); padding-top:8px}
+.cap a{color:var(--ink-3)}
+.find{counter-reset:f; list-style:none; margin:8px 0 0; padding:0}
+.find li{counter-increment:f; position:relative; padding:12px 0 12px 44px; border-top:1px solid var(--rule-soft)}
+.find li:first-child{border-top:0}
+.find li::before{content:counter(f); position:absolute; left:0; top:12px; width:30px; height:30px; border-radius:50%;
+  background:var(--ink); color:#fff; font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center}
+.find b.n{font-variant-numeric:tabular-nums}
+.find .src{display:block; font-size:13px; color:var(--ink-3)}
+.toc{columns:2; column-gap:24px; font-size:15px; margin:6px 0 0; padding-left:18px}
+@media (max-width:520px){ .toc{columns:1} }
+.chart{position:relative; width:100%}
+.chart svg{display:block; width:100%; height:auto; overflow:visible}
+.chart text{font-family:"Source Sans 3",system-ui,sans-serif}
+.tip{position:absolute; pointer-events:none; background:#fff; border:1px solid var(--rule); border-radius:3px;
+  padding:5px 8px; font-size:13px; line-height:1.35; box-shadow:0 2px 6px rgba(20,32,42,.12); white-space:nowrap; display:none; z-index:2}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:22px}
+@media (max-width:600px){ .grid2{grid-template-columns:1fr} }
+.grid2 h3{font-size:15px; margin:0 0 4px; color:var(--ink-2)}
+iframe{display:block; width:100%; border:0}
+.help{background:#f1f6fa; border-left:3px solid var(--gr); padding:8px 12px; font-size:14px; margin-top:12px}
+table.src{width:100%; border-collapse:collapse; font-size:14px}
+table.src th, table.src td{text-align:left; vertical-align:top; padding:7px 6px; border-top:1px solid var(--rule-soft)}
+table.src th{font-size:12.5px; color:var(--ink-3); font-weight:600; border-top:0}
+table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; border-radius:2px; word-break:break-all}
+.note-list li{margin:4px 0}
+.legend{display:flex; flex-wrap:wrap; gap:4px 16px; font-size:14px; color:var(--ink-2); margin:0 0 6px}
+.legend i{display:inline-block; width:14px; height:3px; vertical-align:middle; margin-right:5px; border-radius:2px}
+.legend i.dash{background:repeating-linear-gradient(90deg,var(--ch) 0 4px,transparent 4px 7px)!important}
+.err{color:#b5001e; font-size:14px}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <div class="kicker">Recherche Südostschweiz · Arbeitsstand</div>
+  <h1>Sterben in Graubünden</h1>
+  <p>Todesfälle, Todesursachen, Sterblichkeit und Lebenserwartung – was die öffentlichen Daten zeigen.
+    Jede Zahl ist mit Quelle und Rechnung belegt.</p>
+  <span class="status" id="stand">Datenstand: siehe Quellen unten</span>
+</div></header>
+
+<main>
+
+<section id="erkenntnisse">
+  <h2>Die wichtigsten Erkenntnisse</h2>
+  <p class="sub">Rein deskriptiv. Ursachen für Unterschiede lassen sich aus diesen Daten nicht ableiten.</p>
+  <ol class="find">
+    <li>Seit <b class="n">2019</b> sterben in Graubünden jedes Jahr mehr Menschen, als geboren werden.
+      2025 waren es <b class="n">1906</b> Todesfälle und <b class="n">1421</b> Geburten (−485). 1971 waren es noch 2728 Geburten und 1572 Todesfälle.
+      <span class="src">BFS, Demografische Bilanz nach Kanton → <a href="#schere">Grafik 1</a></span></li>
+    <li>Die Zahl der Todesfälle steigt, das <b>Sterberisiko sinkt</b>: Die altersstandardisierte Sterblichkeit fiel von
+      <b class="n">1249</b> (1998) auf <b class="n">773</b> pro 100 000 (2024). Die Standardisierung rechnet die Alterung heraus: Die steigende Zahl der Todesfälle geht nicht auf ein höheres Sterberisiko zurück.
+      Graubünden liegt 2024 praktisch auf dem Schweizer Wert (772).
+      <span class="src">Obsan, Mortalität → <a href="#risiko">Grafik 2</a></span></li>
+    <li>Pandemie: 2020 lag die standardisierte Sterblichkeit in Graubünden <b>tiefer</b> als in der Schweiz (828 gegenüber 900),
+      2022 <b>höher</b> (874 gegenüber 840). 2022 ist mit <b class="n">1995</b> Todesfällen das Jahr mit den meisten Toten seit Beginn der Reihe 1971.
+      <span class="src">Obsan, Mortalität; BFS → <a href="#risiko">Grafik 2</a></span></li>
+    <li>Regional (2016–2025): Nur <b>Imboden</b> (+538) und <b>Landquart</b> (+477) hatten mehr Geburten als Todesfälle.
+      Am stärksten negativ im Verhältnis zur Bevölkerung: Bernina (−48 pro 1000 Einwohner), Engiadina Bassa/Val Müstair (−40),
+      Moesa (−32), Surselva (−31; absolut mit −678 am grössten).
+      <span class="src">BFS, Demografische Bilanz nach Gemeinden/Regionen → <a href="#regionen">Grafik 3</a></span></li>
+    <li>Im Durchschnitt starb 2025 alle <b class="n">4 Std. 36 Min.</b> ein Mensch in Graubünden, alle 6 Std. 10 Min. kam ein Kind zur Welt.
+      <span class="src">Eigene Rechnung aus BFS-Daten → <a href="#uhr">Grafik 4</a></span></li>
+    <li>Todesursachen 2022 (hochgerechnet): Herz-Kreislauf-Krankheiten rund <b class="n">580</b>, Krebs rund <b class="n">471</b> von 1995 Todesfällen –
+      zusammen gut die Hälfte. Covid-19 rund 101, Unfälle rund 94.
+      <span class="src">Obsan-Gesundheitsreport GR 2025, G 2.4; eigene Hochrechnung → <a href="#ursachen">Grafik 5</a></span></li>
+    <li>Kantonsvergleich (Mittel 2020–2024): standardisierte Sterblichkeit Graubünden <b class="n">816</b>, Schweiz 825.
+      16 Kantone liegen höher, 9 tiefer.
+      <span class="src">Obsan, Mortalität; eigene Mittelwertbildung → <a href="#kantone">Grafik 6</a></span></li>
+    <li>Herz-Kreislauf-Sterblichkeit: von <b class="n">422</b> (2000) auf <b class="n">204</b> pro 100 000 (2024), also etwa halbiert.
+      Schweiz 2024: 208. Das sind 2024 in Graubünden 498 Todesfälle.
+      <span class="src">Obsan/MonAM, Herz-Kreislauf-Erkrankungen → <a href="#herz">Grafik 7</a></span></li>
+    <li>Lebenserwartung bei Geburt 2024: Frauen <b class="n">86,2</b> Jahre (Schweiz 85,8), Männer <b class="n">82,2</b> (Schweiz 82,4).
+      Seit 1998 plus 3,7 Jahre bei den Frauen und plus 5,8 Jahre bei den Männern.
+      <span class="src">Obsan, Lebenserwartung → <a href="#leben">Grafik 8</a></span></li>
+    <li>Vorzeitige Todesfälle (vor 75): die verlorenen Lebensjahre sanken von <b class="n">4734</b> (1998) auf <b class="n">2817</b> pro 100 000 (2024);
+      Schweiz 2777.
+      <span class="src">Obsan, verlorene potenzielle Lebensjahre → <a href="#ypll">Grafik 9</a></span></li>
+    <li>Suizid und Suizidhilfe (5-Jahres-Mittel): Die Suizidrate ohne Suizidhilfe sank von <b class="n">17,3</b> (1998–2002) auf
+      <b class="n">12,1</b> pro 100 000 (2020–2024), im Schnitt 30 bzw. 25 Fälle pro Jahr.
+      Die Rate der assistierten Suizide stieg von <b class="n">0,8</b> auf <b class="n">11,1</b> – von 1,2 auf 25,6 Fälle pro Jahr.
+      Seit 2020–2024 sind beide Zahlen in Graubünden etwa gleich gross. Bei der Suizidhilfe liegt Graubünden unter dem Schweizer Wert (17,2).
+      <span class="src">Obsan, Suizid und Suizidhilfe → <a href="#suizid">Grafik 10</a></span></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Inhalt</h2>
+  <ol class="toc">
+    <li><a href="#schere">Geburten und Todesfälle</a></li>
+    <li><a href="#risiko">Mehr Tote, tieferes Risiko</a></li>
+    <li><a href="#regionen">Regionen</a></li>
+    <li><a href="#uhr">Alle 4 Stunden 36 Minuten</a></li>
+    <li><a href="#ursachen">Todesursachen 2022</a></li>
+    <li><a href="#kantone">Kantonsvergleich</a></li>
+    <li><a href="#herz">Herz-Kreislauf</a></li>
+    <li><a href="#leben">Lebenserwartung</a></li>
+    <li><a href="#ypll">Vorzeitige Todesfälle</a></li>
+    <li><a href="#suizid">Suizid und Suizidhilfe</a></li>
+    <li><a href="#quellen">Quellen und Methode</a></li>
+  </ol>
+</section>
+
+<section id="schere">
+  <h2>1 · Seit 2019 sterben jedes Jahr mehr Menschen, als geboren werden</h2>
+  <p class="sub">Lebendgeburten und Todesfälle der ständigen Wohnbevölkerung, 1971–2025</p>
+  <div class="legend"><span><i style="background:var(--geb)"></i>Geburten</span><span><i style="background:var(--tod)"></i>Todesfälle</span></div>
+  <div class="chart" id="c-schere"></div>
+  <p class="cap">Fläche orange: Jahre mit mehr Todesfällen als Geburten. Quelle: BFS, Demografische Bilanz nach Kanton
+    (<code>px-x-0102020000_101</code>). Daten: <a href="daten/bfs_bilanz_gr.csv">bfs_bilanz_gr.csv</a></p>
+</section>
+
+<section id="risiko">
+  <h2>2 · Mehr Todesfälle – aber ein tieferes Sterberisiko</h2>
+  <p class="sub">Links die Zahl der Todesfälle, rechts die altersstandardisierte Sterblichkeit pro 100 000 Einwohner</p>
+  <div class="grid2">
+    <div><h3>Todesfälle pro Jahr</h3><div class="chart" id="c-tote"></div></div>
+    <div><h3>Standardisierte Sterblichkeit</h3>
+      <div class="legend"><span><i style="background:var(--gr)"></i>Graubünden</span><span><i class="dash"></i>Schweiz</span></div>
+      <div class="chart" id="c-mort"></div></div>
+  </div>
+  <p class="cap">Die Standardisierung rechnet die Sterblichkeit auf eine einheitliche Altersstruktur um (Europäische Standardbevölkerung 2010).
+    So wird sichtbar, ob das Risiko zu sterben steigt oder nur die Zahl der alten Menschen. Quellen: BFS (<code>px-x-0102020000_101</code>), Obsan-Indikator
+    <a href="https://ind.obsan.admin.ch/indicator/obsan/mortalitaet-und-todesursachen">Mortalität und Todesursachen</a>.
+    Daten: <a href="daten/bfs_bilanz_gr.csv">bfs_bilanz_gr.csv</a>, <a href="daten/obsan_mortalitaet_kantone.csv">obsan_mortalitaet_kantone.csv</a></p>
+</section>
+
+<section id="regionen">
+  <h2>3 · Nur zwei Regionen haben mehr Geburten als Todesfälle</h2>
+  <p class="sub">Geburten minus Todesfälle 2016–2025, pro 1000 Einwohner (Bestand am 1. Januar 2025)</p>
+  <div class="chart" id="c-reg"></div>
+  <p class="cap">Zahl rechts: absoluter Saldo 2016–2025. Die Summe der elf Regionen entspricht exakt dem Kantonstotal (geprüft für 1981, 2000, 2025).
+    Quelle: BFS, Demografische Bilanz nach institutionellen Gliederungen (<code>px-x-0102020000_201</code>).
+    Daten: <a href="daten/bfs_bilanz_regionen_gr.csv">bfs_bilanz_regionen_gr.csv</a></p>
+</section>
+
+<section id="uhr">
+  <h2>4 · Alle 4 Stunden und 36 Minuten</h2>
+  <p class="sub">Durchschnittlicher Abstand zwischen zwei Todesfällen und zwei Geburten – mit Jahresregler</p>
+  <iframe src="uhr.html" title="Abstand zwischen Todesfällen und Geburten" loading="lazy" style="height:640px" id="f-uhr"></iframe>
+  <p class="cap">Rechnung: Minuten des Jahres ÷ Anzahl Ereignisse, gerundet. 2025: 525 600 ÷ 1906 = 276 Min. Einzeln: <a href="uhr.html">uhr.html</a></p>
+</section>
+
+<section id="ursachen">
+  <h2>5 · Woran die Menschen 2022 gestorben sind</h2>
+  <p class="sub">Ein Punkt pro Todesfall – mit «Weiter» kommt eine Ursache nach der anderen dazu</p>
+  <iframe src="punkte.html" title="Todesursachen 2022" loading="lazy" style="height:900px" id="f-punkte"></iframe>
+  <p class="cap"><b>Hochrechnung, keine Zählung:</b> Anteile je Ursache und Geschlecht aus dem Obsan-Gesundheitsreport GR 2025 (Grafik G 2.4, S. 35)
+    × Todesfälle 2022 (975 Frauen, 1020 Männer, Obsan-API), Restgrössenrundung auf Summe 1995. Einzeln: <a href="punkte.html">punkte.html</a></p>
+</section>
+
+<section id="kantone">
+  <h2>6 · Graubünden liegt knapp unter dem Schweizer Wert</h2>
+  <p class="sub">Standardisierte Sterblichkeit pro 100 000, Mittelwert der Jahre 2020–2024</p>
+  <div class="chart" id="c-kant"></div>
+  <p class="cap">Mittelwert der fünf Jahresraten, eigene Berechnung. Die Linie zeigt den Bereich der fünf Jahreswerte; in kleinen Kantonen schwanken sie stark.
+    Quelle: Obsan, Mortalität. Daten: <a href="daten/obsan_mortalitaet_kantone.csv">obsan_mortalitaet_kantone.csv</a></p>
+</section>
+
+<section id="herz">
+  <h2>7 · Die Herz-Kreislauf-Sterblichkeit hat sich etwa halbiert</h2>
+  <p class="sub">Todesfälle durch Herz-Kreislauf-Krankheiten pro 100 000, standardisiert, 2000–2024</p>
+  <div class="legend"><span><i style="background:var(--gr)"></i>Graubünden</span><span><i class="dash"></i>Schweiz</span></div>
+  <div class="chart" id="c-herz"></div>
+  <p class="cap">Quelle: Obsan/MonAM, <a href="https://ind.obsan.admin.ch/indicator/monam/herz-kreislauf-erkrankungen-hospitalisierung-und-mortalitaet">Herz-Kreislauf-Erkrankungen: Hospitalisierung und Mortalität</a>.
+    Daten: <a href="daten/obsan_herzkreislauf_kantone.csv">obsan_herzkreislauf_kantone.csv</a> (Kategorie «Mortalitätsrate»)</p>
+</section>
+
+<section id="leben">
+  <h2>8 · Lebenserwartung 2024: Frauen leicht über, Männer leicht unter dem Schweizer Wert</h2>
+  <p class="sub">Lebenserwartung bei Geburt in Jahren, 1998–2024</p>
+  <div class="grid2">
+    <div><h3>Frauen</h3><div class="chart" id="c-le-f"></div></div>
+    <div><h3>Männer</h3><div class="chart" id="c-le-m"></div></div>
+  </div>
+  <div class="legend" style="margin-top:6px"><span><i style="background:var(--gr)"></i>Graubünden</span><span><i class="dash"></i>Schweiz</span></div>
+  <p class="cap">Quelle: Obsan, <a href="https://ind.obsan.admin.ch/indicator/obsan/lebenserwartung">Lebenserwartung</a>.
+    Daten: <a href="daten/obsan_lebenserwartung_kantone.csv">obsan_lebenserwartung_kantone.csv</a> (Kategorie «bei der Geburt»)</p>
+</section>
+
+<section id="ypll">
+  <h2>9 · Weniger vorzeitige Todesfälle</h2>
+  <p class="sub">Verlorene potenzielle Lebensjahre vor dem 75. Altersjahr pro 100 000, standardisiert, 1998–2024</p>
+  <div class="legend"><span><i style="background:var(--gr)"></i>Graubünden</span><span><i class="dash"></i>Schweiz</span></div>
+  <div class="chart" id="c-ypll"></div>
+  <p class="cap">Lesebeispiel: Stirbt jemand mit 60, zählt das 15 verlorene Lebensjahre. Altersgrenze 75 gemäss Obsan-Definition.
+    Quelle: Obsan, <a href="https://ind.obsan.admin.ch/indicator/obsan/verlorene-potenzielle-lebensjahre">Verlorene potenzielle Lebensjahre</a>.
+    Daten: <a href="daten/obsan_ypll_kantone.csv">obsan_ypll_kantone.csv</a></p>
+</section>
+
+<section id="suizid">
+  <h2>10 · Suizid und Suizidhilfe</h2>
+  <p class="sub">Fälle pro 100 000, standardisiert, gleitende 5-Jahres-Mittel (erstes Fenster 1998–2002, letztes 2020–2024)</p>
+  <div class="legend"><span><i style="background:#0068a4"></i>Suizid ohne Suizidhilfe</span><span><i style="background:#ee7733"></i>Assistierter Suizid</span><span><i class="dash"></i>jeweils Schweiz</span></div>
+  <div class="chart" id="c-suiz"></div>
+  <p class="cap">Ein Punkt steht für ein 5-Jahres-Fenster, beschriftet mit dessen letztem Jahr. Quelle: Obsan,
+    <a href="https://ind.obsan.admin.ch/indicator/obsan/suizid-und-suizidhilfe">Suizid und Suizidhilfe</a>.
+    Daten: <a href="daten/obsan_suizid_kantone.csv">obsan_suizid_kantone.csv</a></p>
+  <p class="help">Bei der Publikation gelten die Medienempfehlungen zur Suizidberichterstattung: keine Methoden, keine Einzelfälle, Hilfsangebote nennen.
+    Hilfe in Krisen: Die Dargebotene Hand, Telefon 143, <a href="https://www.143.ch">www.143.ch</a>.</p>
+</section>
+
+<section id="quellen">
+  <h2>Quellen und Methode</h2>
+  <p class="sub">Alle Daten liegen als CSV im Ordner <a href="daten/">daten/</a> und lassen sich mit
+    <a href="fetch_daten.py">fetch_daten.py</a> neu laden. Abrufdatum: <a href="daten/abrufdatum.txt">abrufdatum.txt</a>.</p>
+  <table class="src">
+    <tr><th>Quelle</th><th>Inhalt, Jahre</th><th>Datei</th></tr>
+    <tr><td>BFS, STAT-TAB <code>px-x-0102020000_101</code><br><a href="https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_101/">Demografische Bilanz nach Kanton</a></td>
+      <td>Bestand, Lebendgeburten, Todesfälle GR, 1971–2025</td><td><a href="daten/bfs_bilanz_gr.csv">bfs_bilanz_gr.csv</a></td></tr>
+    <tr><td>BFS, STAT-TAB <code>px-x-0102020000_201</code><br><a href="https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_201/">Demografische Bilanz nach institutionellen Gliederungen</a></td>
+      <td>dasselbe für die 11 Bündner Regionen, 1981–2025</td><td><a href="daten/bfs_bilanz_regionen_gr.csv">bfs_bilanz_regionen_gr.csv</a></td></tr>
+    <tr><td>Obsan-API <code>_007/kg</code><br><a href="https://ind.obsan.admin.ch/indicator/obsan/mortalitaet-und-todesursachen">Mortalität und Todesursachen</a></td>
+      <td>standardisierte Sterblichkeit, alle Kantone, 1998–2024</td><td><a href="daten/obsan_mortalitaet_kantone.csv">obsan_mortalitaet_kantone.csv</a></td></tr>
+    <tr><td>Obsan-API <code>_203/kg</code><br><a href="https://ind.obsan.admin.ch/indicator/monam/herz-kreislauf-erkrankungen-hospitalisierung-und-mortalitaet">Herz-Kreislauf-Erkrankungen</a></td>
+      <td>Mortalitäts- und Hospitalisierungsrate, alle Kantone, 2000–2024</td><td><a href="daten/obsan_herzkreislauf_kantone.csv">obsan_herzkreislauf_kantone.csv</a></td></tr>
+    <tr><td>Obsan-API <code>_001/kg</code><br><a href="https://ind.obsan.admin.ch/indicator/obsan/lebenserwartung">Lebenserwartung</a></td>
+      <td>bei Geburt und mit 65, alle Kantone, 1998–2024</td><td><a href="daten/obsan_lebenserwartung_kantone.csv">obsan_lebenserwartung_kantone.csv</a></td></tr>
+    <tr><td>Obsan-API <code>_009/kg</code><br><a href="https://ind.obsan.admin.ch/indicator/obsan/verlorene-potenzielle-lebensjahre">Verlorene potenzielle Lebensjahre</a></td>
+      <td>standardisiert, vor 75, alle Kantone, 1998–2024</td><td><a href="daten/obsan_ypll_kantone.csv">obsan_ypll_kantone.csv</a></td></tr>
+    <tr><td>Obsan-API <code>_010/kg</code><br><a href="https://ind.obsan.admin.ch/indicator/obsan/suizid-und-suizidhilfe">Suizid und Suizidhilfe</a></td>
+      <td>5-Jahres-Mittel, alle Kantone, 1998/2002–2020/2024</td><td><a href="daten/obsan_suizid_kantone.csv">obsan_suizid_kantone.csv</a></td></tr>
+    <tr><td>Obsan-Bericht 04/2025<br><a href="https://www.gr.ch/DE/institutionen/verwaltung/djsg/ga/ueberuns/leitbilder/Documents/OBSAN-Gesundheitsreport-GR-2025.pdf">Gesundheit im Kanton Graubünden (PDF)</a></td>
+      <td>Todesursachen nach Geschlecht 2022 in Prozent (G 2.4, S. 35); Suizid S. 58–59</td><td>Werte in <a href="punkte.html">punkte.html</a> (Quelltext)</td></tr>
+  </table>
+  <p style="margin:14px 0 4px; font-weight:700">Methode und Vorbehalte</p>
+  <ul class="note-list" style="font-size:15px; margin:0; padding-left:20px">
+    <li>Alle Obsan-Werte beruhen auf der Todesursachenstatistik (CoD) des BFS und STATPOP, Wohnbevölkerung des Kantons. Standardisierung: Europäische Standardbevölkerung 2010.</li>
+    <li>Gegenprobe: Die Obsan-Fallzahlen 2023/2024 (1866/1867) stimmen mit den BFS-Todesfällen überein.</li>
+    <li>Kantonsmittel 2020–2024 = einfacher Durchschnitt der fünf Jahresraten (eigene Berechnung, nicht vom Obsan ausgewiesen).</li>
+    <li>Todesursachen 2022 sind <b>hochgerechnet</b> (Anteile × Fallzahl). Offen: ob «Suizide» im Obsan-Report assistierte Suizide enthält – Anfrage an obsan@bfs.admin.ch.</li>
+    <li>Suizidzahlen sind 5-Jahres-Mittel; einzelne Jahre weist das Obsan für Kantone nicht aus.</li>
+    <li>Nicht verwendet, bewusst: Suizidmethoden (Medienempfehlungen).</li>
+  </ul>
+  <p style="margin:14px 0 4px; font-weight:700">Recherche-Hinweise</p>
+  <ul class="note-list" style="font-size:15px; margin:0; padding-left:20px">
+    <li>Archiv Südostschweiz (seit 2021): keine Datengeschichte zu Todesursachen GR; der Obsan-Report GR 2025 wurde nicht aufgegriffen.
+      In der Bilanz «Coronapandemie – fünf Jahre danach» (3.3.2025, Mitteilung Standeskanzlei) heisst es, für GR seien zur Todesursachenstatistik
+      «keine separaten Zahlen dazu erhältlich» – der Obsan-Report enthält aber kantonale Werte für 2022.</li>
+    <li>Krebstote nach Krebsart für GR: beim Krebsregister Graubünden-Glarus (Kantonsspital) anfragen; im Archiv gibt es nur Glarner Zahlen (31.10.2022).</li>
+    <li>Datawrapper-Versionen: <a href="https://datawrapper.dwcdn.net/4jwwv/">Geburten/Todesfälle</a>, <a href="https://datawrapper.dwcdn.net/Z7OP4/">Kantonsvergleich</a>.</li>
+  </ul>
+</section>
+
+</main>
+
+<script>
+// ---------- helpers ----------
+const NS = "http://www.w3.org/2000/svg";
+const C = { gr: "#0068a4", ch: "#9aa8b2", tod: "#ee7733", geb: "#0068a4", neg: "#c4502a", pos: "#0068a4", ink: "#14202a", ink2: "#4a5b68", ink3: "#71838f", rule: "#dde4e9" };
+const fmt = (v, d = 0) => v.toLocaleString("de-CH", { minimumFractionDigits: d, maximumFractionDigits: d }).replace(/(\d)\.(\d)/, "$1,$2");
+
+async function csv(path) {
+  const t = await (await fetch(path)).text();
+  const [head, ...lines] = t.trim().split(/\r?\n/);
+  const keys = head.split(",");
+  return lines.map(l => { const v = l.split(","); return Object.fromEntries(keys.map((k, i) => [k, v[i]])); });
+}
+function el(name, attrs, parent) {
+  const e = document.createElementNS(NS, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function txt(parent, x, y, s, attrs = {}) { const t = el("text", { x, y, "font-size": 13, fill: C.ink3, ...attrs }, parent); t.textContent = s; return t; }
+function niceTicks(min, max, n = 5) {
+  const span = max - min, step0 = span / n, mag = 10 ** Math.floor(Math.log10(step0));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => span / s <= n);
+  const out = []; for (let v = Math.ceil(min / step) * step; v <= max + 1e-9; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+function tooltip(host) {
+  let t = host.querySelector(".tip");
+  if (!t) { t = document.createElement("div"); t.className = "tip"; host.appendChild(t); }
+  return t;
+}
+const charts = [];
+function register(fn) { charts.push(fn); fn(); }
+let rT; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(() => charts.forEach(f => f()), 120); });
+
+// ---------- generic line chart ----------
+// opts: series [{name, color, dash, pts:[[x,y]], width}], yFmt, yDec, xTicks, h, area {a,b} (series indices; fill where b>a), yZero
+function lineChart(host, opts) {
+  host.innerHTML = "";
+  const W = Math.max(280, host.clientWidth), H = opts.h || Math.round(Math.min(380, Math.max(240, W * 0.55)));
+  const m = { t: 12, r: opts.endLabels === false ? 14 : 92, b: 26, l: 44 };
+  if (W < 420 && opts.endLabels !== false) m.r = 70;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img" }, host);
+  const all = opts.series.flatMap(s => s.pts);
+  const xs = all.map(p => p[0]), ys = all.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  let y0 = opts.yZero ? 0 : Math.min(...ys), y1 = Math.max(...ys);
+  const pad = (y1 - y0) * 0.08; if (!opts.yZero) y0 -= pad; y1 += pad;
+  if (opts.yMin !== undefined) y0 = opts.yMin;
+  const X = x => m.l + (W - m.l - m.r) * (x - x0) / (x1 - x0 || 1);
+  const Y = y => H - m.b - (H - m.t - m.b) * (y - y0) / (y1 - y0);
+  niceTicks(y0, y1, opts.yTicks || 5).forEach(v => {
+    if (v < y0) return;
+    el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: C.rule, "stroke-width": 1 }, svg);
+    txt(svg, m.l - 6, Y(v) + 4, fmt(v, opts.yDec || 0), { "text-anchor": "end" });
+  });
+  const xt = opts.xTicks || niceTicks(x0, x1, W < 420 ? 4 : 7).filter(v => Number.isInteger(v));
+  xt.forEach(v => txt(svg, X(v), H - 6, String(v), { "text-anchor": "middle" }));
+  if (opts.area) {
+    const A = opts.series[opts.area.a].pts, B = opts.series[opts.area.b].pts;
+    const bm = new Map(B.map(p => [p[0], p[1]]));
+    for (let i = 0; i < A.length - 1; i++) {
+      const [xa, ya] = A[i], [xb, yb] = A[i + 1];
+      const pa = bm.get(xa), pb = bm.get(xb);
+      if (pa === undefined || pb === undefined) continue;
+      // fill between segments with colour by sign (b above a = deaths above births)
+      const d1 = pa - ya, d2 = pb - yb;
+      const seg = (xs0, xs1, f) => {
+        const ia = t => ya + (yb - ya) * t, ib = t => pa + (pb - pa) * t;
+        const pts = [[xs0, ia(f[0])], [xs1, ia(f[1])], [xs1, ib(f[1])], [xs0, ib(f[0])]];
+        const pos = (ib((f[0] + f[1]) / 2) - ia((f[0] + f[1]) / 2)) > 0;
+        el("polygon", { points: pts.map(p => `${X(p[0])},${Y(p[1])}`).join(" "),
+          fill: pos ? C.tod : C.geb, opacity: pos ? 0.22 : 0.08 }, svg);
+      };
+      if (d1 * d2 < 0) { const t = d1 / (d1 - d2), xm = xa + (xb - xa) * t; seg(xa, xm, [0, t]); seg(xm, xb, [t, 1]); }
+      else seg(xa, xb, [0, 1]);
+    }
+  }
+  const ends = [];
+  opts.series.forEach(s => {
+    const d = s.pts.map((p, i) => `${i ? "L" : "M"}${X(p[0])},${Y(p[1])}`).join("");
+    el("path", { d, fill: "none", stroke: s.color, "stroke-width": s.width || 2.5, "stroke-dasharray": s.dash ? "5 4" : "none",
+      "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    if (s.dots) s.pts.forEach(p => el("circle", { cx: X(p[0]), cy: Y(p[1]), r: 3, fill: s.color }, svg));
+    const last = s.pts[s.pts.length - 1];
+    if (opts.endLabels !== false && s.label !== false) ends.push({ y: Y(last[1]), x: X(last[0]), s, v: last[1] });
+  });
+  // end labels with simple collision avoidance
+  ends.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 30) ends[i].y = ends[i - 1].y + 30;
+  ends.forEach(e => {
+    txt(svg, e.x + 8, e.y - 1, e.s.name, { fill: e.s.color === C.ch ? C.ink2 : e.s.color, "font-weight": 700, "font-size": 13 });
+    txt(svg, e.x + 8, e.y + 13, fmt(e.v, opts.yDec || 0), { fill: C.ink2, "font-size": 13 });
+  });
+  // hover
+  const tip = tooltip(host);
+  const years = [...new Set(all.map(p => p[0]))].sort((a, b) => a - b);
+  const guide = el("line", { y1: m.t, y2: H - m.b, stroke: C.ink3, "stroke-width": 1, opacity: 0 }, svg);
+  const ov = el("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" }, svg);
+  const move = ev => {
+    const r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) * W / r.width;
+    const yr = years.reduce((a, b) => Math.abs(X(b) - sx) < Math.abs(X(a) - sx) ? b : a);
+    guide.setAttribute("x1", X(yr)); guide.setAttribute("x2", X(yr)); guide.setAttribute("opacity", 0.4);
+    const rows = opts.series.map(s => { const p = s.pts.find(q => q[0] === yr); return p ? `<span style="color:${s.color === C.ch ? C.ink2 : s.color}">●</span> ${s.name}: <b>${fmt(p[1], opts.yDec || 0)}</b>` : ""; }).filter(Boolean);
+    tip.innerHTML = `<b>${opts.xLabel ? opts.xLabel(yr) : yr}</b><br>${rows.join("<br>")}`;
+    tip.style.display = "block";
+    const px = X(yr) * r.width / W; tip.style.left = Math.min(px + 12, r.width - tip.offsetWidth - 4) + "px"; tip.style.top = "8px";
+  };
+  ov.addEventListener("mousemove", move); ov.addEventListener("touchstart", e => move(e.touches[0]), { passive: true });
+  ov.addEventListener("mouseleave", () => { tip.style.display = "none"; guide.setAttribute("opacity", 0); });
+}
+
+function barsV(host, pts, color, hl) {
+  host.innerHTML = "";
+  const W = Math.max(280, host.clientWidth), H = Math.round(Math.min(380, Math.max(240, W * 0.55)));
+  const m = { t: 12, r: 10, b: 26, l: 44 };
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, host);
+  const y1 = Math.max(...pts.map(p => p[1])) * 1.08;
+  const X0 = pts[0][0], n = pts.length, bw = (W - m.l - m.r) / n;
+  const Y = y => H - m.b - (H - m.t - m.b) * y / y1;
+  niceTicks(0, y1, 4).forEach(v => { el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), stroke: C.rule }, svg); txt(svg, m.l - 6, Y(v) + 4, fmt(v), { "text-anchor": "end" }); });
+  pts.forEach(([x, y], i) => el("rect", { x: m.l + i * bw + bw * 0.12, y: Y(y), width: bw * 0.76, height: Y(0) - Y(y), fill: x === hl ? C.tod : color }, svg));
+  niceTicks(X0, pts[n - 1][0], 4).filter(Number.isInteger).forEach(v => txt(svg, m.l + (v - X0 + 0.5) * bw, H - 6, String(v), { "text-anchor": "middle" }));
+  const hp = pts.find(p => p[0] === hl);
+  if (hp) txt(svg, m.l + (hl - X0 + 0.5) * bw, Y(hp[1]) - 6, `${hl}: ${fmt(hp[1])}`, { "text-anchor": "end", fill: C.tod, "font-weight": 700 });
+  const tip = tooltip(host);
+  svg.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) * W / r.width, i = Math.floor((sx - m.l) / bw);
+    if (i < 0 || i >= n) { tip.style.display = "none"; return; }
+    tip.innerHTML = `<b>${pts[i][0]}</b>: ${fmt(pts[i][1])} Todesfälle`; tip.style.display = "block";
+    tip.style.left = Math.min((m.l + i * bw) * r.width / W + 10, r.width - tip.offsetWidth - 4) + "px"; tip.style.top = "8px";
+  });
+  svg.addEventListener("mouseleave", () => tip.style.display = "none");
+}
+
+// ---------- charts ----------
+(async function () {
+  try {
+    const [bil, reg, mort, herz, le, ypll, suiz] = await Promise.all([
+      csv("daten/bfs_bilanz_gr.csv"), csv("daten/bfs_bilanz_regionen_gr.csv"), csv("daten/obsan_mortalitaet_kantone.csv"),
+      csv("daten/obsan_herzkreislauf_kantone.csv"), csv("daten/obsan_lebenserwartung_kantone.csv"),
+      csv("daten/obsan_ypll_kantone.csv"), csv("daten/obsan_suizid_kantone.csv")]);
+    const ab = await (await fetch("daten/abrufdatum.txt")).text();
+    const m = ab.match(/Abgerufen: (\d{4})-(\d\d)-(\d\d)/);
+    if (m) document.getElementById("stand").textContent = `Daten abgerufen am ${+m[3]}.${+m[2]}.${m[1]} · Obsan-Stand 22.12.2025`;
+
+    const yearOf = j => /^\d{4}-\d{2}$/.test(j) ? +j.slice(0, 4) + 4 : +j;
+    const ser = (rows, kanton, cat = "", sex = "Total") => rows
+      .filter(r => r.kanton === kanton && (r.kategorie || "") === cat && r.geschlecht === sex && r.wert)
+      .map(r => [yearOf(r.jahr), +r.wert]).sort((a, b) => a[0] - b[0]);
+    // "1998-02" = 5-year window 1998-2002, plotted at its last year
+
+    // 1 Schere
+    const geb = bil.map(r => [+r.jahr, +r.lebendgeburten]), tod = bil.map(r => [+r.jahr, +r.todesfaelle]);
+    register(() => lineChart(document.getElementById("c-schere"), {
+      series: [{ name: "Geburten", color: C.geb, pts: geb }, { name: "Todesfälle", color: C.tod, pts: tod }],
+      area: { a: 0, b: 1 }, yZero: true,
+      xTicks: document.getElementById("c-schere").clientWidth < 460 ? [1971, 1990, 2010, 2025] : [1971, 1980, 1990, 2000, 2010, 2020, 2025] }));
+
+    // 2 Tote + Risiko
+    register(() => barsV(document.getElementById("c-tote"), tod.filter(p => p[0] >= 1998 && p[0] <= 2025), "#b9c6cf", 2022));
+    register(() => lineChart(document.getElementById("c-mort"), {
+      series: [{ name: "Schweiz", color: C.ch, dash: true, pts: ser(mort, "Schweiz") }, { name: "GR", color: C.gr, pts: ser(mort, "Graubünden") }],
+      yZero: true }));
+
+    // 3 Regionen
+    register(() => {
+      const host = document.getElementById("c-reg"); host.innerHTML = "";
+      const agg = {};
+      reg.forEach(r => {
+        const y = +r.jahr, k = r.region.replace(/^Region /, "");
+        agg[k] = agg[k] || { g: 0, t: 0, p: 0 };
+        if (y >= 2016 && y <= 2025) { agg[k].g += +r.lebendgeburten; agg[k].t += +r.todesfaelle; }
+        if (y === 2025) agg[k].p = +r.bestand_1jan;
+      });
+      const rows = Object.entries(agg).map(([k, v]) => ({ k, s: v.g - v.t, r: (v.g - v.t) / v.p * 1000 })).sort((a, b) => b.r - a.r);
+      const W = Math.max(280, host.clientWidth), rh = 30, lab = W < 460 ? 128 : 220, H = rows.length * rh + 24;
+      const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, host);
+      const mn = Math.min(...rows.map(r => r.r)), mx = Math.max(...rows.map(r => r.r)), span = mx - mn;
+      const x0 = lab, x1 = W - 52, d0 = mn - span * 0.16, d1 = mx + span * 0.16, X = v => x0 + (x1 - x0) * (v - d0) / (d1 - d0);
+      niceTicks(mn, mx, W < 460 ? 3 : 5).forEach(v => { el("line", { x1: X(v), x2: X(v), y1: 0, y2: H - 20, stroke: v === 0 ? C.ink3 : C.rule }, svg); txt(svg, X(v), H - 4, fmt(v), { "text-anchor": "middle" }); });
+      rows.forEach((r, i) => {
+        const y = i * rh + 4;
+        const name = W < 460 ? r.k.replace("Engiadina Bassa/Val Müstair", "Engiadina B./V. Müstair") : r.k;
+        txt(svg, lab - 8, y + 17, name, { "text-anchor": "end", fill: C.ink, "font-size": W < 460 ? 12 : 14 });
+        el("rect", { x: Math.min(X(0), X(r.r)), y: y + 4, width: Math.abs(X(r.r) - X(0)), height: rh - 10, fill: r.r < 0 ? C.neg : C.pos, opacity: 0.9 }, svg);
+        // value inside the bar when there is room, otherwise just outside its end
+        const inside = Math.abs(X(r.r) - X(0)) > 46;
+        const vx = r.r < 0 ? (inside ? X(r.r) + 5 : X(r.r) - 5) : (inside ? X(r.r) - 5 : X(r.r) + 5);
+        const anchor = (r.r < 0) === inside ? "start" : "end";
+        txt(svg, vx, y + 17, fmt(r.r, 1), { "text-anchor": anchor, fill: inside ? "#fff" : C.ink, "font-weight": 700 });
+        txt(svg, W - 2, y + 17, (r.s > 0 ? "+" : "") + fmt(r.s), { "text-anchor": "end", fill: C.ink3 });
+      });
+    });
+
+    // 6 Kantone (mean 2020-2024, min/max range)
+    register(() => {
+      const host = document.getElementById("c-kant"); host.innerHTML = "";
+      const by = {};
+      mort.filter(r => r.geschlecht === "Total" && +r.jahr >= 2020 && +r.jahr <= 2024).forEach(r => (by[r.kanton] = by[r.kanton] || []).push(+r.wert));
+      const rows = Object.entries(by).map(([k, v]) => ({ k, m: v.reduce((a, b) => a + b) / v.length, lo: Math.min(...v), hi: Math.max(...v) })).sort((a, b) => b.m - a.m);
+      const W = Math.max(280, host.clientWidth), rh = 22, lab = W < 460 ? 120 : 170, H = rows.length * rh + 24;
+      const svg = el("svg", { viewBox: `0 0 ${W} ${H}` }, host);
+      const lo = 650, hi = 1000, X = v => lab + (W - lab - 52) * (v - lo) / (hi - lo);
+      niceTicks(lo, hi, 4).forEach(v => { el("line", { x1: X(v), x2: X(v), y1: 0, y2: H - 20, stroke: C.rule }, svg); txt(svg, X(v), H - 4, fmt(v), { "text-anchor": "middle" }); });
+      rows.forEach((r, i) => {
+        const y = i * rh + 12, hl = r.k === "Graubünden", ch = r.k === "Schweiz";
+        const col = hl ? C.gr : ch ? C.ink : "#8c9aa5";
+        if (hl || ch) el("rect", { x: 0, y: y - 10, width: W, height: rh - 1, fill: hl ? "#e7f1f8" : "#f1f3f5" }, svg);
+        txt(svg, lab - 8, y + 4, r.k, { "text-anchor": "end", fill: hl || ch ? C.ink : C.ink2, "font-weight": hl || ch ? 700 : 400, "font-size": W < 460 ? 12 : 13.5 });
+        el("line", { x1: X(r.lo), x2: X(r.hi), y1: y, y2: y, stroke: col, "stroke-width": 2, opacity: 0.35 }, svg);
+        el("circle", { cx: X(r.m), cy: y, r: hl || ch ? 6 : 4.5, fill: col }, svg);
+        txt(svg, W - 2, y + 4, fmt(r.m), { "text-anchor": "end", fill: hl || ch ? C.ink : C.ink3, "font-weight": hl || ch ? 700 : 400 });
+      });
+    });
+
+    // 7 Herz
+    register(() => lineChart(document.getElementById("c-herz"), {
+      series: [{ name: "Schweiz", color: C.ch, dash: true, pts: ser(herz, "Schweiz", "Mortalitätsrate") },
+               { name: "GR", color: C.gr, pts: ser(herz, "Graubünden", "Mortalitätsrate") }], yZero: true }));
+
+    // 8 Lebenserwartung
+    ["Frauen", "Männer"].forEach(sex => register(() => lineChart(document.getElementById(sex === "Frauen" ? "c-le-f" : "c-le-m"), {
+      series: [{ name: "Schweiz", color: C.ch, dash: true, pts: ser(le, "Schweiz", "bei der Geburt", sex) },
+               { name: "GR", color: C.gr, pts: ser(le, "Graubünden", "bei der Geburt", sex) }],
+      yDec: 1, yMin: 75, h: 240 })));
+
+    // 9 YPLL
+    register(() => lineChart(document.getElementById("c-ypll"), {
+      series: [{ name: "Schweiz", color: C.ch, dash: true, pts: ser(ypll, "Schweiz") }, { name: "GR", color: C.gr, pts: ser(ypll, "Graubünden") }],
+      yZero: true }));
+
+    // 10 Suizid
+    const S1 = "Suizidrate (exkl. Suizidhilfe)", S2 = "Suizidhilferate";
+    register(() => lineChart(document.getElementById("c-suiz"), {
+      series: [{ name: "CH", color: "#9fbfd6", dash: true, pts: ser(suiz, "Schweiz", S1), label: false, width: 2 },
+               { name: "CH", color: "#f3b48a", dash: true, pts: ser(suiz, "Schweiz", S2), label: false, width: 2 },
+               { name: "Suizid", color: "#0068a4", pts: ser(suiz, "Graubünden", S1), dots: true },
+               { name: "Suizidhilfe", color: "#ee7733", pts: ser(suiz, "Graubünden", S2), dots: true }],
+      yZero: true, yDec: 1, xLabel: y => `${y - 4}–${y}` }));
+  } catch (e) {
+    document.querySelectorAll(".chart").forEach(c => c.innerHTML = `<p class="err">Daten konnten nicht geladen werden (${e.message}). Die Seite muss über einen Webserver geöffnet werden, nicht als Datei.</p>`);
+  }
+})();
+
+// iframes: adjust height to content when same-origin
+function fitFrame(id) {
+  const f = document.getElementById(id);
+  const fit = () => { try { const h = f.contentDocument.body.offsetHeight; if (h > 50) f.style.height = (h + 4) + "px"; } catch (e) {} };
+  f.addEventListener("load", () => { fit(); setInterval(fit, 800); });
+}
+fitFrame("f-uhr"); fitFrame("f-punkte");
+</script>
+</body>
+</html>
