@@ -142,7 +142,7 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
   <p class="sub">Lebendgeburten und Todesfälle der ständigen Wohnbevölkerung, 1971–2025</p>
   <div class="legend"><span><i style="background:var(--geb)"></i>Geburten</span><span><i style="background:var(--tod)"></i>Todesfälle</span></div>
   <div class="chart" id="c-schere"></div>
-  <p class="cap">Fläche orange: Jahre mit mehr Todesfällen als Geburten. Quelle: BFS, Demografische Bilanz nach Kanton
+  <p class="cap">Fläche orange: Jahre mit mehr Todesfällen als Geburten. Quelle: <a href="https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_101/">BFS, Demografische Bilanz nach Kanton</a>
     (<code>px-x-0102020000_101</code>). Daten: <a href="daten/bfs_bilanz_gr.csv">bfs_bilanz_gr.csv</a></p>
 </section>
 
@@ -156,7 +156,7 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
       <div class="chart" id="c-mort"></div></div>
   </div>
   <p class="cap">Die Standardisierung rechnet die Sterblichkeit auf eine einheitliche Altersstruktur um (Europäische Standardbevölkerung 2010).
-    So wird sichtbar, ob das Risiko zu sterben steigt oder nur die Zahl der alten Menschen. Quellen: BFS (<code>px-x-0102020000_101</code>), Obsan-Indikator
+    So wird sichtbar, ob das Risiko zu sterben steigt oder nur die Zahl der alten Menschen. Quellen: <a href="https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_101/">BFS</a> (<code>px-x-0102020000_101</code>), Obsan-Indikator
     <a href="https://ind.obsan.admin.ch/indicator/obsan/mortalitaet-und-todesursachen">Mortalität und Todesursachen</a>.
     Daten: <a href="daten/bfs_bilanz_gr.csv">bfs_bilanz_gr.csv</a>, <a href="daten/obsan_mortalitaet_kantone.csv">obsan_mortalitaet_kantone.csv</a></p>
 </section>
@@ -166,7 +166,7 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
   <p class="sub">Geburten minus Todesfälle 2016–2025, pro 1000 Einwohner (Bestand am 1. Januar 2025)</p>
   <div class="chart" id="c-reg"></div>
   <p class="cap">Zahl rechts: absoluter Saldo 2016–2025. Die Summe der elf Regionen entspricht exakt dem Kantonstotal (geprüft für 1981, 2000, 2025).
-    Quelle: BFS, Demografische Bilanz nach institutionellen Gliederungen (<code>px-x-0102020000_201</code>).
+    Quelle: <a href="https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_201/">BFS, Demografische Bilanz nach institutionellen Gliederungen</a> (<code>px-x-0102020000_201</code>).
     Daten: <a href="daten/bfs_bilanz_regionen_gr.csv">bfs_bilanz_regionen_gr.csv</a></p>
 </section>
 
@@ -190,7 +190,7 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
   <p class="sub">Standardisierte Sterblichkeit pro 100 000, Mittelwert der Jahre 2020–2024</p>
   <div class="chart" id="c-kant"></div>
   <p class="cap">Mittelwert der fünf Jahresraten, eigene Berechnung. Die Linie zeigt den Bereich der fünf Jahreswerte; in kleinen Kantonen schwanken sie stark.
-    Quelle: Obsan, Mortalität. Daten: <a href="daten/obsan_mortalitaet_kantone.csv">obsan_mortalitaet_kantone.csv</a></p>
+    Quelle: Obsan, <a href="https://ind.obsan.admin.ch/indicator/obsan/mortalitaet-und-todesursachen">Mortalität und Todesursachen</a>. Daten: <a href="daten/obsan_mortalitaet_kantone.csv">obsan_mortalitaet_kantone.csv</a></p>
 </section>
 
 <section id="herz">
@@ -261,7 +261,7 @@ table.src code{font-size:12.5px; background:var(--rule-soft); padding:1px 4px; b
     <li>Alle Obsan-Werte beruhen auf der Todesursachenstatistik (CoD) des BFS und STATPOP, Wohnbevölkerung des Kantons. Standardisierung: Europäische Standardbevölkerung 2010.</li>
     <li>Gegenprobe: Die Obsan-Fallzahlen 2023/2024 (1866/1867) stimmen mit den BFS-Todesfällen überein.</li>
     <li>Kantonsmittel 2020–2024 = einfacher Durchschnitt der fünf Jahresraten (eigene Berechnung, nicht vom Obsan ausgewiesen).</li>
-    <li>Todesursachen 2022 sind <b>hochgerechnet</b> (Anteile × Fallzahl). Offen: ob «Suizide» im Obsan-Report assistierte Suizide enthält – Anfrage an obsan@bfs.admin.ch.</li>
+    <li>Todesursachen 2022 sind <b>hochgerechnet</b> (Anteile × Fallzahl). «Suizide» in G 2.4 enthält keine assistierten Suizide (schriftliche Auskunft Obsan, eingegangen bis 10.11.2026).</li>
     <li>Suizidzahlen sind 5-Jahres-Mittel; einzelne Jahre weist das Obsan für Kantone nicht aus.</li>
     <li>Statistische Sicherheit: Für Graubünden liefert das Obsan 95%-Vertrauensintervalle (Spalten <code>ki_unten</code>, <code>ki_oben</code>).
       Gesichert sind nur Unterschiede, bei denen der Schweizer Wert ausserhalb dieses Bereichs liegt: 2020 (tiefere Sterblichkeit) und

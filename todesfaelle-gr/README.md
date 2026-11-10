@@ -58,7 +58,9 @@ Einbettung der Uhr:
 - **Todesursachen-Verteilung GR nach Jahr** (Krebs, Herz-Kreislauf, Unfälle, Demenz …): nur als
   Momentaufnahme 2022 im Obsan-Gesundheitsreport GR 2025, Grafik G 2.4, S. 35
   ([PDF](https://www.gr.ch/DE/institutionen/verwaltung/djsg/ga/ueberuns/leitbilder/Documents/OBSAN-Gesundheitsreport-GR-2025.pdf)).
-  Zeitreihe nur per Anfrage bei Obsan/BFS.
+  Zeitreihe nur per Anfrage: Laut Obsan (Auskunft bis 10.11.2026) zuständig ist die
+  Todesursachenstatistik CoD des BFS, gesundheit@bfs.admin.ch. Kantonale Analysen sind nur bis 2004 publiziert.
+  Ebenfalls laut Obsan: «Suizide» in G 2.4 enthält keine assistierten Suizide.
 - Schweiz-weit nach Hauptursache 1995–2024: Obsan-Indikator «Mortalität durch NCD».
 - Historisch: BFS `hs-d-14.03.03.02.03.26` (Todesursachen nach Kantonen 1876–1935), nicht geprüft.
 

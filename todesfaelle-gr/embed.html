@@ -22,6 +22,7 @@ body{font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif; 
   padding:5px 8px; font-size:13px; line-height:1.35; box-shadow:0 2px 6px rgba(20,32,42,.12); white-space:nowrap; display:none; z-index:2}
 .err{color:#b5001e; font-size:14px}
 .src{font-size:12px; line-height:1.35; color:#71838f; margin:6px 0 0; padding-top:5px; border-top:1px solid #eef2f5}
+.src a{color:inherit; text-decoration:underline}
 </style>
 </head>
 <body>
@@ -33,21 +34,27 @@ window.EMBED_FILL = true;
 const ALLOWED = ["schere", "tote", "mort", "reg", "kant", "herz", "le", "le-f", "le-m", "ypll", "suiz"];
 const c = new URLSearchParams(location.search).get("c");
 const slot = document.getElementById("slot");
-const OBSAN = "Obsan (BFS – Todesursachenstatistik, STATPOP)";
+// Source lines link to the original tables/indicators (static strings, safe for innerHTML).
+const a = (href, text) => '<a href="' + href + '" target="_blank" rel="noopener">' + text + "</a>";
+const IND = "https://ind.obsan.admin.ch/indicator/";
+const BFS_BIL = a("https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_101/", "BFS, Demografische Bilanz nach Kanton");
+const ob = (path, text) => a(IND + path, text) + " (BFS – Todesursachenstatistik, STATPOP)";
+const MORT = ob("obsan/mortalitaet-und-todesursachen", "Obsan, Mortalität");
+const LE = ob("obsan/lebenserwartung", "Obsan, Lebenserwartung");
 const SRC = {
-  "schere": "Quelle: BFS, Demografische Bilanz nach Kanton",
-  "tote": "Quelle: BFS, Demografische Bilanz nach Kanton",
-  "mort": "Quelle: " + OBSAN + ". Standardisiert auf die Europäische Standardbevölkerung 2010",
-  "reg": "Quelle: BFS, Demografische Bilanz nach institutionellen Gliederungen; eigene Berechnung",
-  "kant": "Quelle: " + OBSAN + ". Mittelwert 2020–2024: eigene Berechnung",
-  "herz": "Quelle: Obsan/MonAM (BFS – Todesursachenstatistik, STATPOP)",
-  "le": "Quelle: " + OBSAN,
-  "le-f": "Quelle: " + OBSAN,
-  "le-m": "Quelle: " + OBSAN,
-  "ypll": "Quelle: " + OBSAN,
-  "suiz": "Quelle: " + OBSAN + ". Hilfe in Krisen: Die Dargebotene Hand, Telefon 143",
+  "schere": "Quelle: " + BFS_BIL,
+  "tote": "Quelle: " + BFS_BIL,
+  "mort": "Quelle: " + MORT + ". Standardisiert auf die Europäische Standardbevölkerung 2010",
+  "reg": "Quelle: " + a("https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_201/", "BFS, Demografische Bilanz nach institutionellen Gliederungen") + "; eigene Berechnung",
+  "kant": "Quelle: " + MORT + ". Mittelwert 2020–2024: eigene Berechnung",
+  "herz": "Quelle: " + ob("monam/herz-kreislauf-erkrankungen-hospitalisierung-und-mortalitaet", "Obsan/MonAM, Herz-Kreislauf-Erkrankungen"),
+  "le": "Quelle: " + LE,
+  "le-f": "Quelle: " + LE,
+  "le-m": "Quelle: " + LE,
+  "ypll": "Quelle: " + ob("obsan/verlorene-potenzielle-lebensjahre", "Obsan, Verlorene potenzielle Lebensjahre"),
+  "suiz": "Quelle: " + ob("obsan/suizid-und-suizidhilfe", "Obsan, Suizid und Suizidhilfe") + ". Hilfe in Krisen: Die Dargebotene Hand, Telefon 143, " + a("https://www.143.ch", "143.ch"),
 };
-document.getElementById("src").textContent = SRC[c] || "";
+document.getElementById("src").innerHTML = SRC[c] || "";
 if (ALLOWED.includes(c)) slot.id = "c-" + c;
 else slot.innerHTML = '<p class="err">Unbekannte Grafik. Parameter c= einer von: ' + ALLOWED.join(", ") + "</p>";
 </script>

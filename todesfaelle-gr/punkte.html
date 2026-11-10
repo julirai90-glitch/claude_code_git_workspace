@@ -54,6 +54,7 @@ svg circle{transition:fill .35s ease, opacity .35s ease}
 html.embed h1, html.embed .intro, html.embed .note{display:none}
 .src-embed{display:none; font-size:12px; line-height:1.35; color:#71838f; margin:10px 0 0; padding-top:5px; border-top:1px solid #eef2f5}
 html.embed .src-embed{display:block}
+.src-embed a{color:inherit; text-decoration:underline}
 html.embed .wrap{padding-top:4px}
 </style>
 </head>
@@ -79,7 +80,7 @@ html.embed .wrap{padding-top:4px}
     <button id="next" type="button" class="primary">Weiter</button>
   </div>
 
-  <p class="src-embed">Anzahlen hochgerechnet aus Anteilen, gerundet. Quelle: Obsan, Gesundheit im Kanton Graubünden (2025); BFS</p>
+  <p class="src-embed">Anzahlen hochgerechnet aus Anteilen, gerundet. Quelle: <a href="https://www.gr.ch/DE/institutionen/verwaltung/djsg/ga/ueberuns/leitbilder/Documents/OBSAN-Gesundheitsreport-GR-2025.pdf" target="_blank" rel="noopener">Obsan, Gesundheit im Kanton Graubünden (2025)</a>, Grafik G 2.4; <a href="https://www.pxweb.bfs.admin.ch/pxweb/de/px-x-0102020000_101/" target="_blank" rel="noopener">BFS</a></p>
   <p class="note">Anzahl je Ursache hochgerechnet aus den Anteilen im Obsan-Gesundheitsreport Graubünden 2025
     (Grafik G 2.4, Werte auf eine Nachkommastelle gerundet) und der Zahl der Todesfälle von Frauen (975)
     und Männern (1020). Die Zahlen sind deshalb als «rund» zu lesen; Abweichungen um wenige Fälle sind möglich.
@@ -103,7 +104,7 @@ const CATS = [
   { k: "Unfälle", n: 94, c: "#ddaa33",
     t: "Alle Unfallarten zusammen, etwa Stürze und Verkehrsunfälle." },
   { k: "Suizide", n: 27, c: "#cc3311",
-    t: "Der Anteil ist bei Männern rund doppelt so hoch wie bei Frauen." },
+    t: "Ohne assistierte Suizide. Der Anteil ist bei Männern rund doppelt so hoch wie bei Frauen." },
   { k: "Infektionskrankheiten (ohne Covid-19)", n: 24, c: "#33bbee", t: "" },
   { k: "Alkoholische Leberzirrhose", n: 15, c: "#aa4499", t: "" },
   { k: "Übrige Todesursachen", n: 558, c: "#8c9aa5",
