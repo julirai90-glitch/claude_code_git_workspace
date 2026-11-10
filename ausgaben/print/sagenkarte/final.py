@@ -35,7 +35,7 @@ P={
 '30':(2782316,1197902,X,'Fänggastein (Schreibvariante)'),
 '31':(2785498,1200514,A,'Massiv Madrisa (Madrisahorn nicht einzeln gefunden)'),
 '32':(2805650,1179088,X,'Lai dal Dragun'),
-'33':(2740122,1191668,O,'Dorf Flims'),
+'33':(2737300,1195300,O,'Ungefähr: Grat hinter Plaun Segnas (Lageangabe gemäss Buch, ungeprüft)'),
 '34':(2791221,1163737,A,'Crap Samson'),
 '35':(2735926,1195816,X,'Martinsloch'),
 '36':(2702138,1170860,O,'Dorf Sedrun'),
@@ -51,7 +51,7 @@ P={
 '46':(2743481,1171672,O,'Safien Platz (swisstopo-«Unghürboden» liegt in Klosters)'),
 '47':(2796107,1187767,X,'Unghürhörner'),
 '48':(2781679,1141246,X,'Lej Sgrischus'),
-'49':(2762100,1180790,O,'Dorf Parpan'),
+'49':(2763474,1164238,O,'Dorf Parsonz (Korrektur: nicht Parpan, ungeprüft)'),
 '50':(2749467,1157328,O,'Dorf Sufers'),
 '51':(2796866,1135011,A,'Val Tempesta (Tal, kein See gefunden)'),
 '52':(2765679,1180331,X,'Totseeli'),
@@ -66,6 +66,9 @@ P={
 '61':(2762767,1164682,A,'Val da Morts (Schreibvariante)'),
 }
 out=[]
+rows.pop('2')  # Nr. 2 = Nr. 44 (gleicher Fels, gemäss Buch, ungeprüft)
+rows['44'].update(name='Crap Sgnè / Platta da las Strias',bedeutung='Felsplatte mit prähistorischen Schalen und Zeichen; volkstümlich «Platte der Hexen»',ort_buch='Tarasp')
+rows['49']['ort_buch']='Parsonz'
 for i,r in rows.items():
     E,N,s,b=P[i]
     h=None

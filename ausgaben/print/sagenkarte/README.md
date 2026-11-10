@@ -21,7 +21,8 @@
 Höhenstreifen: nur `exakt` + `ähnlich` (37 Punkte); Median pro Kategorie ab 3 Werten. Richtstätten: nur 1 Höhenwert.
 
 **Offen / prüfen**
-- Alle 24 «nur Ort»-Einträge: genaue Lage im Buch nachschlagen (Seite/Beschreibung)
+- 23 «nur Ort»-Einträge: genaue Lage im Buch nachschlagen
+- Korrekturen vom 10.11. (aus KI-Antwort, am gedruckten Buch zu prüfen): Nr. 2 = Nr. 44 zusammengeführt (Crap Sgnè / Platta da las Strias, KUL); Nr. 49 nach Parsonz; Nr. 33 ungefähr auf Grat hinter Plaun Segnas
 - Widerspruch Diavolezza: Buch (gemäss Liste) leitet von *diavel* ab; andere Deutung: Sage der Bergfee
 - Nr. 26 Cuvels da las Dialas (Tarasp) ≠ swisstopo «Fora da las Dialas» bei Scuol?
 - Nr. 46 Unghürboda (Safien): swisstopo kennt nur «Unghürboden» in Klosters

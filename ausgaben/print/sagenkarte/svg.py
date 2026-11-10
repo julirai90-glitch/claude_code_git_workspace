@@ -14,7 +14,7 @@ o=[f'<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBo
  '<g id="hilfslinie-bund"><line x1="210" y1="0" x2="210" y2="297" stroke="#ccc" stroke-width="0.2" stroke-dasharray="2 2"/></g>']
 # Titel
 o+=['<g id="titel">','<text x="12" y="18" font-size="11" font-weight="700" fill="#1a1a1a">Wo der Teufel wohnt</text>',
- '<text x="12" y="25.5" font-size="4.2" fill="#555">61 Orts-, Flur- und Bergnamen in Graubünden, die von Hexen, Teufeln, Feen, Galgen und heidnischen Kulten erzählen</text>','</g>']
+ '<text x="12" y="25.5" font-size="4.2" fill="#555">60 Orts-, Flur- und Bergnamen in Graubünden, die von Hexen, Teufeln, Feen, Galgen und heidnischen Kulten erzählen</text>','</g>']
 # Karte
 d=''
 for poly in K:

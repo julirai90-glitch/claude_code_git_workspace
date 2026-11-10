@@ -1,6 +1,5 @@
 id,name,kategorie,gemeinde_buch,bedeutung,E_LV95,N_LV95,hoehe_m,verortung,swisstopo_objekt_bemerkung
 1,Crap la Stroia,HEX,Lantsch/Lenz,«Fels der Hexe» (stroia = Hexe),2763269,1175182,,nur Ort,Dorf Lantsch/Lenz
-2,Platta da las Strias,HEX,Tarasp / Ardez,"«Platte der Hexen», Felsplatte mit prähistorischen Schalensteinen",2815409,1184603,,nur Ort,Dorf Tarasp
 3,Peis da la Stria,HEX,Waltensburg/Vuorz,"«Füsse der Hexe», Felsvertiefungen",2727924,1181840,,nur Ort,Dorf Waltensburg/Vuorz
 4,Peidra da la Tschinch Dainta,HEX,Zuoz,"«Stein der fünf Finger», vermeintliche Hexenabdrücke",2787504,1165182,,nur Ort,Dorf Zuoz
 5,Pleum da Streias,HEX,Rhäzüns,«Hexenwiese»,2749504,1183384,,nur Ort,Dorf Rhäzüns
@@ -31,7 +30,7 @@ id,name,kategorie,gemeinde_buch,bedeutung,E_LV95,N_LV95,hoehe_m,verortung,swisst
 30,Fänggastei,SAG,Saas i. P.,Felsen der Fänggen (Wilde Leute),2782316,1197902,1307,exakt,Fänggastein (Schreibvariante)
 31,Madrisahorn,SAG,Saas i. P.,Nach der Fänggin Madrisa,2785498,1200514,2642,ähnlich,Massiv Madrisa (Madrisahorn nicht einzeln gefunden)
 32,Lai dal Dragun,SAG,Lavin,"Bergsee, von einem Drachen behütet",2805650,1179088,2628,exakt,Lai dal Dragun
-33,Siat Dunschalas,SAG,Flims,"«Sieben Jungfrauen», versteinerte Gratzacken",2740122,1191668,,nur Ort,Dorf Flims
+33,Siat Dunschalas,SAG,Flims,"«Sieben Jungfrauen», versteinerte Gratzacken",2737300,1195300,,nur Ort,"Ungefähr: Grat hinter Plaun Segnas (Lageangabe gemäss Buch, ungeprüft)"
 34,Peidrun da Samson,SAG,Zuoz,"Felsklotz, Samson zugeschrieben",2791221,1163737,2009,ähnlich,Crap Samson
 35,Martinsloch,SAG,Flims,Felsenfenster im Segnesmassiv,2735926,1195816,2677,exakt,Martinsloch
 36,Crap Morder,SAG,Sedrun,"Block im Wildbach, unheimliche Kräfte",2702138,1170860,,nur Ort,Dorf Sedrun
@@ -42,12 +41,12 @@ id,name,kategorie,gemeinde_buch,bedeutung,E_LV95,N_LV95,hoehe_m,verortung,swisst
 41,Tuma Falven,KUL,Domat/Ems,Kultstätte des Jupiter Felvennis,2753707,1188634,623,exakt,Tuma Falveng
 42,Güglia (Julierpass),KUL,Bivio / Silvaplana,Vorrömisches Passheiligtum,2775616,1149018,2277,exakt,Julierpass
 43,Crap Carschenna,KUL,Sils i. D.,Prähistorischer Fels mit Schalen und Gravuren,2754474,1173421,1098,exakt,Crap Carschenna
-44,Crap Sgnè,KUL,Tarasp,Felsplatte mit prähistorischen Zeichen,2815409,1184603,,nur Ort,Dorf Tarasp
+44,Crap Sgnè / Platta da las Strias,KUL,Tarasp,Felsplatte mit prähistorischen Schalen und Zeichen; volkstümlich «Platte der Hexen»,2815409,1184603,,nur Ort,Dorf Tarasp
 45,Unghir Tobel,UNH,Mutten,Unheimliches Tobel,2755777,1172106,1786,exakt,"Unghir Tobel, Thusis (ehem. Mutten)"
 46,Unghürboda,UNH,Safien,«Ungeheuerboden»,2743481,1171672,,nur Ort,Safien Platz (swisstopo-«Unghürboden» liegt in Klosters)
 47,Unghürhörner,UNH,Klosters,«Ungeheuerhörner»,2796107,1187767,2844,exakt,Unghürhörner
 48,Lej Sgrischus,UNH,Sils/Segl,«Schrecklicher See»,2781679,1141246,2618,exakt,Lej Sgrischus
-49,Lai sainza Fons,UNH,Parpan,«Bodenloser See»,2762100,1180790,,nur Ort,Dorf Parpan
+49,Lai sainza Fons,UNH,Parsonz,«Bodenloser See»,2763474,1164238,,nur Ort,"Dorf Parsonz (Korrektur: nicht Parpan, ungeprüft)"
 50,Brüllsee,UNH,Sufers,Bei Gewitter hörte man Unwesen brüllen,2749467,1157328,,nur Ort,Dorf Sufers
 51,Lagh della Tempesta,UNH,Poschiavo,Unwetter-/Hagelsee,2796866,1135011,2805,ähnlich,"Val Tempesta (Tal, kein See gefunden)"
 52,Totseeli,UNH,Arosa,Totensee,2765679,1180331,2394,exakt,Totseeli
