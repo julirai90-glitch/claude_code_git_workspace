@@ -1,0 +1,62 @@
+id	name	suche	ort_buch	gemeinde_tokens	kat	bedeutung
+1	Crap la Stroia	Crap la Stroia	Lantsch/Lenz	lantsch;albula	HEX	«Fels der Hexe» (stroia = Hexe)
+2	Platta da las Strias	Platta da las Strias	Tarasp / Ardez	scuol	HEX	«Platte der Hexen», Felsplatte mit prähistorischen Schalensteinen
+3	Peis da la Stria	Peis da la Stria	Waltensburg/Vuorz	breil	HEX	«Füsse der Hexe», Felsvertiefungen
+4	Peidra da la Tschinch Dainta	Tschinch Dainta	Zuoz	zuoz	HEX	«Stein der fünf Finger», vermeintliche Hexenabdrücke
+5	Pleum da Streias	Streias	Rhäzüns	rhäzüns;rhazuns	HEX	«Hexenwiese»
+6	Hexabödeli	Hexabödeli	Haldenstein	chur;haldenstein	HEX	Waldwiese, Versammlungsort von Hexen
+7	Tanzried	Tanzried	Conters i. P.	conters;klosters	HEX	Riedwiese, Tanzplatz von Hexen und Teufel
+8	Platta dal Barlot	Barlot	Tujetsch	tujetsch	HEX	«Platte des Hexentanzes» (barlot)
+9	Hexentobel	Hexentobel	Klosters	klosters	HEX	Sagenumwobenes Tobel
+10	Piz di Strega	Strega	Rossa	rossa	HEX	«Hexenspitze» (strega)
+11	Strela	Strelapass	Davos	davos;arosa	HEX	Pass, von lat. striga (Hexe)
+12	Val dal Diavel	Val dal Diavel	Zernez	zernez	TEU	«Teufelstal»
+13	Colm digl Diaval	Colm digl Diavel	Tinizong	surses	TEU	«Teufelsberg»
+14	ds Tüfelsch Täli	Tüfelsch Täli	Arosa	arosa	TEU	«Teufelstälchen»
+15	ds Tüfelsch Fridhof	Tüfelsch Fridhof	Sufers	sufers	TEU	«Teufelsfriedhof»
+16	Tüfelstein	Tüfelstein	Klosters	klosters;luzein	TEU	Findling, den der Teufel getragen haben soll
+17	ds Tüfelsch Steina	Tüfelsteina	Vals	vals	TEU	Findling, im Volksglauben Teufelswerk
+18	Crap digl Diavel	Crap digl Diavel	Tinizong	surses	TEU	«Teufelsfels» (Findling)
+19	Crap Giavel	Crap Giavel	Sedrun	tujetsch	TEU	Teufelsblock im Wildbachbett
+20	Tüfelsch Chopf	Tüfelsch Chopf	Pagig	arosa;trimmis	TEU	Felsklotz auf dem Grat
+21	Diavolezza	Diavolezza	Pontresina	pontresina	TEU	Von engad. diavel (Teufel/Teufelin)
+22	in der Hell	Hell	Obersaxen	obersaxen	TEU	«In der Hölle», unwirtliches Gebiet
+23	Höll	Höll	Safien	safiental	TEU	Höllenschlucht
+24	Piz Uffiern	Piz Uffiern	Medel / Tujetsch	medel;tujetsch	TEU	Von lat. infernum (Hölle)
+25	Val d'Infern	Infern	Vicosoprano	bregaglia	TEU	«Höllenmund», «Höllental»
+26	Cuvels da las Dialas	Dialas	Tarasp	scuol	SAG	«Höhlen der Feen» (dialas)
+27	Fora da las Dialas	Fora da las Dialas	Tschierv	val müstair	SAG	«Loch der Feen»
+28	Crap la Diaulta	Diaulta	Ruschein	ilanz	SAG	Feen-/Geisterfelsen
+29	Uldauna	Uldauna	Sumvitg	sumvitg	SAG	uldauna = Waldfee
+30	Fänggastei	Fänggastei	Saas i. P.	klosters	SAG	Felsen der Fänggen (Wilde Leute)
+31	Madrisahorn	Madrisahorn	Saas i. P.	klosters	SAG	Nach der Fänggin Madrisa
+32	Lai dal Dragun	Lai dal Dragun	Lavin	zernez	SAG	Bergsee, von einem Drachen behütet
+33	Siat Dunschalas	Dunschalas	Flims	flims;laax;falera	SAG	«Sieben Jungfrauen», versteinerte Gratzacken
+34	Peidrun da Samson	Samson	Zuoz	zuoz	SAG	Felsklotz, Samson zugeschrieben
+35	Martinsloch	Martinsloch	Flims	flims;elm;glarus	SAG	Felsenfenster im Segnesmassiv
+36	Crap Morder	Crap Morder	Sedrun	tujetsch	SAG	Block im Wildbach, unheimliche Kräfte
+37	Güstizia	Güstizia	Zernez	zernez	RIC	Von lat. iustitia, Richtstatt mit Galgen
+38	Rappengugg	Rappengugg	Zizers / Malans	zizers;malans;igis;landquart	RIC	Bei der ehemaligen Richtstatt
+39	Silva Martis	Luziensteig	Fläsch	fläsch;maienfeld	KUL	Dem Mars geweihter Waldhain
+40	Pedra Sadurna	Sadurna	Mon	albula	KUL	Opferstein für Saturnus
+41	Tuma Falven	Tuma Falveng	Domat/Ems	domat	KUL	Kultstätte des Jupiter Felvennis
+42	Güglia (Julierpass)	Julierpass	Bivio / Silvaplana	surses;silvaplana	KUL	Vorrömisches Passheiligtum
+43	Crap Carschenna	Crap Carschenna	Sils i. D.	sils im domleschg;scharans	KUL	Prähistorischer Fels mit Schalen und Gravuren
+44	Crap Sgnè	Crap Sgnà	Tarasp	scuol	KUL	Felsplatte mit prähistorischen Zeichen
+45	Unghir Tobel	Unghür	Mutten	thusis;mutten	UNH	Unheimliches Tobel
+46	Unghürboda	Unghürboda	Safien	safiental	UNH	«Ungeheuerboden»
+47	Unghürhörner	Unghürhörner	Klosters	klosters	UNH	«Ungeheuerhörner»
+48	Lej Sgrischus	Lej Sgrischus	Sils/Segl	sils/segl;sils im engadin	UNH	«Schrecklicher See»
+49	Lai sainza Fons	sainza Fons	Parpan	churwalden	UNH	«Bodenloser See»
+50	Brüllsee	Brüllsee	Sufers	sufers	UNH	Bei Gewitter hörte man Unwesen brüllen
+51	Lagh della Tempesta	Tempesta	Poschiavo	poschiavo	UNH	Unwetter-/Hagelsee
+52	Totseeli	Totseeli	Arosa	arosa	UNH	Totensee
+53	Lai Mort	Lai Mort	Tinizong	surses	UNH	Totensee
+54	Val da la Malanotg	Malanotg	Portein	cazis	UNH	«Böse Nacht», unheimliche Schlucht
+55	Piz Dieu	Davo Dieu	Sent	scuol	UNH	«Hinter Gott», hinter Gotterbarm
+56	Totalp	Totalp	Davos	davos	UNH	Als «verwünschte» Alp umgedeutet
+57	Geisterstein	Geisterstein	Tschiertschen	chur;tschiertschen	UNH	Felsblock mit Spukerscheinungen
+58	Teurihorn	Teurihorn	Splügen	rheinwald	UNH	Hier mussten verstorbene Ledige büssen
+59	Grip Sunteri	Sunteri	Scuol	scuol	UNH	«Friedhoffels» (sunteri)
+60	Piz Santeri	Santeri	Medel	medel	UNH	Nach Friedhof benannt (coemeterium)
+61	Val digls Morts	Morts	Savognin	surses	UNH	«Tal der Toten»

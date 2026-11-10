@@ -1,0 +1,62 @@
+id,name,kategorie,gemeinde_buch,bedeutung,E_LV95,N_LV95,hoehe_m,verortung,swisstopo_objekt_bemerkung
+1,Crap la Stroia,HEX,Lantsch/Lenz,«Fels der Hexe» (stroia = Hexe),2763269,1175182,,nur Ort,Dorf Lantsch/Lenz
+2,Platta da las Strias,HEX,Tarasp / Ardez,"«Platte der Hexen», Felsplatte mit prähistorischen Schalensteinen",2815409,1184603,,nur Ort,Dorf Tarasp
+3,Peis da la Stria,HEX,Waltensburg/Vuorz,"«Füsse der Hexe», Felsvertiefungen",2727924,1181840,,nur Ort,Dorf Waltensburg/Vuorz
+4,Peidra da la Tschinch Dainta,HEX,Zuoz,"«Stein der fünf Finger», vermeintliche Hexenabdrücke",2787504,1165182,,nur Ort,Dorf Zuoz
+5,Pleum da Streias,HEX,Rhäzüns,«Hexenwiese»,2749504,1183384,,nur Ort,Dorf Rhäzüns
+6,Hexabödeli,HEX,Haldenstein,"Waldwiese, Versammlungsort von Hexen",2759253,1193963,,nur Ort,Dorf Haldenstein
+7,Tanzried,HEX,Conters i. P.,"Riedwiese, Tanzplatz von Hexen und Teufel",2778690,1194620,1899,exakt,"Tanzried, Conters i. P."
+8,Platta dal Barlot,HEX,Tujetsch,«Platte des Hexentanzes» (barlot),2700212,1172438,2246,exakt,Platta dil Barlot (Schreibvariante)
+9,Hexentobel,HEX,Klosters,Sagenumwobenes Tobel,2793841,1191696,,nur Ort,Dorf Klosters
+10,Piz di Strega,HEX,Rossa,«Hexenspitze» (strega),2729846,1139665,,nur Ort,Dorf Rossa
+11,Strela,HEX,Davos,"Pass, von lat. striga (Hexe)",2779943,1187374,2349,exakt,Strelapass
+12,Val dal Diavel,TEU,Zernez,«Teufelstal»,2805985,1167044,2298,exakt,Val dal Diavel
+13,Colm digl Diaval,TEU,Tinizong,«Teufelsberg»,2770482,1160403,2117,exakt,Igl Colm digl Diavel
+14,ds Tüfelsch Täli,TEU,Arosa,«Teufelstälchen»,2772430,1185764,,nur Ort,Dorf Arosa
+15,ds Tüfelsch Fridhof,TEU,Sufers,«Teufelsfriedhof»,2749467,1157328,,nur Ort,Dorf Sufers
+16,Tüfelstein,TEU,Klosters,"Findling, den der Teufel getragen haben soll",2778006,1200839,1388,ähnlich,"Tüfelstein – swisstopo: Gemeinde Luzein, Buch: Klosters"
+17,ds Tüfelsch Steina,TEU,Vals,"Findling, im Volksglauben Teufelswerk",2733918,1166675,1189,exakt,Tüfelsteina
+18,Crap digl Diavel,TEU,Tinizong,«Teufelsfels» (Findling),2770207,1160342,1992,exakt,Igl Crap digl Diavel
+19,Crap Giavel,TEU,Sedrun,Teufelsblock im Wildbachbett,2702138,1170860,,nur Ort,Dorf Sedrun
+20,Tüfelsch Chopf,TEU,Pagig,Felsklotz auf dem Grat,2766582,1193300,2479,exakt,Tüfelsch Chopf
+21,Diavolezza,TEU,Pontresina,Von engad. diavel (Teufel/Teufelin),2794389,1143048,2959,exakt,Diavolezza (Pass)
+22,in der Hell,TEU,Obersaxen,"«In der Hölle», unwirtliches Gebiet",2724633,1176042,,nur Ort,Gemeinde Obersaxen Mundaun
+23,Höll,TEU,Safien,Höllenschlucht,2744788,1178394,1570,exakt,"Höll, Safiental"
+24,Piz Uffiern,TEU,Medel / Tujetsch,Von lat. infernum (Hölle),2711469,1163107,3150,exakt,Piz Uffiern (Medel); zweiter Piz Uffiern in Tujetsch
+25,Val d'Infern,TEU,Vicosoprano,"«Höllenmund», «Höllental»",2768399,1139136,2361,ähnlich,Boca d'Infern (Val d'Infern nicht gefunden)
+26,Cuvels da las Dialas,SAG,Tarasp,«Höhlen der Feen» (dialas),2815409,1184603,,nur Ort,Dorf Tarasp (swisstopo-«Fora da las Dialas» bei Scuol ist ein anderes Objekt?)
+27,Fora da las Dialas,SAG,Tschierv,«Loch der Feen»,2830387,1166897,1322,exakt,"Fora da las Dialas, Val Müstair"
+28,Crap la Diaulta,SAG,Ruschein,Feen-/Geisterfelsen,2733942,1183012,,nur Ort,Dorf Ruschein
+29,Uldauna,SAG,Sumvitg,uldauna = Waldfee,2714374,1175099,,nur Ort,Dorf Sumvitg
+30,Fänggastei,SAG,Saas i. P.,Felsen der Fänggen (Wilde Leute),2782316,1197902,1307,exakt,Fänggastein (Schreibvariante)
+31,Madrisahorn,SAG,Saas i. P.,Nach der Fänggin Madrisa,2785498,1200514,2642,ähnlich,Massiv Madrisa (Madrisahorn nicht einzeln gefunden)
+32,Lai dal Dragun,SAG,Lavin,"Bergsee, von einem Drachen behütet",2805650,1179088,2628,exakt,Lai dal Dragun
+33,Siat Dunschalas,SAG,Flims,"«Sieben Jungfrauen», versteinerte Gratzacken",2740122,1191668,,nur Ort,Dorf Flims
+34,Peidrun da Samson,SAG,Zuoz,"Felsklotz, Samson zugeschrieben",2791221,1163737,2009,ähnlich,Crap Samson
+35,Martinsloch,SAG,Flims,Felsenfenster im Segnesmassiv,2735926,1195816,2677,exakt,Martinsloch
+36,Crap Morder,SAG,Sedrun,"Block im Wildbach, unheimliche Kräfte",2702138,1170860,,nur Ort,Dorf Sedrun
+37,Güstizia,RIC,Zernez,"Von lat. iustitia, Richtstatt mit Galgen",2802138,1178307,1590,exakt,Güstizia
+38,Rappengugg,RIC,Zizers / Malans,Bei der ehemaligen Richtstatt,2761200,1201352,,nur Ort,Dorf Zizers
+39,Silva Martis,KUL,Fläsch,Dem Mars geweihter Waldhain,2758800,1210838,714,ähnlich,St. Luziensteig
+40,Pedra Sadurna,KUL,Mon,Opferstein für Saturnus,2762668,1168784,,nur Ort,Dorf Mon
+41,Tuma Falven,KUL,Domat/Ems,Kultstätte des Jupiter Felvennis,2753707,1188634,623,exakt,Tuma Falveng
+42,Güglia (Julierpass),KUL,Bivio / Silvaplana,Vorrömisches Passheiligtum,2775616,1149018,2277,exakt,Julierpass
+43,Crap Carschenna,KUL,Sils i. D.,Prähistorischer Fels mit Schalen und Gravuren,2754474,1173421,1098,exakt,Crap Carschenna
+44,Crap Sgnè,KUL,Tarasp,Felsplatte mit prähistorischen Zeichen,2815409,1184603,,nur Ort,Dorf Tarasp
+45,Unghir Tobel,UNH,Mutten,Unheimliches Tobel,2755777,1172106,1786,exakt,"Unghir Tobel, Thusis (ehem. Mutten)"
+46,Unghürboda,UNH,Safien,«Ungeheuerboden»,2743481,1171672,,nur Ort,Safien Platz (swisstopo-«Unghürboden» liegt in Klosters)
+47,Unghürhörner,UNH,Klosters,«Ungeheuerhörner»,2796107,1187767,2844,exakt,Unghürhörner
+48,Lej Sgrischus,UNH,Sils/Segl,«Schrecklicher See»,2781679,1141246,2618,exakt,Lej Sgrischus
+49,Lai sainza Fons,UNH,Parpan,«Bodenloser See»,2762100,1180790,,nur Ort,Dorf Parpan
+50,Brüllsee,UNH,Sufers,Bei Gewitter hörte man Unwesen brüllen,2749467,1157328,,nur Ort,Dorf Sufers
+51,Lagh della Tempesta,UNH,Poschiavo,Unwetter-/Hagelsee,2796866,1135011,2805,ähnlich,"Val Tempesta (Tal, kein See gefunden)"
+52,Totseeli,UNH,Arosa,Totensee,2765679,1180331,2394,exakt,Totseeli
+53,Lai Mort,UNH,Tinizong,Totensee,2772125,1163453,2603,exakt,Lai Mort
+54,Val da la Malanotg,UNH,Portein,"«Böse Nacht», unheimliche Schlucht",2749836,1175001,1304,exakt,Val da la Malanotg
+55,Piz Dieu,UNH,Sent,"«Hinter Gott», hinter Gotterbarm",2814972,1196314,2608,exakt,Davo Dieu
+56,Totalp,UNH,Davos,Als «verwünschte» Alp umgedeutet,2781303,1190560,2436,ähnlich,Totalp (Punkt der Sesselbahn)
+57,Geisterstein,UNH,Tschiertschen,Felsblock mit Spukerscheinungen,2766313,1182615,2185,exakt,Geisterstein
+58,Teurihorn,UNH,Splügen,Hier mussten verstorbene Ledige büssen,2744112,1160027,2974,exakt,Teurihorn
+59,Grip Sunteri,UNH,Scuol,«Friedhoffels» (sunteri),2816315,1186069,,nur Ort,Dorf Scuol (swisstopo-«Sunteri Tschanüff» liegt in Valsot)
+60,Piz Santeri,UNH,Medel,Nach Friedhof benannt (coemeterium),2713798,1168188,2880,ähnlich,"Piz Santeri – swisstopo: Gemeinde Sumvitg, Buch: Medel"
+61,Val digls Morts,UNH,Savognin,«Tal der Toten»,2762767,1164682,1439,ähnlich,Val da Morts (Schreibvariante)
