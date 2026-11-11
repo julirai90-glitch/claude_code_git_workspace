@@ -36,7 +36,7 @@ img.leaflet-tile{outline:1px solid transparent}
 #card{background:var(--panel);border-radius:6px;padding:12px 14px;min-height:112px}
 #card h2{margin:0;font-size:19px;line-height:1.2}
 .st{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;margin:3px 0 6px}
-#card p{margin:0;font-size:15px}#card .t{margin-top:6px;font-size:15px;font-weight:600}#card .o{margin-top:5px;font-size:14px;color:var(--muted)}
+#card p{margin:0;font-size:15px}#card .t{margin-top:2px;font-size:15px;font-weight:600}#card .o{margin-top:5px;font-size:14px;color:var(--muted)}#card .x{margin-top:6px}
 details{border-top:1px solid var(--border);padding-top:8px}
 summary{cursor:pointer;font-weight:600;padding:6px 0;min-height:32px}
 .tw{overflow-x:auto;margin-top:6px}
@@ -47,9 +47,17 @@ td:first-child{font-weight:600;white-space:normal}td svg{vertical-align:-2px;mar
 tr.pick{cursor:pointer}
 .src{font-size:13px;color:var(--muted);line-height:1.4;margin:0}.src a{color:inherit}
 details p{font-size:14px;margin:8px 0}
+.more{display:none;margin:0;font-size:14px;font-weight:600}.more a{color:var(--blau)}
+.fix,.fix body{height:100%;overflow:hidden}
+.fix #app{height:100%;gap:8px;padding:2px 0 4px;grid-template-rows:auto auto auto minmax(0,1fr) auto auto auto}
+.fix .dek{font-size:14px;margin-top:4px}
+.fix .mapwrap{min-height:220px;display:flex}.fix #map{height:auto;flex:1}
+.fix #card{height:190px;min-height:0;overflow-y:auto;padding:10px 12px}
+.fix details{display:none}.fix .more{display:block}
 </style>
 </head>
 <body>
+<script>if(/[?&]fix\b/.test(location.search))document.documentElement.classList.add('fix')</script>
 <div id="app">
 <header>
 <h1>Knapp die Hälfte der RhB-Bahnhöfe ist ohne Hilfe nutzbar</h1>
@@ -70,6 +78,7 @@ details p{font-size:14px;margin:8px 0}
 <p>Die Einteilung stammt aus der Tabelle der RhB «Stand BehiG Infrastruktur per Ende 2026» vom 3. November 2026. Die Termine stammen aus der Liste des Bundesamts für Verkehr mit den Angaben der RhB per Ende 2025; bei den vier spätesten Terminen gilt der Stand laut RhB vom Oktober 2026.</p>
 <p>BAV und RhB teilen nicht alle Bahnhöfe gleich ein. Zehn Bahnhöfe, für die das BAV einen Umbau aufführt, stehen bei der RhB unter Ersatzmassnahme, darunter Versam-Safien. Bergün/Bravuogn steht bei der RhB unter Überbrückung, beim BAV unter Ersatzmassnahme ohne Termin. Der geschlossene Bahnhof Alvaneu ist nicht aufgeführt.</p>
 </details>
+<p class="more"><a href="karte.html" target="_blank" rel="noopener">Alle Bahnhöfe als Tabelle, Quellen und Methode ↗</a></p>
 <p class="src">Quellen: <a href="https://www.bav.admin.ch/de/barrierefreiheit" target="_blank" rel="noopener">BAV, Standberichte BehiG 2025 und 2026</a>; Rhätische Bahn, Tabelle vom 3.11.2026 und Auskunft vom Oktober 2026. Stand: 5.11.2026. Karte: swisstopo. Strecken: OpenStreetMap.</p>
 </div>
 <script>/* @preserve
@@ -122,11 +131,12 @@ function draw(){ms.forEach(m=>on[m.s.c]?m.addTo(map):m.remove());if(sel&&!on[sel
 const near=(ll,px)=>{const p=map.latLngToContainerPoint(ll);let best=null,d=px;ms.forEach(m=>{if(!on[m.s.c])return;const q=map.latLngToContainerPoint(m.getLatLng()),x=p.distanceTo(q);if(x<d){d=x;best=m.s}});return best};
 function pick(s,fly){sel=s;ring.setLatLng([s.lat,s.lon]).addTo(map);const c=CAT[s.c];
  let t={autonom:'Ein- und Aussteigen ohne Hilfe und ohne Anmeldung.',umbau:'Bis zum Umbau nur mit Voranmeldung: Hilfe beim Einsteigen, Shuttle oder Halt an einem anderen Gleis.',ersatz:'Ein Umbau nach Behindertengesetz ist laut RhB nicht verhältnismässig, die Ersatzmassnahme kann bestehen bleiben. Nur mit Voranmeldung: Hilfe beim Einsteigen, Shuttle oder Halt an einem anderen Gleis.',keine:'Mit dem Rollstuhl ist hier keine Beförderung vorgesehen. Laut RhB sind an diesen Orten «keine Lösungen möglich, die nur einigermassen verhältnismässig angeboten werden können».'}[s.c];
- let h=`<h2>${esc(s.n)}</h2><div class="st">${sym(s.c,16)}${c.l}</div><p>${t}</p>`;
+ let h=`<h2>${esc(s.n)}</h2><div class="st">${sym(s.c,16)}${c.l}</div>`;
  if(s.done)h+=`<p class="t">${esc(s.done)}</p>`;
  else if(s.ibn){const v=s.neu||s.ibn;h+=`<p class="t">${s.c=='ersatz'?'Wird laut RhB aus anderen Gründen umgebaut (Zustand der Anlage, Betrieb, Sicherheit) und dabei hindernisfrei gemacht. Autonom nutzbar ab':'Autonom nutzbar ab'} ${fm(v)}${s.neu?' (laut RhB, Oktober 2026)':''}</p>`;
   const prev=s.neu?s.ibn:s.alt;if(prev&&prev!=v)h+=`<p class="o">${s.neu?'BAV-Liste 2026':'Vorjahresliste des BAV'}: ${fm(prev)}</p>`}
  if(s.hin)h+=`<p class="o">${esc(s.hin)}</p>`;
+ h+=`<p class="x">${t}</p>`;
  document.getElementById('card').innerHTML=h;
  document.getElementById('q').value='';
  if(fly){map.flyTo([s.lat,s.lon],Math.max(map.getZoom(),FZ),{duration:.6})}size()}
@@ -149,6 +159,7 @@ function size(){if(window.parentIFrame)window.parentIFrame.size()}
 document.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',size));
 draw();table();pick(S.find(s=>s.n=='Versam-Safien'));
 window.addEventListener('resize',()=>{map.invalidateSize()});
+if(window.ResizeObserver)new ResizeObserver(()=>map.invalidateSize()).observe(document.getElementById('map'));
 </script>
 <script>window.iFrameResizer={heightCalculationMethod:"documentElementScroll"};</script>
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>

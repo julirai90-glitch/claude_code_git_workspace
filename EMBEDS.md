@@ -588,3 +588,13 @@ Karte aller 103 RhB-Bahnhöfe nach Umsetzungsstand BehiG. Grundkarte swisstopo, 
 ```
 
 Gemessene Höhen im iframe: 1095 px bei 358 px Breite, 1186 px bei 288 px, 1148 px bei 696 px. Mit offener Tabelle rund 4800 px.
+
+**Ohne Skripts (CMS suedostschweiz.ch):** Modus `?fix` mit fester Höhe. Die Karte füllt den Platz, der übrig bleibt; Tabelle und Methode öffnen als Link in einem neuen Tab.
+
+```html
+<iframe src="https://julirai90-glitch.github.io/claude_code_git_workspace/rhb-bahnhoefe/karte.html?fix"
+  title="Karte: Umsetzungsstand des Behindertengesetzes an den RhB-Bahnhöfen"
+  loading="lazy" style="width:100%; height:1100px; border:none; display:block;"></iframe>
+```
+
+Getestet bei 1100 px: Kartenhöhe 425 px (320 px breit), 509 px (390 px), 609 px (Desktop). Kleinere Höhen funktionieren auch, die Karte wird dann niedriger (Minimum 220 px).
