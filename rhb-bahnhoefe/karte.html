@@ -47,7 +47,8 @@ td:first-child{font-weight:600;white-space:normal}td svg{vertical-align:-2px;mar
 tr.pick{cursor:pointer}
 .src{font-size:13px;color:var(--muted);line-height:1.4;margin:0}.src a{color:inherit}
 details p{font-size:14px;margin:8px 0}
-.more{display:none;margin:0;font-size:14px;font-weight:600}.more a{color:var(--blau)}
+.more{display:none;margin:0}.more button{font:600 15px/1 inherit;font-family:inherit;color:var(--blau);background:#fff;border:1px solid var(--blau);border-radius:5px;height:40px;padding:0 14px;cursor:pointer}
+#list{position:absolute;inset:0;z-index:1100;background:var(--bg);overflow:auto;padding:4px 10px 10px;overscroll-behavior:contain}#list p{font-size:14px;margin:10px 0 0;color:var(--muted)}#list .tw{margin-top:0}#list th{position:sticky;top:0;background:var(--bg)}
 .fix,.fix body{height:100%;overflow:hidden}
 .fix #app{height:100%;gap:8px;padding:2px 0 4px;grid-template-rows:auto auto minmax(0,1fr) auto auto auto}
 .fix .dek{font-size:14px;margin-top:4px}
@@ -74,7 +75,7 @@ details p{font-size:14px;margin:8px 0}
 <p>Die Einteilung stammt aus der Tabelle der RhB «Stand BehiG Infrastruktur per Ende 2026» vom 3. November 2026. Die Termine stammen aus der Liste des Bundesamts für Verkehr mit den Angaben der RhB per Ende 2025; bei den vier spätesten Terminen gilt der Stand laut RhB vom Oktober 2026.</p>
 <p>BAV und RhB teilen nicht alle Bahnhöfe gleich ein. Elf Bahnhöfe, für die das BAV einen Umbau aufführt, stehen bei der RhB unter Ersatzmassnahme, darunter Versam-Safien. Bergün/Bravuogn steht bei der RhB unter Überbrückung, beim BAV unter Ersatzmassnahme ohne Termin. Der geschlossene Bahnhof Alvaneu ist nicht aufgeführt.</p>
 </details>
-<p class="more"><a href="karte.html" target="_blank" rel="noopener">Alle Bahnhöfe als Tabelle, Quellen und Methode ↗</a></p>
+<p class="more"><button id="lb" type="button">Alle Bahnhöfe als Liste</button></p>
 <p class="src">Quellen: <a href="https://www.bav.admin.ch/de/barrierefreiheit" target="_blank" rel="noopener">BAV, Standberichte BehiG 2025 und 2026</a>; Rhätische Bahn, Tabelle vom 3.11.2026 und Auskunft vom Oktober 2026. Stand: 5.11.2026. Karte: swisstopo. Strecken: OpenStreetMap.</p>
 </div>
 <script>/* @preserve
@@ -150,10 +151,12 @@ function table(){document.getElementById('th').innerHTML=cols.map(c=>`<th><butto
  const val=(s,k)=>k=='t'?ym(s):k=='c'?CAT[s.c].l:s.n;
  const r=S.filter(s=>on[s.c]).sort((a,b)=>{const x=val(a,sk),y=val(b,sk);return ((typeof x=='number'?x-y:x.localeCompare(y,'de'))*sd)||a.n.localeCompare(b.n,'de')});
  document.getElementById('tb').innerHTML=r.map(s=>{const w=s.done?'Ende 2026':s.c=='autonom'?'heute':(s.neu||s.ibn)?fm(s.neu||s.ibn):'kein Termin';return `<tr class="pick" data-i="${S.indexOf(s)}"><td>${esc(s.n)}</td><td>${sym(s.c,14)}${{autonom:'Autonom',umbau:'Überbrückung',ersatz:'Ersatz',keine:'Wanderstation'}[s.c]}</td><td>${w}</td></tr>`}).join('');
- document.querySelectorAll('#tb tr').forEach(t=>t.onclick=()=>{pick(S[+t.dataset.i],true);document.querySelector('.mapwrap').scrollIntoView({behavior:'smooth',block:'nearest'})})}
+ document.querySelectorAll('#tb tr').forEach(t=>t.onclick=()=>{if(window.hideList)hideList();pick(S[+t.dataset.i],true);document.querySelector('.mapwrap').scrollIntoView({behavior:'smooth',block:'nearest'})})}
 function size(){if(window.parentIFrame)window.parentIFrame.size()}
 document.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',size));
 draw();table();pick(S.find(s=>s.n=='Versam-Safien'));
+if(document.documentElement.classList.contains('fix')){const ls=document.createElement('div');ls.id='list';ls.hidden=true;ls.append(document.querySelector('#dt .tw'));document.querySelectorAll('#dm p').forEach(x=>ls.append(x));document.querySelector('.mapwrap').append(ls);
+ const lb=document.getElementById('lb');window.hideList=()=>{ls.hidden=true;lb.textContent='Alle Bahnhöfe als Liste'};lb.onclick=()=>{if(ls.hidden){ls.hidden=false;ls.scrollTop=0;lb.textContent='Zurück zur Karte'}else hideList()}}
 window.addEventListener('resize',()=>{map.invalidateSize()});
 if(window.ResizeObserver)new ResizeObserver(()=>map.invalidateSize()).observe(document.getElementById('map'));
 </script>
