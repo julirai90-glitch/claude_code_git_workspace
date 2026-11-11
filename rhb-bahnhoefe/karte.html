@@ -154,7 +154,7 @@ function table(){document.getElementById('th').innerHTML=cols.map(c=>`<th><butto
  document.querySelectorAll('#tb tr').forEach(t=>t.onclick=()=>{if(window.hideList)hideList();pick(S[+t.dataset.i],true);document.querySelector('.mapwrap').scrollIntoView({behavior:'smooth',block:'nearest'})})}
 function size(){if(window.parentIFrame)window.parentIFrame.size()}
 document.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',size));
-draw();table();pick(S.find(s=>s.n=='Versam-Safien'));
+draw();table();document.getElementById('card').innerHTML='<p class="x">Tippen Sie auf einen Punkt oder suchen Sie Ihren Bahnhof.</p>';
 if(document.documentElement.classList.contains('fix')){const ls=document.createElement('div');ls.id='list';ls.hidden=true;ls.append(document.querySelector('#dt .tw'));document.querySelectorAll('#dm p').forEach(x=>ls.append(x));document.querySelector('.mapwrap').append(ls);
  const lb=document.getElementById('lb');window.hideList=()=>{ls.hidden=true;lb.textContent='Alle Bahnhöfe als Liste'};lb.onclick=()=>{if(ls.hidden){ls.hidden=false;ls.scrollTop=0;lb.textContent='Zurück zur Karte'}else hideList()}}
 window.addEventListener('resize',()=>{map.invalidateSize()});
