@@ -594,7 +594,7 @@ Gemessene Höhen im iframe: 1095 px bei 358 px Breite, 1186 px bei 288 px, 1148 
 ```html
 <iframe src="https://julirai90-glitch.github.io/claude_code_git_workspace/rhb-bahnhoefe/karte.html?fix"
   title="Karte: Umsetzungsstand des Behindertengesetzes an den RhB-Bahnhöfen"
-  loading="lazy" style="width:100%; height:1100px; border:none; display:block;"></iframe>
+  loading="lazy" style="width:100%; height:950px; border:none; display:block;"></iframe>
 ```
 
-Getestet bei 1100 px: Kartenhöhe 425 px (320 px breit), 509 px (390 px), 609 px (Desktop). Kleinere Höhen funktionieren auch, die Karte wird dann niedriger (Minimum 220 px).
+Titel und Lead stehen nicht in der Karte, sie kommen aus dem CMS. Getestet bei 1000 px: Kartenhöhe 494 px (320 px breit), 533 px (390 px), 626 px (Desktop). Empfohlen 950 px; kleinere Höhen funktionieren auch, die Karte wird dann niedriger (Minimum 220 px).
