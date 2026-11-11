@@ -119,14 +119,15 @@ map.on('zoomend',()=>{map.getPane('ort').style.display=map.getZoom()>=10.5?'none
 const lats=S.map(s=>s.lat),lons=S.map(s=>s.lon);
 const HOME=L.latLngBounds([Math.min(...lats),Math.min(...lons)],[Math.max(...lats),Math.max(...lons)]);
 const home=()=>map.fitBounds(HOME,{paddingTopLeft:[14,54],paddingBottomRight:[14,14]});
-home();const hz=map.getZoom();map.setMinZoom(hz-.5);map.setMaxBounds(HOME.pad(.45));
+let hz=7,touched=false;const fit=()=>{if(!map.getSize().y)return;map.setMinZoom(5);map.fitBounds(HOME,{paddingTopLeft:[14,54],paddingBottomRight:[14,14],animate:false});hz=map.getZoom();map.setMinZoom(hz-.5);setTimeout(()=>{const r=document.getElementById('reset');if(r)r.hidden=map.getZoom()<=hz+.1},0)};fit();map.setMaxBounds(HOME.pad(.45));
+map.getContainer().addEventListener('pointerdown',()=>{touched=true});map.getContainer().addEventListener('wheel',()=>{touched=true},{passive:true});
 const FZ=14;
 const order={autonom:1,ersatz:2,umbau:3,keine:4};
 const ms=S.map(s=>{const z=s.c=='autonom'?13:15;const m=L.marker([s.lat,s.lon],{interactive:false,keyboard:false,zIndexOffset:order[s.c]*100,icon:L.divIcon({className:'',html:sym(s.c,z),iconSize:[z,z]})});m.s=s;return m});
 let sel=null,ring=L.circleMarker([0,0],{radius:12,color:'#1d2430',weight:2.5,fill:false,interactive:false});
 function draw(){ms.forEach(m=>on[m.s.c]?m.addTo(map):m.remove());if(sel&&!on[sel.c])ring.remove()}
 const near=(ll,px)=>{const p=map.latLngToContainerPoint(ll);let best=null,d=px;ms.forEach(m=>{if(!on[m.s.c])return;const q=map.latLngToContainerPoint(m.getLatLng()),x=p.distanceTo(q);if(x<d){d=x;best=m.s}});return best};
-function pick(s,fly){sel=s;ring.setLatLng([s.lat,s.lon]).addTo(map);const c=CAT[s.c];
+function pick(s,fly){touched=true;sel=s;ring.setLatLng([s.lat,s.lon]).addTo(map);const c=CAT[s.c];
  let t={autonom:'Ein- und Aussteigen ohne Hilfe und ohne Anmeldung.',umbau:'Bis zum Umbau nur mit Voranmeldung: Hilfe beim Einsteigen, Shuttle oder Halt an einem anderen Gleis.',ersatz:'Ein Umbau nach Behindertengesetz ist laut RhB nicht verhältnismässig, die Ersatzmassnahme kann bestehen bleiben. Nur mit Voranmeldung: Hilfe beim Einsteigen, Shuttle oder Halt an einem anderen Gleis.',keine:'Mit dem Rollstuhl ist hier keine Beförderung vorgesehen. Laut RhB sind an diesen Orten «keine Lösungen möglich, die nur einigermassen verhältnismässig angeboten werden können».'}[s.c];
  let h=`<h2>${esc(s.n)}</h2><div class="st">${sym(s.c,16)}${c.l}</div>`;
  if(s.done)h+=`<p class="t">${esc(s.done)}</p>`;
@@ -158,7 +159,8 @@ draw();table();document.getElementById('card').innerHTML='<p class="x">Tippen Si
 if(document.documentElement.classList.contains('fix')){const ls=document.createElement('div');ls.id='list';ls.hidden=true;ls.append(document.querySelector('#dt .tw'));document.querySelectorAll('#dm p').forEach(x=>ls.append(x));document.querySelector('.mapwrap').append(ls);
  const lb=document.getElementById('lb');window.hideList=()=>{ls.hidden=true;lb.textContent='Alle Bahnhöfe als Liste'};lb.onclick=()=>{if(ls.hidden){ls.hidden=false;ls.scrollTop=0;lb.textContent='Zurück zur Karte'}else hideList()}}
 window.addEventListener('resize',()=>{map.invalidateSize()});
-if(window.ResizeObserver)new ResizeObserver(()=>map.invalidateSize()).observe(document.getElementById('map'));
+const refit=()=>{map.invalidateSize();if(!touched)fit()};
+if(window.ResizeObserver)new ResizeObserver(refit).observe(document.getElementById('map'));window.addEventListener('load',refit);
 </script>
 <script>window.iFrameResizer={heightCalculationMethod:"documentElementScroll"};</script>
 <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.3.9/js/iframeResizer.contentWindow.min.js"></script>
