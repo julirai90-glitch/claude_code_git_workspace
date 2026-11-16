@@ -23,6 +23,9 @@ h1{font-size:clamp(22px,5.4vw,28px);line-height:1.15;margin:0;text-wrap:balance}
 #map{height:clamp(390px,112vw,560px);background:#eceef0;font:inherit}
 .search{position:absolute;z-index:800;top:8px;right:8px;width:min(190px,56%)}
 .search input{width:100%;height:40px;padding:0 10px;font-size:16px;border:1px solid #9aa3ad;border-radius:5px;background:#fff;color:var(--text)}
+.search ul{list-style:none;margin:4px 0 0;padding:0;background:#fff;border:1px solid #9aa3ad;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,.2);overflow:hidden}
+.search li{height:38px;line-height:38px;padding:0 10px;font-size:15px;color:#1d2430;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border-top:1px solid #e6e9ec}
+.search li:first-child{border-top:0}.search li[aria-selected=true],.search li:hover{background:#e8eef5}.search li.none{color:#5d6673;cursor:default;background:#fff}
 .reset{position:absolute;z-index:800;bottom:22px;left:8px;height:36px;padding:0 10px;font-size:13px;font-weight:600;font-family:inherit;background:#fff;border:1px solid #9aa3ad;border-radius:5px;color:var(--text);cursor:pointer}
 .hint{position:absolute;z-index:790;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(29,36,48,.86);color:#fff;font-size:14px;padding:8px 12px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
 .hint.on{opacity:1}
@@ -64,7 +67,7 @@ details p{font-size:14px;margin:8px 0}
 <div class="chips" id="chips" role="group" aria-label="Kategorien ein- und ausblenden"></div>
 <div class="mapwrap">
 <div id="map" aria-label="Karte von Graubünden mit RhB-Bahnhöfen. Alle Angaben stehen auch in der Tabelle unter der Karte."></div>
-<form class="search" id="sf" role="search"><input id="q" list="sl" placeholder="Bahnhof suchen" aria-label="Bahnhof suchen" autocomplete="off"><datalist id="sl"></datalist></form>
+<form class="search" id="sf" role="search"><input id="q" placeholder="Bahnhof suchen" aria-label="Bahnhof suchen" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sl"><ul id="sl" role="listbox" aria-label="Vorschläge" hidden></ul></form>
 <button class="reset" id="reset" type="button" hidden>Ganzer Kanton</button>
 <div class="hint" id="hint">Karte mit zwei Fingern bewegen</div>
 </div>
@@ -141,9 +144,22 @@ function pick(s,fly){touched=true;sel=s;ring.setLatLng([s.lat,s.lon]).addTo(map)
 map.on('click',e=>{const s=near(e.latlng,26);if(s)pick(s)});
 if(!touch){const tip=L.tooltip({className:'tip',direction:'top',offset:[0,-8]});map.on('mousemove',e=>{const s=near(e.latlng,16);map.getContainer().style.cursor=s?'pointer':'';if(s){tip.setLatLng([s.lat,s.lon]).setContent(esc(s.n));if(!map.hasLayer(tip))tip.addTo(map)}else if(map.hasLayer(tip))map.removeLayer(tip)})}
 const rs=document.getElementById('reset');rs.onclick=home;map.on('zoomend',()=>{rs.hidden=map.getZoom()<=hz+.1});
-const sl=document.getElementById('sl');sl.innerHTML=[...S].sort((a,b)=>a.n.localeCompare(b.n,'de')).map(s=>`<option value="${esc(s.n)}">`).join('');
-const q=document.getElementById('q');const go=()=>{const v=q.value.trim().toLowerCase();if(!v)return;const s=S.find(x=>x.n.toLowerCase()==v)||S.find(x=>x.n.toLowerCase().startsWith(v))||S.find(x=>x.n.toLowerCase().includes(v));if(s){if(!on[s.c])document.getElementById('c-'+s.c).click();pick(s,true);q.blur()}};
-q.addEventListener('change',go);document.getElementById('sf').addEventListener('submit',e=>{e.preventDefault();go()});
+const sl=document.getElementById('sl');const SN=[...S].sort((a,b)=>a.n.localeCompare(b.n,'de'));
+const q=document.getElementById('q');
+// Own suggestion list: only after >=1 typed letter, max 4 entries (space between field and keyboard is tight)
+let hits=[],cur=-1;
+const close=()=>{sl.hidden=true;sl.innerHTML='';hits=[];cur=-1;q.setAttribute('aria-expanded','false');q.removeAttribute('aria-activedescendant')};
+const render=()=>{const v=q.value.trim().toLowerCase();if(!v){close();return}
+ hits=[...SN.filter(s=>s.n.toLowerCase().startsWith(v)),...SN.filter(s=>!s.n.toLowerCase().startsWith(v)&&s.n.toLowerCase().includes(v))].slice(0,4);
+ sl.innerHTML=hits.length?hits.map((s,i)=>`<li role="option" id="o${i}" aria-selected="${i==cur}">${esc(s.n)}</li>`).join(''):'<li class="none" aria-disabled="true">Kein Bahnhof gefunden</li>';
+ sl.hidden=false;q.setAttribute('aria-expanded','true');if(cur>=0)q.setAttribute('aria-activedescendant','o'+cur);else q.removeAttribute('aria-activedescendant')};
+const choose=s=>{close();if(!on[s.c])document.getElementById('c-'+s.c).click();pick(s,true);q.blur()};
+q.addEventListener('input',()=>{cur=-1;render()});
+q.addEventListener('keydown',e=>{if(e.key=='ArrowDown'&&hits.length){cur=(cur+1)%hits.length;render();e.preventDefault()}else if(e.key=='ArrowUp'&&hits.length){cur=(cur-1+hits.length)%hits.length;render();e.preventDefault()}else if(e.key=='Escape'){close()}else if(e.key=='Enter'&&cur>=0){e.preventDefault();choose(hits[cur])}});
+sl.addEventListener('mousedown',e=>e.preventDefault());
+sl.addEventListener('click',e=>{const li=e.target.closest('li[role=option]');if(li)choose(hits[+li.id.slice(1)])});
+q.addEventListener('blur',()=>setTimeout(close,150));const go=()=>{const v=q.value.trim().toLowerCase();if(!v)return;const s=S.find(x=>x.n.toLowerCase()==v)||S.find(x=>x.n.toLowerCase().startsWith(v))||S.find(x=>x.n.toLowerCase().includes(v));if(s)choose(s)};
+document.getElementById('sf').addEventListener('submit',e=>{e.preventDefault();go()});
 if(touch){const hint=document.getElementById('hint');let tm;const el=map.getContainer();el.addEventListener('touchmove',e=>{if(e.touches.length==1&&map.getZoom()>hz+.1){hint.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>hint.classList.remove('on'),1200)}},{passive:true})}
 const cols=[['n','Bahnhof'],['c','Status'],['t','Autonom ab']];let sk='n',sd=1;
 const ym=s=>{const v=s.neu||s.ibn;if(!v||s.done)return s.c=='autonom'?0:1e6;const[a,b]=v.split('.');return b*12+ +a};
