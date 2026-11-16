@@ -837,6 +837,14 @@ function renderTerrain() {
   if (pano) pano.setTime(state.day, state.minute);
   updateCardNow();
 }
+// keep the panorama slider in step with the main time state (range, value, label)
+function syncPanoTime() {
+  const t2 = $('#time2'), tm = $('#time'); if (!t2) return;
+  t2.min = tm.min; t2.max = tm.max; t2.value = tm.value = state.minute;
+  const p = state.place, lab = $('#time2-val'); if (!p) { lab.textContent = clock(state.minute); return; }
+  const s = sunPosition(t0Of(state.day) + state.minute * 60000, p.la, p.lo), h = horizonAt(p.hz, s.az);
+  lab.textContent = `${clock(state.minute)} · ` + (s.el < -0.27 ? 'Nacht' : s.el > h ? `Sonne ${s.el.toFixed(1).replace('.', ',')}° hoch` : 'Sonne hinter dem Berg');
+}
 let rt = 0;
 function scheduleTerrain() { if (!rt) rt = requestAnimationFrame(() => { rt = 0; renderTerrain(); }); }
 
@@ -943,6 +951,7 @@ function spark() {
   ctx.fillStyle = '#fff'; ctx.fillRect(state.day * bw - .75, 0, 1.5, H);
 }
 function updateCardNow() {
+  syncPanoTime();
   const p = state.place; if (!p) return;
   const s = sunPosition(t0Of(state.day) + state.minute * 60000, p.la, p.lo), h = horizonAt(p.hz, s.az);
   const el = $('#card-now');
@@ -1018,7 +1027,9 @@ function bindControls() {
   const day = $('#day'), tm = $('#time');
   day.max = NDAYS - 1;
   day.addEventListener('input', () => { stop(); setDay(+day.value); });
-  tm.addEventListener('input', () => { stop(); state.minute = +tm.value; scheduleTerrain(); });
+  const setMinute = v => { stop(); state.minute = +v; scheduleTerrain(); };
+  tm.addEventListener('input', () => setMinute(tm.value));
+  $('#time2').addEventListener('input', e => setMinute(e.target.value));
   $('#play').addEventListener('click', () => state.playing ? stop() : play());
   $$('[data-day]').forEach(b => b.addEventListener('click', () => { stop(); const v = b.dataset.day; setDay(v === 'today' ? todayIndex() : dayIndexOf(...v.split('-').map(Number))); }));
   $$('[data-view]').forEach(b => b.addEventListener('click', () => { $$('[data-view]').forEach(x => x.classList.toggle('on', x === b)); pano.setView(b.dataset.view); }));

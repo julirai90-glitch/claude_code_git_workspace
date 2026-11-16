@@ -22,6 +22,10 @@ ok((await txt(pg, '#q-list')).includes('Kein Ort'), 'empty search message');
 for (const v of ['0', '364', '173']) { await pg.$eval('#day', (e, v) => { e.value = v; e.dispatchEvent(new Event('input')); }, v); await pg.waitForTimeout(150); }
 ok(pg.errs.length === 0, 'date slider extremes without errors');
 ok((await txt(pg, '#clock')).startsWith('21. Dezember'), 'day 173 = 21 December');
+await pg.$eval('#time2', e => { e.value = '780'; e.dispatchEvent(new Event('input')); }); await pg.waitForTimeout(200);
+ok((await pg.$eval('#time', e => e.value)) === '780', 'time2 -> time synced');
+await pg.$eval('#time', e => { e.value = '660'; e.dispatchEvent(new Event('input')); }); await pg.waitForTimeout(200);
+ok((await pg.$eval('#time2', e => e.value)) === '660' && (await txt(pg, '#time2-val')).startsWith('11:00'), 'time -> time2 synced, label ' + await txt(pg, '#time2-val'));
 const n0 = (await pg.$$('#gantt .row')).length; await pg.click('#with-ham'); const n1 = (await pg.$$('#gantt .row')).length;
 ok(n1 > n0, `hamlet toggle adds rows (${n0} -> ${n1})`);
 const b = await pg.$eval('#map', e => { const r = e.getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; });
@@ -42,6 +46,9 @@ ok(await pg.$eval('#ort', e => getComputedStyle(e).display === 'none'), 'embed=k
 await pg.close();
 pg = await open(BASE + '?embed=ort#ort=1577255384-chur');
 ok((await txt(pg, '#d-name')) === 'Chur', 'embed=ort shows Chur');
+ok(await pg.$eval('#time2', e => e.offsetParent !== null && e.getBoundingClientRect().height > 0), 'embed=ort: panorama time slider visible');
+await pg.$eval('#time2', e => { e.value = '600'; e.dispatchEvent(new Event('input')); }); await pg.waitForTimeout(200);
+ok((await pg.$eval('#time', e => e.value)) === '600' && (await txt(pg, '#time2-val')).startsWith('10:00'), 'embed=ort: #time2 -> #time = 600, label ' + await txt(pg, '#time2-val'));
 await pg.close();
 pg = await open(BASE, { width: 390, height: 844 });
 ok(await pg.evaluate(() => document.documentElement.scrollWidth <= 390), 'mobile: no horizontal overflow');

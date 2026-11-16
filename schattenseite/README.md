@@ -8,13 +8,17 @@ Saison 1.7.2026–30.6.2027.
 https://julirai90-glitch.github.io/claude_code_git_workspace/schattenseite/
 Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=46.6,9.3`
 
-## Stand (7.11.2026)
+## Stand (16.11.2026)
 
 - Fertig und live: Karte mit Live-Schatten, Ortskarte, Entdeckungen, Horizontpanorama, Sonnenjahr,
   Schattenliste, Methode. Mobil: ein Finger scrollt, zwei Finger verschieben/zoomen.
 - Kernbefunde (Modellrechnung, **vor Publikation vor Ort verifizieren**): Stampa 97 Tage ohne direkte Sonne,
   Bondo 95, Tavanasa 87, Vicosoprano 71 (16.11.–25.1.; SRF Meteo 11.10.2025: «Mitte November» bis «Ende Januar»);
   Chur am 21.12. über Mittag rund 1½ h Schatten (71–108 min je nach Toleranz).
+- Neu am 16.11.: Einstieg mit Chur-Befund (Zahlen aus den Daten gefüllt), Startort Chur statt Stampa,
+  Schattenorte auf der Karte gross/violett/beschriftet, Entdeckungen mobil untereinander, Countdown in der
+  Ortskarte («Noch N Tage bis zur Sonne»), zweiter Uhrzeitregler unter dem Horizontpanorama (`#time2`, synchron
+  mit `#time`), `bundle.js?v=…` in `index.html` (bei Änderungen am Bundle hochzählen).
 - Publikationstermin: **nicht entschieden**. Vorschlag (Claude): Hauptstück um den 21.12., vorher Verifikation /
   Leseraufruf, im Jan./Feb. Folgen zur Rückkehr der Sonne.
 
@@ -24,7 +28,13 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
 2. Rechnen im Web Worker (Ortswahl auf schwachen Handys noch 0,7–1,4 s, blockiert kurz die Seite).
 3. Auf echtem iPhone/Android testen – v. a. Scrollen per Wischen über die Karte (headless nicht testbar).
 4. Footer-Credit «Konzept und Umsetzung: Julian Reich mit Claude (KI)» ist ein Platzhalter.
-5. Optional: Gelände verlustfrei besser komprimieren (1,72 → ~1,39 MB), WebGL-Schatten.
+5. CMS Südostschweiz (Vorschlag, nicht entschieden): Text im CMS, Embeds `?embed=karte` und `?embed=ort`,
+   Link zur ganzen Seite. Mit Webdesigner klären: Iframe-Höhe, Verhalten in der App, Hosting (GitHub-Konto
+   oder Somedia-Server), helle Variante.
+6. Ideen (nicht begonnen): «Die Sonnendiebe» – welcher Berg nimmt welchem Dorf die Sonne, gewichtet mit
+   Einwohnern (swissNAMES3D/OSM-Gipfel + STATPOP-Hektarraster); Rechnung pro Gebäude statt pro Ortspunkt.
+7. Im Bergell liegen die Schattenpunkte so dicht, dass Name und Punkt nicht eindeutig zuordenbar sind.
+8. Optional: Gelände verlustfrei besser komprimieren (1,72 → ~1,39 MB), WebGL-Schatten.
 
 ## Dateien
 
@@ -46,7 +56,8 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
 
 ```
 cd schattenseite/_build
-npm i geotiff@2 suncalc playwright-core   # falls node_modules fehlt
+npm i geotiff@2 suncalc playwright-core   # falls node_modules fehlt (in diesem Klon sind node_modules und
+                                          # cache Verknüpfungen auf ~/claude_code_git_workspace/schattenseite/_build – nicht stagen)
 sh fetch_osm.sh            # Orte + Grenzen (Overpass)
 node fetch_heights.mjs     # Bodenhöhen swisstopo
 node build_dem.mjs         # Gelände + Horizonte, lädt ~150 MB übers Netz, speichert wenig
