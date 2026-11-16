@@ -40,13 +40,14 @@ async function init() {
   });
   map.terrainCanvas = terrain.canvas; map.tdx = terrain.dx; map.tdy = terrain.dy;
   map.dotColor = p => rampColor(dayMinutes.get(p) ?? 0);
+  map.isShadow = p => !(dayMinutes.get(p) ?? 0);
   pano = new Panorama($('#pano'), $('#pano-tip'));
   carpet = new Carpet($('#carpet'), $('#carpet-tip'), d => setDay(d, true));
   bindControls();
   buildLists();
-  // initial selection: hash, else the village with the longest dark period
+  // initial selection: hash, else Chur (strongest story: midday shadow on the shortest day)
   const fromHash = parseHash(byId);
-  const darkest = places.filter(p => p.t !== 'hamlet').sort((a, b) => b.s.dark - a.s.dark)[0];
+  const darkest = byId.get('1577255384') || places.filter(p => p.t !== 'hamlet').sort((a, b) => b.s.dark - a.s.dark)[0];
   setDay(state.day);
   state.minute = solarNoonMinute(state.day) - 90;
   if (fromHash && fromHash.pt) selectPoint(...fromHash.pt, true); else select(fromHash || darkest, { fly: !!fromHash, quiet: true });
@@ -221,6 +222,12 @@ function fillCard() {
   $('#card-flat').textContent = `ohne Berge ${hm(st.flat)}`;
   const dt = darkText(s);
   $('#card-dark').innerHTML = dt ? `<b>${dt.days} Tage</b> ohne direkte Sonne · ${dt.from} bis ${dt.to}` : s.darkHi ? `Knapp: je nach Genauigkeit bis ${s.darkHi} Tage ohne Sonne` : `Jeden Tag des Jahres mindestens kurz Sonne`;
+  const td = todayIndex(), cn = $('#card-count'); let ct = '';
+  if (s.run) {
+    const n = td >= s.run[0] && td <= s.run[1] ? s.run[1] + 1 - td : td < s.run[0] ? s.run[0] - td : -1;
+    if (n >= 0) ct = td >= s.run[0] ? `Noch ${n} ${n === 1 ? 'Tag' : 'Tage'} bis zur Sonne` : n === 0 ? 'Heute verschwindet die Sonne' : n === 1 ? 'Morgen verschwindet die Sonne' : `In ${n} Tagen verschwindet die Sonne`;
+  }
+  cn.textContent = ct;
   updateCardNow(); spark();
 }
 function spark() {
@@ -279,6 +286,10 @@ function writeLead() {
   $('#n-dark').textContent = v.filter(p => p.s.dark > 0).length;
   const top = v.slice().sort((a, b) => b.s.dark - a.s.dark)[0];
   $('#lead-top').innerHTML = `${top.n} (${top.g})`; $('#lead-top-days').textContent = top.s.dark;
+  // hero sentence: same values as the findings below, static text stays as fallback
+  $('#hero-top').textContent = top.n; $('#hero-days').textContent = top.s.dark;
+  const chur = v.find(p => p.n === 'Chur');
+  if (chur && chur.s.d21runs > 1) $('#hero-gap').textContent = spoken(chur.s.d21last + 1 - chur.s.d21first - chur.s.d21);
 }
 function writeToday() {
   const v = places.filter(p => p.t !== 'hamlet'), w = places.filter(p => p.t === 'hamlet');

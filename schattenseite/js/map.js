@@ -125,13 +125,21 @@ export class MapView {
     path(this.cantonPaths); ctx.strokeStyle = 'rgba(235,228,210,.75)'; ctx.lineWidth = 1.3; ctx.stroke();
     // places
     const z = v.s / this.fitS, rad = Math.min(6.5, 3.1 + Math.max(0, Math.log2(z)) * 1.1);
+    const shade = [];
     for (const p of this.places) {
       if (!this.visible(p)) continue;
       const [x, y] = this.toScreen(p.X, p.Y);
       if (x < -10 || y < -10 || x > this.W + 10 || y > this.H + 10) continue;
-      const r = p.t === 'hamlet' ? rad * 0.68 : rad;
-      ctx.beginPath(); ctx.arc(x, y, r, 0, 7);
-      ctx.fillStyle = this.dotColor(p); ctx.fill(); ctx.lineWidth = 1.4; ctx.strokeStyle = 'rgba(6,9,20,.9)'; ctx.stroke();
+      if (this.isShadow && this.isShadow(p)) { shade.push([p, x, y]); continue; }
+      const r = (p.t === 'hamlet' ? rad * 0.68 : rad) * 0.85;
+      ctx.globalAlpha = 0.85; ctx.beginPath(); ctx.arc(x, y, r, 0, 7);
+      ctx.fillStyle = this.dotColor(p); ctx.fill(); ctx.lineWidth = 1.1; ctx.strokeStyle = 'rgba(6,9,20,.85)'; ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    // places without direct sun on the selected day: larger, drawn last (on top)
+    for (const [p, x, y] of shade) {
+      ctx.beginPath(); ctx.arc(x, y, this.shadowR(p, rad), 0, 7);
+      ctx.fillStyle = this.dotColor(p); ctx.fill(); ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(245,240,255,.9)'; ctx.stroke();
     }
     this.drawLabels(ctx, rad);
     if (this.sel) {
@@ -151,22 +159,38 @@ export class MapView {
     ctx.font = '500 11px Inter, system-ui, sans-serif'; ctx.fillStyle = 'rgba(240,236,226,.85)'; ctx.textBaseline = 'bottom';
     ctx.fillText(`${nice / 1000} km`, x + w + 6, y + 4);
   }
+  shadowR(p, rad) { return (p.t === 'hamlet' ? 0.75 : 1) * Math.max(rad * 1.6, 5.5); }
   drawLabels(ctx, rad) {
     const z = this.view.s / this.fitS, boxes = [];
-    const want = this.places.filter(p => p === this.sel || p === this.hover || (this.visible(p) && (p.t === 'town' || (p.pop || 0) > 9000 / z ** 1.6 || (z > 3 && p.t === 'village') || z > 7)));
-    want.sort((a, b) => (b === this.sel || b === this.hover) - (a === this.sel || a === this.hover) || (b.pop || 0) - (a.pop || 0) || (a.t === 'hamlet') - (b.t === 'hamlet'));
+    const want = this.places.filter(p => p === this.sel || p === this.hover || (this.visible(p) && ((p.t !== 'hamlet' && this.isShadow && this.isShadow(p)) || p.t === 'town' || (p.pop || 0) > 9000 / z ** 1.6 || (z > 3 && p.t === 'village') || z > 7)));
+    const sh = p => p.t !== 'hamlet' && this.isShadow && this.isShadow(p);
+    const pri = p => (p === this.sel || p === this.hover) ? 2 : sh(p) ? 1 : 0;
+    want.sort((a, b) => pri(b) - pri(a) || (b.pop || 0) - (a.pop || 0) || (a.t === 'hamlet') - (b.t === 'hamlet'));
     ctx.textBaseline = 'middle';
+    const hit = box => boxes.some(b => !(box[2] < b[0] || box[0] > b[2] || box[3] < b[1] || box[1] > b[3]));
     for (const p of want) {
       const strong = p === this.sel || p === this.hover;
       ctx.font = `${strong ? 600 : 500} ${strong ? 14 : p.t === 'town' ? 13 : 12}px Inter, system-ui, sans-serif`;
       const txt = p === this.hover && this.opts.hoverInfo ? `${p.n} · ${this.opts.hoverInfo(p)}` : p.n;
       const [x, y] = this.toScreen(p.X, p.Y), w = ctx.measureText(txt).width;
-      const bx = x + rad + 5, box = [bx - 2, y - 9, bx + w + 2, y + 9];
-      if (box[2] > this.W || box[0] < 0 || y < 8 || y > this.H - 8) continue;
-      if (!strong && boxes.some(b => !(box[2] < b[0] || box[0] > b[2] || box[3] < b[1] || box[1] > b[3]))) continue;
-      boxes.push(box);
-      ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(8,12,26,.85)'; ctx.lineJoin = 'round'; ctx.strokeText(txt, bx, y);
-      ctx.fillStyle = strong ? '#fff' : 'rgba(240,236,226,.92)'; ctx.fillText(txt, bx, y);
+      const r = this.isShadow && this.isShadow(p) ? this.shadowR(p, rad) : rad;
+      // candidate label anchors [text x, text y, align]; shadow villages may fall back to other sides
+      const cands = [[x + r + 5, y, 'left']];
+      if (sh(p)) cands.push([x - r - 5, y, 'right'], [x - w / 2, y - r - 10, 'left'], [x - w / 2, y + r + 10, 'left'],
+        [x + r, y - r - 10, 'left'], [x - r, y - r - 10, 'right'], [x - w / 2, y - r - 28, 'left'], [x + r, y + r + 10, 'left'], [x - r, y + r + 10, 'right'], [x - w / 2, y + r + 28, 'left']);
+      let placed = null;
+      for (const [tx, ty, al] of cands) {
+        const x0 = al === 'right' ? tx - w : tx, box = [x0 - 2, ty - 9, x0 + w + 2, ty + 9];
+        if (box[2] > this.W || box[0] < 0 || ty < 8 || ty > this.H - 8) continue;
+        if (!strong && hit(box)) continue;
+        placed = [tx, ty, al, box]; break;
+      }
+      if (!placed) continue;
+      boxes.push(placed[3]);
+      ctx.textAlign = placed[2];
+      ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(8,12,26,.85)'; ctx.lineJoin = 'round'; ctx.strokeText(txt, placed[0], placed[1]);
+      ctx.fillStyle = strong ? '#fff' : 'rgba(240,236,226,.92)'; ctx.fillText(txt, placed[0], placed[1]);
     }
+    ctx.textAlign = 'left';
   }
 }

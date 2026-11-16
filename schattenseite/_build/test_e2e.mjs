@@ -12,7 +12,7 @@ async function open(url, vp = { width: 1440, height: 900 }) {
 const txt = (pg, s) => pg.$eval(s, e => e.textContent);
 let pg = await open(BASE);
 ok(pg.errs.length === 0, 'no console errors on load ' + pg.errs.join('; '));
-ok((await txt(pg, '#card-name')) === 'Stampa', 'default place = longest dark period');
+ok((await txt(pg, '#card-name')) === 'Chur', 'default place = Chur');
 ok((await pg.$$('#finds .find')).length >= 4, 'findings rendered');
 await pg.fill('#q', 'bondo'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(500);
 ok((await txt(pg, '#card-name')) === 'Bondo', 'search + Enter selects Bondo');
@@ -31,7 +31,7 @@ await pg.mouse.click(b[0] + 5, b[1] + b[3] - 5); await pg.waitForTimeout(500);
 ok(pg.errs.length === 0, 'click at the map corner does not throw');
 await pg.close();
 pg = await open(BASE + '#ort=999');
-ok((await txt(pg, '#card-name')) === 'Stampa', 'invalid hash falls back');
+ok((await txt(pg, '#card-name')) === 'Chur', 'invalid hash falls back');
 await pg.close();
 pg = await open(BASE + '#punkt=46.6,9.3'); await pg.waitForTimeout(500);
 ok((await txt(pg, '#card-name')).includes('von') || (await txt(pg, '#card-name')).includes('bei'), 'point hash: ' + await txt(pg, '#card-name'));
