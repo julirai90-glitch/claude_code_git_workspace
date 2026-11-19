@@ -208,6 +208,20 @@ async function loadPlaces() {
   return meta;
 }
 
+// Inhabited-hectare layer (data/hectares.js), loaded on demand when the layer is first switched on.
+function loadHectares() {
+  return new Promise((ok, fail) => {
+    if (window.HECTARES_B64) return ok();
+    const s = document.createElement('script'); s.src = 'data/hectares.js?v=' + (window.HECTARES_V || 1);
+    s.onload = () => ok(); s.onerror = fail; document.head.appendChild(s);
+  }).then(async () => {
+    const m = window.HECTARES_META, raw = await gunzipB64(window.HECTARES_B64), n = m.n, out = { meta: m, count: n };
+    const all = new Uint16Array(raw.buffer, raw.byteOffset, raw.byteLength / 2);
+    m.cols.forEach((c, k) => { out[c] = all.subarray(k * n, (k + 1) * n); });
+    return out;
+  });
+}
+
 // ---- terrain.js ----
 // Terrain rendering on the 150 m grid: static relief, live cast shadows for a given sun position.
 
@@ -320,6 +334,21 @@ function norm(v) { const l = Math.hypot(...v); return v.map(x => x / l); }
 // ---- map.js ----
 // Map view: terrain image, boundaries, places, pan/zoom/pinch, hit testing.
 
+// Inhabited-hectare layer: classes of days without direct sun (0, 1-29, 30-59, 60-89, 90+)
+const HECT_CLASSES = [[0, 'rgba(255,200,97,.55)'], [1, '#e2d4f7'], [30, '#bb98ec'], [60, '#9563dc'], [90, '#7333c4']];
+const hectClass = d => d >= 90 ? 4 : d >= 60 ? 3 : d >= 30 ? 2 : d >= 1 ? 1 : 0;
+// swisstopo approximate conversions WGS84 <-> LV95 (accuracy ~1 m)
+function toLV95(lat, lon) {
+  const p = (lat * 3600 - 169028.66) / 10000, l = (lon * 3600 - 26782.5) / 10000;
+  return [2600072.37 + 211455.93 * l - 10938.51 * l * p - 0.36 * l * p * p - 44.54 * l ** 3,
+          1200147.07 + 308807.95 * p + 3745.25 * l * l + 76.63 * p * p - 194.56 * l * l * p + 119.79 * p ** 3];
+}
+function fromLV95(E, N) {
+  const y = (E - 2600000) / 1e6, x = (N - 1200000) / 1e6;
+  return [(16.9023892 + 3.238272 * x - 0.270978 * y * y - 0.002528 * x * x - 0.0447 * y * y * x - 0.0140 * x ** 3) * 100 / 36,
+          (2.6779094 + 4.728982 * y + 0.791484 * y * x + 0.1306 * y * x * x - 0.0436 * y ** 3) * 100 / 36];
+}
+
 class MapView {
   constructor(canvas, G, outline, places, opts) {
     this.cv = canvas; this.ctx = canvas.getContext('2d'); this.G = G; this.outline = outline; this.places = places;
@@ -357,12 +386,12 @@ class MapView {
   fitView() { const v = this.view; this.fit(); const t = this.view; this.view = v; return t; }
   zoomAt(sx, sy, f) {
     const [X, Y] = this.toWorld(sx, sy);
-    const s = Math.min(this.maxS, Math.max(this.minS, this.view.s * f));
+    const s = Math.min(this.maxZ(), Math.max(this.minS, this.view.s * f));
     this.view.s = s; this.view.x = X - (sx - this.W / 2) / s; this.view.y = Y - (sy - this.H / 2) / s;
     this.clamp(); this.draw();
   }
   flyTo(X, Y, s, ms = 700) {
-    const a = { ...this.view }, b = { x: X, y: Y, s: Math.min(this.maxS, Math.max(this.minS, s)) }, t0 = performance.now();
+    const a = { ...this.view }, b = { x: X, y: Y, s: Math.min(this.maxZ(), Math.max(this.minS, s)) }, t0 = performance.now();
     cancelAnimationFrame(this._fly);
     const step = now => {
       const t = Math.min(1, (now - t0) / ms), e = t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
@@ -372,6 +401,7 @@ class MapView {
     };
     this._fly = requestAnimationFrame(step);
   }
+  maxZ() { return this.showHect ? this.fitS * 30 : this.maxS; }      // hectares need a closer look
   clamp() {
     const [x0, y0, x1, y1] = this.bounds, v = this.view;
     const m = 30000; v.x = Math.min(x1 + m, Math.max(x0 - m, v.x)); v.y = Math.min(y1 + m, Math.max(y0 - m, v.y));
@@ -387,7 +417,7 @@ class MapView {
       if (pts.size === 2) { pinch = null; moved = 99; touchPan = true; }
     });
     cv.addEventListener('pointermove', e => {
-      if (!pts.has(e.pointerId)) { if (e.pointerType === 'mouse') this.setHover(this.pick(e.offsetX, e.offsetY)); return; }
+      if (!pts.has(e.pointerId)) { if (e.pointerType === 'mouse') { const p = this.pick(e.offsetX, e.offsetY); this.setHover(p); this.setHoverHect(p ? -1 : this.hectAt(e.offsetX, e.offsetY), e.offsetX, e.offsetY); } return; }
       const prev = pts.get(e.pointerId); pts.set(e.pointerId, [e.offsetX, e.offsetY, e.pointerType]);
       const dx = e.offsetX - prev[0], dy = e.offsetY - prev[1];
       if (pts.size === 1) {
@@ -406,7 +436,7 @@ class MapView {
       if (!cancelled && pts.size === 0 && moved <= (e.pointerType === 'touch' ? 12 : 4) && last) this.click(last[0], last[1]);
     };
     cv.addEventListener('pointerup', e => end(e, false)); cv.addEventListener('pointercancel', e => end(e, true));
-    cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') this.setHover(null); });
+    cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { this.setHover(null); this.setHoverHect(-1); } });
     cv.addEventListener('wheel', e => {
       if (!e.ctrlKey && !this.opts.wheelZoom()) return;          // let the page scroll unless the map is "active"
       e.preventDefault(); this.zoomAt(e.offsetX, e.offsetY, Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0018)));
@@ -439,6 +469,7 @@ class MapView {
       ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(tc, x, y, tc.width * this.tdx * v.s, tc.height * this.tdy * v.s);
     }
+    if (this.showHect && this.hect) { ctx.fillStyle = 'rgba(11,16,32,.5)'; ctx.fillRect(0, 0, this.W, this.H); this.paintHect(ctx); }
     const path = rings => { ctx.beginPath(); for (const r of rings) r.forEach(([X, Y], k) => { const [x, y] = this.toScreen(X, Y); k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); };
     if (v.s > this.fitS * 1.8) { path(this.gemPaths); ctx.strokeStyle = 'rgba(200,215,255,.16)'; ctx.lineWidth = 0.7; ctx.stroke(); }
     path(this.cantonPaths); ctx.strokeStyle = 'rgba(235,228,210,.75)'; ctx.lineWidth = 1.3; ctx.stroke();
@@ -466,6 +497,7 @@ class MapView {
       ctx.beginPath(); ctx.arc(x, y, rad + 6, 0, 7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
       ctx.beginPath(); ctx.arc(x, y, rad + 9, 0, 7); ctx.strokeStyle = 'rgba(0,0,0,.5)'; ctx.lineWidth = 1.5; ctx.stroke();
     }
+    if (this.showHect && this.hect && this.hoverHect >= 0) this.paintHectTip(ctx);
     this.drawScale(ctx);
     if (this.opts.afterPaint) this.opts.afterPaint(ctx);
   }
@@ -477,6 +509,44 @@ class MapView {
     ctx.moveTo(x, y - 5); ctx.lineTo(x, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y - 5); ctx.stroke();
     ctx.font = '500 11px Inter, system-ui, sans-serif'; ctx.fillStyle = 'rgba(240,236,226,.85)'; ctx.textBaseline = 'bottom';
     ctx.fillText(`${nice / 1000} km`, x + w + 6, y + 4);
+  }
+  setHectares(h) {
+    const X = new Float32Array(h.count), Y = new Float32Array(h.count), cls = new Uint8Array(h.count), idx = new Map();
+    for (let i = 0; i < h.count; i++) {
+      const he = h.meta.e0 / 100 + h.e[i], hn = h.meta.n0 / 100 + h.n[i];
+      const [la, lo] = fromLV95(he * 100 + 50, hn * 100 + 50); [X[i], Y[i]] = this.world(la, lo);
+      cls[i] = hectClass(h.dark[i]); idx.set(he * 1e5 + hn, i);
+    }
+    Object.assign(h, { X, Y, cls, idx }); this.hect = h; this.hoverHect = -1; this.draw();
+  }
+  hectAt(sx, sy) {
+    if (!this.showHect || !this.hect) return -1;
+    const [X, Y] = this.toWorld(sx, sy), [E, N] = toLV95(...this.latlon(X, Y));
+    const i = this.hect.idx.get(Math.floor(E / 100) * 1e5 + Math.floor(N / 100));
+    return i == null ? -1 : i;
+  }
+  setHoverHect(i, sx, sy) {
+    if (i === this.hoverHect && (i < 0 || this._hxy && this._hxy[0] === sx)) return;
+    this.hoverHect = i; this._hxy = [sx, sy]; if (i >= 0) this.cv.style.cursor = 'pointer'; else if (!this.hover) this.cv.style.cursor = ''; this.draw();
+  }
+  paintHect(ctx) {
+    const h = this.hect, w = Math.max(100 * this.view.s, 2.2), hw = w / 2, paths = HECT_CLASSES.map(() => new Path2D());
+    for (let i = 0; i < h.count; i++) {
+      const [x, y] = this.toScreen(h.X[i], h.Y[i]);
+      if (x < -w || y < -w || x > this.W + w || y > this.H + w) continue;
+      paths[h.cls[i]].rect(x - hw, y - hw, w, w);
+    }
+    // draw shaded classes last so they are not hidden under sunny neighbours when zoomed out
+    paths.forEach((p, k) => { ctx.fillStyle = HECT_CLASSES[k][1]; ctx.fill(p); });
+  }
+  paintHectTip(ctx) {
+    const h = this.hect, i = this.hoverHect, [x, y] = this.toScreen(h.X[i], h.Y[i]), w = Math.max(100 * this.view.s, 2.2);
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.strokeRect(x - w / 2, y - w / 2, w, w);
+    const txt = this.opts.hectInfo ? this.opts.hectInfo(i) : String(h.dark[i]);
+    ctx.font = '500 12px Inter, system-ui, sans-serif'; const tw = ctx.measureText(txt).width;
+    let [tx, ty] = this._hxy; tx += 14; ty -= 14; if (tx + tw + 12 > this.W) tx -= tw + 40;
+    ctx.fillStyle = 'rgba(8,12,26,.92)'; ctx.fillRect(tx - 6, ty - 11, tw + 12, 22);
+    ctx.fillStyle = '#f0ece2'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.fillText(txt, tx, ty);
   }
   shadowR(p, rad) { return (p.t === 'hamlet' ? 0.75 : 1) * Math.max(rad * 1.6, 5.5); }
   drawLabels(ctx, rad) {
@@ -720,6 +790,7 @@ function rampColor(min) {
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const state = { day: todayIndex(), minute: 600, place: null, playing: false, mapActive: false };
+let hect = null;
 let insideMask, G, P, places, terrain, map, pano, carpet, dayMinutes = new Map();
 
 init().catch(err => { console.error(err); $('#loading').textContent = 'Die Daten konnten nicht geladen werden. Bitte einen aktuellen Browser verwenden.'; });
@@ -735,6 +806,7 @@ async function init() {
     onPlace: p => select(p, { fly: false }), onPoint: (la, lo) => selectPoint(la, lo),
     wheelZoom: () => state.mapActive,
     onTouchHint: () => { const h = $('#touchhint'); h.classList.add('show'); clearTimeout(h._t); h._t = setTimeout(() => h.classList.remove('show'), 1600); },
+    hectInfo: i => hectText(i),
     hoverInfo: p => { const m = dayMinutes.get(p); return m ? hm(m) + ' Sonne' : 'keine Sonne'; },
     insets: () => innerWidth <= 760 ? { t: 64, r: 12, b: 12, l: 12 } : { t: 70, r: innerWidth > 1100 ? 340 : 330, b: 175, l: 24 },
   });
@@ -743,7 +815,7 @@ async function init() {
   map.isShadow = p => !(dayMinutes.get(p) ?? 0);
   pano = new Panorama($('#pano'), $('#pano-tip'));
   carpet = new Carpet($('#carpet'), $('#carpet-tip'), d => setDay(d, true));
-  bindControls();
+  bindControls(); bindHect();
   buildLists();
   // initial selection: hash, else Chur (strongest story: midday shadow on the shortest day)
   const fromHash = parseHash(byId);
@@ -936,6 +1008,8 @@ function fillCard() {
     if (n >= 0) ct = td >= s.run[0] ? `Noch ${n} ${n === 1 ? 'Tag' : 'Tage'} bis zur Sonne` : n === 0 ? 'Heute verschwindet die Sonne' : n === 1 ? 'Morgen verschwindet die Sonne' : `In ${n} Tagen verschwindet die Sonne`;
   }
   cn.textContent = ct;
+  const hi = map.showHect && p.t === 'point' ? hectIndexAt(p.la, p.lo) : -1;
+  $('#card-hect').textContent = hi >= 0 ? `Diese Hektare (30-m-Rechnung): ${hectText(hi)}` : '';
   updateCardNow(); spark();
 }
 function spark() {
@@ -1119,6 +1193,39 @@ function strip() {
   $('#strip').addEventListener('click', e => { const c = e.target.closest('[data-id]'); if (c) { const p = places.find(x => String(x.id) === c.dataset.id); stop(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); } });
   const chur = v.find(p => p.n === 'Chur');
   $('#strip-note').innerHTML = `Zum Vergleich: Chur ${hm(chur.s.d21)}. Am meisten Sonne: ${v.slice().sort((a, b) => b.s.d21 - a.s.d21).slice(0, 3).map(p => `${p.n} (${hm(p.s.d21)})`).join(', ')}.`;
+}
+
+// ---------- inhabited-hectare layer ----------
+function hectText(i) {
+  const d = hect.dark[i], r0 = hect.r0[i], r1 = hect.r1[i];
+  if (!d) return 'jeden Tag direkte Sonne';
+  return `${d} ${d === 1 ? 'Tag' : 'Tage'} ohne direkte Sonne` + (r0 !== 65535 && d > 1 ? ` (${dateLabel(r0, false)} bis ${dateLabel(r1, false)})` : '');
+}
+function hectIndexAt(la, lo) {
+  if (!hect) return -1; const [E, N] = toLV95(la, lo), i = hect.idx.get(Math.floor(E / 100) * 1e5 + Math.floor(N / 100));
+  return i == null ? -1 : i;
+}
+async function toggleHect(on) {
+  const b = $('#hect'); on = on ?? !map.showHect;
+  if (on && !hect) {
+    b.disabled = true; b.textContent = 'lädt …';
+    try { hect = await loadHectares(); map.setHectares(hect); }
+    catch (e) { console.error(e); b.disabled = false; b.textContent = 'Wohngebiete'; return; }
+    b.disabled = false; b.textContent = 'Wohngebiete';
+  }
+  map.showHect = on; b.setAttribute('aria-pressed', on); $('#hlegend').hidden = !on;
+  document.documentElement.classList.toggle('hect-on', on);
+  if (on && map.view.s < map.fitS * 7) {
+    const s = map.fitS * 10, I = map.insets(), p = state.place && state.place.X != null ? state.place : { X: map.view.x + (I.l - I.r) / 2 / map.view.s, Y: map.view.y + (I.t - I.b) / 2 / map.view.s };
+    map.flyTo(p.X - (I.l - I.r) / 2 / s, p.Y - (I.t - I.b) / 2 / s, s);
+  }
+  if (!on && map.view.s > map.maxS) map.zoomAt(map.W / 2, map.H / 2, map.maxS / map.view.s);
+  map.draw(); fillCard();
+}
+function bindHect() {
+  $('#hlegend .hsw').innerHTML = HECT_CLASSES.map(([, c], k) => `<span><i style="background:${c}"></i>${['0', '1–29', '30–59', '60–89', '90+'][k]}</span>`).join('');
+  $('#hect').addEventListener('click', () => toggleHect());
+  if (new URLSearchParams(location.search).get('schicht') === 'wohngebiete') toggleHect(true);
 }
 
 })();

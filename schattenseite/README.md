@@ -22,6 +22,15 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
 - Publikationstermin: **nicht entschieden**. Vorschlag (Claude): Hauptstück um den 21.12., vorher Verifikation /
   Leseraufruf, im Jan./Feb. Folgen zur Rückkehr der Sonne.
 
+- Neu am 19.11.: Schicht «Wohngebiete» (Knopf neben dem Zoom, `?schicht=wohngebiete`): 23'163 bewohnte Hektaren
+  (GWR, 76'792 Wohngebäude), Tage ohne direkte Sonne pro Hektare, nachgeladen aus `data/hectares.js` (151 KB) erst
+  beim Einschalten. Ein Rechenpunkt pro Hektare (Gebäude nächst der Mitte, Höhe swisstopo). Pilot Bergell
+  (`_build/pilot/`): Hektarwert = Median der Gebäude bei 90 % der Hektaren ±0–4 Tage. Ortspunkte vs. nächste
+  Hektare (<150 m): Median 0 Tage Differenz.
+- **Zu prüfen (Modell, nicht verifiziert):** Chur West am Fuss des Pizokels (Kasernen-, Freifeld-, Grünbergstrasse)
+  36–95 Tage ohne direkte Sonne; Live-Rechnung 150 m bestätigt die Grössenordnung (92 Tage). Möglicher Einfluss:
+  Wald am Hang zählt im Copernicus-Modell als Hindernis.
+
 ## Offene Punkte
 
 1. Verifikation vor Ort (Bondo, Tavanasa, Küblis, Chur Altstadt); Ortspunkte der Top 10 prüfen.
@@ -32,7 +41,7 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
    Link zur ganzen Seite. Mit Webdesigner klären: Iframe-Höhe, Verhalten in der App, Hosting (GitHub-Konto
    oder Somedia-Server), helle Variante.
 6. Ideen (nicht begonnen): «Die Sonnendiebe» – welcher Berg nimmt welchem Dorf die Sonne, gewichtet mit
-   Einwohnern (swissNAMES3D/OSM-Gipfel + STATPOP-Hektarraster); Rechnung pro Gebäude statt pro Ortspunkt.
+   Einwohnern (swissNAMES3D/OSM-Gipfel + STATPOP-Hektarraster). Rechnung pro Gebäude: als Hektarraster umgesetzt (19.11.).
 7. Im Bergell liegen die Schattenpunkte so dicht, dass Name und Punkt nicht eindeutig zuordenbar sind.
 8. Optional: Gelände verlustfrei besser komprimieren (1,72 → ~1,39 MB), WebGL-Schatten.
 
@@ -46,6 +55,7 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
 | `data/dem.js` | Gelände 150 m, gzip+base64 (2,3 MB) |
 | `data/places.js` | Ortsstatistik + Horizonte (0,05°-Schritte) |
 | `data/outline.js` | Kantons- und Gemeindegrenzen (OSM) |
+| `data/hectares.js` | Wohngebiete: Schattentage pro bewohnter Hektare (wird erst beim Einschalten geladen) |
 | `_build/` | Rechenkette, Tests, Screenshot-Helfer (`node_modules/`, `cache/` gitignored) |
 | `IDEE.md`, `KRITIK.md`, `GUTEN-MORGEN.md` | Entstehung: Ideenwahl, 6 Kritikrunden, Übergabe vom 5.11. (historisch) |
 
@@ -62,6 +72,8 @@ sh fetch_osm.sh            # Orte + Grenzen (Overpass)
 node fetch_heights.mjs     # Bodenhöhen swisstopo
 node build_dem.mjs         # Gelände + Horizonte, lädt ~150 MB übers Netz, speichert wenig
 node build_stats.mjs       # Statistik → data/places.js (~40 s)
+node fetch_gwr.mjs         # Wohngebäude GWR → cache/gwr_gr.json (~60 min, 14'700 Abfragen geo.admin)
+node build_hectares.mjs    # Höhen (23'000 Abfragen, resumable) + Gelände im RAM + Statistik → data/hectares.js (~40 min)
 node bundle.mjs
 node test_sun.mjs && node test_fastsun.mjs && node test_consistency.mjs
 TMPDIR=/dev/shm node test_e2e.mjs [URL]   # Standard http://127.0.0.1:8731/index.html (python3 -m http.server 8731)

@@ -48,6 +48,15 @@ code { font-size: .9em; color: var(--sun); }
 .zoom { position: absolute; top: 16px; right: 16px; display: flex; flex-direction: row; gap: 1px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); z-index: 4; }
 .zoom button { width: 38px; height: 38px; border: 0; background: var(--panel); font-size: 1.15rem; line-height: 1; }
 .zoom button:hover { background: #1b2546; }
+.zoom .hbtn { width: auto; padding: 0 13px; font-size: .82rem; font-weight: 600; color: var(--ink); }
+.zoom .hbtn[aria-pressed=true] { background: #7333c4; color: #fff; }
+.hlegend { position: absolute; top: 66px; left: 16px; z-index: 5; max-width: 300px; padding: 8px 11px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: .74rem; color: var(--muted); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.hlegend .ht { display: block; margin-bottom: 5px; }
+.hlegend .hsw { display: flex; gap: 9px; flex-wrap: wrap; color: var(--ink); }
+.hlegend i { display: inline-block; width: 10px; height: 10px; margin-right: 4px; vertical-align: -1px; border-radius: 2px; }
+.hect-on .hint { opacity: 0; }
+.hectnote { margin: 6px 0 0; font-size: .8rem; color: #d3c1f2; }
+.hectnote:empty { display: none; }
 .hint { position: absolute; top: 66px; left: 18px; font-size: .8rem; color: var(--muted); pointer-events: none; text-shadow: 0 1px 3px #000; transition: opacity .4s; }
 .mapwrap.active .hint { opacity: 0; }
 
@@ -185,6 +194,8 @@ footer { max-width: var(--w); margin: 0 auto; padding: 18px 24px 48px; font-size
   .search { top: 12px; left: 12px; width: calc(100% - 76px); }
   .zoom { top: 12px; right: 12px; }
   #zoom-in, #zoom-out { display: none; }
+  .search { width: calc(100% - 182px); }
+  .hlegend { top: 58px; left: 12px; right: 12px; max-width: none; }
   .hint { display: none; }
   .controls { position: relative; left: 0; right: 0; bottom: 0; order: 2; border-radius: 0; border-left: 0; border-right: 0; padding: 12px 14px; }
   .card { position: relative; order: 3; right: 0; top: 0; width: auto; margin: 12px 14px 0; }

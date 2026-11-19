@@ -25,3 +25,17 @@ export async function loadPlaces() {
   });
   return meta;
 }
+
+// Inhabited-hectare layer (data/hectares.js), loaded on demand when the layer is first switched on.
+export function loadHectares() {
+  return new Promise((ok, fail) => {
+    if (window.HECTARES_B64) return ok();
+    const s = document.createElement('script'); s.src = 'data/hectares.js?v=' + (window.HECTARES_V || 1);
+    s.onload = () => ok(); s.onerror = fail; document.head.appendChild(s);
+  }).then(async () => {
+    const m = window.HECTARES_META, raw = await gunzipB64(window.HECTARES_B64), n = m.n, out = { meta: m, count: n };
+    const all = new Uint16Array(raw.buffer, raw.byteOffset, raw.byteLength / 2);
+    m.cols.forEach((c, k) => { out[c] = all.subarray(k * n, (k + 1) * n); });
+    return out;
+  });
+}

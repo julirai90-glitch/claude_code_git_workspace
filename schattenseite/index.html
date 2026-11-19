@@ -40,8 +40,9 @@
   </div>
   <canvas id="map" aria-label="Reliefkarte Graubündens mit berechneten Schatten. Klick auf einen Ort oder einen beliebigen Punkt."></canvas>
   <div class="zoom" role="group" aria-label="Zoom">
-    <button id="zoom-in" aria-label="Hineinzoomen">+</button><button id="zoom-out" aria-label="Herauszoomen">−</button><button id="zoom-fit" aria-label="Ganzer Kanton">⤢</button>
+    <button id="zoom-in" aria-label="Hineinzoomen">+</button><button id="zoom-out" aria-label="Herauszoomen">−</button><button id="zoom-fit" aria-label="Ganzer Kanton">⤢</button><button id="hect" class="hbtn" aria-pressed="false" title="Bewohnte Hektaren nach Tagen ohne direkte Sonne einfärben">Wohngebiete</button>
   </div>
+  <div id="hlegend" class="hlegend" hidden><span class="ht">Bewohnte Hektaren: Tage ohne direkte Sonne (Juli 2026 bis Juni 2027)</span><span class="hsw"></span></div>
   <div class="hint">Klick auf einen Ort – oder irgendwo in die Karte</div>
   <div id="touchhint" class="touchhint" aria-hidden="true">Karte mit zwei Fingern verschieben und zoomen · Tippen wählt einen Ort</div>
 
@@ -56,6 +57,7 @@
     <p id="card-now" class="now"></p>
     <p id="card-dark" class="dark"></p>
     <p id="card-count" class="count"></p>
+    <p id="card-hect" class="hectnote"></p>
     <button id="to-detail" class="link">Horizont und Jahreskalender ↓</button>
   </aside>
 
@@ -123,6 +125,7 @@
       <ol>
         <li><b>Gelände:</b> Copernicus-Höhenmodell GLO-30 (Auflösung rund 30 Meter) für Graubünden und einen Rand von rund 30 Kilometern, inklusive der Berge in Italien, Österreich und den Nachbarkantonen. Gebäude und kleine Baumgruppen (schmaler als rund 150 Meter) wurden herausgefiltert, grosse Wälder zählen als Hindernis.</li>
         <li><b>Orte:</b> 799 Ortspunkte aus OpenStreetMap (248 Dörfer und Städte, 551 Weiler), Bodenhöhe vom Höhendienst von swisstopo. Ein Ort ist ein Punkt – meist der Dorfkern. Hundert Meter weiter am Hang kann es anders aussehen.</li>
+        <li><b>Wohngebiete (Schalter «Wohngebiete» auf der Karte):</b> 23’163 bewohnte Hektaren (Bundesraster, 100 × 100 Meter) mit insgesamt 76’792 bestehenden Wohngebäuden aus dem eidgenössischen Gebäude- und Wohnungsregister (GWR, Stand 16.11.2026). Gerechnet wird pro Hektare an einem Punkt – beim Wohngebäude, das der Mitte der Gebäude am nächsten liegt –, mit Bodenhöhe von swisstopo und dem 30-Meter-Gelände. Die Zahl gilt für die Lage, nicht für ein einzelnes Haus: Nachbarhäuser und Bäume in der Nähe sind nicht berücksichtigt.</li>
         <li><b>Horizont:</b> Für jeden Ort in 720 Richtungen (alle 0,5 Grad) der höchste Geländewinkel bis 35 Kilometer Distanz, mit Erdkrümmung und Lichtbrechung. Hindernisse näher als 100 Meter (Nachbarhäuser, Bäume) zählen nicht.</li>
         <li><b>Sonne:</b> Sonnenstand nach den astronomischen Formeln der US-Wetterbehörde NOAA, Minute für Minute für jeden Tag vom 1. Juli 2026 bis 30. Juni 2027, mit Lichtbrechung. «Direkte Sonne» heisst: Die Mitte der Sonnenscheibe steht über dem Gelände.</li>
       </ol>
@@ -155,6 +158,6 @@
 <script src="data/dem.js"></script>
 <script src="data/places.js"></script>
 <script src="data/outline.js"></script>
-<script src="js/bundle.js?v=20261116"></script>
+<script src="js/bundle.js?v=20261119"></script>
 </body>
 </html>

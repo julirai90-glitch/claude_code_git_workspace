@@ -1,9 +1,9 @@
 // Wiring: state (day, minute, place), controls, texts, lists.
 import { horizonProfile, horizonAt, sample } from './horizon.js';
 import { sunPosition, localMidnight, dayStats } from './sun.js';
-import { loadDem, loadPlaces } from './data.js';
+import { loadDem, loadPlaces, loadHectares } from './data.js';
 import { Terrain } from './terrain.js';
-import { MapView } from './map.js';
+import { MapView, HECT_CLASSES, toLV95 } from './map.js';
 import { Panorama } from './panorama.js';
 import { Carpet } from './carpet.js';
 import { NDAYS, ymd, dateLabel, dayIndexOf, todayIndex, hm, clock, int, MON3 } from './fmt.js';
@@ -20,6 +20,7 @@ export function rampColor(min) {
 const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const state = { day: todayIndex(), minute: 600, place: null, playing: false, mapActive: false };
+let hect = null;
 let insideMask, G, P, places, terrain, map, pano, carpet, dayMinutes = new Map();
 
 init().catch(err => { console.error(err); $('#loading').textContent = 'Die Daten konnten nicht geladen werden. Bitte einen aktuellen Browser verwenden.'; });
@@ -35,6 +36,7 @@ async function init() {
     onPlace: p => select(p, { fly: false }), onPoint: (la, lo) => selectPoint(la, lo),
     wheelZoom: () => state.mapActive,
     onTouchHint: () => { const h = $('#touchhint'); h.classList.add('show'); clearTimeout(h._t); h._t = setTimeout(() => h.classList.remove('show'), 1600); },
+    hectInfo: i => hectText(i),
     hoverInfo: p => { const m = dayMinutes.get(p); return m ? hm(m) + ' Sonne' : 'keine Sonne'; },
     insets: () => innerWidth <= 760 ? { t: 64, r: 12, b: 12, l: 12 } : { t: 70, r: innerWidth > 1100 ? 340 : 330, b: 175, l: 24 },
   });
@@ -43,7 +45,7 @@ async function init() {
   map.isShadow = p => !(dayMinutes.get(p) ?? 0);
   pano = new Panorama($('#pano'), $('#pano-tip'));
   carpet = new Carpet($('#carpet'), $('#carpet-tip'), d => setDay(d, true));
-  bindControls();
+  bindControls(); bindHect();
   buildLists();
   // initial selection: hash, else Chur (strongest story: midday shadow on the shortest day)
   const fromHash = parseHash(byId);
@@ -236,6 +238,8 @@ function fillCard() {
     if (n >= 0) ct = td >= s.run[0] ? `Noch ${n} ${n === 1 ? 'Tag' : 'Tage'} bis zur Sonne` : n === 0 ? 'Heute verschwindet die Sonne' : n === 1 ? 'Morgen verschwindet die Sonne' : `In ${n} Tagen verschwindet die Sonne`;
   }
   cn.textContent = ct;
+  const hi = map.showHect && p.t === 'point' ? hectIndexAt(p.la, p.lo) : -1;
+  $('#card-hect').textContent = hi >= 0 ? `Diese Hektare (30-m-Rechnung): ${hectText(hi)}` : '';
   updateCardNow(); spark();
 }
 function spark() {
@@ -419,4 +423,37 @@ function strip() {
   $('#strip').addEventListener('click', e => { const c = e.target.closest('[data-id]'); if (c) { const p = places.find(x => String(x.id) === c.dataset.id); stop(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); } });
   const chur = v.find(p => p.n === 'Chur');
   $('#strip-note').innerHTML = `Zum Vergleich: Chur ${hm(chur.s.d21)}. Am meisten Sonne: ${v.slice().sort((a, b) => b.s.d21 - a.s.d21).slice(0, 3).map(p => `${p.n} (${hm(p.s.d21)})`).join(', ')}.`;
+}
+
+// ---------- inhabited-hectare layer ----------
+function hectText(i) {
+  const d = hect.dark[i], r0 = hect.r0[i], r1 = hect.r1[i];
+  if (!d) return 'jeden Tag direkte Sonne';
+  return `${d} ${d === 1 ? 'Tag' : 'Tage'} ohne direkte Sonne` + (r0 !== 65535 && d > 1 ? ` (${dateLabel(r0, false)} bis ${dateLabel(r1, false)})` : '');
+}
+function hectIndexAt(la, lo) {
+  if (!hect) return -1; const [E, N] = toLV95(la, lo), i = hect.idx.get(Math.floor(E / 100) * 1e5 + Math.floor(N / 100));
+  return i == null ? -1 : i;
+}
+async function toggleHect(on) {
+  const b = $('#hect'); on = on ?? !map.showHect;
+  if (on && !hect) {
+    b.disabled = true; b.textContent = 'lädt …';
+    try { hect = await loadHectares(); map.setHectares(hect); }
+    catch (e) { console.error(e); b.disabled = false; b.textContent = 'Wohngebiete'; return; }
+    b.disabled = false; b.textContent = 'Wohngebiete';
+  }
+  map.showHect = on; b.setAttribute('aria-pressed', on); $('#hlegend').hidden = !on;
+  document.documentElement.classList.toggle('hect-on', on);
+  if (on && map.view.s < map.fitS * 7) {
+    const s = map.fitS * 10, I = map.insets(), p = state.place && state.place.X != null ? state.place : { X: map.view.x + (I.l - I.r) / 2 / map.view.s, Y: map.view.y + (I.t - I.b) / 2 / map.view.s };
+    map.flyTo(p.X - (I.l - I.r) / 2 / s, p.Y - (I.t - I.b) / 2 / s, s);
+  }
+  if (!on && map.view.s > map.maxS) map.zoomAt(map.W / 2, map.H / 2, map.maxS / map.view.s);
+  map.draw(); fillCard();
+}
+function bindHect() {
+  $('#hlegend .hsw').innerHTML = HECT_CLASSES.map(([, c], k) => `<span><i style="background:${c}"></i>${['0', '1–29', '30–59', '60–89', '90+'][k]}</span>`).join('');
+  $('#hect').addEventListener('click', () => toggleHect());
+  if (new URLSearchParams(location.search).get('schicht') === 'wohngebiete') toggleHect(true);
 }
