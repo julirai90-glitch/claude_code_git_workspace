@@ -222,6 +222,15 @@ function loadHectares() {
   });
 }
 
+// Orientation features (data/features.js): lakes, rivers, streams, railways, main roads; loaded after start.
+function loadFeatures() {
+  return new Promise((ok, fail) => {
+    if (window.FEATURES_B64) return ok();
+    const s = document.createElement('script'); s.src = 'data/features.js?v=' + (window.FEATURES_V || 1);
+    s.onload = () => ok(); s.onerror = fail; document.head.appendChild(s);
+  }).then(async () => ({ meta: window.FEATURES_META, ...JSON.parse(new TextDecoder().decode(await gunzipB64(window.FEATURES_B64))) }));
+}
+
 // ---- terrain.js ----
 // Terrain rendering on the 150 m grid: static relief, live cast shadows for a given sun position.
 
@@ -470,6 +479,7 @@ class MapView {
       ctx.drawImage(tc, x, y, tc.width * this.tdx * v.s, tc.height * this.tdy * v.s);
     }
     if (this.showHect && this.hect) { ctx.fillStyle = 'rgba(11,16,32,.5)'; ctx.fillRect(0, 0, this.W, this.H); this.paintHect(ctx); }
+    if (this.featPaths) this.paintFeatures(ctx);
     const path = rings => { ctx.beginPath(); for (const r of rings) r.forEach(([X, Y], k) => { const [x, y] = this.toScreen(X, Y); k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); };
     if (v.s > this.fitS * 1.8) { path(this.gemPaths); ctx.strokeStyle = 'rgba(200,215,255,.16)'; ctx.lineWidth = 0.7; ctx.stroke(); }
     path(this.cantonPaths); ctx.strokeStyle = 'rgba(235,228,210,.75)'; ctx.lineWidth = 1.3; ctx.stroke();
@@ -509,6 +519,29 @@ class MapView {
     ctx.moveTo(x, y - 5); ctx.lineTo(x, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y - 5); ctx.stroke();
     ctx.font = '500 11px Inter, system-ui, sans-serif'; ctx.fillStyle = 'rgba(240,236,226,.85)'; ctx.textBaseline = 'bottom';
     ctx.fillText(`${nice / 1000} km`, x + w + 6, y + 4);
+  }
+  // orientation features, cached as Path2D in world coordinates (drawn with a scaling transform)
+  setFeatures(F) {
+    const { w, n, u } = F.meta, P = this.featPaths = {};
+    const pts = (a, cb) => { let x = 0, y = 0; for (let i = 0; i < a.length; i += 2) { x += a[i]; y += a[i + 1]; cb(...this.world(n - y / u, w + x / u), i); } };
+    for (const cls of ['river', 'stream', 'rail', 'road']) {
+      const p = new Path2D(); for (const a of F[cls]) pts(a, (X, Y, i) => i ? p.lineTo(X, Y) : p.moveTo(X, Y)); P[cls] = p;
+    }
+    const lk = new Path2D(); for (const poly of F.lake) for (const a of poly) { pts(a, (X, Y, i) => i ? lk.lineTo(X, Y) : lk.moveTo(X, Y)); lk.closePath(); }
+    P.lake = lk; this.draw();
+  }
+  paintFeatures(ctx) {
+    const P = this.featPaths, v = this.view, d = this.dpr, s = v.s, z = s / this.fitS;
+    ctx.save(); ctx.setTransform(d * s, 0, 0, d * s, d * (this.W / 2 - v.x * s), d * (this.H / 2 - v.y * s));
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    const stroke = (p, color, px) => { ctx.strokeStyle = color; ctx.lineWidth = px / s; ctx.stroke(p); };
+    // roads and railways: dark casing + light core, readable on sunlit (light) and shaded (dark) terrain
+    if (z > 1.6) { const w = Math.min(1.8, 0.6 + z * 0.07); stroke(P.road, 'rgba(10,14,28,.35)', w + 1.4); stroke(P.road, 'rgba(250,246,236,.5)', w); }
+    if (z > 1.6) { const w = Math.min(1.6, 0.7 + z * 0.05); stroke(P.rail, 'rgba(10,14,28,.6)', w + 1.6); ctx.setLineDash([5 / s, 4 / s]); stroke(P.rail, 'rgba(250,246,236,.9)', w); ctx.setLineDash([]); }
+    if (z > 2.6) stroke(P.stream, 'rgba(120,205,225,.55)', Math.min(1.4, 0.4 + z * 0.06));
+    stroke(P.river, 'rgba(120,205,225,.8)', Math.min(2.6, 0.9 + z * 0.12));
+    ctx.fillStyle = 'rgba(95,180,215,.88)'; ctx.fill(P.lake, 'evenodd');
+    ctx.restore();
   }
   setHectares(h) {
     const X = new Float32Array(h.count), Y = new Float32Array(h.count), cls = new Uint8Array(h.count), idx = new Map();
@@ -833,6 +866,7 @@ async function init() {
     else if (e.isIntersecting && resume) { resume = false; play(); }
   }, { threshold: 0.15 }).observe($('#karte'));
   writeLead(); finds();
+  loadFeatures().then(F => map.setFeatures(F)).catch(e => console.error(e));   // orientation, after first paint
 }
 
 // Data-driven entry points into the story (all figures computed from the data, nothing hard-coded

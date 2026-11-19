@@ -1,7 +1,7 @@
 // Wiring: state (day, minute, place), controls, texts, lists.
 import { horizonProfile, horizonAt, sample } from './horizon.js';
 import { sunPosition, localMidnight, dayStats } from './sun.js';
-import { loadDem, loadPlaces, loadHectares } from './data.js';
+import { loadDem, loadPlaces, loadHectares, loadFeatures } from './data.js';
 import { Terrain } from './terrain.js';
 import { MapView, HECT_CLASSES, toLV95 } from './map.js';
 import { Panorama } from './panorama.js';
@@ -63,6 +63,7 @@ async function init() {
     else if (e.isIntersecting && resume) { resume = false; play(); }
   }, { threshold: 0.15 }).observe($('#karte'));
   writeLead(); finds();
+  loadFeatures().then(F => map.setFeatures(F)).catch(e => console.error(e));   // orientation, after first paint
 }
 
 // Data-driven entry points into the story (all figures computed from the data, nothing hard-coded

@@ -27,6 +27,9 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
   beim Einschalten. Ein Rechenpunkt pro Hektare (Gebäude nächst der Mitte, Höhe swisstopo). Pilot Bergell
   (`_build/pilot/`): Hektarwert = Median der Gebäude bei 90 % der Hektaren ±0–4 Tage. Ortspunkte vs. nächste
   Hektare (<150 m): Median 0 Tage Differenz.
+- Neu am 19.11.: Orientierung auf der Karte – Seen, Flüsse, benannte Bäche (ab Zoom 2,6×), RhB/Bahn (gestrichelt)
+  und Hauptstrassen (ab Zoom 1,6×) aus OSM, Kanton + ~4 km Rand, `data/features.js` (120 KB), nach dem Start
+  nachgeladen. Wasser türkis, weil Blau «Gelände im Schatten» heisst.
 - **Zu prüfen (Modell, nicht verifiziert):** Chur West am Fuss des Pizokels (Kasernen-, Freifeld-, Grünbergstrasse)
   36–95 Tage ohne direkte Sonne; Live-Rechnung 150 m bestätigt die Grössenordnung (92 Tage). Möglicher Einfluss:
   Wald am Hang zählt im Copernicus-Modell als Hindernis.
@@ -55,6 +58,7 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
 | `data/dem.js` | Gelände 150 m, gzip+base64 (2,3 MB) |
 | `data/places.js` | Ortsstatistik + Horizonte (0,05°-Schritte) |
 | `data/outline.js` | Kantons- und Gemeindegrenzen (OSM) |
+| `data/features.js` | Seen, Flüsse, Bäche, Bahn, Hauptstrassen (OSM, vereinfacht), nach dem Start geladen |
 | `data/hectares.js` | Wohngebiete: Schattentage pro bewohnter Hektare (wird erst beim Einschalten geladen) |
 | `_build/` | Rechenkette, Tests, Screenshot-Helfer (`node_modules/`, `cache/` gitignored) |
 | `IDEE.md`, `KRITIK.md`, `GUTEN-MORGEN.md` | Entstehung: Ideenwahl, 6 Kritikrunden, Übergabe vom 5.11. (historisch) |
@@ -72,6 +76,7 @@ sh fetch_osm.sh            # Orte + Grenzen (Overpass)
 node fetch_heights.mjs     # Bodenhöhen swisstopo
 node build_dem.mjs         # Gelände + Horizonte, lädt ~150 MB übers Netz, speichert wenig
 node build_stats.mjs       # Statistik → data/places.js (~40 s)
+sh fetch_features.sh /dev/shm/osm && node build_features.mjs /dev/shm/osm   # Orientierung (Rohdaten ~100 MB nur im RAM)
 node fetch_gwr.mjs         # Wohngebäude GWR → cache/gwr_gr.json (~60 min, 14'700 Abfragen geo.admin)
 node build_hectares.mjs    # Höhen (23'000 Abfragen, resumable) + Gelände im RAM + Statistik → data/hectares.js (~40 min)
 node bundle.mjs

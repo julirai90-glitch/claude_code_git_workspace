@@ -39,3 +39,12 @@ export function loadHectares() {
     return out;
   });
 }
+
+// Orientation features (data/features.js): lakes, rivers, streams, railways, main roads; loaded after start.
+export function loadFeatures() {
+  return new Promise((ok, fail) => {
+    if (window.FEATURES_B64) return ok();
+    const s = document.createElement('script'); s.src = 'data/features.js?v=' + (window.FEATURES_V || 1);
+    s.onload = () => ok(); s.onerror = fail; document.head.appendChild(s);
+  }).then(async () => ({ meta: window.FEATURES_META, ...JSON.parse(new TextDecoder().decode(await gunzipB64(window.FEATURES_B64))) }));
+}
