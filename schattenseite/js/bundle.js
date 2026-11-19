@@ -1044,7 +1044,7 @@ function fillCard() {
   }
   cn.textContent = ct;
   const hi = map.showHect && p.t === 'point' ? hectIndexAt(p.la, p.lo) : -1;
-  $('#card-hect').textContent = hi >= 0 ? `Genauere Rechnung für diese Hektare: ${hectText(hi)}` : '';
+  $('#card-hect').textContent = hi >= 0 ? `Genauere Rechnung für dieses Wohngebiet: ${hectText(hi)}` : '';
   $('#mstrip').innerHTML = `<span><b>${p.n}</b> · ${dateLabel(state.day)}: ${st.sun ? hm(st.sun) + ' direkte Sonne' : 'keine direkte Sonne'}</span><span class="go">Mehr ↓</span>`;
   updateCardNow(); spark();
 }

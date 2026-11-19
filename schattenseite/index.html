@@ -40,9 +40,9 @@
   </div>
   <canvas id="map" aria-label="Reliefkarte Graubündens mit berechneten Schatten. Klick auf einen Ort oder einen beliebigen Punkt."></canvas>
   <div class="zoom" role="group" aria-label="Zoom">
-    <button id="zoom-in" aria-label="Hineinzoomen">+</button><button id="zoom-out" aria-label="Herauszoomen">−</button><button id="zoom-fit" aria-label="Ganzer Kanton">⤢</button><button id="hect" class="hbtn" aria-pressed="false" title="Bewohnte Hektaren nach Tagen ohne direkte Sonne einfärben">Wohngebiete</button>
+    <button id="zoom-in" aria-label="Hineinzoomen">+</button><button id="zoom-out" aria-label="Herauszoomen">−</button><button id="zoom-fit" aria-label="Ganzer Kanton">⤢</button><button id="hect" class="hbtn" aria-pressed="false" title="Wohngebiete nach Tagen ohne direkte Sonne einfärben">Wohngebiete</button>
   </div>
-  <div id="hlegend" class="hlegend" hidden><span class="ht">Bewohnte Hektaren: Tage ohne direkte Sonne (Juli 2026 bis Juni 2027)</span><span class="hsw"></span><a href="#genau" class="genau">Wie genau?</a></div>
+  <div id="hlegend" class="hlegend" hidden><span class="ht">Wohngebiete: Tage ohne direkte Sonne (Juli 2026 bis Juni 2027)</span><span class="hsw"></span><a href="#genau" class="genau">Wie genau?</a></div>
   <button id="mstrip" class="mstrip" type="button" aria-label="Zum Ergebnis"></button>
   <div class="hint">Klick auf einen Ort – oder irgendwo in die Karte</div>
   <div id="touchhint" class="touchhint" aria-hidden="true">Karte mit zwei Fingern verschieben und zoomen · Tippen wählt einen Ort</div>
@@ -127,7 +127,7 @@
       <li><b>Modell, nicht Messung.</b> Gerechnet wird, was die Berge an Sonne zulassen – bei wolkenlosem Himmel. Wolken, Nebel und Hochnebel sind nicht berücksichtigt.</li>
       <li><b>Typische Abweichung:</b> Der berechnete Horizont weicht im Mittel um 0,45 Grad von den Höhenprofilen von swisstopo ab. Liegt er 0,5 Grad höher, kommen bei den 19 Dörfern mit einer Schattenzeit 3 bis 11 Tage dazu (in Stampa und Bondo je 4); Beginn und Ende verschieben sich um wenige Tage. Die blasse Verlängerung in der Schattenliste zeigt das.</li>
       <li><b>Kippzonen:</b> Wo die Sonne gerade noch über einen Grat streift, entscheiden Zehntelgrade. Ein Tag mit einer einzigen Minute Sonne durch eine Lücke im Grat zählt als Sonnentag. Am Rand einer Schattenzone kann die Zahl der Schattentage deshalb um Wochen danebenliegen, im Kern ist sie stabil.</li>
-      <li><b>Wohngebiete:</b> Der Wert gilt für die Lage einer Hektare, nicht für ein einzelnes Haus. Nachbarhäuser und Bäume näher als 100 Meter zählen nicht. Eine Gegenrechnung für Chur West mit dem Oberflächenmodell von swisstopo (mit Wald und Häusern) ergab im Schnitt 3 bis 6 Tage mehr.</li>
+      <li><b>Wohngebiete:</b> Der Wert gilt für die Lage eines Quadrats von 100 × 100 Metern, nicht für ein einzelnes Haus. Nachbarhäuser und Bäume näher als 100 Meter zählen nicht. Eine Gegenrechnung für Chur West mit dem Oberflächenmodell von swisstopo (mit Wald und Häusern) ergab im Schnitt 3 bis 6 Tage mehr.</li>
       <li><b>Zwei Zahlen für denselben Ort:</b> Ein Klick in die Karte rechnet sofort im Browser, mit einem gröberen Gelände (150 Meter). Die Werte der Wohngebiete und der 799 Orte stammen aus der Rechnung mit 30 Metern und sind genauer. Kleine Unterschiede sind deshalb normal.</li>
       <li><b>Direkte Sonne</b> heisst: Die Mitte der Sonnenscheibe steht über dem Gelände. Streift die Sonne knapp am Grat entlang, kann ihr oberer Rand noch kurz hervorblitzen.</li>
     </ul>
@@ -138,7 +138,7 @@
       <ol>
         <li><b>Gelände:</b> Copernicus-Höhenmodell GLO-30 (Auflösung rund 30 Meter) für Graubünden und einen Rand von rund 30 Kilometern, inklusive der Berge in Italien, Österreich und den Nachbarkantonen. Gebäude und kleine Baumgruppen (schmaler als rund 150 Meter) wurden herausgefiltert, grosse Wälder zählen als Hindernis.</li>
         <li><b>Orte:</b> 799 Ortspunkte aus OpenStreetMap (248 Dörfer und Städte, 551 Weiler), Bodenhöhe vom Höhendienst von swisstopo. Ein Ort ist ein Punkt – meist der Dorfkern. Hundert Meter weiter am Hang kann es anders aussehen.</li>
-        <li><b>Wohngebiete (Schalter «Wohngebiete» auf der Karte):</b> 23’163 bewohnte Hektaren (Bundesraster, 100 × 100 Meter) mit insgesamt 76’792 bestehenden Wohngebäuden aus dem eidgenössischen Gebäude- und Wohnungsregister (GWR, Stand 16.11.2026). Gerechnet wird pro Hektare an einem Punkt – beim Wohngebäude, das der Mitte der Gebäude am nächsten liegt –, mit Bodenhöhe von swisstopo und dem 30-Meter-Gelände. Die Zahl gilt für die Lage, nicht für ein einzelnes Haus: Nachbarhäuser und Bäume in der Nähe sind nicht berücksichtigt.</li>
+        <li><b>Wohngebiete (Schalter «Wohngebiete» auf der Karte):</b> 23’163 bewohnte Quadrate von 100 × 100 Metern (Raster des Bundes) mit insgesamt 76’792 bestehenden Wohngebäuden aus dem eidgenössischen Gebäude- und Wohnungsregister (GWR, Stand 16.11.2026). Gerechnet wird pro Quadrat an einem Punkt – beim Wohngebäude, das der Mitte der Gebäude am nächsten liegt –, mit Bodenhöhe von swisstopo und dem 30-Meter-Gelände. Die Zahl gilt für die Lage, nicht für ein einzelnes Haus: Nachbarhäuser und Bäume in der Nähe sind nicht berücksichtigt.</li>
         <li><b>Horizont:</b> Für jeden Ort in 720 Richtungen (alle 0,5 Grad) der höchste Geländewinkel bis 35 Kilometer Distanz, mit Erdkrümmung und Lichtbrechung. Hindernisse näher als 100 Meter (Nachbarhäuser, Bäume) zählen nicht.</li>
         <li><b>Sonne:</b> Sonnenstand nach den astronomischen Formeln der US-Wetterbehörde NOAA, Minute für Minute für jeden Tag vom 1. Juli 2026 bis 30. Juni 2027, mit Lichtbrechung. «Direkte Sonne» heisst: Die Mitte der Sonnenscheibe steht über dem Gelände.</li>
       </ol>
