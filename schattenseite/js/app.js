@@ -187,7 +187,8 @@ function selectNow(p, { fly = true, quiet = false } = {}) {
   if (!p.s) p.s = seasonStats(p.stats);
   pano.set(p, state.day, state.minute, refDays());
   fillCard(); fillDetail(); map.draw(); markStrip();
-  if (!quiet) history.replaceState(null, '', p.id ? `#ort=${p.id}-${slug(p.n)}` : `#punkt=${p.la.toFixed(5)},${p.lo.toFixed(5)}`);
+  // sandboxed CMS iframes may forbid touching the URL: the selection must work anyway
+  if (!quiet) try { history.replaceState(null, '', p.id ? `#ort=${p.id}-${slug(p.n)}` : `#punkt=${p.la.toFixed(5)},${p.lo.toFixed(5)}`); } catch (e) { /* ignore */ }
 }
 function selectPoint(la, lo, quiet) {
   const z = sample(G, la, lo); if (!(z > 0)) return;
@@ -240,7 +241,8 @@ function fillCard() {
   }
   cn.textContent = ct;
   const hi = map.showHect && p.t === 'point' ? hectIndexAt(p.la, p.lo) : -1;
-  $('#card-hect').textContent = hi >= 0 ? `Diese Hektare (30-m-Rechnung): ${hectText(hi)}` : '';
+  $('#card-hect').textContent = hi >= 0 ? `Genauere Rechnung für diese Hektare: ${hectText(hi)}` : '';
+  $('#mstrip').innerHTML = `<span><b>${p.n}</b> · ${dateLabel(state.day)}: ${st.sun ? hm(st.sun) + ' direkte Sonne' : 'keine direkte Sonne'}</span><span class="go">Mehr ↓</span>`;
   updateCardNow(); spark();
 }
 function spark() {
@@ -369,6 +371,10 @@ function bindControls() {
   list.addEventListener('pointerdown', e => { const li = e.target.closest('li[data-k]'); if (li) { e.preventDefault(); choose(hits[+li.dataset.k]); } });
   $('#spark').addEventListener('click', e => { stop(); setDay(Math.floor(e.offsetX / e.currentTarget.clientWidth * NDAYS)); });
   $('#to-detail').addEventListener('click', () => $('#ort').scrollIntoView({ behavior: 'smooth' }));
+  $('#mstrip').addEventListener('click', () => $('.card').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  // 'Wie genau?' links open the accuracy box before scrolling to it
+  $$('a.genau').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const d = $('#genau'); d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+  if (innerWidth <= 760) $('#q').placeholder = 'Ort suchen';
   $('#share').addEventListener('click', async () => {
     const url = location.href; try { await navigator.clipboard.writeText(url); $('#share').textContent = 'Link kopiert'; } catch { prompt('Link zu diesem Ort:', url); }
     setTimeout(() => $('#share').textContent = 'Link zu diesem Ort', 1800);

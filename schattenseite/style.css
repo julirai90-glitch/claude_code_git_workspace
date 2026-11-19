@@ -194,7 +194,10 @@ footer { max-width: var(--w); margin: 0 auto; padding: 18px 24px 48px; font-size
   .search { top: 12px; left: 12px; width: calc(100% - 76px); }
   .zoom { top: 12px; right: 12px; }
   #zoom-in, #zoom-out { display: none; }
-  .search { width: calc(100% - 182px); }
+  .search { width: calc(100% - 190px); }
+  .zoom { gap: 6px; border: 0; overflow: visible; }
+  .zoom button { height: 44px; min-width: 44px; border: 1px solid var(--line); border-radius: 12px; }
+
   .hlegend { top: 58px; left: 12px; right: 12px; max-width: none; }
   .hint { display: none; }
   .controls { position: relative; left: 0; right: 0; bottom: 0; order: 2; border-radius: 0; border-left: 0; border-right: 0; padding: 12px 14px; }
@@ -208,7 +211,8 @@ footer { max-width: var(--w); margin: 0 auto; padding: 18px 24px 48px; font-size
   .gantt { --nm: 120px; --lab: 74px; font-size: .8rem; }
   .gantt .nm span, .gantt .lab span { display: none; }
   .cols { grid-template-columns: 1fr; gap: 10px; }
-  .months span:nth-child(even) { color: transparent; }
+  .months { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .months span:nth-child(even) { display: none; }   /* every second month only, labels would be clipped */
 }
 
 .spark { display: block; width: 100%; height: 38px; margin-top: 12px; cursor: pointer; }
@@ -250,3 +254,15 @@ body.busy .card, body.busy .detail { opacity: .65; transition: opacity .15s; }
   .gantt .row { min-height: 40px; }
   .mapwrap::before { content: 'Zwei Finger: Karte verschieben · Tippen: Ort wählen'; position: absolute; top: 62px; left: 14px; z-index: 3; font-size: .7rem; color: rgba(240,236,226,.7); text-shadow: 0 1px 3px #000; pointer-events: none; }
 }
+
+/* phones: one-line result directly below the map (the full card sits below the controls) */
+.mstrip { display: none; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 10px 14px; border: 0; border-bottom: 1px solid var(--line); background: #111830; color: var(--ink); font-size: .9rem; text-align: left; }
+.mstrip b { font-weight: 600; } .mstrip .go { color: var(--sun); white-space: nowrap; font-size: .84rem; }
+/* accuracy box: closed by default, at the start of the method section */
+.genau { display: inline-block; margin-top: 4px; font-size: .76rem; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.hlegend .genau { display: block; margin-top: 6px; }
+.genaubox { margin: 14px 0 22px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.025); padding: 0 16px; }
+.genaubox summary { cursor: pointer; padding: 12px 0; font-weight: 600; color: var(--ink); }
+.genaubox ul { margin: 0 0 14px; padding-left: 18px; color: #d3cdbf; font-size: .92rem; line-height: 1.5; }
+.genaubox li { margin-bottom: 7px; }
+@media (max-width: 760px) { .mstrip { display: flex; order: 1; } }
