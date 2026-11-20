@@ -1,0 +1,55 @@
+{
+  "name": "Scuol",
+  "bfs": 3762,
+  "boundary_year": "aktuell",
+  "clip": [
+    2815000,
+    1184000,
+    2821000,
+    1188500
+  ],
+  "terrain_km": [
+    2813,
+    2823,
+    1182,
+    1191
+  ],
+  "start": [
+    2817902,
+    1186649
+  ],
+  "start_note": "Via da la Staziun 2, Scuol (geo.admin SearchServer)",
+  "area_text": "Scuol, Vulpera, Nairs und Tarasp – ein Ausschnitt von 6 × 4,5 km aus der Gemeinde Scuol (rund 440 km²); Ftan, Sent, Ardez, Guarda und die übrigen Fraktionen fehlen",
+  "place_classes": [
+    "neighbourhood",
+    "village"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Scuol-Tarasp",
+      "Bahnhof Scuol-Tarasp"
+    ],
+    [
+      "castle",
+      "Chastè da Tarasp",
+      "Schloss Tarasp"
+    ],
+    [
+      "swimming_pool",
+      "Bogn Engiadina Scuol",
+      "Bogn Engiadina"
+    ],
+    [
+      "hospital",
+      "Ospidal d'Engiadina Bassa Scuol",
+      "Spital"
+    ],
+    [
+      "stadium",
+      "Halla da glatsch Gurlaina",
+      "Eishalle Gurlaina"
+    ]
+  ]
+}

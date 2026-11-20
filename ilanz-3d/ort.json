@@ -1,0 +1,55 @@
+{
+  "name": "Ilanz/Glion",
+  "bfs": 3619,
+  "boundary_year": "aktuell",
+  "clip": [
+    2732500,
+    1179500,
+    2737500,
+    1184000
+  ],
+  "terrain_km": [
+    2730,
+    2740,
+    1177,
+    1187
+  ],
+  "start": [
+    2735100,
+    1181968
+  ],
+  "start_note": "Bushaltestelle Ilanz, Bahnhof/Post (geo.admin SearchServer)",
+  "area_text": "Ilanz mit Strada, Schnaus, Ruschein, Castrisch, Sevgein und Luven – ein Ausschnitt von 5 × 4,5 km aus der Gemeinde Ilanz/Glion (rund 130 km²); die übrigen Dörfer der Gemeinde fehlen",
+  "place_classes": [
+    "neighbourhood",
+    "village"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Ilanz",
+      "Bahnhof Ilanz"
+    ],
+    [
+      "hospital",
+      "Regionalspital Surselva Ilanz",
+      "Regionalspital"
+    ],
+    [
+      "christian",
+      "Dominikanerinnenkloster Ilanz",
+      "Kloster Ilanz"
+    ],
+    [
+      "ruins",
+      "Burgruine Castelberg",
+      "Burgruine Castelberg"
+    ],
+    [
+      "swimming_pool",
+      "Schwimmbad Fontanivas",
+      "Schwimmbad Fontanivas"
+    ]
+  ]
+}

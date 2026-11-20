@@ -1,0 +1,40 @@
+{
+  "name": "Domat/Ems",
+  "bfs": 3722,
+  "boundary_year": "aktuell",
+  "clip": null,
+  "terrain_km": [
+    2749,
+    2759,
+    1183,
+    1192
+  ],
+  "start": [
+    2753113,
+    1188851
+  ],
+  "start_note": "Ort Domat/Ems (swisstopo-Ortsnamen, geo.admin SearchServer)",
+  "area_text": "ganze Gemeinde Domat/Ems (Stand 2026)",
+  "place_classes": [
+    "neighbourhood",
+    "village"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Domat/Ems",
+      "Bahnhof Domat/Ems"
+    ],
+    [
+      "railway_station",
+      "Domat/Ems Werk",
+      "Bahnhof Ems Werk"
+    ],
+    [
+      "golf_course",
+      "Golfplatz Domat/Ems",
+      "Golfplatz"
+    ]
+  ]
+}

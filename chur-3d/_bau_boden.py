@@ -177,7 +177,8 @@ def write_places(data):
     from shapely.geometry import Point, Polygon
     g = json.load(open(os.path.join(HERE, "gebaeude.json")))
     ox, oy = g["origin_lv95"]
-    area = Polygon([(x + ox, y + oy) for x, y in g["area"]])
+    from shapely.geometry import MultiPolygon
+    area = MultiPolygon([Polygon([(x + ox, y + oy) for x, y in ring]) for ring in g.get("areas", [g["area"]])])
     out, seen = [], set()
     for x, y, t in data:
         for layer in ("place", "poi"):

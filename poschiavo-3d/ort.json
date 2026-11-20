@@ -1,0 +1,50 @@
+{
+  "name": "Poschiavo",
+  "bfs": 3561,
+  "boundary_year": "aktuell",
+  "clip": [
+    2799500,
+    1131000,
+    2803500,
+    1136000
+  ],
+  "terrain_km": [
+    2797,
+    2806,
+    1128,
+    1139
+  ],
+  "start": [
+    2801421,
+    1133662
+  ],
+  "start_note": "Bushaltestelle Poschiavo, Stazione (geo.admin SearchServer)",
+  "area_text": "Borgo di Poschiavo mit San Carlo und Li Curt – ein Ausschnitt von 4 × 5 km aus der Gemeinde Poschiavo (rund 190 km²)",
+  "place_classes": [
+    "neighbourhood",
+    "village"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Poschiavo",
+      "Stazione Poschiavo"
+    ],
+    [
+      "attraction",
+      "Vecchio Monastero Poschiavo",
+      "Vecchio Monastero"
+    ],
+    [
+      "church_tower",
+      "Santa Maria",
+      "Santa Maria"
+    ],
+    [
+      "hospital",
+      "Ospedale San Sisto Poschiavo",
+      "Ospedale San Sisto"
+    ]
+  ]
+}

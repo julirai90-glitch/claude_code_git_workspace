@@ -489,6 +489,9 @@ def main():
                     "av": f"Amtliche Vermessung (AV), Kanton Graubünden, {av_date}",
                     "grenze": f"swissBOUNDARIES3D, Gemeinde {CFG['name']} Stand {CFG['boundary_year']}"},
         "area": [[round(x - ox, 1), round(y - oy, 1)] for x, y in main_area.exterior.coords],
+        # all parts (exclaves such as Mutten/Thusis): labels are searched in every part
+        "areas": [[[round(x - ox, 1), round(y - oy, 1)] for x, y in g.exterior.coords]
+                  for g in getattr(area, "geoms", [area])],
         "boundary_lines": [[[round(x - ox, 1), round(y - oy, 1)] for x, y, *_ in ln] for ln in border],
     }
     json.dump(out, open(os.path.join(HERE, "gebaeude.json"), "w"), ensure_ascii=False, separators=(",", ":"))

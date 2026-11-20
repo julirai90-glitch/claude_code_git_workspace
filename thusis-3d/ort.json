@@ -1,0 +1,46 @@
+{
+  "name": "Thusis",
+  "bfs": 3668,
+  "boundary_year": "aktuell",
+  "clip": null,
+  "terrain_km": [
+    2749,
+    2760,
+    1167,
+    1177
+  ],
+  "start": [
+    2753072,
+    1173853
+  ],
+  "start_note": "Bushaltestelle Thusis, Bahnhof (geo.admin SearchServer)",
+  "area_text": "ganze Gemeinde Thusis mit Mutten (Stand 2026)",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Thusis",
+      "Bahnhof Thusis"
+    ],
+    [
+      "hospital",
+      "Spital Thusis",
+      "Spital"
+    ],
+    [
+      "swimming_pool",
+      "Waldschwimmbad Thusis",
+      "Waldschwimmbad"
+    ],
+    [
+      "ruins",
+      "Burgruine Obertagstein",
+      "Burgruine Obertagstein"
+    ]
+  ]
+}

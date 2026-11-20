@@ -1,0 +1,45 @@
+{
+  "name": "Klosters",
+  "bfs": 3871,
+  "boundary_year": "aktuell",
+  "clip": [
+    2784000,
+    1191500,
+    2789500,
+    1196500
+  ],
+  "terrain_km": [
+    2782,
+    2792,
+    1189,
+    1199
+  ],
+  "start": [
+    2786201,
+    1193774
+  ],
+  "start_note": "Bushaltestelle Klosters Platz, Bahnhof (geo.admin SearchServer)",
+  "area_text": "Klosters Platz, Klosters Dorf und Monbiel – ein Ausschnitt von 5,5 × 5 km aus der Gemeinde Klosters (rund 190 km²); Serneus, Saas, Küblis und die übrigen Fraktionen fehlen",
+  "place_classes": [
+    "neighbourhood",
+    "village"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Klosters Platz",
+      "Bahnhof Klosters Platz"
+    ],
+    [
+      "railway_station",
+      "Klosters Dorf",
+      "Bahnhof Klosters Dorf"
+    ],
+    [
+      "swimming_pool",
+      "Strandbad Klosters",
+      "Strandbad"
+    ]
+  ]
+}
