@@ -383,3 +383,24 @@ html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::after { content
 .strip text.sel { fill: #fff; font: 600 12px var(--sans); paint-order: stroke; stroke: rgba(8,12,26,.95); stroke-width: 4px; pointer-events: none; }
 .embed-tag21 .search { position: relative; top: auto; left: auto; width: 100% !important; flex: none; margin: 0 0 6px; }
 .embed-tag21 .search ul { position: absolute; left: 0; right: 0; top: 100%; z-index: 10; }
+/* ---- editor feedback 20.11. ---- */
+/* phones: zoom buttons back, stacked at the right edge below the layer switch */
+@media (max-width: 760px) {
+  .zoom #zoom-in, .zoom #zoom-out, .zoom #zoom-fit { display: block; position: absolute; right: 0; width: 40px; height: 40px; min-width: 40px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); font-size: 1.1rem; }
+  .zoom #zoom-in { top: 50px; } .zoom #zoom-out { top: 94px; } .zoom #zoom-fit { top: 138px; }
+  .search { width: calc(100% - 148px) !important; }
+  .hlegend, .embed .hlegend { max-width: calc(100% - 78px); right: auto; }
+}
+/* map embed: box around canvas and overlays; on phones controls on top, map in the middle, result line below */
+.embed-karte .mapbox { position: absolute; inset: 0; }
+.embed-karte .mapbox #map { position: absolute; inset: 0; height: 100%; }
+.embed-karte .mapwrap::before { display: none; }
+@media (max-width: 760px) {
+  .embed-karte .mapbox { position: relative; inset: auto; flex: 1; min-height: 0; order: 2; }
+  .embed-karte .mapbox #map { position: absolute; inset: 0; height: 100%; min-height: 0; }
+  .embed-karte .controls { order: 1; border-top: 0; border-bottom: 1px solid var(--line); }
+  .embed-karte .mstrip { order: 3; border-bottom: 0; border-top: 1px solid var(--line); }
+}
+@media (max-width: 760px) and (pointer: coarse) {
+  .embed-karte .mapbox::before { content: 'Zwei Finger: Karte verschieben · Tippen: Ort wählen'; position: absolute; left: 12px; bottom: 8px; z-index: 3; font-size: .68rem; color: rgba(240,236,226,.75); text-shadow: 0 1px 3px #000; pointer-events: none; }
+}

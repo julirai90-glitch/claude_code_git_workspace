@@ -29,6 +29,11 @@ const EMBED = new URLSearchParams(location.search).get('embed');
 if (EMBED) document.documentElement.classList.add('embed', 'embed-' + EMBED);
 // these embeds fill a frame of fixed height (the CMS keeps only an inline iframe height)
 if (['karte', 'horizont', 'sonnenjahr', 'tag21'].includes(EMBED)) document.documentElement.classList.add('fit');
+if (EMBED === 'karte') {                      // controls above the map: overlays move into a box around the canvas
+  const mw = document.getElementById('karte'), box = document.createElement('div'); box.className = 'mapbox';
+  mw.insertBefore(box, document.getElementById('map'));
+  ['#map', '.search', '.zoom', '#hlegend', '.hint', '#touchhint'].forEach(s => { const e = document.querySelector(s); if (e) box.appendChild(e); });
+}
 // in embeds the accuracy box is open from the start: the frame cannot grow when it is opened
 if (EMBED && document.getElementById('genau')) document.getElementById('genau').open = true;   // script runs at the end of body
 async function init() {
@@ -525,10 +530,6 @@ async function toggleHect(on) {
   }
   map.showHect = on; b.setAttribute('aria-pressed', on); $('#hlegend').hidden = !on;
   document.documentElement.classList.toggle('hect-on', on);
-  if (on && map.view.s < map.fitS * 7) {
-    const s = map.fitS * 10, I = map.insets(), p = state.place && state.place.X != null ? state.place : { X: map.view.x + (I.l - I.r) / 2 / map.view.s, Y: map.view.y + (I.t - I.b) / 2 / map.view.s };
-    map.flyTo(p.X - (I.l - I.r) / 2 / s, p.Y - (I.t - I.b) / 2 / s, s);
-  }
   if (!on && map.view.s > map.maxS) map.zoomAt(map.W / 2, map.H / 2, map.maxS / map.view.s);
   map.draw(); fillCard();
 }
