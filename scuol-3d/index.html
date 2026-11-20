@@ -19,6 +19,8 @@
     backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   #head { top: 12px; left: 12px; padding: 10px 14px; max-width: 340px; z-index: 4; }   /* hit list above the pad */
   #head h1 { margin: 0; font-size: 18px; letter-spacing: .01em; }
+  #alle { float: right; font-size: 12.5px; font-weight: 400; color: var(--accent); text-decoration: none; padding: 3px 0 3px 8px; }
+  #alle:hover { text-decoration: underline; }
   #head p { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
   #search { position: relative; margin-top: 8px; }
   /* 16px keeps iOS from zooming into the field */
@@ -113,7 +115,8 @@
 <div id="gate" role="button" tabindex="0"><span>Antippen, um die Karte zu bewegen</span></div>
 
 <div id="head" class="panel">
-  <h1><span class="ortname">Scuol</span> 3D <span style="font-weight:400;color:var(--muted);font-size:12px">Prototyp</span></h1>
+  <h1><span class="ortname">Scuol</span> 3D <span style="font-weight:400;color:var(--muted);font-size:12px">Prototyp</span>
+    <a id="alle" href="../graubuenden-3d/" target="_top">Alle Orte</a></h1>
   <p>Alle Gebäude von <span class="ortname">Scuol</span>. Ebene «Baujahr» wählen und den Schieber ziehen: Wann wurden die heutigen Gebäude gebaut? Abgerissene fehlen. Gebäude antippen für Details.</p>
   <div id="search">
     <input id="q" type="search" placeholder="Adresse suchen, z. B. Poststrasse 33" autocomplete="off" spellcheck="false"
@@ -328,6 +331,7 @@ const START = ORT.start;
 document.title = `${ORT.name} 3D`;
 document.querySelectorAll(".ortname").forEach(e => { e.textContent = ORT.name; });
 document.getElementById("areatext").textContent = ORT.area_text;
+document.getElementById("alle").href = "../graubuenden-3d/?g=" + encodeURIComponent(ORT.gemeinde || ORT.name);
 // first year of slider and histogram: places with few old buildings start later (everything older is in the first bar)
 const T0 = ORT.start_year || 1800;
 
