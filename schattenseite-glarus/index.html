@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Schattenseite – wo im Kanton Glarus im Winter die Sonne fehlt</title>
+<meta name="description" content="Für 77 Glarner Orte berechnet: wie viel direkte Sonne die Berge am kürzesten Tag übrig lassen – und wo sie wochenlang ganz ausbleibt.">
+<meta property="og:title" content="Die Schattenseite – wo im Kanton Glarus im Winter die Sonne fehlt">
+<meta property="og:description" content="Für 77 Glarner Orte berechnet: wie viel direkte Sonne die Berge am kürzesten Tag übrig lassen.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://julirai90-glitch.github.io/claude_code_git_workspace/schattenseite-glarus/">
+<meta property="og:image" content="https://julirai90-glitch.github.io/claude_code_git_workspace/schattenseite-glarus/share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="de_CH">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://julirai90-glitch.github.io/claude_code_git_workspace/schattenseite-glarus/">
+<meta name="theme-color" content="#0b1020">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%230b1020%22/%3E%3Ccircle cx=%2216%22 cy=%2220%22 r=%229%22 fill=%22%23ffc861%22/%3E%3Cpath d=%22M0 22l8-8 6 5 7-9 11 12v10H0z%22 fill=%22%232a3c63%22/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/fraunces-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script>/* embed classes before the big data files load, so embeds never flash the full page */(function(){var e=new URLSearchParams(location.search).get("embed");if(!e)return;var c=document.documentElement.classList;c.add("embed","embed-"+e);if(["karte","horizont","sonnenjahr"].indexOf(e)>=0)c.add("fit");})();</script>
+</head>
+<body>
+
+<header class="hero">
+  <p class="kicker">Glarus in Zahlen · Modellrechnung</p>
+  <h1>Die Schattenseite</h1>
+  <p class="dek">Am 21. Dezember scheint die Sonne in Glarus nur <span id="hero-sun">rund vier Stunden</span> direkt auf den Ortspunkt – ohne Berge wären es <span id="hero-flat">rund 8,5 Stunden</span>. In <span id="hero-top">Elm</span> bleibt sie <span id="hero-days">26</span> Tage ganz weg. Für <span id="n-places">77</span> Orte ist hier berechnet, wie viel Sonne die Berge übrig lassen.</p>
+  <p class="today" id="today" aria-live="polite">&nbsp;</p>
+</header>
+
+<section id="karte" class="mapwrap" aria-label="Karte">
+  <div id="loading" role="status"><div><b>Die Sonne geht gleich auf …</b><small>Gelände wird geladen</small></div></div>
+  <div class="search">
+    <label for="q" class="vh">Ort suchen</label>
+    <input id="q" type="search" placeholder="Ort suchen, z. B. Elm" autocomplete="off" role="combobox" aria-controls="q-list" aria-expanded="false">
+    <ul id="q-list" role="listbox" hidden></ul>
+  </div>
+  <canvas id="map" aria-label="Reliefkarte des Kantons Glarus mit berechneten Schatten. Klick auf einen Ort oder einen beliebigen Punkt."></canvas>
+  <div class="zoom" role="group" aria-label="Zoom">
+    <button id="zoom-in" aria-label="Hineinzoomen">+</button><button id="zoom-out" aria-label="Herauszoomen">−</button><button id="zoom-fit" aria-label="Ganzer Kanton">⤢</button><button id="hect" class="hbtn" aria-pressed="false" title="Wohngebiete nach Tagen ohne direkte Sonne einfärben">Wohngebiete</button>
+  </div>
+  <div id="hlegend" class="hlegend" hidden><span class="ht">Wohngebiete: Tage ohne direkte Sonne (Juli 2026 bis Juni 2027)</span><span class="hsw"></span><a href="#genau" class="genau">Wie genau?</a></div>
+  <button id="mstrip" class="mstrip" type="button" aria-label="Zum Ergebnis"></button>
+  <div class="hint">Klick auf einen Ort – oder irgendwo in die Karte</div>
+  <div id="touchhint" class="touchhint" aria-hidden="true">Karte mit zwei Fingern verschieben und zoomen · Tippen wählt einen Ort</div>
+
+  <aside class="card" aria-live="polite">
+    <div class="card-head">
+      <h2 id="card-name">–</h2>
+      <p id="card-sub"></p>
+    </div>
+    <div class="card-num"><span class="lbl">Direkte Sonne am <span id="card-day"></span></span><strong id="card-sun">–</strong><span id="card-flat" class="muted"></span></div>
+    <canvas id="spark" class="spark" title="Direkte Sonne pro Tag, Juli bis Juni – Klick wählt das Datum" aria-label="Jahreskurve der direkten Sonne"></canvas>
+    <div class="spark-ax" aria-hidden="true"><span>Juli</span><span>Jan.</span><span>Juni</span></div>
+    <p id="card-now" class="now"></p>
+    <p id="card-dark" class="dark"></p>
+    <p id="card-count" class="count"></p>
+    <p id="card-hect" class="hectnote"></p>
+    <a href="#genau" class="genau">Wie genau sind diese Zahlen?</a>
+    <button id="to-detail" class="link">Horizont und Jahreskalender ↓</button>
+  </aside>
+
+  <div class="controls">
+    <button id="play" class="play" aria-label="Tagesablauf abspielen"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-play" d="M8 5v14l11-7z"/><path class="i-pause" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+    <div class="sliders">
+      <div class="row1"><span id="clock" class="clock">–</span><span id="sunpos" class="muted"></span></div>
+      <div class="srow"><label for="time">Zeit</label><input id="time" type="range" min="420" max="1080" step="1"></div>
+      <div class="srow"><label for="day">Datum</label><div class="dayw"><input id="day" type="range" min="0" max="364" step="1"><div class="months" aria-hidden="true"><span>Juli</span><span>Aug.</span><span>Sept.</span><span>Okt.</span><span>Nov.</span><span>Dez.</span><span>Jan.</span><span>Feb.</span><span>März</span><span>Apr.</span><span>Mai</span><span>Juni</span></div></div></div>
+      <div class="quick"><button data-day="today">Heute</button><button data-day="12-21">21. Dez.</button><button data-day="2-1">1. Feb.</button><button data-day="3-20">20. März</button><button data-day="6-21">21. Juni</button></div>
+    </div>
+    <div class="legend" aria-label="Legende">
+      <span class="lt">Direkte Sonne an diesem Tag</span>
+      <span class="ramp"></span>
+      <span class="ticks"><span>0 h</span><span>2 h</span><span>4 h</span><span>6 h</span><span>8 h</span></span>
+      <span class="lt2"><i class="sw sun"></i>Gelände in der Sonne <i class="sw shade"></i>im Schatten</span>
+    </div>
+  </div>
+</section>
+
+<section class="findswrap" aria-label="Entdeckungen in den Daten">
+  <h2 class="fh">Entdeckungen</h2>
+  <div id="finds" class="finds"></div>
+</section>
+
+<section id="ort" class="detail">
+  <div class="dhead">
+    <div><h2 id="d-name">–</h2><p id="d-sub" class="muted"></p></div>
+    <button id="share" class="pill">Link zu diesem Ort</button>
+  </div>
+  <p id="d-sentence" class="sentence"></p>
+  <div id="tiles" class="tiles"></div>
+
+  <figure class="fig">
+    <figcaption><h3>Der Horizont</h3><p>Die Bergsilhouette rundherum, berechnet aus dem Höhenmodell, darüber die Bahn der Sonne. Durchgezogen: direkte Sonne, gestrichelt: Sonne hinter dem Berg. Die Zahlen sind die Uhrzeiten.</p>
+      <div class="seg" role="group" aria-label="Ausschnitt"><button data-view="south" class="on">Süden</button><button data-view="full">Rundum 360°</button></div>
+    </figcaption>
+    <div class="canvaswrap"><canvas id="pano" class="pano" aria-label="Horizontpanorama mit Sonnenbahnen"></canvas><div id="pano-tip" class="tip" hidden></div></div>
+    <div class="srow srow-pano"><label for="time2">Uhrzeit</label><input id="time2" type="range" min="420" max="1080" step="1"><output id="time2-val" class="pano-time" for="time2" aria-live="off"></output></div>
+  </figure>
+
+  <figure class="fig">
+    <figcaption><h3>Das Sonnenjahr</h3><p>Jede Spalte ist ein Tag von Juli bis Juni, von oben nach unten die Uhrzeit. <i class="sw sun"></i>direkte Sonne <i class="sw shade"></i>Tag, aber Schatten <i class="sw night"></i>Nacht. Die Sprünge Ende Oktober und Ende März sind die Zeitumstellung. Klick wählt das Datum.</p></figcaption>
+    <div class="canvaswrap"><canvas id="carpet" class="carpet" aria-label="Kalender der direkten Sonne über das ganze Jahr"></canvas><div id="carpet-tip" class="tip" hidden></div></div>
+  </figure>
+</section>
+
+<section id="liste" class="lists">
+  <h2>Die Schattenliste</h2>
+  <p class="intro">In <span id="n-dark">–</span> von <span id="n-vil">30</span> Dörfern erreicht laut Rechnung mindestens einen Tag lang kein direkter Sonnenstrahl den Ortspunkt. Am längsten dauert es in <span id="lead-top">–</span>: <span id="lead-top-days">–</span> Tage. Die blasse Verlängerung zeigt, wie sich die Zeitspanne verschiebt, wenn der Horizont 0,5 Grad höher liegt – so gross ist die typische Ungenauigkeit des Höhenmodells.</p>
+  <div class="opts"><label><input type="checkbox" id="with-ham"> auch <span id="n-ham">47</span> Weiler zeigen</label><span id="gantt-n" class="muted"></span></div>
+  <div id="gantt"></div>
+
+  <h2 class="mt">Alle Dörfer am kürzesten Tag</h2>
+  <p class="intro">Minuten direkter Sonne am 21. Dezember, jedes Dorf ein Punkt. Links die Schattenlöcher, rechts die Sonnenterrassen.</p>
+  <div id="strip" class="strip"></div>
+  <p id="strip-note" class="muted small"></p>
+</section>
+
+<section id="methode" class="method">
+  <h2>So haben wir gerechnet</h2>
+  <p class="kinote">Die Berechnungen, die Karte und alle Grafiken entstehen aus Programmcode, den wir mithilfe künstlicher Intelligenz (Claude von Anthropic) geschrieben haben. Idee und Fragestellung stammen von der Redaktion, die auch die journalistische Verantwortung trägt.</p>
+  <details id="genau" class="genaubox">
+    <summary>Wie genau sind diese Zahlen?</summary>
+    <ul>
+      <li><b>Modell, nicht Messung.</b> Gerechnet wird, was die Berge an Sonne zulassen – bei wolkenlosem Himmel. Wolken, Nebel und Hochnebel sind nicht berücksichtigt.</li>
+      <li><b>Typische Abweichung:</b> Der berechnete Horizont weicht im Mittel um 0,57 Grad von den Höhenprofilen von swisstopo ab. Liegt er 0,5 Grad höher, kommen in Elm 8 und in Mühlehorn 11 Tage dazu; liegt er 0,5 Grad tiefer, sind es in Elm 11 Tage weniger und in Mühlehorn keine mehr (Mühlehorn ist ein Kippfall: 0 bis 30 Tage). Die blasse Verlängerung in der Schattenliste zeigt das.</li>
+      <li><b>Kippzonen:</b> Wo die Sonne gerade noch über einen Grat streift, entscheiden Zehntelgrade. Ein Tag mit einer einzigen Minute Sonne durch eine Lücke im Grat zählt als Sonnentag. Am Rand einer Schattenzone kann die Zahl der Schattentage deshalb um Wochen danebenliegen, im Kern ist sie stabil.</li>
+      <li><b>Martinsloch bei Elm:</b> Die Sonne steht am 30. September um 9:34 Uhr (Sommerzeit) und am 13. März um 8:54 Uhr (Winterzeit) in der Richtung vom Ortspunkt Elm zum Martinsloch im Tschingelhörner-Grat (berechnet, Abweichung 0,02 bzw. 0,17 Grad; Lage des Lochs nach dem Ortsverzeichnis von swisstopo). Ein Loch im Fels bildet das Höhenmodell nicht ab: Die Sonne durch das Loch ist in den Zahlen nicht enthalten, und der berechnete Horizont liegt dort mit 20,3 Grad knapp unter dem Loch (20,9 Grad), also im Bereich der Unsicherheit.</li>
+      <li><b>Wohngebiete:</b> Der Wert gilt für die Lage eines Quadrats von 100 × 100 Metern, nicht für ein einzelnes Haus. Nachbarhäuser und Bäume näher als 100 Meter zählen nicht. Für Glarus gibt es keine Gegenrechnung mit dem Oberflächenmodell von swisstopo (mit Wald und Häusern); in einer Testrechnung für Chur West in Graubünden ergab sie im Schnitt 3 bis 6 Tage mehr.</li>
+      <li><b>Zwei Zahlen für denselben Ort:</b> Ein Klick in die Karte rechnet sofort im Browser, mit einem gröberen Gelände (150 Meter). Die Werte der Wohngebiete und der 77 Orte stammen aus der Rechnung mit 30 Metern und sind genauer. Kleine Unterschiede sind deshalb normal.</li>
+      <li><b>Direkte Sonne</b> heisst: Die Mitte der Sonnenscheibe steht über dem Gelände. Streift die Sonne knapp am Grat entlang, kann ihr oberer Rand noch kurz hervorblitzen.</li>
+    </ul>
+  </details>
+  <div class="cols">
+    <div>
+      <h3>Das Modell</h3>
+      <ol>
+        <li><b>Gelände:</b> Copernicus-Höhenmodell GLO-30 (Auflösung rund 30 Meter) für den Kanton Glarus und einen Rand von rund 35 Kilometern, inklusive der Berge in den Nachbarkantonen. Gebäude und kleine Baumgruppen (schmaler als rund 150 Meter) wurden herausgefiltert, grosse Wälder zählen als Hindernis.</li>
+        <li><b>Orte:</b> 77 Ortspunkte aus OpenStreetMap (30 Dörfer und Städte, 47 Weiler), Bodenhöhe vom Höhendienst von swisstopo. Ein Ort ist ein Punkt – meist der Dorfkern. Hundert Meter weiter am Hang kann es anders aussehen.</li>
+        <li><b>Wohngebiete (Schalter «Wohngebiete» auf der Karte):</b> 3’288 bewohnte Quadrate von 100 × 100 Metern (Raster des Bundes) mit insgesamt 14’063 bestehenden Wohngebäuden aus dem eidgenössischen Gebäude- und Wohnungsregister (GWR, Stand 20.11.2026). Gerechnet wird pro Quadrat an einem Punkt – beim Wohngebäude, das der Mitte der Gebäude am nächsten liegt –, mit Bodenhöhe von swisstopo und dem 30-Meter-Gelände. Die Zahl gilt für die Lage, nicht für ein einzelnes Haus: Nachbarhäuser und Bäume in der Nähe sind nicht berücksichtigt.</li>
+        <li><b>Horizont:</b> Für jeden Ort in 720 Richtungen (alle 0,5 Grad) der höchste Geländewinkel bis 35 Kilometer Distanz, mit Erdkrümmung und Lichtbrechung. Hindernisse näher als 100 Meter (Nachbarhäuser, Bäume) zählen nicht.</li>
+        <li><b>Sonne:</b> Sonnenstand nach den astronomischen Formeln der US-Wetterbehörde NOAA, Minute für Minute für jeden Tag vom 1. Juli 2026 bis 30. Juni 2027, mit Lichtbrechung. «Direkte Sonne» heisst: Die Mitte der Sonnenscheibe steht über dem Gelände.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Geprüft</h3>
+      <ul>
+        <li><b>Sonnenstand:</b> Abweichung zur unabhängigen Bibliothek SunCalc höchstens 0,02 Grad; Tageslänge Glarus am 21.12. 8 h 31 min, SunCalc 8 h 30 min.</li>
+        <li><b>Horizont:</b> 100 Stichproben (20 Orte, je 5 Richtungen) gegen Höhenprofile von swisstopo (swissALTI3D/DHM25): mittlere Abweichung 0,57 Grad, Median der Differenz −0,14 Grad (das Modell liegt im Mittel etwas tiefer, die Rechnung ist also eher zu sonnig als zu schattig); 80 % der Stichproben liegen zwischen −0,66 und +0,92 Grad.</li>
+      </ul>
+      <h3>Grenzen</h3>
+      <ul>
+        <li>Keine Wolken, kein Nebel, keine Gebäude: Es geht um die Sonne, die das Gelände durchlässt – nicht um gemessenen Sonnenschein.</li>
+        <li>Ein halbes Grad Horizontfehler verschiebt Sonnenauf- und -untergang um wenige Minuten, den Beginn der Schattenzeit aber um Tage. Deshalb die Spannweiten.</li>
+        <li>Berge weiter als 35 Kilometer entfernt fehlen; das betrifft höchstens die Minuten kurz nach Sonnenaufgang und vor Sonnenuntergang.</li>
+        <li>Klicks auf beliebige Kartenpunkte rechnen im Browser mit einem gröberen 150-Meter-Gitter.</li>
+        <li>Die Schatten auf der Karte sind eine Veranschaulichung; massgebend sind die Zahlen pro Ort.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="src"><b>Quellen:</b> Copernicus GLO-30 DEM © DLR e.V. 2010–2014 und © Airbus Defence and Space GmbH 2014–2018, bereitgestellt im Rahmen von COPERNICUS durch die Europäische Union und die ESA (abgerufen am 20.11.2026) · Bodenhöhen und Kontrollprofile: Bundesamt für Landestopografie swisstopo, api3.geo.admin.ch · Orte und Grenzen: © OpenStreetMap-Mitwirkende, ODbL (Stand 20.11.2026) · Seen, Flüsse, Bahn und Hauptstrassen: © OpenStreetMap-Mitwirkende, ODbL (Stand 20.11.2026) · Wohngebäude: Eidgenössisches Gebäude- und Wohnungsregister GWR, Bundesamt für Statistik, via map.geo.admin.ch (Stand 20.11.2026) · Sonnenstand: NOAA Solar Calculator. Rechenskripte im Ordner <code>_build/</code>.</p>
+</section>
+
+<p class="embed-credit">Die Schattenseite · Modellrechnung aus Copernicus-Höhenmodell, swisstopo, OpenStreetMap</p>
+<footer>
+  <p>Die Schattenseite · Konzept und Recherche: Julian Reich · Berechnungen und Grafiken mit Code, der mithilfe künstlicher Intelligenz entstanden ist · Schriften: Fraunces, Inter (SIL Open Font License)</p>
+</footer>
+
+<script src="data/dem.js"></script>
+<script src="data/places.js"></script>
+<script src="data/outline.js"></script>
+<script src="js/bundle.js?v=20261120i"></script>
+</body>
+</html>

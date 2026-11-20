@@ -1,0 +1,4 @@
+[out:json][timeout:180];
+area["ISO3166-2"="CH-GL"]->.gl;
+rel(area.gl)["boundary"="administrative"]["admin_level"~"^(4|8)$"];
+out geom;
