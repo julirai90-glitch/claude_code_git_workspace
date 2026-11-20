@@ -377,7 +377,9 @@ html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::after { content
 @media (max-width: 760px) { .strip { height: 560px; } .strip svg { height: 100%; } }
 .embed-tag21 .mapwrap, .embed-tag21 .detail { display: none; }
 .embed-tag21 .lists { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 10px 12px 6px; max-width: none; }
-.embed-tag21 .lists > :not(#strip) { display: none; }
+.embed-tag21 .lists > :not(#strip):not(.search) { display: none; }
 .embed-tag21 #strip { flex: 1; min-height: 0; height: auto; }
 .embed-tag21 .lists, .embed-horizont #ort, .embed-sonnenjahr #ort { width: 100%; margin: 0; box-sizing: border-box; }
 .strip text.sel { fill: #fff; font: 600 12px var(--sans); paint-order: stroke; stroke: rgba(8,12,26,.95); stroke-width: 4px; pointer-events: none; }
+.embed-tag21 .search { position: relative; top: auto; left: auto; width: 100% !important; flex: none; margin: 0 0 6px; }
+.embed-tag21 .search ul { position: absolute; left: 0; right: 0; top: 100%; z-index: 10; }
