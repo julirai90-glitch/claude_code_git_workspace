@@ -27,6 +27,8 @@ init().catch(err => { console.error(err); $('#loading').textContent = 'Die Daten
 
 const EMBED = new URLSearchParams(location.search).get('embed');
 if (EMBED) document.documentElement.classList.add('embed', 'embed-' + EMBED);
+// in embeds the accuracy box is open from the start: the frame cannot grow when it is opened
+if (EMBED && document.getElementById('genau')) document.getElementById('genau').open = true;   // script runs at the end of body
 async function init() {
   [G, P] = await Promise.all([loadDem(), loadPlaces()]);
   places = P.places;

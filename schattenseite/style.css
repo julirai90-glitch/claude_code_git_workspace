@@ -294,3 +294,5 @@ body.busy .card, body.busy .detail { opacity: .65; transition: opacity .15s; }
   .gantt .nm { grid-area: nm; } .gantt .lab { grid-area: lab; padding-right: 6px; } .gantt .bar { grid-area: bar; }
 }
 @media (max-width: 520px) { .gantt .axis i:last-child span { display: none; } }
+/* embeds with a fixed frame height: nothing may expand (it would be cut off) */
+.embed .opts label { display: none; }
