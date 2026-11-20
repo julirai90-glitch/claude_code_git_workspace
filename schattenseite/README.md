@@ -18,7 +18,7 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
 - Neu am 16.11.: Einstieg mit Chur-Befund (Zahlen aus den Daten gefüllt), Startort Chur statt Stampa,
   Schattenorte auf der Karte gross/violett/beschriftet, Entdeckungen mobil untereinander, Countdown in der
   Ortskarte («Noch N Tage bis zur Sonne»), zweiter Uhrzeitregler unter dem Horizontpanorama (`#time2`, synchron
-  mit `#time`), `bundle.js?v=…` in `index.html` (bei Änderungen am Bundle hochzählen).
+  mit `#time`), `bundle.js?v=…` und `style.css?v=…` in `index.html` (bei jeder Änderung an JS oder CSS beide hochzählen).
 - Publikationstermin: **nicht entschieden**. Vorschlag (Claude): Hauptstück um den 21.12., vorher Verifikation /
   Leseraufruf, im Jan./Feb. Folgen zur Rückkehr der Sonne.
 
