@@ -43,13 +43,14 @@ export class Carpet {
   draw() {
     if (!this.stats) return;
     const dpr = Math.min(devicePixelRatio || 1, 2.5), g = this.geom(), ctx = this.ctx; if (!g.W) return;
-    if (this.cv.width !== Math.round(g.W * dpr)) { this.cv.width = Math.round(g.W * dpr); this.cv.height = Math.round(g.H * dpr); }
+    if (this.cv.width !== Math.round(g.W * dpr) || this.cv.height !== Math.round(g.H * dpr)) { this.cv.width = Math.round(g.W * dpr); this.cv.height = Math.round(g.H * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, g.W, g.H);
     ctx.imageSmoothingEnabled = false; ctx.drawImage(this.img, g.L, g.T, g.pw, g.ph);
     ctx.font = '11px Inter, system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.textBaseline = 'middle';
     for (let h = 6; h <= 21; h += 3) { const Y = g.T + (h * 60 - M0) / (M1 - M0) * g.ph; ctx.fillText(String(h).padStart(2, '0') + ' h', 0, Y); ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(g.L, Y, g.pw, 1); ctx.fillStyle = 'rgba(255,255,255,.55)'; }
     ctx.textAlign = 'center';
-    for (let d = 0; d < NDAYS; d++) { const [, m, dd] = ymd(d); if (dd === 1) { const X = g.L + d / NDAYS * g.pw; ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(X, g.T, 1, g.ph); ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillText(MON3[m - 1], X + g.pw / NDAYS * 15, g.H - 9); } }
+    const every = g.pw < 260 ? 3 : g.pw < 460 ? 2 : 1;   // narrow: label every 2nd/3rd month, the lines stay
+    for (let d = 0, k = 0; d < NDAYS; d++) { const [, m, dd] = ymd(d); if (dd === 1) { const X = g.L + d / NDAYS * g.pw; ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(X, g.T, 1, g.ph); ctx.fillStyle = 'rgba(255,255,255,.6)'; if (k++ % every === 0) ctx.fillText(MON3[m - 1], X + g.pw / NDAYS * 15, g.H - 9); } }
     ctx.textAlign = 'left';
     const mark = (d, col, w) => { const X = g.L + (d + .5) / NDAYS * g.pw; ctx.fillStyle = col; ctx.fillRect(X - w / 2, g.T - 2, w, g.ph + 4); };
     if (this.hd != null) mark(this.hd, 'rgba(255,255,255,.45)', 1);

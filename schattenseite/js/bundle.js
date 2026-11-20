@@ -654,7 +654,7 @@ class Panorama {
     if (!this.place) return;
     const dpr = Math.min(devicePixelRatio || 1, 2.5), cv = this.cv, ctx = this.ctx;
     const g = this.geom(); if (!g.W) return;
-    if (cv.width !== Math.round(g.W * dpr)) { cv.width = Math.round(g.W * dpr); cv.height = Math.round(g.H * dpr); }
+    if (cv.width !== Math.round(g.W * dpr) || cv.height !== Math.round(g.H * dpr)) { cv.width = Math.round(g.W * dpr); cv.height = Math.round(g.H * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const { W, H, v, x, y } = g, hz = this.place.hz;
     // sky
@@ -777,13 +777,14 @@ class Carpet {
   draw() {
     if (!this.stats) return;
     const dpr = Math.min(devicePixelRatio || 1, 2.5), g = this.geom(), ctx = this.ctx; if (!g.W) return;
-    if (this.cv.width !== Math.round(g.W * dpr)) { this.cv.width = Math.round(g.W * dpr); this.cv.height = Math.round(g.H * dpr); }
+    if (this.cv.width !== Math.round(g.W * dpr) || this.cv.height !== Math.round(g.H * dpr)) { this.cv.width = Math.round(g.W * dpr); this.cv.height = Math.round(g.H * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, g.W, g.H);
     ctx.imageSmoothingEnabled = false; ctx.drawImage(this.img, g.L, g.T, g.pw, g.ph);
     ctx.font = '11px Inter, system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.textBaseline = 'middle';
     for (let h = 6; h <= 21; h += 3) { const Y = g.T + (h * 60 - M0) / (M1 - M0) * g.ph; ctx.fillText(String(h).padStart(2, '0') + ' h', 0, Y); ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(g.L, Y, g.pw, 1); ctx.fillStyle = 'rgba(255,255,255,.55)'; }
     ctx.textAlign = 'center';
-    for (let d = 0; d < NDAYS; d++) { const [, m, dd] = ymd(d); if (dd === 1) { const X = g.L + d / NDAYS * g.pw; ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(X, g.T, 1, g.ph); ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillText(MON3[m - 1], X + g.pw / NDAYS * 15, g.H - 9); } }
+    const every = g.pw < 260 ? 3 : g.pw < 460 ? 2 : 1;   // narrow: label every 2nd/3rd month, the lines stay
+    for (let d = 0, k = 0; d < NDAYS; d++) { const [, m, dd] = ymd(d); if (dd === 1) { const X = g.L + d / NDAYS * g.pw; ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(X, g.T, 1, g.ph); ctx.fillStyle = 'rgba(255,255,255,.6)'; if (k++ % every === 0) ctx.fillText(MON3[m - 1], X + g.pw / NDAYS * 15, g.H - 9); } }
     ctx.textAlign = 'left';
     const mark = (d, col, w) => { const X = g.L + (d + .5) / NDAYS * g.pw; ctx.fillStyle = col; ctx.fillRect(X - w / 2, g.T - 2, w, g.ph + 4); };
     if (this.hd != null) mark(this.hd, 'rgba(255,255,255,.45)', 1);
@@ -830,6 +831,8 @@ init().catch(err => { console.error(err); $('#loading').textContent = 'Die Daten
 
 const EMBED = new URLSearchParams(location.search).get('embed');
 if (EMBED) document.documentElement.classList.add('embed', 'embed-' + EMBED);
+// these embeds fill a frame of fixed height (the CMS keeps only an inline iframe height)
+if (['karte', 'horizont', 'sonnenjahr'].includes(EMBED)) document.documentElement.classList.add('fit');
 // in embeds the accuracy box is open from the start: the frame cannot grow when it is opened
 if (EMBED && document.getElementById('genau')) document.getElementById('genau').open = true;   // script runs at the end of body
 async function init() {
@@ -850,6 +853,9 @@ async function init() {
   map.isShadow = p => !(dayMinutes.get(p) ?? 0);
   pano = new Panorama($('#pano'), $('#pano-tip'));
   carpet = new Carpet($('#carpet'), $('#carpet-tip'), d => setDay(d, true));
+  // fit embeds: the long explanations go into the article text, the frame keeps a one-line legend
+  if (EMBED === 'horizont') $('#ort .fig figcaption p').textContent = 'Durchgezogen: direkte Sonne · gestrichelt: hinter dem Berg';
+  if (EMBED === 'sonnenjahr') $$('#ort .fig')[1].querySelector('figcaption p').innerHTML = '<i class="sw sun"></i>direkte Sonne <i class="sw shade"></i>Schatten <i class="sw night"></i>Nacht · Klick wählt das Datum';
   bindControls(); bindHect();
   buildLists();
   // initial selection: hash, else Chur (strongest story: midday shadow on the shortest day)

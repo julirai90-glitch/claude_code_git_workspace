@@ -35,7 +35,7 @@ export class Panorama {
     if (!this.place) return;
     const dpr = Math.min(devicePixelRatio || 1, 2.5), cv = this.cv, ctx = this.ctx;
     const g = this.geom(); if (!g.W) return;
-    if (cv.width !== Math.round(g.W * dpr)) { cv.width = Math.round(g.W * dpr); cv.height = Math.round(g.H * dpr); }
+    if (cv.width !== Math.round(g.W * dpr) || cv.height !== Math.round(g.H * dpr)) { cv.width = Math.round(g.W * dpr); cv.height = Math.round(g.H * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const { W, H, v, x, y } = g, hz = this.place.hz;
     // sky

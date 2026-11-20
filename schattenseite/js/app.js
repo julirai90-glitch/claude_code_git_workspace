@@ -27,6 +27,8 @@ init().catch(err => { console.error(err); $('#loading').textContent = 'Die Daten
 
 const EMBED = new URLSearchParams(location.search).get('embed');
 if (EMBED) document.documentElement.classList.add('embed', 'embed-' + EMBED);
+// these embeds fill a frame of fixed height (the CMS keeps only an inline iframe height)
+if (['karte', 'horizont', 'sonnenjahr'].includes(EMBED)) document.documentElement.classList.add('fit');
 // in embeds the accuracy box is open from the start: the frame cannot grow when it is opened
 if (EMBED && document.getElementById('genau')) document.getElementById('genau').open = true;   // script runs at the end of body
 async function init() {
@@ -47,6 +49,9 @@ async function init() {
   map.isShadow = p => !(dayMinutes.get(p) ?? 0);
   pano = new Panorama($('#pano'), $('#pano-tip'));
   carpet = new Carpet($('#carpet'), $('#carpet-tip'), d => setDay(d, true));
+  // fit embeds: the long explanations go into the article text, the frame keeps a one-line legend
+  if (EMBED === 'horizont') $('#ort .fig figcaption p').textContent = 'Durchgezogen: direkte Sonne · gestrichelt: hinter dem Berg';
+  if (EMBED === 'sonnenjahr') $$('#ort .fig')[1].querySelector('figcaption p').innerHTML = '<i class="sw sun"></i>direkte Sonne <i class="sw shade"></i>Schatten <i class="sw night"></i>Nacht · Klick wählt das Datum';
   bindControls(); bindHect();
   buildLists();
   // initial selection: hash, else Chur (strongest story: midday shadow on the shortest day)

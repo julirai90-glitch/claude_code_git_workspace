@@ -296,3 +296,38 @@ body.busy .card, body.busy .detail { opacity: .65; transition: opacity .15s; }
 @media (max-width: 520px) { .gantt .axis i:last-child span { display: none; } }
 /* embeds with a fixed frame height: nothing may expand (it would be cut off) */
 .embed .opts label { display: none; }
+
+/* ---- fixed-height embeds (Südostschweiz CMS: no scripts, no <style>, only the iframe's own height) ---- */
+.embed #share { display: none; }                          /* no links out of the article */
+html.fit, html.fit body { height: 100%; overflow: hidden; }
+html.fit body { display: flex; flex-direction: column; }
+html.fit .embed-credit { flex: none; }
+/* karte: the map takes whatever is left after search, result line and controls */
+.embed-karte .mapwrap { flex: 1; min-height: 0; height: auto; max-width: none; border: 0; }
+@media (max-width: 760px) {
+  .embed-karte .mapwrap { display: flex; flex-direction: column; height: auto; }
+  .embed-karte #map { position: relative; flex: 1; min-height: 0; height: auto; }
+}
+/* horizont / sonnenjahr: place name, one figure, the canvas fills the rest */
+.embed-horizont .mapwrap, .embed-sonnenjahr .mapwrap { display: none; }
+.embed-horizont #ort, .embed-sonnenjahr #ort { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 14px 16px 6px; max-width: none; }
+.embed-horizont .sentence, .embed-horizont .tiles, .embed-horizont .fig + .fig,
+.embed-sonnenjahr .sentence, .embed-sonnenjahr .tiles, .embed-sonnenjahr .fig:first-of-type { display: none; }
+.embed-horizont .dhead h2, .embed-sonnenjahr .dhead h2 { font-size: 1.9rem; }
+.embed-horizont .fig, .embed-sonnenjahr .fig { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 12px; }
+.embed-horizont .canvaswrap, .embed-sonnenjahr .canvaswrap { flex: 1; min-height: 110px; }
+.embed-horizont .pano, .embed-sonnenjahr .carpet { height: 100%; }
+/* liste: only the bars, always in the narrow layout so the height hardly depends on the width */
+.embed-liste .lists .intro, .embed-liste .opts, .embed-liste #gantt ~ * { display: none; }
+.embed-liste .gantt { --nm: 0px; --lab: 0px; }
+.embed-liste .gantt .row { grid-template-columns: 1fr auto; grid-template-areas: "nm lab" "bar bar"; row-gap: 4px; padding: 5px 0; }
+.embed-liste .gantt .nm { grid-area: nm; } .embed-liste .gantt .lab { grid-area: lab; padding-right: 6px; } .embed-liste .gantt .bar { grid-area: bar; }
+.embed-liste .gantt .nm span, .embed-liste .gantt .lab span { display: none; }
+.embed-liste .gantt .axis i:last-child span { display: none; }
+/* very narrow columns: the search field keeps its width (the fit-to-canton button goes) */
+@media (max-width: 480px) { #zoom-fit { display: none; } .search { width: calc(100% - 146px) !important; } }
+.embed-horizont .fig h3, .embed-sonnenjahr .fig h3 { font-size: 1.2rem; }
+.embed-horizont .dhead, .embed-sonnenjahr .dhead { flex: none; }
+.embed-horizont .srow-pano { flex: none; margin-top: 6px; }
+.embed-karte .hint { display: none; }
+@media (pointer: fine) { .mapwrap::before { display: none; } }   /* touch hint only on touch screens */
