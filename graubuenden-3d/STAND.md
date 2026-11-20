@@ -7,16 +7,10 @@ Weckrufe (send_later): 02:00 trig_011oA4vWghrBevTAmHiwVJwD · 04:00 trig_01T9G1G
 Python-Umgebung: `~/.cache/orte-3d-venv/bin/python` (neu angelegt, fiona etc.). Cache `~/.cache/orte-3d`.
 Lokaler Branch ist 43 Commits hinter origin/gh-pages (nicht gepullt, weil EMBEDS.md lokal geändert ist – fremde Änderung, nicht anfassen).
 
-## Aktuell (00:15)
-- [x] Startcheck, Weckrufe, Gerüst
-- [x] 3D-Orte: Landquart, Domat/Ems, Thusis, Ilanz, Scuol, Klosters, Poschiavo, Guarda, Soglio, Vals, Zuoz (committet)
-- [x] Atlas + Einstiegsseite graubuenden-3d/index.html
-- [x] Kritikrunde 1 (Layout mobil, Rückweg, VZ-2000-Abgleich), Runde 2 (Randfälle, Einbettung)
-- [ ] Arosa, Flims, Maienfeld, Bergün: gebaut, Seiten erzeugt, NOCH NICHT geprüft/committet
-- [ ] Ladezeit-Messung (perf.js, 4× CPU-Drosselung) läuft
-- [ ] Kritikrunde 3, atlas.json neu bauen (Modelle-Liste), Vorschaubilder für die 4 neuen
-- [ ] Übergabe GUTEN-MORGEN.md
-
+## Aktuell – ABGESCHLOSSEN (00:18)
+- [x] 15 neue 3D-Orte, Atlas, Kritikrunden 1–3, Übergabe GUTEN-MORGEN.md
+- [x] Weckrufe gelöscht, Testserver beendet
+- Nichts gepusht.
 ## Probleme
 - Thusis: Exklave Mutten grösser als Hauptteil → Ortsnamen fehlten; behoben (gebaeude.json `areas`).
 - Soglio: Geländekacheln in Italien fehlen → terrain_km verschoben. 332/644 Gebäude ohne GWR-Treffer.
