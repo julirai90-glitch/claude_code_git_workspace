@@ -21,3 +21,23 @@ Geprüft: Atlas Desktop (1280×800) und iPhone 13 (Ganzseite), alle 14 3D-Seiten
 Faktenprüfung: Wohngebäude nach Bauperiode im GWR heute vs. Volkszählung 2000 (BFS px-x-0902020100_107):
 vor 1919 heute 22'630, 2000: 16'514. Unerwartet – als Hinweis in die Methode aufgenommen (siehe dort).
 Lage-Prüfung: alle 14 3D-Markierungen liegen in der richtigen Gemeinde (Punkt-in-Polygon, shapely).
+
+## Runde 2 – 20.11.2026 23:49
+
+Geprüft: Bedienung 3D (Scuol, Poschiavo: Ebene Baujahr, Adresssuche, Infobox), Atlas-Randfälle per Skript
+(`?g=` ungültig / klein geschrieben / mit Schrägstrich, Suche ohne Treffer, leere Suche, Umlaute «mus» → Müstair, Mustér,
+Pfeiltasten + Enter, Einheit Wohnungen, alle vier Kennzahlen, «Alle 100 zeigen»), Einbettung als iframe in 696 px Spalte.
+Konsole fehlerfrei. Atlas lädt lokal in rund 0,2 s (atlas.json 96 KB).
+
+| # | Schwäche | Massnahme |
+|---|---|---|
+| 1 | Modus Wohnungen: «Wohnungen stehen seit vor 1919» schief | «liegen in Gebäuden von vor 1919» (Lead und Detail) |
+| 2 | Legende «stärkste Periode» sprach immer von Wohngebäuden | neutral: «Periode, aus der pro Jahr die meisten stammen» |
+| 3 | Keine Einbettungsfassung | `?embed` oder automatisch im iframe: ohne Titel/Lead, Links öffnen neuen Tab |
+| 4 | Kleine Diagramme zeigten den Altbau-Anteil (Sortierwert) nicht | Streifen mit vier Anteilen unter jedem Diagramm |
+| 5 | Prozentwert bricht bei langen Namen um | `nowrap` |
+| 6 | Karte nicht per Tastatur bedienbar | bewusst nicht geändert (100 Tabstopps); Suche ist der Tastaturweg – offen |
+| 7 | Kleinstgemeinden (Rongellen 23 Wohngebäude) dominieren die Ränder der Rangliste | belassen, Zahl der Gebäude steht im Detail; Hinweis «sehr kleine Gemeinden» im Text |
+| 8 | 3D Scuol «Stradun 1.1» = Hütte mit Sammeljahr 1900 | Datenlage GWR, Seite kennzeichnet «unsicher» bereits |
+| 9 | Ungültiger Link `?g=…` zeigt stillschweigend Chur | belassen (sinnvoller Standard) |
+| 10 | Sils: 1'233 Wohnungen bei 693 Einwohnern – Zweitwohnungen wären eine eigene Geschichte | notiert für die Übergabe, nicht gebaut |

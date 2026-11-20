@@ -90,8 +90,10 @@
   .mini:hover, .mini:focus-visible { border-color: #000; outline: none; }
   .mini.sel { border-color: var(--sel); box-shadow: 0 0 0 2px var(--sel) inset; }
   .mini .n { font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; gap: 6px; }
-  .mini .n span { font-weight: 400; color: var(--muted); }
+  .mini .n span { font-weight: 400; color: var(--muted); white-space: nowrap; }
   .mini svg { display: block; width: 100%; height: 40px; margin-top: 2px; }
+  .mshare { display: flex; height: 5px; margin: 3px 0 2px; border-radius: 1px; overflow: hidden; }
+  .mshare i { display: block; height: 100%; }
 
   #models { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
   .model { display: block; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; text-decoration: none; color: inherit; }
@@ -105,10 +107,14 @@
   details summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
   .method p, .method li { font-size: 14.5px; max-width: 780px; }
   footer { margin-top: 36px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+  .embed .kicker, .embed h1, .embed .lead { display: none; }
+  .embed main { padding-top: 8px; }
+  .embed .controls { margin-top: 0; }
   .err { padding: 30px; text-align: center; color: #a00; }
 </style>
 </head>
 <body>
+<script>if (/[?&]embed\b/.test(location.search) || window.self !== window.top) { document.documentElement.classList.add("embed"); const b = document.createElement("base"); b.target = "_blank"; document.head.appendChild(b); }</script>
 <main>
   <p class="kicker">Graubünden 3D · Prototyp</p>
   <h1>Wann wurde Graubünden gebaut?</h1>
@@ -193,7 +199,7 @@ const METRICS = {
   alt: { label: "Anteil vor 1919 gebaut", get: g => share(g, [0]) },
   boom: { label: "Anteil 1961–1980 gebaut", get: g => share(g, [3, 4]) },
   neu: { label: "Anteil seit 2001 gebaut", get: g => share(g, [9, 10, 11, 12]) },
-  peak: { label: "Periode mit den meisten neuen Wohngebäuden pro Jahr (ab 1919)", get: g => peak(g) },
+  peak: { label: "Periode, aus der pro Jahr die meisten stammen (ab 1919)", get: g => peak(g) },
 };
 let A, P, YEARS, unit = "wohn", metric = "alt", sel = null, breaks = {};
 const total = g => g[unit].reduce((a, b) => a + b, 0);
@@ -320,7 +326,8 @@ function select(bfs, fromMap) {
   const models = A.modelle.filter(m => m.bfs === bfs).sort((a, b) => b.gebaeude - a.gebaeude);
   const pk = peak(g), u = unit === "wohn" ? "Wohngebäude" : "Wohnungen";
   // descriptive sentence: largest group vs canton
-  let say = `${pct(sh[0])} der heutigen ${u} stehen schon seit vor 1919 (Kanton: ${pct(kt[0])}). `;
+  let say = unit === "wohn" ? `${pct(sh[0])} der heutigen Wohngebäude stehen schon seit vor 1919 (Kanton: ${pct(kt[0])}). `
+    : `${pct(sh[0])} der heutigen Wohnungen liegen in Gebäuden von vor 1919 (Kanton: ${pct(kt[0])}). `;
   say += `Pro Jahr gerechnet stammen die meisten aus der Periode ${pLabel(pk)}. `;
   say += `Seit 2001 gebaut: ${pct(sh[3])} (Kanton: ${pct(kt[3])}).`;
   $("detail").innerHTML = `
@@ -347,9 +354,10 @@ function drawMulti() {
     const v = metric === "peak" ? pLabel(peak(g)) : pct(METRICS[metric].get(g));
     return `<button class="mini${g.bfs === sel ? " sel" : ""}" data-b="${g.bfs}" aria-label="${g.name}, ${v}">
       <div class="n">${g.name}<span>${v}</span></div>
-      <svg viewBox="0 0 140 40" preserveAspectRatio="none" aria-hidden="true">${histSVG(g, 140, 40, { max, gap: .4 })}</svg></button>`;
+      <svg viewBox="0 0 140 40" preserveAspectRatio="none" aria-hidden="true">${histSVG(g, 140, 40, { max, gap: .4 })}</svg>
+      <div class="mshare" aria-hidden="true">${GROUPS.map(([, idx, y]) => `<i style="width:${(share(g, idx) * 100).toFixed(1)}%;background:${yearColor(y)}"></i>`).join("")}</div></button>`;
   }).join("");
-  $("multinote").innerHTML = `Sortiert nach «${METRICS[metric].label}». Jedes Diagramm: neue ${unit === "wohn" ? "Wohngebäude" : "Wohnungen"} pro Jahr, 1919 bis heute, als Anteil am heutigen Bestand der Gemeinde (gleiche Skala für alle; Balken sehr kleiner Gemeinden können oben abgeschnitten sein). Antippen für Details.`;
+  $("multinote").innerHTML = `Sortiert nach «${METRICS[metric].label}». Diagramm: ${unit === "wohn" ? "Wohngebäude" : "Wohnungen"} pro Jahr der Bauperiode, 1919 bis heute, als Anteil am heutigen Bestand der Gemeinde (gleiche Skala für alle; Balken sehr kleiner Gemeinden können oben abgeschnitten sein). Streifen darunter: Anteile vor 1919 · 1919–1960 · 1961–2000 · seit 2001. Antippen für Details.`;
 }
 $("more").addEventListener("click", () => {
   const short = $("multi").classList.toggle("short");
@@ -397,7 +405,8 @@ seg("unit", "u", u => { unit = u; recompute(); refresh(); });
 function lead() {
   const k = A.kanton, u = unit === "wohn" ? "Wohngebäude" : "Wohnungen";
   const sorted = A.gemeinden.filter(g => g.wohn.reduce((a, b) => a + b, 0) >= 300).sort((a, b) => share(b, [0]) - share(a, [0]));
-  $("lead").innerHTML = `Von den heute ${fmt(total(k))} ${unit === "wohn" ? "Wohngebäuden" : "Wohnungen"} in Graubünden stehen ${pct(share(k, [0]))} schon seit vor 1919 – ` +
+  $("lead").innerHTML = (unit === "wohn" ? `Von den heute ${fmt(total(k))} Wohngebäuden in Graubünden stehen ${pct(share(k, [0]))} schon seit vor 1919 – `
+    : `Von den heute ${fmt(total(k))} Wohnungen in Graubünden liegen ${pct(share(k, [0]))} in Gebäuden von vor 1919 – `) +
     `unter den Gemeinden mit mindestens 300 Wohngebäuden reicht die Spanne von ${pct(share(sorted.at(-1), [0]))} in ${sorted.at(-1).name} bis ${pct(share(sorted[0], [0]))} in ${sorted[0].name}. ` +
     `Die Karte zeigt, wie alt der Bestand jeder der 100 Gemeinden ist; ${A.modelle.length} Orte gibt es zusätzlich als 3D-Modell.`;
 }
