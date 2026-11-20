@@ -71,7 +71,7 @@ async function init() {
   };
   if (EMBED && parent !== window) {          // lets the CMS grow the iframe to its content (see EMBEDS in README)
     let last = 0;
-    const report = () => { const h = Math.ceil(document.documentElement.getBoundingClientRect().height); if (Math.abs(h - last) > 2) { last = h; parent.postMessage({ type: 'schattenseite-height', embed: EMBED, height: h }, '*'); } };
+    const report = () => { const h = Math.ceil(document.documentElement.getBoundingClientRect().height); if (Math.abs(h - last) > 2) { last = h; parent.postMessage({ type: 'schattenseite-height', embed: EMBED, height: h }, '*'); parent.postMessage({ 'datawrapper-height': { ['schattenseite-' + EMBED]: h } }, '*'); } };
     new ResizeObserver(report).observe(document.body); report();
   }
   loadFeatures().then(F => map.setFeatures(F)).catch(e => console.error(e));   // orientation, after first paint

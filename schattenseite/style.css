@@ -287,3 +287,10 @@ body.busy .card, body.busy .detail { opacity: .65; transition: opacity .15s; }
   .embed-karte .card { display: none; }       /* the one-line result strip below the map is enough */
 }
 .kinote { max-width: 46em; margin: 10px 0 0; font-size: .95rem; line-height: 1.55; color: #d3cdbf; }
+/* narrow (embeds in a phone column): name and days on one line, the bar full width below */
+@media (max-width: 520px) {
+  .gantt { --nm: 0px; --lab: 0px; }
+  .gantt .row { grid-template-columns: 1fr auto; grid-template-areas: "nm lab" "bar bar"; row-gap: 4px; padding: 5px 0; }
+  .gantt .nm { grid-area: nm; } .gantt .lab { grid-area: lab; padding-right: 6px; } .gantt .bar { grid-area: bar; }
+}
+@media (max-width: 520px) { .gantt .axis i:last-child span { display: none; } }
