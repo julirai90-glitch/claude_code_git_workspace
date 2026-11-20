@@ -331,3 +331,5 @@ html.fit .embed-credit { flex: none; }
 .embed-horizont .srow-pano { flex: none; margin-top: 6px; }
 .embed-karte .hint { display: none; }
 @media (pointer: fine) { .mapwrap::before { display: none; } }   /* touch hint only on touch screens */
+/* sources live in the article (info box at the end), not in every embed */
+.embed .embed-credit { display: none; }
