@@ -353,3 +353,9 @@ html.fit .embed-credit { flex: none; }
   .embed .quick button { flex: none; padding: 3px 9px; font-size: .72rem; }
 }
 .embed-karte .mapwrap { width: 100%; margin: 0; }   /* auto margins made it as wide as its content */
+#loading > div { text-align: center; }
+#loading b { display: block; font-family: var(--serif); font-weight: 400; font-size: 1.35rem; color: var(--ink); letter-spacing: 0; }
+#loading small { display: block; margin-top: 6px; font-size: .78rem; color: var(--muted); }
+/* loading screen for embeds without the map (the map embed has its own #loading): overlay + sun + two lines */
+html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::before { content: 'Die Sonne geht gleich auf …'; position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: radial-gradient(circle at 50% calc(50% - 62px), #ffe7ad 0 9px, #ffb347 17px, transparent 26px) var(--bg); color: var(--ink); font: 400 1.3rem var(--serif); }
+html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::after { content: 'Gelände wird geladen'; position: fixed; left: 0; right: 0; top: calc(50% + 22px); z-index: 61; text-align: center; color: var(--muted); font: .78rem var(--sans); }

@@ -21,6 +21,7 @@
 <link rel="preload" href="fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
+<script>/* embed classes before the big data files load, so embeds never flash the full page */(function(){var e=new URLSearchParams(location.search).get("embed");if(!e)return;var c=document.documentElement.classList;c.add("embed","embed-"+e);if(["karte","horizont","sonnenjahr"].indexOf(e)>=0)c.add("fit");})();</script>
 </head>
 <body>
 
@@ -32,7 +33,7 @@
 </header>
 
 <section id="karte" class="mapwrap" aria-label="Karte">
-  <div id="loading" role="status">Gelände wird geladen …</div>
+  <div id="loading" role="status"><div><b>Die Sonne geht gleich auf …</b><small>Gelände wird geladen</small></div></div>
   <div class="search">
     <label for="q" class="vh">Ort suchen</label>
     <input id="q" type="search" placeholder="Ort suchen, z. B. Bondo" autocomplete="off" role="combobox" aria-controls="q-list" aria-expanded="false">
@@ -172,6 +173,6 @@
 <script src="data/dem.js"></script>
 <script src="data/places.js"></script>
 <script src="data/outline.js"></script>
-<script src="js/bundle.js?v=20261120g"></script>
+<script src="js/bundle.js?v=20261120i"></script>
 </body>
 </html>
