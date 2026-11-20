@@ -41,3 +41,25 @@ Konsole fehlerfrei. Atlas lädt lokal in rund 0,2 s (atlas.json 96 KB).
 | 8 | 3D Scuol «Stradun 1.1» = Hütte mit Sammeljahr 1900 | Datenlage GWR, Seite kennzeichnet «unsicher» bereits |
 | 9 | Ungültiger Link `?g=…` zeigt stillschweigend Chur | belassen (sinnvoller Standard) |
 | 10 | Sils: 1'233 Wohnungen bei 693 Einwohnern – Zweitwohnungen wären eine eigene Geschichte | notiert für die Übergabe, nicht gebaut |
+
+## Runde 3 – 21.11.2026 00:12
+
+Geprüft: Atlas Desktop ganzseitig mit Auswahl Arosa, vier neue 3D-Orte (Arosa, Flims, Maienfeld, Bergün),
+Faktenstichproben, Ladegrössen. Konsole fehlerfrei.
+
+| # | Schwäche | Massnahme |
+|---|---|---|
+| 1 | Seite zeigt Daten, aber keine Kernaussage | drei Befunde, live aus den Daten gerechnet (stärkste Periode Kanton, höchster Anteil 1961–1980, höchster Anteil seit 2001; nur Gemeinden ≥ 300 Wohngebäude), Gemeindename anklickbar |
+| 2 | Datenstand nur in der Fusszeile | Zeile unter dem Lead |
+| 3 | y-Beschriftung lag über den Balken | links, mit weissem Rand |
+| 4 | **Flächenangaben in Gebietstexten aus dem Gedächtnis** – drei falsch (Klosters 190 statt ~220 km², Vals 150 statt ~175, Zuoz 40 statt ~65) | gegen die Gemeindepolygone geprüft und korrigiert |
+| 5 | Gebietstexte nannten Dörfer als fehlend, die im Ausschnitt liegen (Bergün: Latsch; Maienfeld: «Bofel» statt Bovel) | aus der Namensliste der Basiskarte im Ausschnitt korrigiert |
+| 6 | Kartenbeschriftungen Flims/Domat-Ems, Arosa/Davos überlappten | Platzierung pro Ort (links, oben, unten) |
+| 7 | Messung mit 4-facher CPU-Drosselung hängt in SwiftShader | abgebrochen; Ladegrössen gemessen statt Zeit (1,1–4,7 MB je Ort + three.js) – echte Handy-Messung offen |
+| 8 | Felsentherme Vals hat im GWR kein Baujahr (bekannt: eröffnet 1996) | Registerlücke, erscheint grau «unbekannt»; in Übergabe genannt |
+| 9 | Gebäude mit nur Bauperiode zeigen im 3D den Periodenbeginn (Kloster Ilanz «1961») | bestehende Logik, auf der Seite in der Methode erklärt; belassen |
+| 10 | 3D-Markierungen auf der Karte bleiben unter 36 px | Gemeindefläche antippen führt ebenfalls zum 3D-Knopf; belassen |
+
+Stichproben GWR ↔ 3D (EGID, Baujahr identisch): Schloss Tarasp (1628, Kapelle 1040, Pulverturm 1716),
+Lyceum Alpinum Zuoz (Grosses Haus 1915, Sporthalle 1977, Chesa Urezza 2017), Kloster Ilanz (Periode 1961–1970).
+Befund-Zahlen nachgerechnet in Python aus atlas.json: Zernez 40,3 % (1961–80), Bonaduz 34,1 % (seit 2001), Rossa 65,6 %, Laax 6,6 % (vor 1919).
