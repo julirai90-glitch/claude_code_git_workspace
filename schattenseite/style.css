@@ -333,3 +333,23 @@ html.fit .embed-credit { flex: none; }
 @media (pointer: fine) { .mapwrap::before { display: none; } }   /* touch hint only on touch screens */
 /* sources live in the article (info box at the end), not in every embed */
 .embed .embed-credit { display: none; }
+/* ---- compact map embed ---- */
+.embed .mstrip { cursor: default; } .embed .mstrip .go, .embed .hlegend .genau { display: none; }
+.embed .hlegend { top: 58px; left: 12px; right: auto; max-width: calc(100% - 24px); padding: 5px 9px; font-size: .68rem; border-radius: 10px; }
+.embed .hlegend .ht { display: inline; margin: 0 8px 0 0; } .embed .hlegend .hsw { display: inline-flex; gap: 7px; }
+.embed .hlegend i { width: 8px; height: 8px; margin-right: 3px; }
+@media (max-width: 520px) {
+  .embed .search input { padding: 9px 10px 9px 32px; font-size: .88rem; background-position: 10px 50%; }
+  .embed .zoom .hbtn { padding: 0 10px; font-size: .78rem; }
+  .embed .zoom button { height: 40px; min-width: 40px; }
+  .embed .hlegend { top: 54px; }
+  .embed .mstrip { padding: 8px 12px; font-size: .82rem; }
+  .embed .controls { gap: 10px; padding: 8px 10px; }
+  .embed .play { width: 40px; height: 40px; box-shadow: 0 0 0 4px rgba(255, 200, 97, .14); }
+  .embed .play svg { width: 20px; height: 20px; }
+  .embed .row1 { flex-wrap: nowrap; gap: 8px; } .embed .clock { font-size: 1.02rem; white-space: nowrap; }
+  .embed #sunpos { font-size: .7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .embed .quick { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .embed .quick::-webkit-scrollbar { display: none; }
+  .embed .quick button { flex: none; padding: 3px 9px; font-size: .72rem; }
+}
+.embed-karte .mapwrap { width: 100%; margin: 0; }   /* auto margins made it as wide as its content */

@@ -856,6 +856,7 @@ async function init() {
   // fit embeds: the long explanations go into the article text, the frame keeps a one-line legend
   if (EMBED === 'horizont') $('#ort .fig figcaption p').textContent = 'Durchgezogen: direkte Sonne · gestrichelt: hinter dem Berg';
   if (EMBED === 'sonnenjahr') $$('#ort .fig')[1].querySelector('figcaption p').innerHTML = '<i class="sw sun"></i>direkte Sonne <i class="sw shade"></i>Schatten <i class="sw night"></i>Nacht · Klick wählt das Datum';
+  if (EMBED) $('#hlegend .ht').textContent = 'Tage ohne direkte Sonne';   // the accuracy notes are in the article
   bindControls(); bindHect();
   buildLists();
   // initial selection: hash, else Chur (strongest story: midday shadow on the shortest day)
@@ -1196,7 +1197,7 @@ function bindControls() {
   list.addEventListener('pointerdown', e => { const li = e.target.closest('li[data-k]'); if (li) { e.preventDefault(); choose(hits[+li.dataset.k]); } });
   $('#spark').addEventListener('click', e => { stop(); setDay(Math.floor(e.offsetX / e.currentTarget.clientWidth * NDAYS)); });
   $('#to-detail').addEventListener('click', () => $('#ort').scrollIntoView({ behavior: 'smooth' }));
-  $('#mstrip').addEventListener('click', () => $('.card').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  $('#mstrip').addEventListener('click', () => { if (!EMBED) $('.card').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   // 'Wie genau?' links open the accuracy box before scrolling to it
   $$('a.genau').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const d = $('#genau'); d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
   if (innerWidth <= 760) $('#q').placeholder = 'Ort suchen';
