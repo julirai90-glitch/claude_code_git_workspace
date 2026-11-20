@@ -9,10 +9,16 @@ Lokaler Branch ist 43 Commits hinter origin/gh-pages (nicht gepullt, weil EMBEDS
 
 ## Aktuell
 - [x] Startcheck, Weckrufe, Gerüst
-- [ ] 3D-Orte bauen (Landquart, Domat/Ems, Ilanz, Scuol, Klosters, Thusis, Poschiavo)
-- [ ] Bauzeit-Atlas (alle Gemeinden)
-- [ ] Einstiegsseite
+- [x] 3D-Orte gebaut: Landquart, Domat/Ems, Thusis, Ilanz, Scuol, Klosters, Poschiavo + Guarda, Soglio, Vals, Zuoz (23:42)
+- [x] Bauzeit-Atlas + Einstiegsseite graubuenden-3d/index.html (erste Fassung, ungeprüft)
 - [ ] Kritikrunden 1–3
 - [ ] Übergabe
 
 ## Probleme
+
+- Thusis: Exklave Mutten grösser als Hauptteil → Ortsnamen fehlten; behoben (gebaeude.json `areas`).
+- Soglio: Geländekacheln in Italien fehlen → terrain_km verschoben. 332/644 Gebäude ohne GWR-Treffer.
+- Testserver: `python3 -m http.server 8766` im Repo-Root (Hintergrund), Skripte in /tmp/nacht (shot.js, thumb.js).
+
+## Nächster Schritt
+Atlas im Browser prüfen (Desktop + Mobil), dann Kritikrunde 1.

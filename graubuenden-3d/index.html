@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
 <title>Wann wurde Graubünden gebaut? – Graubünden 3D</title>
 <style>
   :root {
@@ -46,6 +47,8 @@
   #map path.g:hover { stroke: #000; stroke-width: 1.2; }
   #map path.sel { stroke: var(--sel); stroke-width: 2.4; }
   #map .m3d { cursor: pointer; }
+  #map .mlab { font-size: 3px; font-weight: 600; fill: #111; paint-order: stroke; stroke: #fff; stroke-width: .7px; stroke-linejoin: round; pointer-events: none; }
+  @media (max-width: 600px) { #map .mlab { display: none; } }
   #map .m3d rect { fill: #fff; stroke: #111; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
   #tip { position: absolute; pointer-events: none; background: rgba(20,22,25,.92); color: #fff; font-size: 13px; padding: 6px 8px;
     border-radius: 6px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); display: none; }
@@ -206,6 +209,8 @@ function colorOf(g) {
 // ---------- map ----------
 const NS = "http://www.w3.org/2000/svg";
 let X0, Y1, paths = {};
+const LABEL_BELOW = new Set(["guarda-3d"]);
+const LABEL_LEFT = new Set(["domat-ems-3d", "ilanz-3d", "vals-3d", "thusis-3d", "soglio-3d", "zuoz-3d"]);
 function drawMap() {
   const svg = $("map");
   let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
@@ -229,10 +234,14 @@ function drawMap() {
     a.setAttribute("href", "../" + m.ordner + "/"); a.setAttribute("class", "m3d");
     a.setAttribute("aria-label", m.name + " in 3D");
     const r = document.createElementNS(NS, "rect");
-    r.setAttribute("x", (m.punkt[0] - X0 - 1.6).toFixed(2)); r.setAttribute("y", (Y1 - m.punkt[1] - 1.6).toFixed(2));
-    r.setAttribute("width", 3.2); r.setAttribute("height", 3.2); r.setAttribute("rx", .5);
+    r.setAttribute("x", (m.punkt[0] - X0 - 1.3).toFixed(2)); r.setAttribute("y", (Y1 - m.punkt[1] - 1.3).toFixed(2));
+    r.setAttribute("width", 2.6); r.setAttribute("height", 2.6); r.setAttribute("rx", .5);
     const t = document.createElementNS(NS, "title"); t.textContent = m.name + " in 3D ansehen";
-    a.append(r, t); svg.appendChild(a);
+    const lab = document.createElementNS(NS, "text");
+    const [dx, dy, anchor] = LABEL_BELOW.has(m.ordner) ? [0, 4.2, "middle"] : LABEL_LEFT.has(m.ordner) ? [-2, 1.05, "end"] : [2, 1.05, "start"];
+    lab.setAttribute("x", (m.punkt[0] - X0 + dx).toFixed(2)); lab.setAttribute("y", (Y1 - m.punkt[1] + dy).toFixed(2));
+    lab.setAttribute("text-anchor", anchor); lab.setAttribute("class", "mlab"); lab.textContent = m.name;
+    a.append(r, t, lab); svg.appendChild(a);
   });
 }
 function tip(e, g) {
@@ -273,6 +282,16 @@ function histSVG(g, w, h, opts = {}) {
   }
   return s;
 }
+function yTicks(g, W, H) { // light grid lines at round per-year shares
+  const top = Math.max(...rates(g), ...rates(A.kanton)) * 1.08;
+  const step = [0.001, 0.002, 0.0025, 0.005, 0.01, 0.02, 0.025, 0.05].find(s => top / s <= 4) || 0.05;
+  let s = "";
+  for (let v = step; v < top; v += step) {
+    const y = (H - v / top * H).toFixed(1);
+    s += `<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="#000" stroke-opacity=".08"/><text x="${W}" y="${y - 3}" text-anchor="end">${(v * 100).toLocaleString("de-CH", { maximumFractionDigits: 2 })} % pro Jahr</text>`;
+  }
+  return s;
+}
 function select(bfs, fromMap) {
   const g = A.gemeinden.find(x => x.bfs === bfs); if (!g) return;
   if (sel) { paths[sel].classList.remove("sel"); document.querySelector(`.mini[data-b="${sel}"]`)?.classList.remove("sel"); }
@@ -282,22 +301,22 @@ function select(bfs, fromMap) {
   const t = total(g), sh = GROUPS.map(([, idx]) => share(g, idx)), kt = GROUPS.map(([, idx]) => share(A.kanton, idx));
   const W = 420, H = 150, pad = 18;
   const ticks = [1919, 1946, 1971, 2001, 2016].map(y => `<text x="${((y - 1919) / (A.meta.bis - 1919) * W).toFixed(0)}" y="${H + 14}">${y}</text>`).join("");
-  const model = A.modelle.find(m => m.bfs === bfs);
+  const models = A.modelle.filter(m => m.bfs === bfs);
   const pk = peak(g), u = unit === "wohn" ? "Wohngebäude" : "Wohnungen";
   // descriptive sentence: largest group vs canton
   let say = `${pct(sh[0])} der heutigen ${u} stehen schon seit vor 1919 (Kanton: ${pct(kt[0])}). `;
-  say += `Am meisten pro Jahr kamen im Zeitraum ${pLabel(pk)} hinzu. `;
+  say += `Pro Jahr gerechnet stammen die meisten aus der Periode ${pLabel(pk)}. `;
   say += `Seit 2001 gebaut: ${pct(sh[3])} (Kanton: ${pct(kt[3])}).`;
   $("detail").innerHTML = `
     <h3>${g.name}</h3>
-    <div class="facts">${g.einwohner ? fmt(g.einwohner) + " Einwohnerinnen und Einwohner · " : ""}${fmt(t)} ${u}${unit === "whg" ? " in " + fmt(total({ ...g, whg: g.wohn, wohn: g.wohn }) ) + " Wohngebäuden" : ""}</div>
+    <div class="facts">${g.einwohner ? fmt(g.einwohner) + " Einwohnerinnen und Einwohner · " : ""}${fmt(t)} ${u}${unit === "whg" ? " in " + fmt(g.wohn.reduce((a, b) => a + b, 0)) + " Wohngebäuden" : ""}</div>
     <div class="shares" aria-hidden="true">${sh.map((v, i) => `<div style="width:${(v * 100).toFixed(2)}%;background:${yearColor(GROUPS[i][2])}"></div>`).join("")}</div>
     <div class="sharelab">${GROUPS.map(([l], i) => `<span><i style="background:${yearColor(GROUPS[i][2])}"></i>${l}<b>${pct(sh[i])}</b></span>`).join("")}</div>
     <svg id="hist" viewBox="0 -4 ${W} ${H + 22}" role="img" aria-label="Neue ${u} pro Jahr nach Bauperiode, ${g.name} und Kanton">${histSVG(g, W, H, { kanton: true })}${ticks}
-      <line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="#999"/></svg>
+      <line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="#999"/>${yTicks(g, W, H)}</svg>
     <div class="small muted">Balken: Anteil der heutigen ${u}, der pro Jahr der Periode gebaut wurde (ab 1919). <span style="white-space:nowrap">- - - Kanton Graubünden</span></div>
     <p class="say">${say}</p>
-    ${model ? `<a class="btn3d" href="../${model.ordner}/">${model.name} in 3D ansehen →</a><div class="small muted" style="margin-top:4px">${model.gebiet}.</div>`
+    ${models.length ? models.map(m => `<a class="btn3d" href="../${m.ordner}/">${m.name} in 3D ansehen →</a><div class="small muted" style="margin-top:4px">${m.gebiet}.</div>`).join("")
             : `<p class="small muted" style="margin-top:10px">Für ${g.name} gibt es (noch) kein 3D-Modell.</p>`}`;
   if (fromMap && matchMedia("(max-width: 820px)").matches) $("detail").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -355,7 +374,7 @@ seg("unit", "u", u => { unit = u; recompute(); refresh(); });
 function lead() {
   const k = A.kanton, u = unit === "wohn" ? "Wohngebäude" : "Wohnungen";
   const sorted = [...A.gemeinden].sort((a, b) => share(b, [0]) - share(a, [0]));
-  $("lead").innerHTML = `Von den heute ${fmt(total(k))} ${u} in Graubünden stehen ${pct(share(k, [0]))} schon seit vor 1919 – ` +
+  $("lead").innerHTML = `Von den heute ${fmt(total(k))} ${unit === "wohn" ? "Wohngebäuden" : "Wohnungen"} in Graubünden stehen ${pct(share(k, [0]))} schon seit vor 1919 – ` +
     `in ${sorted[0].name} sind es ${pct(share(sorted[0], [0]))}, in ${sorted.at(-1).name} ${pct(share(sorted.at(-1), [0]))}. ` +
     `Die Karte zeigt, wie alt der Bestand jeder der 100 Gemeinden ist; ${A.modelle.length} Orte gibt es zusätzlich als 3D-Modell.`;
 }
