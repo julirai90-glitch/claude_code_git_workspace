@@ -30,10 +30,11 @@
   .seg button + button { border-left: 1px solid var(--line); }
   .seg button[aria-pressed="true"] { background: var(--ink); color: #fff; }
   .finds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 8px; }
-  @media (max-width: 700px) { .finds { grid-template-columns: 1fr; } }
   .find { background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--c, #999); border-radius: 8px; padding: 10px 12px; font-size: 14.5px; line-height: 1.4; }
   .find b { display: block; font-size: 22px; line-height: 1.15; margin-bottom: 2px; }
   .find a { color: inherit; text-decoration: underline; text-decoration-color: rgba(0,0,0,.3); cursor: pointer; }
+  @media (max-width: 700px) { .finds { grid-template-columns: 1fr; gap: 6px; } .find { padding: 7px 10px; font-size: 13.5px; }
+    .find b { display: inline; font-size: 17px; margin-right: 4px; } }
   .ctl-label { font-size: 13px; color: var(--muted); margin-right: 6px; }
   #search { font: inherit; font-size: 16px; padding: 7px 10px; min-height: 38px; border: 1px solid var(--line); border-radius: 8px; width: 220px; background: #fff; }
   .searchwrap { position: relative; }
