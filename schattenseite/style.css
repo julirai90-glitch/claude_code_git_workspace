@@ -361,3 +361,13 @@ html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::before { conten
 html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::after { content: 'Gelände wird geladen'; position: fixed; left: 0; right: 0; top: calc(50% + 22px); z-index: 61; text-align: center; color: var(--muted); font: .78rem var(--sans); }
 .embed-liste .lists > h2:first-child { display: none; }   /* the CMS box carries the title */
 .embed-liste .lists { padding-top: 0; }
+/* quick day buttons: short date labels only in very narrow columns */
+.quick .s { display: none; }
+@media (max-width: 420px) {
+  .quick .l { display: none; } .quick .s { display: inline; }
+  .embed .quick { overflow: visible; gap: 4px; } .embed .quick button { padding: 3px 7px; }
+  .embed #sunpos { display: none; }
+  .months { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .months span { display: none; } .months span:nth-child(3n+1) { display: block; }   /* Juli, Okt., Jan., Apr. */
+}
+@media (max-width: 340px) { .embed .quick button { padding: 3px 5px; font-size: .68rem; } .embed .controls { gap: 8px; padding: 8px; } }
