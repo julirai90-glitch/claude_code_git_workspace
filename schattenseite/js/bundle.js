@@ -866,6 +866,17 @@ async function init() {
     else if (e.isIntersecting && resume) { resume = false; play(); }
   }, { threshold: 0.15 }).observe($('#karte'));
   writeLead(); finds();
+  if (SYNC) SYNC.onmessage = ({ data: m }) => {
+    stop();
+    if (m.day != null && m.day !== state.day) setDay(m.day);
+    if (m.id && byId.has(m.id)) select(byId.get(m.id), { quiet: true, fromSync: true });
+    else if (m.pt) selectPoint(m.pt[0], m.pt[1], true);
+  };
+  if (EMBED && parent !== window) {          // lets the CMS grow the iframe to its content (see EMBEDS in README)
+    let last = 0;
+    const report = () => { const h = Math.ceil(document.documentElement.getBoundingClientRect().height); if (Math.abs(h - last) > 2) { last = h; parent.postMessage({ type: 'schattenseite-height', embed: EMBED, height: h }, '*'); } };
+    new ResizeObserver(report).observe(document.body); report();
+  }
   loadFeatures().then(F => map.setFeatures(F)).catch(e => console.error(e));   // orientation, after first paint
 }
 
@@ -978,7 +989,10 @@ function computeDayMinutes() {
 }
 
 // ---------- selection ----------
+// Split embeds on one CMS page are separate iframes of the same origin: they keep the selected place in step.
+const SYNC = EMBED && 'BroadcastChannel' in window ? new BroadcastChannel('schattenseite') : null;
 function select(p, opts = {}) {
+  if (SYNC && !opts.quiet && !opts.fromSync) SYNC.postMessage(p.id ? { id: String(p.id), day: state.day } : { pt: [p.la, p.lo], day: state.day });
   // immediate feedback, the year computation follows in the next frame
   state.place = p; map.sel = p.X != null ? p : null; map.draw();
   $('#card-name').textContent = p.n; document.body.classList.add('busy');

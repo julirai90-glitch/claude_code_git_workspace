@@ -266,3 +266,23 @@ body.busy .card, body.busy .detail { opacity: .65; transition: opacity .15s; }
 .genaubox ul { margin: 0 0 14px; padding-left: 18px; color: #d3cdbf; font-size: .92rem; line-height: 1.5; }
 .genaubox li { margin-bottom: 7px; }
 @media (max-width: 760px) { .mstrip { display: flex; order: 1; } }
+
+/* ---- embed modes (CMS iframes) ----
+   alles: whole story without hero (headline/lead live in the CMS), fixed map height
+   karte / entdeckungen / ort / liste / methode: one part each, to place text between them */
+.embed .findswrap { display: none; }
+.embed-alles .findswrap, .embed-entdeckungen .findswrap { display: block; }
+.embed-alles .lists, .embed-liste .lists { display: block; }
+.embed-alles .method, .embed-methode .method { display: block; }
+.embed-alles .mapwrap { height: 680px; min-height: 0; }
+.embed-entdeckungen .mapwrap, .embed-entdeckungen .detail,
+.embed-liste .mapwrap, .embed-liste .detail,
+.embed-methode .mapwrap, .embed-methode .detail { display: none; }
+.embed-entdeckungen .findswrap { padding-top: 6px; }
+.embed-liste .lists, .embed-methode .method { padding-top: 10px; }
+@media (max-width: 760px) {
+  .embed-alles #map { height: 430px; min-height: 0; }
+  .embed-karte .mapwrap { height: auto; }
+  .embed-karte #map { height: 430px; min-height: 0; }
+  .embed-karte .card { display: none; }       /* the one-line result strip below the map is enough */
+}

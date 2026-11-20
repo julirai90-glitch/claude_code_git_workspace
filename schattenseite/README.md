@@ -34,6 +34,20 @@ Einbetten: `?embed=karte` · `?embed=ort#ort=<osm-id>-<name>` · Punkt: `#punkt=
   36–95 Tage ohne direkte Sonne; Live-Rechnung 150 m bestätigt die Grössenordnung (92 Tage). Möglicher Einfluss:
   Wald am Hang zählt im Copernicus-Modell als Hindernis.
 
+## Embeds für das CMS (Stand 20.11.2026)
+
+Basis-URL: `https://julirai90-glitch.github.io/claude_code_git_workspace/schattenseite/index.html?embed=…`
+
+- **Variante A, ein Embed:** `?embed=alles` – ganze Geschichte ohne Titel/Lead (die stehen im CMS).
+- **Variante B, Teile:** `karte`, `entdeckungen`, `ort`, `liste`, `methode` – dazwischen Text im CMS. Die Teile
+  synchronisieren sich (BroadcastChannel): Ortswahl in Karte, Liste oder Entdeckungen ändert auch den Ort-Embed.
+- Jedes Embed meldet seine Höhe per `postMessage({type:'schattenseite-height', height})`. Einmal pro Artikel als
+  HTML-Block einfügen, damit die Iframes mitwachsen:
+  `<script>window.addEventListener('message',function(e){var d=e.data;if(!d||d.type!=='schattenseite-height')return;document.querySelectorAll('iframe').forEach(function(f){if(f.contentWindow===e.source)f.style.height=d.height+'px';});});</script>`
+- Ohne Skript feste Höhen (gemessen in einer 720 px breiten Spalte, Handy 390 px): alles 5600 / 7400, karte 710 / 850,
+  entdeckungen 500 / 630, ort 1380 / 1710, liste 1700 / 1950, methode 1370 / 2520.
+- Getestet nur in einer nachgebauten Testseite, nicht im echten CMS / in der App.
+
 ## Offene Punkte
 
 1. Verifikation vor Ort (Bondo, Tavanasa, Küblis, Chur Altstadt); Ortspunkte der Top 10 prüfen.
