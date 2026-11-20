@@ -228,8 +228,9 @@ function colorOf(g) {
 // ---------- map ----------
 const NS = "http://www.w3.org/2000/svg";
 let X0, Y1, paths = {};
-const LABEL_BELOW = new Set(["guarda-3d"]);
-const LABEL_LEFT = new Set(["domat-ems-3d", "ilanz-3d", "vals-3d", "thusis-3d", "soglio-3d", "zuoz-3d"]);
+const LABEL_BELOW = new Set(["guarda-3d", "arosa-3d", "domat-ems-3d"]);
+const LABEL_ABOVE = new Set(["maienfeld-3d"]);
+const LABEL_LEFT = new Set(["flims-3d", "berguen-3d", "ilanz-3d", "vals-3d", "thusis-3d", "soglio-3d", "zuoz-3d"]);
 function drawMap() {
   const svg = $("map");
   let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
@@ -260,7 +261,7 @@ function drawMap() {
     hit.setAttribute("r", 4); hit.setAttribute("fill", "transparent");
     const t = document.createElementNS(NS, "title"); t.textContent = m.name + " in 3D ansehen";
     const lab = document.createElementNS(NS, "text");
-    const [dx, dy, anchor] = LABEL_BELOW.has(m.ordner) ? [0, 4.2, "middle"] : LABEL_LEFT.has(m.ordner) ? [-2, 1.05, "end"] : [2, 1.05, "start"];
+    const [dx, dy, anchor] = LABEL_BELOW.has(m.ordner) ? [0, 4.2, "middle"] : LABEL_ABOVE.has(m.ordner) ? [0, -2.2, "middle"] : LABEL_LEFT.has(m.ordner) ? [-2, 1.05, "end"] : [2, 1.05, "start"];
     lab.setAttribute("x", (m.punkt[0] - X0 + dx).toFixed(2)); lab.setAttribute("y", (Y1 - m.punkt[1] + dy).toFixed(2));
     lab.setAttribute("text-anchor", anchor); lab.setAttribute("class", "mlab"); lab.textContent = m.name;
     a.append(hit, r, t, lab); svg.appendChild(a);

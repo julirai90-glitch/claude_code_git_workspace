@@ -1,0 +1,47 @@
+{
+  "name": "Flims",
+  "bfs": 3732,
+  "boundary_year": "aktuell",
+  "clip": [
+    2738500,
+    1186500,
+    2743000,
+    1190500
+  ],
+  "terrain_km": [
+    2736,
+    2745,
+    1184,
+    1193
+  ],
+  "start": [
+    2741042,
+    1188941
+  ],
+  "start_zoom": 0.75,
+  "start_note": "Bushaltestelle Flims Dorf, Post (geo.admin SearchServer)",
+  "area_text": "Flims Dorf, Flims Waldhaus und Fidaz – ein Ausschnitt von 4,5 × 4 km aus der Gemeinde Flims (rund 50 km²)",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "gondola_station",
+      "Flims Dorf (Talstation Foppa)",
+      "Bergbahnen"
+    ],
+    [
+      "swimming_pool",
+      "Strandbad Caumasee",
+      "Caumasee"
+    ],
+    [
+      "stadium",
+      "Sportzentrum Prau la Selva",
+      "Prau la Selva"
+    ]
+  ]
+}

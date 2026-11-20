@@ -1,0 +1,43 @@
+{
+  "name": "Bergün",
+  "gemeinde": "Bergün Filisur",
+  "bfs": 3544,
+  "boundary_year": "aktuell",
+  "clip": [
+    2775500,
+    1165500,
+    2778500,
+    1168000
+  ],
+  "terrain_km": [
+    2773,
+    2781,
+    1163,
+    1171
+  ],
+  "start": [
+    2776803,
+    1166750
+  ],
+  "start_zoom": 0.45,
+  "start_note": "Ort Bergün/Bravuogn (swisstopo-Ortsnamen, geo.admin SearchServer)",
+  "area_text": "Bergün/Bravuogn mit Latsch – ein Ausschnitt von 3 × 2,5 km aus der Gemeinde Bergün Filisur (seit 2018); Filisur, Stugl und Preda fehlen",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Bergün/Bravuogn",
+      "Bahnhof Bergün"
+    ],
+    [
+      "swimming_pool",
+      "Freibad Bergün",
+      "Freibad"
+    ]
+  ]
+}

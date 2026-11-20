@@ -1,0 +1,47 @@
+{
+  "name": "Maienfeld",
+  "bfs": 3953,
+  "boundary_year": "aktuell",
+  "clip": [
+    2757500,
+    1206000,
+    2761500,
+    1210500
+  ],
+  "terrain_km": [
+    2755,
+    2764,
+    1204,
+    1213
+  ],
+  "start": [
+    2759169,
+    1208198
+  ],
+  "start_zoom": 0.7,
+  "start_note": "Ort Maienfeld (swisstopo-Ortsnamen, geo.admin SearchServer)",
+  "area_text": "Maienfeld mit Rofels und Bovel – ein Ausschnitt von 4 × 4,5 km aus der Gemeinde Maienfeld (rund 32 km²)",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Maienfeld",
+      "Bahnhof Maienfeld"
+    ],
+    [
+      "castle",
+      "Schloss Salenegg",
+      "Schloss Salenegg"
+    ],
+    [
+      "castle",
+      "Schloss Maienfeld",
+      "Schloss Maienfeld"
+    ]
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "Arosa",
+  "bfs": 3921,
+  "boundary_year": "aktuell",
+  "clip": [
+    2769500,
+    1181500,
+    2774000,
+    1186000
+  ],
+  "terrain_km": [
+    2767,
+    2776,
+    1179,
+    1188
+  ],
+  "start": [
+    2771099,
+    1183865
+  ],
+  "start_zoom": 0.75,
+  "start_note": "Bushaltestelle Arosa, Bahnhof (geo.admin SearchServer)",
+  "area_text": "Arosa mit Innerarosa, Maran, Prätschli und Litzirüti – ein Ausschnitt von 4,5 × 4,5 km aus der Gemeinde Arosa (rund 155 km²); Langwies, Peist und die übrigen Schanfigger Fraktionen fehlen",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Arosa",
+      "Bahnhof Arosa"
+    ],
+    [
+      "",
+      "Bergkirchli Arosa",
+      "Bergkirchli"
+    ],
+    [
+      "swimming_pool",
+      "Strandbad Untersee",
+      "Untersee"
+    ],
+    [
+      "gondola_station",
+      "Arosa (Talstation) Hörnli",
+      "Hörnlibahn"
+    ],
+    [
+      "stadium",
+      "Sport- und Kongresszentrum Arosa",
+      "Sport- und Kongresszentrum"
+    ]
+  ]
+}
