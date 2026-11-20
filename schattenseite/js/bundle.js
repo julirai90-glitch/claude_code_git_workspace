@@ -832,7 +832,7 @@ init().catch(err => { console.error(err); $('#loading').textContent = 'Die Daten
 const EMBED = new URLSearchParams(location.search).get('embed');
 if (EMBED) document.documentElement.classList.add('embed', 'embed-' + EMBED);
 // these embeds fill a frame of fixed height (the CMS keeps only an inline iframe height)
-if (['karte', 'horizont', 'sonnenjahr'].includes(EMBED)) document.documentElement.classList.add('fit');
+if (['karte', 'horizont', 'sonnenjahr', 'tag21'].includes(EMBED)) document.documentElement.classList.add('fit');
 // in embeds the accuracy box is open from the start: the frame cannot grow when it is opened
 if (EMBED && document.getElementById('genau')) document.getElementById('genau').open = true;   // script runs at the end of body
 async function init() {
@@ -1242,6 +1242,43 @@ function markStrip() {
   if (!m) return; if (c) { m.setAttribute('cx', c.getAttribute('cx')); m.setAttribute('cy', c.getAttribute('cy')); } else m.setAttribute('cx', -20);
 }
 function strip() {
+  const box = $('#strip'); let lastW = 0, lastH = 0;
+  const draw = () => {
+    const vertical = EMBED === 'tag21' || innerWidth <= 760, W = box.clientWidth, H = box.clientHeight;
+    if (vertical && (W === lastW && H === lastH)) return; lastW = W; lastH = H;
+    if (vertical) stripVertical(box, W, H); else stripHorizontal();
+  };
+  new ResizeObserver(draw).observe(box); draw();
+  box.addEventListener('click', e => { const c = e.target.closest('[data-id]'); if (c) { const p = places.find(x => String(x.id) === c.dataset.id); stop(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); } });
+  const v = places.filter(p => p.t !== 'hamlet'), chur = v.find(p => p.n === 'Chur');
+  $('#strip-note').innerHTML = `Zum Vergleich: Chur ${hm(chur.s.d21)}. Am meisten Sonne: ${v.slice().sort((a, b) => b.s.d21 - a.s.d21).slice(0, 3).map(p => `${p.n} (${hm(p.s.d21)})`).join(', ')}.`;
+}
+// vertical beeswarm: most sun at the top, no sun at the bottom; dots shrink until the widest band fits
+function stripVertical(box, W, H) {
+  if (!W || !H) return;
+  const v = places.filter(p => p.t !== 'hamlet').sort((a, b) => a.s.d21 - b.s.d21), max = 480, top = 14, bot = 30, L = 40, R = 10;
+  const y = m => top + (1 - m / max) * (H - top - bot), cx0 = L + (W - L - R) / 2, half = (W - L - R) / 2 - 4;
+  let sp = 9, placed;
+  for (let tries = 0; tries < 12; tries++, sp *= 0.88) {
+    placed = []; let ok = true;
+    for (const p of v) {
+      const cy = y(p.s.d21); let k = 0, cx = cx0;
+      while (placed.some(q => (q[0] - cx) ** 2 + (q[1] - cy) ** 2 < sp * sp)) { k++; cx = cx0 + (k % 2 ? 1 : -1) * Math.ceil(k / 2) * sp; }
+      if (Math.abs(cx - cx0) > half) { ok = false; break; }
+      placed.push([cx, cy, p]);
+    }
+    if (ok) break;
+  }
+  const r = Math.max(1.6, sp * 0.45);
+  const dots = placed.map(([cx, cy, p]) => `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="${rampColor(p.s.d21)}" data-id="${p.id}"><title>${p.n} (${p.g}): ${p.s.d21 ? hm(p.s.d21) : 'keine Sonne'}</title></circle>`).join('');
+  const ticks = [0, 120, 240, 360, 480].map(m => `<g transform="translate(0,${y(m).toFixed(1)})"><line x1="${L - 6}" x2="${W - R}" class="grid"/><text x="${L - 10}" dy="4">${m / 60} h</text></g>`).join('');
+  const n0 = v.filter(p => !p.s.d21).length, best = v[v.length - 1], chur = placed.find(q => q[2].n === 'Chur'), bp = placed.find(q => q[2] === best);
+  const lab = (q, t) => q ? `<text class="ann2" x="${Math.min(q[0] + r + 5, W - R - 2)}" y="${q[1] + 4}" text-anchor="${q[0] + r + 5 > W - R - 90 ? 'end' : 'start'}">${t}</text>` : '';
+  box.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${v.length} Dörfer nach Minuten direkter Sonne am 21. Dezember">
+    <g class="ticks v">${ticks}</g>${dots}${lab(chur, 'Chur')}${lab(bp, best.n)}
+    <text class="ann" x="${cx0}" y="${H - 8}" text-anchor="middle">${n0} Dörfer ohne Sonne</text></svg>`;
+}
+function stripHorizontal() {
   const v = places.filter(p => p.t !== 'hamlet'), W = 1000, H = 150, max = 480;
   const x = m => 20 + m / max * (W - 40);
   const placed = [], dots = [];
@@ -1253,9 +1290,6 @@ function strip() {
   const n0 = v.filter(p => !p.s.d21).length;
   const ticks = [0, 60, 120, 180, 240, 300, 360, 420, 480].map(m => `<g transform="translate(${x(m)},${H - 14})"><line y1="-6" y2="0"/><text y="12">${m / 60} h</text></g>`).join('');
   $('#strip').innerHTML = `<svg viewBox="0 0 ${W} ${H + 4}" role="img" aria-label="${v.length} Dörfer nach Minuten direkter Sonne am 21. Dezember">${dots.join('')}<g class="ticks">${ticks}</g><text class="ann" x="${x(0) + 10}" y="${H / 2 - 52}">${n0} Dörfer ohne Sonne</text><circle id="strip-sel" r="6.5" fill="none" stroke="#fff" stroke-width="2" cx="-20" cy="-20"/></svg>`;
-  $('#strip').addEventListener('click', e => { const c = e.target.closest('[data-id]'); if (c) { const p = places.find(x => String(x.id) === c.dataset.id); stop(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); } });
-  const chur = v.find(p => p.n === 'Chur');
-  $('#strip-note').innerHTML = `Zum Vergleich: Chur ${hm(chur.s.d21)}. Am meisten Sonne: ${v.slice().sort((a, b) => b.s.d21 - a.s.d21).slice(0, 3).map(p => `${p.n} (${hm(p.s.d21)})`).join(', ')}.`;
 }
 
 // ---------- inhabited-hectare layer ----------
