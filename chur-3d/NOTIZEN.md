@@ -161,3 +161,16 @@ Playwright: nur `chromium-1243` vorhanden.
 - **Felder ein-/ausblenden (04.11.2026):** Auge-Knopf blendet alle Felder aus (kleine Quellenzeile bleibt), Kreuz-Knopf
   das Steuerkreuz, ▾ im unteren Feld verkleinert es auf Zeile + Schieber + Quelle. Zustand in localStorage `k3d-ui`
   (nur dieser Browser).
+
+## Nachtauftrag 20./21.11.2026: 15 weitere Orte, Atlas
+- Neu: Landquart, Domat/Ems, Thusis, Ilanz, Scuol, Klosters, Poschiavo, Guarda, Soglio, Vals, Zuoz, Arosa, Flims,
+  Maienfeld, Bergün (je `<ort>-3d/`). Einstieg: `graubuenden-3d/` (Bauzeit-Atlas aller 100 Gemeinden + Kacheln).
+- Neue optionale Felder in ort.json: `gemeinde` (Gemeindename für die Grenzabfrage, wenn der Ort eine Fraktion ist,
+  z. B. Guarda → Scuol), `start_zoom` (Faktor für die Startdistanz, kleine Dörfer 0,4–0,6).
+- gebaeude.json hat neu `areas` (alle Teilflächen); _bau_boden sucht Ortsnamen in allen. Grund: Thusis – die
+  Exklave Mutten ist grösser als der Hauptteil, vorher erschienen nur Namen aus Mutten.
+- Soglio: swissALTI3D endet an der Landesgrenze → `terrain_km` so wählen, dass alle 1-km-Kacheln existieren
+  (sonst KeyError im Geländeskript). 332 von 644 Gebäuden ohne GWR-Treffer (meist Ställe/Rustici).
+- Flächenangaben in `area_text` immer gegen das Polygon prüfen (atlas.json `flaeche_km2`), nicht schätzen.
+- Python-Umgebung auf dem Server: `~/.cache/orte-3d-venv` (fiona usw.); System-Python hat die Pakete nicht.
+- Vorschaubilder für den Atlas: /tmp-Skript mit CSS `body > *:not(#scene):not(#labels){display:none}`.
