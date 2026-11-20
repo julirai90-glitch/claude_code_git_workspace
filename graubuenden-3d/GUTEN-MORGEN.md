@@ -69,7 +69,7 @@ Als Nächstes (Vorschläge):
 
 ## 6. Arbeitszeit und Unterbrüche
 
-Laut Git-Zeitstempeln (Europe/Zurich): erster Commit 23:07, letzter 00:16 am 21.11.2026; Start der Arbeit 23:04.
+Laut Git-Zeitstempeln (Europe/Zurich): erster Commit 23:07 (20.11.), letzter 00:14 (21.11.2026); Start der Arbeit 23:04.
 Keine Unterbrüche durch das Nutzungslimit. Kein Weckruf war nötig; die drei geplanten Weckrufe (02:00, 04:00, 05:45)
 habe ich nach Abschluss gelöscht.
 

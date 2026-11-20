@@ -7,7 +7,7 @@ Weckrufe (send_later): 02:00 trig_011oA4vWghrBevTAmHiwVJwD · 04:00 trig_01T9G1G
 Python-Umgebung: `~/.cache/orte-3d-venv/bin/python` (neu angelegt, fiona etc.). Cache `~/.cache/orte-3d`.
 Lokaler Branch ist 43 Commits hinter origin/gh-pages (nicht gepullt, weil EMBEDS.md lokal geändert ist – fremde Änderung, nicht anfassen).
 
-## Aktuell – ABGESCHLOSSEN (00:18)
+## Aktuell – ABGESCHLOSSEN (00:14)
 - [x] 15 neue 3D-Orte, Atlas, Kritikrunden 1–3, Übergabe GUTEN-MORGEN.md
 - [x] Weckrufe gelöscht, Testserver beendet
 - Nichts gepusht.
