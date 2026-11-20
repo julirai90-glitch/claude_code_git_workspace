@@ -380,3 +380,4 @@ html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::after { content
 .embed-tag21 .lists > :not(#strip) { display: none; }
 .embed-tag21 #strip { flex: 1; min-height: 0; height: auto; }
 .embed-tag21 .lists, .embed-horizont #ort, .embed-sonnenjahr #ort { width: 100%; margin: 0; box-sizing: border-box; }
+.strip text.sel { fill: #fff; font: 600 12px var(--sans); paint-order: stroke; stroke: rgba(8,12,26,.95); stroke-width: 4px; pointer-events: none; }

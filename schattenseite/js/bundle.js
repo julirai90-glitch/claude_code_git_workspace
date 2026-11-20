@@ -1238,8 +1238,20 @@ function gantt(list, edge) {
   return `<div class="gantt${edge ? ' edge' : ''}"><div class="guides">${sol}${today}</div><div class="axis">${ticks.join('')}</div>${rows}<div class="axis bottom">${ticks.join('')}</div></div>`;
 }
 function markStrip() {
-  const c = state.place && state.place.id && document.querySelector(`#strip circle[data-id="${state.place.id}"]`), m = $('#strip-sel');
-  if (!m) return; if (c) { m.setAttribute('cx', c.getAttribute('cx')); m.setAttribute('cy', c.getAttribute('cy')); } else m.setAttribute('cx', -20);
+  const p = state.place, c = p && p.id && document.querySelector(`#strip circle[data-id="${p.id}"]`), m = $('#strip-sel'), t = $('#strip-lab');
+  if (!m) return;
+  document.querySelectorAll('#strip .ann2').forEach(a => { a.style.display = p && a.dataset.for === String(p.id) ? 'none' : ''; });   // no double label
+  if (!c) { m.setAttribute('cx', -20); if (t) t.textContent = ''; return; }
+  const cx = +c.getAttribute('cx'), cy = +c.getAttribute('cy');
+  m.setAttribute('cx', cx); m.setAttribute('cy', cy);
+  if (!t) return;
+  t.textContent = `${p.n} · ${p.s.d21 ? hm(p.s.d21) : 'keine direkte Sonne'}`;
+  // label beside the dot, flipped to the left near the right edge, kept inside the drawing
+  const svg = t.ownerSVGElement, W = svg.viewBox.baseVal.width, H = svg.viewBox.baseVal.height, vertical = svg.classList.contains('v');
+  t.setAttribute('text-anchor', 'start'); t.setAttribute('x', cx + 10); t.setAttribute('y', vertical ? cy + 4 : Math.max(12, cy - 12));
+  const w = t.getComputedTextLength();
+  if (cx + 10 + w > W - 4) { t.setAttribute('text-anchor', 'end'); t.setAttribute('x', cx - 10); }
+  if (!vertical && cy - 12 < 12) t.setAttribute('y', Math.min(H - 4, cy + 20));
 }
 function strip() {
   const box = $('#strip'); let lastW = 0, lastH = 0;
@@ -1247,6 +1259,7 @@ function strip() {
     const vertical = EMBED === 'tag21' || innerWidth <= 760, W = box.clientWidth, H = box.clientHeight;
     if (vertical && (W === lastW && H === lastH)) return; lastW = W; lastH = H;
     if (vertical) stripVertical(box, W, H); else stripHorizontal();
+    markStrip();
   };
   new ResizeObserver(draw).observe(box); draw();
   box.addEventListener('click', e => { const c = e.target.closest('[data-id]'); if (c) { const p = places.find(x => String(x.id) === c.dataset.id); stop(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); } });
@@ -1273,10 +1286,11 @@ function stripVertical(box, W, H) {
   const dots = placed.map(([cx, cy, p]) => `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="${rampColor(p.s.d21)}" data-id="${p.id}"><title>${p.n} (${p.g}): ${p.s.d21 ? hm(p.s.d21) : 'keine Sonne'}</title></circle>`).join('');
   const ticks = [0, 120, 240, 360, 480].map(m => `<g transform="translate(0,${y(m).toFixed(1)})"><line x1="${L - 6}" x2="${W - R}" class="grid"/><text x="${L - 10}" dy="4">${m / 60} h</text></g>`).join('');
   const n0 = v.filter(p => !p.s.d21).length, best = v[v.length - 1], chur = placed.find(q => q[2].n === 'Chur'), bp = placed.find(q => q[2] === best);
-  const lab = (q, t) => q ? `<text class="ann2" x="${Math.min(q[0] + r + 5, W - R - 2)}" y="${q[1] + 4}" text-anchor="${q[0] + r + 5 > W - R - 90 ? 'end' : 'start'}">${t}</text>` : '';
-  box.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${v.length} Dörfer nach Minuten direkter Sonne am 21. Dezember">
+  const lab = (q, t) => q ? `<text class="ann2" data-for="${q[2].id}" x="${Math.min(q[0] + r + 5, W - R - 2)}" y="${q[1] + 4}" text-anchor="${q[0] + r + 5 > W - R - 90 ? 'end' : 'start'}">${t}</text>` : '';
+  box.innerHTML = `<svg class="v" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${v.length} Dörfer nach Minuten direkter Sonne am 21. Dezember">
     <g class="ticks v">${ticks}</g>${dots}${lab(chur, 'Chur')}${lab(bp, best.n)}
-    <text class="ann" x="${cx0}" y="${H - 8}" text-anchor="middle">${n0} Dörfer ohne Sonne</text></svg>`;
+    <text class="ann" x="${cx0}" y="${H - 8}" text-anchor="middle">${n0} Dörfer ohne Sonne</text>
+    <circle id="strip-sel" r="${(r + 3.5).toFixed(1)}" fill="none" stroke="#fff" stroke-width="2" cx="-20" cy="-20"/><text id="strip-lab" class="sel"></text></svg>`;
 }
 function stripHorizontal() {
   const v = places.filter(p => p.t !== 'hamlet'), W = 1000, H = 150, max = 480;
@@ -1289,7 +1303,7 @@ function stripHorizontal() {
   }
   const n0 = v.filter(p => !p.s.d21).length;
   const ticks = [0, 60, 120, 180, 240, 300, 360, 420, 480].map(m => `<g transform="translate(${x(m)},${H - 14})"><line y1="-6" y2="0"/><text y="12">${m / 60} h</text></g>`).join('');
-  $('#strip').innerHTML = `<svg viewBox="0 0 ${W} ${H + 4}" role="img" aria-label="${v.length} Dörfer nach Minuten direkter Sonne am 21. Dezember">${dots.join('')}<g class="ticks">${ticks}</g><text class="ann" x="${x(0) + 10}" y="${H / 2 - 52}">${n0} Dörfer ohne Sonne</text><circle id="strip-sel" r="6.5" fill="none" stroke="#fff" stroke-width="2" cx="-20" cy="-20"/></svg>`;
+  $('#strip').innerHTML = `<svg viewBox="0 0 ${W} ${H + 4}" role="img" aria-label="${v.length} Dörfer nach Minuten direkter Sonne am 21. Dezember">${dots.join('')}<g class="ticks">${ticks}</g><text class="ann" x="${x(0) + 10}" y="${H / 2 - 52}">${n0} Dörfer ohne Sonne</text><circle id="strip-sel" r="6.5" fill="none" stroke="#fff" stroke-width="2" cx="-20" cy="-20"/><text id="strip-lab" class="sel"></text></svg>`;
 }
 
 // ---------- inhabited-hectare layer ----------
