@@ -857,7 +857,7 @@ async function init() {
   if (EMBED === 'horizont') $('#ort .fig figcaption p').textContent = 'Durchgezogen: direkte Sonne · gestrichelt: hinter dem Berg';
   if (EMBED === 'sonnenjahr') $$('#ort .fig')[1].querySelector('figcaption p').innerHTML = '<i class="sw sun"></i>direkte Sonne <i class="sw shade"></i>Schatten <i class="sw night"></i>Nacht · Klick wählt das Datum';
   if (EMBED) $('#hlegend .ht').textContent = 'Tage ohne direkte Sonne';
-  if (EMBED === 'tag21') { $('#liste').insertBefore($('.search'), $('#strip')); $('#q').placeholder = 'Dorf suchen'; }   // the map is hidden here   // the accuracy notes are in the article
+  if (EMBED === 'tag21') $('#liste').insertBefore($('.search'), $('#strip'));   // the map (and its search) is hidden here
   bindControls(); bindHect();
   buildLists();
   // initial selection: hash, else Chur (strongest story: midday shadow on the shortest day)
@@ -1178,13 +1178,14 @@ function bindControls() {
   const q = $('#q'), list = $('#q-list'); let hits = [], hi = 0;
   const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   const render = () => {
-    q.setAttribute('aria-expanded', String(hits.length > 0 || q.value.trim().length >= 2));
-    if (!hits.length && q.value.trim().length >= 2) { list.innerHTML = `<li class="empty">${EMBED === 'tag21' ? 'Kein Dorf gefunden (Weiler sind hier nicht dabei)' : 'Kein Ort gefunden – oder direkt in die Karte klicken'}</li>`; list.hidden = false; return; }
+    q.setAttribute('aria-expanded', String(hits.length > 0 || q.value.trim().length >= 1));
+    if (!hits.length && q.value.trim().length >= 1) { list.innerHTML = `<li class="empty">${EMBED === 'tag21' ? 'Kein Dorf gefunden (Weiler sind hier nicht dabei)' : 'Kein Ort gefunden – oder direkt in die Karte klicken'}</li>`; list.hidden = false; return; }
     list.innerHTML = hits.map((p, k) => `<li role="option" class="${k === hi ? 'on' : ''}" data-k="${k}"><b>${p.n}</b><span>${p.kind} · ${p.g}</span></li>`).join(''); list.hidden = !hits.length; };
   q.addEventListener('input', () => {
     const t = norm(q.value.trim()); hi = 0;
-    hits = t.length < 2 ? [] : places.filter(p => (EMBED !== 'tag21' || p.t !== 'hamlet') && (norm(p.n).includes(t) || norm(p.g || '').startsWith(t)))
-      .sort((a, b) => (norm(b.n).startsWith(t) - norm(a.n).startsWith(t)) || ((a.t === 'hamlet') - (b.t === 'hamlet')) || a.n.localeCompare(b.n)).slice(0, 8);
+    // one letter: names starting with it; from two letters on also inside names and by municipality
+    hits = !t.length ? [] : places.filter(p => (EMBED !== 'tag21' || p.t !== 'hamlet') && (t.length === 1 ? norm(p.n).startsWith(t) : norm(p.n).includes(t) || norm(p.g || '').startsWith(t)))
+      .sort((a, b) => (norm(b.n).startsWith(t) - norm(a.n).startsWith(t)) || ((a.t === 'hamlet') - (b.t === 'hamlet')) || a.n.localeCompare(b.n)).slice(0, 5);
     render();
   });
   const choose = p => { q.value = ''; hits = []; render(); q.blur(); stop(); select(p); document.getElementById('karte').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
