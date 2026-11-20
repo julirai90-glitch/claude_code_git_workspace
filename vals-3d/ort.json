@@ -1,0 +1,47 @@
+{
+  "name": "Vals",
+  "bfs": 3603,
+  "boundary_year": "aktuell",
+  "clip": [
+    2732000,
+    1162500,
+    2735000,
+    1166500
+  ],
+  "terrain_km": [
+    2730,
+    2737,
+    1160,
+    1169
+  ],
+  "start": [
+    2733337,
+    1164374
+  ],
+  "start_note": "Quartierteil Platz, Vals (geo.admin SearchServer)",
+  "area_text": "Vals Platz mit Umgebung – ein Ausschnitt von 3 × 4 km aus der Gemeinde Vals (rund 150 km²)",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "swimming_pool",
+      "Therme Vals",
+      "Therme Vals"
+    ],
+    [
+      "gondola_station",
+      "Vals (Talstation)",
+      "Gondelbahn"
+    ],
+    [
+      "",
+      "St. Niklaus",
+      "St. Niklaus"
+    ]
+  ],
+  "start_zoom": 0.6
+}

@@ -536,7 +536,7 @@ document.querySelector("#info .close").addEventListener("click", closeInfo);
 function home() {
   const t = toLocal(START[0], START[1], hAt(...START));
   controls.target.copy(t);
-  camera.position.copy(t).add(new THREE.Vector3(900, 1300, 1700));
+  camera.position.copy(t).add(new THREE.Vector3(900, 1300, 1700).multiplyScalar(ORT.start_zoom || 1));  // smaller villages start closer
   controls.update();
 }
 $("reset").addEventListener("click", () => { controls.autoRotate = false; home(); });

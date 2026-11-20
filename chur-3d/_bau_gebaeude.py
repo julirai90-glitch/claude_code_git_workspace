@@ -63,7 +63,7 @@ def fetch_unzip(url, name, keep=None):
 
 def boundary():
     """Municipal boundary of the configured year ("aktuell" = current), optionally clipped to a box."""
-    url = BOUNDARY_URL.format(name=urllib.parse.quote(CFG["name"]))
+    url = BOUNDARY_URL.format(name=urllib.parse.quote(CFG.get("gemeinde", CFG["name"])))  # place may be a village of a larger municipality
     data = json.load(open(fetch(url, f"grenzen_{CFG['bfs']}.json")))
     hit = [r for r in data["results"] if r["properties"]["gde_nr"] == CFG["bfs"] and (
         r["properties"]["is_current_jahr"] if CFG["boundary_year"] == "aktuell"
@@ -487,7 +487,7 @@ def main():
         "sources": {"swissbuildings3d": "swisstopo swissBUILDINGS3D 3.0, Ausgabe " + "/".join(map(str, years)),
                     "gwr": "BFS GWR, Export " + (rows[0]["GEXPDAT"] if rows else "?"),
                     "av": f"Amtliche Vermessung (AV), Kanton Graubünden, {av_date}",
-                    "grenze": f"swissBOUNDARIES3D, Gemeinde {CFG['name']} Stand {CFG['boundary_year']}"},
+                    "grenze": f"swissBOUNDARIES3D, Gemeinde {CFG.get('gemeinde', CFG['name'])} Stand {CFG['boundary_year']}"},
         "area": [[round(x - ox, 1), round(y - oy, 1)] for x, y in main_area.exterior.coords],
         # all parts (exclaves such as Mutten/Thusis): labels are searched in every part
         "areas": [[[round(x - ox, 1), round(y - oy, 1)] for x, y in g.exterior.coords]

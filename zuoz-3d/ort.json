@@ -1,0 +1,37 @@
+{
+  "name": "Zuoz",
+  "bfs": 3791,
+  "boundary_year": "aktuell",
+  "clip": [
+    2791800,
+    1162800,
+    2794800,
+    1165800
+  ],
+  "terrain_km": [
+    2789,
+    2797,
+    1160,
+    1168
+  ],
+  "start": [
+    2793253,
+    1164089
+  ],
+  "start_note": "Bushaltestelle Zuoz, staziun (geo.admin SearchServer)",
+  "area_text": "Dorf Zuoz – ein Ausschnitt von 3 × 3 km aus der Gemeinde Zuoz (rund 40 km²)",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "college",
+      "Lyceum Alpinum Zuoz",
+      "Lyceum Alpinum"
+    ]
+  ],
+  "start_zoom": 0.5
+}

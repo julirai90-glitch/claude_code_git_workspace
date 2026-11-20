@@ -1,0 +1,38 @@
+{
+  "name": "Guarda",
+  "gemeinde": "Scuol",
+  "bfs": 3762,
+  "boundary_year": "aktuell",
+  "clip": [
+    2805800,
+    1182800,
+    2808600,
+    1185200
+  ],
+  "terrain_km": [
+    2803,
+    2811,
+    1180,
+    1188
+  ],
+  "start": [
+    2807212,
+    1184064
+  ],
+  "start_note": "Ort Guarda (swisstopo-Ortsnamen, geo.admin SearchServer)",
+  "area_text": "Guarda – ein Ausschnitt von 2,8 × 2,4 km aus der Gemeinde Scuol; Guarda ist seit 2015 eine Fraktion von Scuol",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Guarda",
+      "Bahnhof Guarda"
+    ]
+  ],
+  "start_zoom": 0.38
+}

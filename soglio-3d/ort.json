@@ -1,0 +1,38 @@
+{
+  "name": "Soglio",
+  "gemeinde": "Bregaglia",
+  "bfs": 3792,
+  "boundary_year": "aktuell",
+  "clip": [
+    2760300,
+    1133300,
+    2763000,
+    1135600
+  ],
+  "terrain_km": [
+    2760,
+    2765,
+    1131,
+    1138
+  ],
+  "start": [
+    2761712,
+    1134432
+  ],
+  "start_note": "Ort Soglio (swisstopo-Ortsnamen, geo.admin SearchServer)",
+  "area_text": "Soglio mit Bondo, Promontogno und Spino – ein Ausschnitt von 2,7 × 2,3 km aus der Gemeinde Bregaglia; Soglio und Bondo sind seit 2010 Fraktionen von Bregaglia",
+  "place_classes": [
+    "neighbourhood",
+    "village",
+    "hamlet"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "hospital",
+      "Centro Sanitario Bregaglia",
+      "Centro Sanitario Bregaglia"
+    ]
+  ],
+  "start_zoom": 0.45
+}
