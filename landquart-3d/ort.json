@@ -1,0 +1,45 @@
+{
+  "name": "Landquart",
+  "bfs": 3955,
+  "boundary_year": "aktuell",
+  "clip": null,
+  "terrain_km": [
+    2755,
+    2767,
+    1198,
+    1208
+  ],
+  "start": [
+    2761034,
+    1204028
+  ],
+  "start_note": "Bushaltestelle Landquart, Bahnhof (geo.admin SearchServer)",
+  "area_text": "ganze Gemeinde Landquart mit Igis und Mastrils (Stand 2026)",
+  "place_classes": [
+    "neighbourhood",
+    "village"
+  ],
+  "exclude_places": [],
+  "landmarks": [
+    [
+      "railway_station",
+      "Landquart",
+      "Bahnhof Landquart"
+    ],
+    [
+      "railway_station",
+      "Igis",
+      "Bahnhof Igis"
+    ],
+    [
+      "university",
+      "Landwirtschaftliches Bildungs- und Beratungszentrum Plantahof",
+      "Plantahof"
+    ],
+    [
+      "castle",
+      "Burg Marschlins",
+      "Schloss Marschlins"
+    ]
+  ]
+}
