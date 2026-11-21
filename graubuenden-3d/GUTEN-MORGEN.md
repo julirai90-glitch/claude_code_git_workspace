@@ -1,6 +1,6 @@
 # Guten Morgen, Herr Reich
 
-Nachtauftrag vom 20./21.11.2026 – «Graubünden 3D». Nichts gepusht, alles nur lokal committet.
+Nachtauftrag vom 20./21.11.2026 – «Graubünden 3D». Am Morgen des 21.11.2026 auf Julians Wunsch gepusht (siehe Punkt 8).
 
 ## 1. Was gebaut wurde
 
@@ -83,10 +83,10 @@ habe ich nach Abschluss gelöscht.
 
 ## 8. Veröffentlichungsstatus
 
-**Nicht gepusht.** Branch `gh-pages`, lokale Commits dieser Nacht: `91cf919` bis zum letzten Commit mit dieser Datei
-(`git log --oneline 91cf919^..HEAD`). Geändert ausserhalb der neuen Ordner: `chur-3d/_bau_gebaeude.py`, `chur-3d/_bau_boden.py`
-(abwärtskompatibel), `chur-3d/index.html` + Kopien in `davos-3d/`, `st-moritz-3d/` (Link «Alle Orte», optionaler Startzoom),
-`chur-3d/NOTIZEN.md`.
+**Gepusht am 21.11.2026** auf `gh-pages` (online unter julirai90-glitch.github.io/claude_code_git_workspace/graubuenden-3d/).
+Danach ergänzt: Gebäude, die im 3D-Modell fehlen (z. B. Bahnhof Thusis), als vereinfachte Blöcke über dem
+Vermessungsgrundriss – 1'396 in 18 Orten, Details in `chur-3d/NOTIZEN.md`. Der Server-Klon ist wieder synchron mit GitHub.
 
-Dateien: `graubuenden-3d/` (Atlas, `_bau_atlas.py`, `atlas.json`, `IDEE.md`, `KRITIK.md`, `STAND.md`),
-15 neue Ordner `<ort>-3d/`.
+Geändert ausserhalb der neuen Ordner: `chur-3d/_bau_gebaeude.py`, `chur-3d/_bau_boden.py`, `chur-3d/index.html` + Kopien
+in `davos-3d/`, `st-moritz-3d/` (Link «Alle Orte», optionaler Startzoom, vereinfachte Blöcke), `chur-3d/NOTIZEN.md`.
+Dateien: `graubuenden-3d/` (Atlas, `_bau_atlas.py`, `atlas.json`, `IDEE.md`, `KRITIK.md`), 15 neue Ordner `<ort>-3d/`.
