@@ -174,3 +174,13 @@ Playwright: nur `chromium-1243` vorhanden.
 - Flächenangaben in `area_text` immer gegen das Polygon prüfen (atlas.json `flaeche_km2`), nicht schätzen.
 - Python-Umgebung auf dem Server: `~/.cache/orte-3d-venv` (fiona usw.); System-Python hat die Pakete nicht.
 - Vorschaubilder für den Atlas: /tmp-Skript mit CSS `body > *:not(#scene):not(#labels){display:none}`.
+
+## Lücken im 3D-Modell gefüllt (21.11.2026, nach Julians Hinweis «Wo ist Bahnhof Thusis?»)
+- Bahnhofgebäude Thusis (EGID 1183060) und Viamala-Zentrum stehen in GWR und AV, fehlen aber in swissBUILDINGS3D 2022
+  (Blatt 1215-41, Erfassung 2016). Grund nicht geprüft.
+- Build ergänzt jetzt jedes AV-Gebäude mit lebender GWR-EGID, das keinem 3D-Körper zugeordnet ist und zu weniger als
+  30 % von 3D-Grundrissen bedeckt wird (≥ 10 m², im Gebiet): Flachdach-Block über dem AV-Grundriss, Unterkante = tiefster
+  Geländepunkt, Oberkante = mittleres Gelände + Geschosse (GASTW) × 3 m; ohne GASTW Wohnbau 2, sonst 1 Geschoss.
+  Meta `f: 1`, Statistik `vereinfacht`. Seite: grau-blau auf der Karte, Infobox «Form vereinfacht», Höhe «geschätzt».
+- Ergänzt: 1'396 Gebäude in 18 Orten (Davos 210, Domat/Ems 162, Maienfeld 136, Klosters 129, Scuol 117, Ilanz 113,
+  Thusis 107 … Chur 60, Soglio 2). Chur/Davos/St. Moritz dabei mit GWR-Export 20.11.2026 neu gebaut.

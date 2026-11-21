@@ -130,7 +130,7 @@
   <h2 id="i-title"></h2>
   <dl id="i-list"></dl>
   <div id="i-notes"></div>
-  <p class="hint">Quelle: Gebäude- und Wohnungsregister (GWR), BFS; Form: swissBUILDINGS3D, swisstopo; Grundrisse: amtliche Vermessung GR</p>
+  <p class="hint" id="i-src">Quelle: Gebäude- und Wohnungsregister (GWR), BFS; Form: swissBUILDINGS3D, swisstopo; Grundrisse: amtliche Vermessung GR</p>
 </div>
 
 <div id="bottom" class="panel">
@@ -165,7 +165,8 @@
       (Annahme, nicht bestätigt); diese <span id="sammel"></span> Gebäude stehen deshalb ebenfalls in jedem Jahr. Wo das 3D-Modell mehrere Häuser als einen Körper führt (Häuserzeilen), ist er entlang der Hausgrundrisse
       der amtlichen Vermessung geteilt (<span id="geteilt"></span>). Die Schnitte und Trennwände sind daraus
       abgeleitet, nicht gemessen; an den Hausgrenzen kann ein Dachstück dem Nachbarhaus zufallen.
-      Das 3D-Modell stammt von 2022: Neubauten danach fehlen oder zeigen noch den Vorgängerbau.
+      Das 3D-Modell stammt von 2022 (Erfassung je nach Gebiet früher): Neubauten danach zeigen teils noch den Vorgängerbau.
+      <span id="vereinftext"></span>
       Die Adresssuche findet nur Gebäude mit Registereintrag; sie läuft im Browser, Eingaben werden nicht übermittelt.</p>
     <p><b>Gestaltet:</b> Farben, Kamera, Höhen nicht überhöht. Altbauten erscheinen im Baujahr gemäss Register,
       das bei sehr alten Häusern oft geschätzt ist.</p>
@@ -230,6 +231,8 @@ const YEAR_STOPS = [[1800, "#2d1e5f"], [1880, "#5b2a86"], [1920, "#9c3587"], [19
                     [1975, "#ef7d3c"], [2000, "#f3b234"], [2026, "#e3d44a"]];
 const UNKNOWN = "#9aa1a8";
 const ROOF = "#b5523b", FLAT = "#b9b4ac", WALL = "#efebe4", FRESH = "#2563eb";
+// blocks derived from the survey footprint (missing in swissBUILDINGS3D): cool grey, so they read as "not measured"
+const DER_ROOF = "#8fa3b8", DER_WALL = "#d9e1ea";
 const USE = {
   wohnen: ["Wohnen", "#6fa8e6"],
   arbeit: ["Arbeit, Handel, Industrie", "#f0a35e"],
@@ -366,7 +369,9 @@ const bgeo = new THREE.BufferGeometry();
 bgeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
 bgeo.setAttribute("aYear", new THREE.BufferAttribute(yearAttr, 1));
 const colors = new Uint8Array(N * 3), colorsB = new Uint8Array(N * 3), mixAttr = new Float32Array(N);
-for (let i = 0; i < N; i++) mixAttr[i] = meta[bid[i]].mix || 0;
+const derAttr = new Float32Array(N);
+for (let i = 0; i < N; i++) { mixAttr[i] = meta[bid[i]].mix || 0; derAttr[i] = meta[bid[i]].f ? 1 : 0; }
+bgeo.setAttribute("aDer", new THREE.BufferAttribute(derAttr, 1));
 bgeo.setAttribute("color", new THREE.BufferAttribute(colors, 3, true));
 // solids holding several register buildings (row houses): second colour = newest year, drawn as stripes
 bgeo.setAttribute("colorB", new THREE.BufferAttribute(colorsB, 3, true));
@@ -381,12 +386,13 @@ const bmat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.Dou
 bmat.onBeforeCompile = sh => {
   Object.assign(sh.uniforms, uniforms);
   const wall = new THREE.Color(WALL), flat = new THREE.Color(FLAT), fresh = new THREE.Color(FRESH);
-  sh.vertexShader = "attribute float aYear;\nattribute float aBid;\nattribute vec3 colorB;\nattribute float aMix;\n" +
-    "varying float vYear;\nvarying float vBid;\nvarying float vUp;\nvarying vec3 vColorB;\nvarying float vMix;\nvarying vec3 vPos;\n" +
+  const dRoof = new THREE.Color(DER_ROOF), dWall = new THREE.Color(DER_WALL);
+  sh.vertexShader = "attribute float aYear;\nattribute float aBid;\nattribute vec3 colorB;\nattribute float aMix;\nattribute float aDer;\n" +
+    "varying float vYear;\nvarying float vBid;\nvarying float vUp;\nvarying vec3 vColorB;\nvarying float vMix;\nvarying vec3 vPos;\nvarying float vDer;\n" +
     sh.vertexShader.replace("#include <begin_vertex>",
-      "#include <begin_vertex>\nvYear = aYear; vBid = aBid; vUp = objectNormal.y; vColorB = colorB; vMix = aMix; vPos = position;");
+      "#include <begin_vertex>\nvYear = aYear; vBid = aBid; vUp = objectNormal.y; vColorB = colorB; vMix = aMix; vPos = position; vDer = aDer;");
   sh.fragmentShader = "uniform float uYear;\nuniform float uFresh;\nuniform float uSel;\nuniform float uMap;\nuniform float uStripe;\n" +
-    "varying float vYear;\nvarying float vBid;\nvarying float vUp;\nvarying vec3 vColorB;\nvarying float vMix;\nvarying vec3 vPos;\n" +
+    "varying float vYear;\nvarying float vBid;\nvarying float vUp;\nvarying vec3 vColorB;\nvarying float vMix;\nvarying vec3 vPos;\nvarying float vDer;\n" +
     sh.fragmentShader.replace("#include <color_fragment>", `#include <color_fragment>
       if (vYear > uYear + 0.5) discard;
       // several construction years in one solid: diagonal stripes oldest / newest (pale until the newest is built)
@@ -395,6 +401,7 @@ bmat.onBeforeCompile = sh => {
       // walls: plain facade colour on the map, a pale tint of the layer colour otherwise
       if (uMap > 0.5 && abs(vUp) > 0.97) diffuseColor.rgb = vec3(${flat.r}, ${flat.g}, ${flat.b});  // flat roofs
       if (abs(vUp) < 0.35) diffuseColor.rgb = uMap > 0.5 ? vec3(${wall.r}, ${wall.g}, ${wall.b}) : mix(diffuseColor.rgb, vec3(1.0), 0.45);
+      if (uMap > 0.5 && vDer > 0.5) diffuseColor.rgb = abs(vUp) < 0.35 ? vec3(${dWall.r}, ${dWall.g}, ${dWall.b}) : vec3(${dRoof.r}, ${dRoof.g}, ${dRoof.b});
       if (vYear < -0.5 && uYear < ${NOW}.0) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.93), 0.75);
       if (uFresh > 0.0 && vYear > uYear - uFresh) diffuseColor.rgb = vec3(${fresh.r}, ${fresh.g}, ${fresh.b});
       if (abs(vBid - uSel) < 0.5) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.0, 0.75, 0.85), 0.75);`);
@@ -426,6 +433,7 @@ $("nojahr").textContent = B.stats.ohne.toLocaleString("de-CH");
 $("nurperiode").textContent = B.stats.bauperiode.toLocaleString("de-CH");
 $("avdate").textContent = (B.sources.av || "").replace(/.*, /, "");
 $("sammel").textContent = (B.stats.sammel1900 || 0).toLocaleString("de-CH");
+$("vereinftext").textContent = B.stats.vereinfacht ? `${B.stats.vereinfacht.toLocaleString("de-CH")} Gebäude, die Vermessung und Register kennen, fehlen im 3D-Modell ganz (Neubauten, aber auch ältere wie Bahnhöfe); sie sind als vereinfachter Block über dem Grundriss gezeichnet, Höhe aus der Geschosszahl geschätzt (grau-blau auf der Karte).` : "";
 $("creditdate").textContent = "Stand " + (B.sources.av || "").replace(/.*, /, "");
 $("more").addEventListener("click", () => {
   const on = $("bottom").classList.toggle("more");
@@ -438,6 +446,7 @@ function legend() {
   const L = $("legend");
   if (mode === "map") {
     L.innerHTML = `<span><i style="background:${ROOF}"></i>Steildach</span><span><i style="background:${FLAT}"></i>Flachdach</span>
+      ${meta.some(m => m.f) ? `<span><i style="background:${DER_ROOF}"></i>Form vereinfacht (fehlt im 3D-Modell)</span>` : ""}
       <span><i style="background:${FRESH}"></i>neu gebaut (Zeitreise)</span>
       <span>Farben nach Alter: Ebene «Baujahr»</span>`;
   } else if (mode === "year") {
@@ -518,12 +527,16 @@ function showInfo(i) {
     : m.s === "j" ? m.y : m.s === "p" ? `Periode ${m.p}` : "nicht erfasst"]);
   if (m.k) rows.push(["Nutzung", m.k]);
   if (m.g) rows.push(["Geschosse", m.g]);
-  rows.push(["Höhe", `${m.h.toLocaleString("de-CH")} m (Modell)`]);
+  rows.push(["Höhe", m.f ? `etwa ${Math.round(m.h)} m (geschätzt)` : `${m.h.toLocaleString("de-CH")} m (Modell)`]);
+  if (m.f) rows.push(["Form", "vereinfacht"]);
+  $("i-src").textContent = m.f ? "Quelle: Gebäude- und Wohnungsregister (GWR), BFS; Grundriss: amtliche Vermessung GR; Höhe geschätzt"
+    : "Quelle: Gebäude- und Wohnungsregister (GWR), BFS; Form: swissBUILDINGS3D, swisstopo; Grundrisse: amtliche Vermessung GR";
   if (m.ad && m.ad.length > 1 && !m.ys)
     rows.push(["Adressen", m.ad.slice(0, 4).join(", ") + (m.ad.length > 4 ? ` und ${m.ad.length - 4} weitere` : "")]);
   // method notes stay folded: they matter for checking, not for reading the building
   const notes = [];
   if (m.n) notes.push("Das 3D-Modell führt diese Häuser als einen Körper. Er erscheint in der Zeitreise mit dem ältesten Baujahr; Nutzung und Geschosse gelten für dieses.");
+  if (m.f) notes.push("Dieses Gebäude fehlt im 3D-Modell von swisstopo (Stand 2022 oder älter). Gezeichnet ist ein Block über dem Grundriss der amtlichen Vermessung; die Höhe ist geschätzt: Geschosse laut Register × 3 m (ohne Angabe: Wohnhaus 2, sonst 1 Geschoss). Dachform und genaue Höhe sind nicht gemessen.");
   if (m.v) notes.push("Aus einem grösseren 3D-Körper herausgeschnitten, entlang des Hausgrundrisses der amtlichen Vermessung.");
   if (m.e) rows.push([m.ys ? "EGID (ältestes)" : "EGID", m.e]);
   if (!m.e) rows.push(["Register", "kein GWR-Eintrag zugeordnet"]);

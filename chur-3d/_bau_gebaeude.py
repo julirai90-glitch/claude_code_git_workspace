@@ -325,6 +325,43 @@ def load_gwr():
     return rows, codes, addr
 
 
+def terrain_sampler():
+    """Bilinear height from <ort>/gelaende.bin.gz (built by _bau_gelaende.py before this script)."""
+    g = json.load(open(os.path.join(HERE, "gelaende.json")))
+    raw = gzip.open(os.path.join(HERE, "gelaende.bin.gz")).read()
+    z = np.frombuffer(raw, dtype=np.uint16).reshape(g["rows"], g["cols"]) * g["zscale"] + g["zmin"]
+    c, off = g["cell"], g["first_cell_centre_offset"]
+
+    def h(e, n):
+        fx = min(max((e - g["west"] - off) / c, 0), g["cols"] - 1.001)
+        fy = min(max((g["north"] - n - off) / c, 0), g["rows"] - 1.001)
+        x0, y0 = int(fx), int(fy); dx, dy = fx - x0, fy - y0
+        return float(z[y0, x0] * (1 - dx) * (1 - dy) + z[y0, x0 + 1] * dx * (1 - dy)
+                     + z[y0 + 1, x0] * (1 - dx) * dy + z[y0 + 1, x0 + 1] * dx * dy)
+    return h
+
+
+FLOOR_M = 3.0  # assumed storey height for blocks derived from a footprint
+
+
+def block(poly, z0, z1):
+    """Flat-roofed prism over a footprint: roof triangles + wall quads, as (n,3,3)."""
+    out = []
+    for pg in getattr(poly, "geoms", [poly]):
+        if pg.geom_type != "Polygon" or pg.area < 1:
+            continue
+        rings = [np.array(pg.exterior.coords)[:-1]] + [np.array(r.coords)[:-1] for r in pg.interiors]
+        verts = np.concatenate(rings)
+        ends = np.cumsum([len(r) for r in rings]).astype(np.uint32)
+        for a, b, c in earcut.triangulate_float64(verts, ends).reshape(-1, 3):
+            out.append([[*verts[a], z1], [*verts[b], z1], [*verts[c], z1]])
+        for r in rings:
+            for (x0, y0), (x1, y1) in zip(r, np.roll(r, -1, axis=0)):
+                out.append([[x0, y0, z0], [x1, y1, z0], [x1, y1, z1]])
+                out.append([[x0, y0, z0], [x1, y1, z1], [x0, y0, z1]])
+    return np.array(out, dtype=np.float64)
+
+
 def main():
     os.makedirs(CACHE, exist_ok=True)
     full, area = boundary()
@@ -407,6 +444,32 @@ def main():
             hits[int(cand[0])].append(r)
     demolished = sum(1 for r in rows if r["GSTAT"] == "1007")
 
+    # --- gaps: houses in the survey and the register that the 3D model lacks (new since the model was
+    # captured, or never modelled, e.g. Bahnhof Thusis). Drawn as a flat-roofed block over the survey
+    # footprint, height = storeys from the register x FLOOR_M. Marked "f" (form derived, not measured).
+    joined = {r["EGID"] for rs in hits.values() for r in rs}
+    hgt = terrain_sampler()
+    n_derived = 0
+    for g, e in avs:
+        if not e or e not in live or e in joined or g.area < 10 or not area.contains(g.representative_point()):
+            continue
+        covered = sum(units[i]["foot"].intersection(g).area for i in tree.query(g))
+        if covered > 0.3 * g.area:
+            continue
+        g = g.simplify(0.1)
+        ring = list(g.exterior.coords) if g.geom_type == "Polygon" else [c for p in g.geoms for c in p.exterior.coords]
+        zs = [hgt(x, y) for x, y in ring[:-1]]
+        r = live[e]
+        storeys = int(r["GASTW"]) if r["GASTW"] else (2 if r["GKAT"] in ("1020", "1030", "1040") else 1)
+        z0 = min(zs)
+        z1 = sum(zs) / len(zs) + storeys * FLOOR_M
+        units.append({"tris": block(g, z0, z1), "foot": g, "egids": [e], "split": False, "der": True,
+                      "b": {"zmin": z0, "art": "aus Grundriss abgeleitet"}})
+        i = len(units) - 1
+        hits[i].append(r); by_egid.add(i); joined.add(e)
+        n_derived += 1
+    print(n_derived, "houses added from survey footprints (not in the 3D model)")
+
     # --- geometry + attributes
     pos, bid, meta = [], [], []
     for i, u in enumerate(units):
@@ -430,6 +493,8 @@ def main():
             # GBAUJ 1900 is a catch-all in the GR register (Davos: 1395 entries, 1899/1901: 0/1),
             # so it is shown like the period "before 1919", not as an exact year
             m["sx"] = 1
+        if u.get("der"):
+            m["f"] = 1  # form derived from the survey footprint and storeys, not in swissBUILDINGS3D
         if u["split"]:
             m["v"] = 1  # cut out of a larger solid along the survey footprint
         if i in by_egid:
@@ -483,7 +548,8 @@ def main():
                   "ohne": len(meta) - with_year - with_period, "gwr_abgebrochen": demolished,
                   "koerper": len(buildings), "geteilt": n_split,
                   "egid": sum(1 for m in meta if m.get("j") == "e"),
-                  "sammel1900": sum(1 for m in meta if m.get("sx"))},
+                  "sammel1900": sum(1 for m in meta if m.get("sx")),
+                  "vereinfacht": sum(1 for m in meta if m.get("f"))},
         "sources": {"swissbuildings3d": "swisstopo swissBUILDINGS3D 3.0, Ausgabe " + "/".join(map(str, years)),
                     "gwr": "BFS GWR, Export " + (rows[0]["GEXPDAT"] if rows else "?"),
                     "av": f"Amtliche Vermessung (AV), Kanton Graubünden, {av_date}",
