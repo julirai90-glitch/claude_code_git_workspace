@@ -460,7 +460,12 @@ def main():
         ring = list(g.exterior.coords) if g.geom_type == "Polygon" else [c for p in g.geoms for c in p.exterior.coords]
         zs = [hgt(x, y) for x, y in ring[:-1]]
         r = live[e]
-        storeys = int(r["GASTW"]) if r["GASTW"] else (2 if r["GKAT"] in ("1020", "1030", "1040") else 1)
+        try:
+            storeys = int(r["GASTW"])
+        except ValueError:
+            storeys = 0
+        if storeys < 1:  # missing (or 0): assume 2 storeys for housing, 1 otherwise
+            storeys = 2 if r["GKAT"] in ("1020", "1030", "1040") else 1
         z0 = min(zs)
         z1 = sum(zs) / len(zs) + storeys * FLOOR_M
         units.append({"tris": block(g, z0, z1), "foot": g, "egids": [e], "split": False, "der": True,

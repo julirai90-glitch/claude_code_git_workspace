@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <link rel="icon" href="data:,">
-<title>Wann wurde Graubünden gebaut? – Graubünden 3D</title>
+<title>Wie alt sind Graubündens Häuser? – Graubünden 3D</title>
 <style>
   :root {
     --bg: #f6f5f2; --card: #fff; --ink: #1d2125; --muted: #5f6870; --line: rgba(0,0,0,.12);
@@ -124,7 +124,7 @@
 <script>if (/[?&]embed\b/.test(location.search) || window.self !== window.top) { document.documentElement.classList.add("embed"); const b = document.createElement("base"); b.target = "_blank"; document.head.appendChild(b); }</script>
 <main>
   <p class="kicker">Graubünden 3D · Prototyp</p>
-  <h1>Wann wurde Graubünden gebaut?</h1>
+  <h1>Wie alt sind Graubündens Häuser?</h1>
   <p class="lead" id="lead">Bauperiode aller heute bestehenden Wohngebäude in den 100 Bündner Gemeinden. Wird geladen …</p>
 
   <p class="small muted" id="stand" style="margin:-8px 0 14px"></p>
@@ -165,10 +165,11 @@
     <ul>
       <li><b>Quelle:</b> Eidgenössisches Gebäude- und Wohnungsregister (GWR) des Bundesamts für Statistik, Export Kanton Graubünden vom <span class="exp"></span>. Gezählt sind nur <b>heute bestehende</b> Gebäude. Abgerissene fehlen – die Grafiken zeigen also, wie alt der heutige Bestand ist, nicht wie viel in einer Zeit gebaut wurde.</li>
       <li><b>Wohngebäude</b> heisst hier: GWR-Gebäudekategorien «reines Wohngebäude», «Wohngebäude mit Nebennutzung» und «Gebäude mit teilweiser Wohnnutzung». Ställe, Gewerbebauten, Hotels ohne Wohnungen usw. fehlen. «Wohnungen» zählt die Wohnungen in diesen Gebäuden.</li>
-      <li><b>Bauperiode statt Baujahr:</b> Das genaue Baujahr fehlt im GWR bei rund einem Drittel der Bündner Wohngebäude, und bei sehr vielen alten Häusern steht 1900 als Sammelwert. Die Bauperiode (GWR-Merkmal GBAUP) ist dagegen fast immer erfasst. Die Perioden sind ungleich lang (11 bis 27 Jahre), deshalb zeigen die Diagramme Gebäude <b>pro Jahr</b> der Periode. «Vor 1919» hat keinen Anfang und erscheint nur als Anteil.</li>
-      <li>Die letzte Periode («nach 2015») läuft bis zum Exportdatum; gezählt sind fertige Gebäude, keine im Bau.</li>
+      <li><b>Bauperiode statt Baujahr:</b> Das genaue Baujahr fehlt im GWR bei rund einem Drittel der Bündner Wohngebäude, und bei sehr vielen alten Häusern steht 1900 als Sammelwert. Die Bauperiode (GWR-Merkmal GBAUP) ist dagegen fast immer erfasst. Die Perioden sind ungleich lang (5 bis 27 Jahre), deshalb zeigen die Diagramme Gebäude <b>pro Jahr</b> der Periode. «Vor 1919» hat keinen Anfang und erscheint nur als Anteil.</li>
+      <li>Die letzte Periode («nach 2015») läuft bis zum Exportdatum; gezählt sind fertige Gebäude, keine im Bau. Weil Neubauten erst mit Verzögerung im Register stehen können, ist sie eher zu tief.</li>
+      <li>Ohne Bauperiode im Register und deshalb nicht gezählt: <span id="ohneper"></span> Wohngebäude im ganzen Kanton.</li>
       <li>Die Qualität der GWR-Angaben hängt von der Nachführung durch die Gemeinden ab. Einzelne Werte sind nicht geprüft.</li>
-      <li><b>Abgleich mit der Volkszählung 2000</b> (BFS, Tabelle px-x-0902020100_107, gleiche Gebäudekategorien): Damals zählte das BFS in Graubünden 16'514 Gebäude mit Wohnnutzung aus der Zeit vor 1919, das GWR führt heute 22'630. Auch die anderen Perioden bis 2000 sind heute 2 bis 19 Prozent grösser. Mit Abbrüchen lässt sich das nicht erklären, denn die würden die Zahl senken. <i>Nicht geprüft:</i> Vermutlich wurden seither alte Ställe und Nebengebäude zu Wohnhäusern umgebaut (ein Stall von 1850 zählt nach dem Umbau als Wohngebäude von «vor 1919»), und das Register wurde vervollständigt. «Vor 1919» heisst also: Das Gebäude steht seit damals – nicht unbedingt, dass seit damals darin gewohnt wird.</li>
+      <li><b>Abgleich mit der Volkszählung 2000</b> (BFS, Tabelle px-x-0902020100_107, gleiche Gebäudekategorien): Damals zählte das BFS in Graubünden 16'514 Gebäude mit Wohnnutzung aus der Zeit vor 1919, das GWR führt heute 22'630. Auch die anderen Perioden bis 2000 sind heute 2 bis 19 Prozent grösser. Mit Abbrüchen lässt sich das nicht erklären, denn die würden die Zahl senken. <i>Nicht geprüft, eine mögliche Erklärung:</i> Seither wurden wohl alte Ställe und Nebengebäude zu Wohnhäusern umgebaut (ein Stall von 1850 zählt nach dem Umbau als Wohngebäude von «vor 1919»), und das Register wurde vervollständigt. «Vor 1919» heisst also: Das Gebäude steht seit damals – nicht unbedingt, dass seit damals darin gewohnt wird.</li>
       <li><b>Gemeinden</b> in den Grenzen von heute (swissBOUNDARIES3D). Einwohner: BFS STATPOP, ständige Wohnbevölkerung <span class="popyear"></span>.</li>
       <li><b>3D-Modelle:</b> swisstopo swissBUILDINGS3D 3.0 (Ausgabe 2022), Gelände swissALTI3D, Basiskarte swisstopo, Baujahre GWR, Hausgrenzen amtliche Vermessung GR. Details auf jeder 3D-Seite.</li>
     </ul>
@@ -184,6 +185,7 @@
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const fmt = n => Math.round(n).toLocaleString("de-CH");
 const pct = x => (x * 100 >= 9.95 || x === 0 ? Math.round(x * 100) : (x * 100).toFixed(1).replace(".", ",")) + " %";
 // same colour ramp as the 3D pages (construction year)
@@ -341,7 +343,7 @@ function select(bfs, fromMap) {
   say += `Pro Jahr gerechnet stammen die meisten aus der Periode ${pLabel(pk)}. `;
   say += `Seit 2001 gebaut: ${pct(sh[3])} (Kanton: ${pct(kt[3])}).`;
   $("detail").innerHTML = `
-    <h3>${g.name}</h3>
+    <h3>${esc(g.name)}</h3>
     <div class="facts">${g.einwohner ? fmt(g.einwohner) + " Einwohnerinnen und Einwohner · " : ""}${fmt(t)} ${u}${unit === "whg" ? " in " + fmt(g.wohn.reduce((a, b) => a + b, 0)) + " Wohngebäuden" : ""}</div>
     <div class="shares" aria-hidden="true">${sh.map((v, i) => `<div style="width:${(v * 100).toFixed(2)}%;background:${yearColor(GROUPS[i][2])}"></div>`).join("")}</div>
     <div class="sharelab">${GROUPS.map(([l], i) => `<span><i style="background:${yearColor(GROUPS[i][2])}"></i>${l}<b>${pct(sh[i])}</b></span>`).join("")}</div>
@@ -362,8 +364,8 @@ function drawMulti() {
   const max = Math.max(...A.gemeinden.filter(g => total(g) >= 100).flatMap(rates)); // tiny places would flatten the rest
   $("multi").innerHTML = list.map(g => {
     const v = metric === "peak" ? pLabel(peak(g)) : pct(METRICS[metric].get(g));
-    return `<button class="mini${g.bfs === sel ? " sel" : ""}" data-b="${g.bfs}" aria-label="${g.name}, ${v}">
-      <div class="n">${g.name}<span>${v}</span></div>
+    return `<button class="mini${g.bfs === sel ? " sel" : ""}" data-b="${g.bfs}" aria-label="${esc(g.name)}, ${v}">
+      <div class="n">${esc(g.name)}<span>${v}</span></div>
       <svg viewBox="0 0 140 40" preserveAspectRatio="none" aria-hidden="true">${histSVG(g, 140, 40, { max, gap: .4 })}</svg>
       <div class="mshare" aria-hidden="true">${GROUPS.map(([, idx, y]) => `<i style="width:${(share(g, idx) * 100).toFixed(1)}%;background:${yearColor(y)}"></i>`).join("")}</div></button>`;
   }).join("");
@@ -381,10 +383,11 @@ $("multi").addEventListener("click", e => { const b = e.target.closest(".mini");
 const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 let hitIdx = -1;
 $("search").addEventListener("input", () => {
+  if (!A) return;
   const q = norm($("search").value.trim()); hitIdx = -1;
   if (!q) { $("hits").innerHTML = ""; return; }
   const hits = A.gemeinden.filter(g => norm(g.name).split(/[\s/()-]+/).some(w => w.startsWith(q)) || norm(g.name).startsWith(q)).slice(0, 6);
-  $("hits").innerHTML = hits.length ? hits.map(g => `<li role="option" data-b="${g.bfs}">${g.name}</li>`).join("")
+  $("hits").innerHTML = hits.length ? hits.map(g => `<li role="option" data-b="${g.bfs}">${esc(g.name)}</li>`).join("")
     : `<li aria-disabled="true" class="muted">Keine Gemeinde gefunden</li>`;
 });
 $("search").addEventListener("keydown", e => {
@@ -408,7 +411,7 @@ function seg(id, key, cb) {
 function recompute() {
   for (const m of ["alt", "boom", "neu"]) breaks[m] = quantileBreaks(A.gemeinden.map(METRICS[m].get), 6);
 }
-function refresh() { colorMap(); drawMulti(); if (sel) select(sel); lead(); finds(); }
+function refresh() { if (!A) return; colorMap(); drawMulti(); if (sel) select(sel); lead(); finds(); }
 seg("metric", "m", m => { metric = m; refresh(); });
 seg("unit", "u", u => { unit = u; recompute(); refresh(); });
 
@@ -418,7 +421,7 @@ function lead() {
   $("lead").innerHTML = (unit === "wohn" ? `Von den heute ${fmt(total(k))} Wohngebäuden in Graubünden stehen ${pct(share(k, [0]))} schon seit vor 1919 – `
     : `Von den heute ${fmt(total(k))} Wohnungen in Graubünden liegen ${pct(share(k, [0]))} in Gebäuden von vor 1919 – `) +
     `unter den Gemeinden mit mindestens 300 Wohngebäuden reicht die Spanne von ${pct(share(sorted.at(-1), [0]))} in ${sorted.at(-1).name} bis ${pct(share(sorted[0], [0]))} in ${sorted[0].name}. ` +
-    `Die Karte zeigt, wie alt der Bestand jeder der 100 Gemeinden ist; ${A.modelle.length} Orte gibt es zusätzlich als 3D-Modell.`;
+    `Die Karte zeigt, wie alt der heutige Bestand jeder der 100 Gemeinden ist – abgerissene Häuser fehlen. ${A.modelle.length} Orte gibt es zusätzlich als 3D-Modell.`;
 }
 
 function finds() { // three descriptive findings, computed from the data (only municipalities with >= 300 residential buildings)
@@ -430,8 +433,8 @@ function finds() { // three descriptive findings, computed from the data (only m
   const u = unit === "wohn" ? "Wohngebäude" : "Wohnungen";
   $("finds").innerHTML = `
     <div class="find" style="--c:${yearColor(pMid(pk))}"><b>${pLabel(pk)}</b>Aus dieser Periode stammen pro Jahr gerechnet die meisten heutigen ${u} im Kanton (${pct(r[pk - 1])} des Bestands pro Jahr).</div>
-    <div class="find" style="--c:${yearColor(1970)}"><b>${pct(share(boom, [3, 4]))}</b>der ${u} in ${link(boom)} stammen aus 1961–1980 – der höchste Anteil im Kanton (Kanton: ${pct(share(k, [3, 4]))}).</div>
-    <div class="find" style="--c:${yearColor(2015)}"><b>${pct(share(neu, [9, 10, 11, 12]))}</b>der ${u} in ${link(neu)} sind seit 2001 gebaut – der höchste Anteil im Kanton (Kanton: ${pct(share(k, [9, 10, 11, 12]))}).</div>`;
+    <div class="find" style="--c:${yearColor(1970)}"><b>${pct(share(boom, [3, 4]))}</b>der ${u} in ${link(boom)} stammen aus 1961–1980 – der höchste Anteil unter den Gemeinden mit mindestens 300 Wohngebäuden (Kanton: ${pct(share(k, [3, 4]))}).</div>
+    <div class="find" style="--c:${yearColor(2015)}"><b>${pct(share(neu, [9, 10, 11, 12]))}</b>der ${u} in ${link(neu)} sind seit 2001 gebaut – der höchste Anteil unter den Gemeinden mit mindestens 300 Wohngebäuden (Kanton: ${pct(share(k, [9, 10, 11, 12]))}).</div>`;
 }
 $("finds").addEventListener("click", e => { const a = e.target.closest("a[data-b]"); if (a) { select(+a.dataset.b, true); $("mapcard").scrollIntoView({ behavior: "smooth", block: "nearest" }); } });
 function drawModels() {
@@ -449,6 +452,7 @@ fetch("atlas.json").then(r => { if (!r.ok) throw new Error(r.status); return r.j
   const sum = key => P.map((_, i) => d.gemeinden.reduce((s, g) => s + g[key][i], 0));
   A.kanton = { name: "Kanton Graubünden", wohn: sum("wohn"), whg: sum("whg") };
   document.querySelectorAll(".exp").forEach(e => e.textContent = ex.toLocaleDateString("de-CH"));
+  $("ohneper").textContent = fmt(d.gemeinden.reduce((s, g) => s + g.ohne_periode_wohn, 0));
   $("stand").textContent = `Daten: Gebäude- und Wohnungsregister (BFS), Stand ${ex.toLocaleDateString("de-CH")}. Unter den Befunden zählen nur Gemeinden mit mindestens 300 Wohngebäuden.`;
   document.querySelectorAll(".popyear").forEach(e => e.textContent = (d.meta.quelle_einwohner.match(/\d{4}/) || [""])[0]);
   recompute(); drawMap(); drawModels(); refresh();

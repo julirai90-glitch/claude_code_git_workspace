@@ -74,7 +74,8 @@ def main():
     rows = csv.DictReader(open(gwr_csv(), encoding="utf-8"), delimiter="\t")
     names, export = {}, None
     n = len(PERIODS)
-    stat = defaultdict(lambda: {"wohn": [0] * n, "whg": [0] * n, "alle": [0] * n, "ohne_periode": 0})
+    stat = defaultdict(lambda: {"wohn": [0] * n, "whg": [0] * n, "alle": [0] * n, "ohne_periode": 0,
+                                "ohne_periode_wohn": 0})
     for r in rows:
         export = r["GEXPDAT"]
         if r["GSTAT"] != "1004":
@@ -85,6 +86,7 @@ def main():
         i = PIDX.get(r["GBAUP"])
         if i is None:
             s["ohne_periode"] += 1
+            s["ohne_periode_wohn"] += r["GKAT"] in RESIDENTIAL
             continue
         s["alle"][i] += 1
         if r["GKAT"] in RESIDENTIAL:

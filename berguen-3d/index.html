@@ -401,6 +401,8 @@ bmat.onBeforeCompile = sh => {
       // walls: plain facade colour on the map, a pale tint of the layer colour otherwise
       if (uMap > 0.5 && abs(vUp) > 0.97) diffuseColor.rgb = vec3(${flat.r}, ${flat.g}, ${flat.b});  // flat roofs
       if (abs(vUp) < 0.35) diffuseColor.rgb = uMap > 0.5 ? vec3(${wall.r}, ${wall.g}, ${wall.b}) : mix(diffuseColor.rgb, vec3(1.0), 0.45);
+      // derived blocks in the year/use layers: same colour, washed out, so they never read as measured
+      if (uMap < 0.5 && vDer > 0.5) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.96), 0.5);
       if (uMap > 0.5 && vDer > 0.5) diffuseColor.rgb = abs(vUp) < 0.35 ? vec3(${dWall.r}, ${dWall.g}, ${dWall.b}) : vec3(${dRoof.r}, ${dRoof.g}, ${dRoof.b});
       if (vYear < -0.5 && uYear < ${NOW}.0) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.93), 0.75);
       if (uFresh > 0.0 && vYear > uYear - uFresh) diffuseColor.rgb = vec3(${fresh.r}, ${fresh.g}, ${fresh.b});
@@ -453,10 +455,12 @@ function legend() {
     const grad = YEAR_STOPS.map(([y, c]) => `${c} ${((y - 1800) / (NOW - 1800) * 100).toFixed(0)}%`).join(",");
     L.innerHTML = `<span>alt<span id="ramp" style="background:linear-gradient(90deg,${grad})"></span>neu</span>
       <span><i style="background:${UNKNOWN}"></i>Baujahr unbekannt</span>
+      ${meta.some(m => m.f) ? `<span><i style="background:#f1d9c6"></i>blass: Form vereinfacht (fehlt im 3D-Modell)</span>` : ""}
       ${meta.some(m => m.mix) ? `<span><i style="background:repeating-linear-gradient(135deg,${YEAR_STOPS[1][1]} 0 3px,${YEAR_STOPS[5][1]} 3px 6px)"></i>mehrere Baujahre (Häuserzeile)</span>` : ""}
       <span><i style="background:${FRESH}"></i>neu gebaut (Zeitreise)</span>`;
   } else {
-    L.innerHTML = Object.values(USE).map(([t, c]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
+    L.innerHTML = Object.values(USE).map(([t, c]) => `<span><i style="background:${c}"></i>${t}</span>`).join("") +
+      (meta.some(m => m.f) ? `<span>blass: Form vereinfacht</span>` : "");
   }
 }
 // histogram of build years per decade
