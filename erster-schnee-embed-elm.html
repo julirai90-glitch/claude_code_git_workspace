@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de-CH"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Erster Schnee pro Winter, Elm</title>
+<style>
+html,body{margin:0;padding:0;background:#fff;color:#1c2530;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}
+svg{display:block;width:100%;height:auto}
+text{fill:#5d6b7a;font-size:13px}.t{fill:#1c2530}.st{font-weight:700;font-size:15px;fill:#1c2530}
+#tip{position:fixed;pointer-events:none;background:#fff;color:#1c2530;border:1px solid #cfd8e2;border-radius:8px;padding:5px 8px;font-size:12.5px;box-shadow:0 2px 8px #0003;display:none;max-width:230px;z-index:2}
+</style></head><body><div id="c"></div><div id="tip"></div>
+<script>
+const MODE='elm',DATA={"gla":{"name":"Glarus","h":517,"last":"2026-11-20","rows":[[1891,117,2,0,0],[1892,78,1,0,0],[1893,98,2,0,0],[1894,102,2,0,0],[1895,77,2,0,0],[1896,71,3,0,0],[1897,120,7,0,0],[1898,120,3,0,0],[1899,128,2,0,0],[1900,101,11,0,0],[1901,107,1,0,0],[1902,109,1,0,0],[1903,107,2,0,0],[1904,113,3,0,0],[1905,99,3,0,0],[1906,110,1,0,0],[1907,127,3,0,0],[1908,99,1,0,0],[1909,101,2,0,0],[1910,93,2,0,0],[1911,130,2,0,0],[1912,82,5,0,0],[1913,126,30,0,0],[1914,106,1,0,0],[1915,105,1,0,0],[1916,80,2,0,0],[1917,70,1,0,0],[1918,118,9,0,0],[1919,76,1,0,0],[1920,125,1,0,0],[1921,99,12,0,0],[1922,109,6,0,0],[1923,98,3,0,0],[1924,110,3,0,0],[1925,116,8,0,0],[1926,112,1,0,0],[1927,102,1,0,0],[1928,118,10,0,0],[1929,79,2,0,0],[1930,95,2,0,0],[1931,131,2,0,0],[1932,91,4,0,0],[1933,115,1,0,0],[1934,157,10,0,0],[1935,125,9,0,0],[1936,128,2,0,0],[1937,126,3,0,0],[1938,141,4,0,0],[1939,87,3,0,0],[1940,126,3,0,0],[1941,89,10,0,0],[1942,108,2,0,0],[1943,107,5,0,0],[1944,100,7,0,0],[1945,117,1,0,0],[1946,127,10,0,0],[1947,116,12,0,0],[1948,138,6,0,0],[1949,105,3,0,0],[1950,127,1,0,0],[1951,154,5,0,0],[1952,98,4,0,0],[1953,146,3,0,0],[1954,109,4,0,0],[1955,115,6,0,0],[1956,66,1,0,0],[1957,140,8,0,0],[1958,144,1,0,0],[1959,88,8,0,0],[1960,139,6,0,0],[1961,95,6,0,0],[1962,106,7,0,0],[1963,137,1,0,0],[1964,83,1,0,0],[1965,104,5,0,0],[1966,95,19,0,0],[1967,118,1,0,0],[1968,107,3,0,0],[1969,116,12,0,0],[1970,106,3,0,0],[1971,110,11,0,0],[1972,82,8,0,0],[1973,117,18,0,0],[1974,88,13,0,0],[1975,112,1,0,0],[1976,111,1,0,0],[1977,106,2,0,0],[1978,117,3,0,0],[1979,103,2,0,0],[1980,93,1,0,0],[1981,119,6,0,0],[1982,107,2,0,0],[1983,121,1,0,0],[1984,148,2,0,0],[1985,103,3,0,0],[1986,140,7,0,0],[1987,182,3,0,0],[1988,111,1,0,0],[1989,157,1,0,0],[1990,96,2,0,0],[1991,107,2,0,0],[1992,108,1,0,0],[1993,132,1,0,0],[1994,141,4,0,0],[1995,108,5,0,0],[1996,-1,null,364,0],[1997,-1,null,365,0],[1998,-1,null,365,0],[1999,-1,null,366,0],[2000,-1,null,365,0],[2001,-1,null,365,0],[2002,-1,null,365,0],[2003,-1,null,366,0],[2004,-1,null,365,0],[2005,-1,null,365,0],[2006,-1,null,365,0],[2007,-1,null,366,0],[2008,89,12,60,0],[2009,120,2,0,0],[2010,114,1,0,0],[2011,137,2,0,0],[2012,87,1,0,0],[2013,70,4,0,0],[2014,96,12,0,0],[2015,112,2,0,0],[2016,154,5,0,0],[2017,109,2,0,0],[2018,87,3,0,0],[2019,170,2,0,0],[2020,122,8,0,0],[2021,118,2,0,0],[2022,131,2,0,0],[2023,115,1,0,0],[2024,111,1,0,0],[2025,110,2,0,0],[2026,-1,null,0,1]]},"elm":{"name":"Elm","h":958,"last":"2026-11-20","rows":[[1878,87,11,0,0],[1879,39,4,0,0],[1880,89,8,0,0],[1881,129,2,87,0],[1882,100,2,0,0],[1883,64,10,0,0],[1884,70,3,0,0],[1885,57,8,0,0],[1886,99,34,0,0],[1887,59,4,0,0],[1888,65,21,0,0],[1889,70,5,0,0],[1890,30,8,0,0],[1891,89,1,0,0],[1892,76,1,0,0],[1893,97,1,0,0],[1894,59,1,0,0],[1895,86,1,0,0],[1896,71,5,0,0],[1897,49,21,0,0],[1898,71,1,0,0],[1899,125,1,0,0],[1900,101,22,0,0],[1901,107,5,0,0],[1902,111,8,0,0],[1903,77,3,0,0],[1904,68,13,0,0],[1905,62,6,0,0],[1906,100,11,0,0],[1907,104,3,0,0],[1908,99,1,0,0],[1909,84,1,0,0],[1910,93,27,0,0],[1911,52,2,0,0],[1912,63,2,0,0],[1913,97,2,0,0],[1914,88,2,0,0],[1915,60,35,0,0],[1916,75,1,0,0],[1917,65,1,0,0],[1918,118,18,0,0],[1919,51,10,0,0],[1920,122,10,0,0],[1921,97,8,0,0],[1922,87,6,0,0],[1923,97,10,0,0],[1924,110,7,0,0],[1925,100,7,0,0],[1926,83,3,0,0],[1927,82,2,0,0],[1928,73,4,0,0],[1929,79,18,0,0],[1930,84,1,0,0],[1931,51,3,0,0],[1932,74,2,0,0],[1933,88,20,0,0],[1934,75,9,0,0],[1935,80,13,0,0],[1936,57,2,0,0],[1937,84,5,0,0],[1938,87,3,0,0],[1939,67,2,0,0],[1940,85,1,0,0],[1941,82,2,0,0],[1942,107,12,0,0],[1943,97,2,0,0],[1944,62,3,0,0],[1945,99,8,0,0],[1946,88,5,0,0],[1947,107,12,0,0],[1948,137,11,0,0],[1949,87,5,0,0],[1950,86,10,0,0],[1951,82,6,0,0],[1952,49,3,0,0],[1953,89,8,0,0],[1954,105,5,0,0],[1955,77,3,0,0],[1956,65,5,0,0],[1957,128,2,0,0],[1958,76,5,0,0],[1959,88,5,0,0],[1960,71,3,0,0],[1961,77,5,0,0],[1962,88,3,0,0],[1963,107,4,0,0],[1964,77,3,0,0],[1965,101,5,0,0],[1966,89,10,0,0],[1967,89,5,0,0],[1968,106,3,0,0],[1969,104,5,0,0],[1970,80,15,0,0],[1971,100,20,0,0],[1972,80,12,0,0],[1973,81,7,0,0],[1974,58,5,0,0],[1975,72,1,0,0],[1976,94,2,0,0],[1977,104,3,0,0],[1978,29,2,0,0],[1979,51,5,0,0],[1980,85,2,0,0],[1981,81,28,0,0],[1982,106,15,0,0],[1983,118,7,0,0],[1984,35,10,0,0],[1985,103,10,0,0],[1986,114,15,0,0],[1987,105,1,0,0],[1988,110,8,0,0],[1989,68,4,0,0],[1990,94,7,0,0],[1991,79,8,0,0],[1992,77,6,0,0],[1993,81,17,0,0],[1994,135,1,0,0],[1995,92,1,0,0],[1996,43,1,0,0],[1997,74,7,0,0],[1998,86,2,0,0],[1999,97,3,0,0],[2000,91,2,0,0],[2001,99,4,0,0],[2002,53,4,0,0],[2003,65,3,0,0],[2004,75,10,0,0],[2005,107,2,0,0],[2006,92,1,0,0],[2007,79,2,0,0],[2008,89,25,0,0],[2009,76,20,0,0],[2010,79,1,0,0],[2011,68,19,0,0],[2012,87,5,0,0],[2013,70,26,0,0],[2014,82,4,0,0],[2015,73,2,0,0],[2016,97,24,0,0],[2017,96,13,0,0],[2018,87,22,0,0],[2019,99,4,0,0],[2020,86,11,0,0],[2021,94,3,0,0],[2022,114,2,0,0],[2023,108,2,0,0],[2024,111,10,0,0],[2025,108,1,0,0],[2026,-1,null,0,1]]}};
+const NS='http://www.w3.org/2000/svg',A='#1f5fa8',ACC='#d9822b',GRID='#e3e8ee',BAND='#e6eef8',GAP='#eceff3',MUT='#5d6b7a',FG='#1c2530';
+const dateOf=(y,i)=>{const t=new Date(Date.UTC(2003,7,1+i));return new Date(Date.UTC(t.getUTCMonth()>=7?y:y+1,t.getUTCMonth(),t.getUTCDate()))};
+const f1=d=>d.toLocaleDateString('de-CH',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
+const f2=d=>d.toLocaleDateString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'UTC'});
+const dm=i=>new Date(Date.UTC(2003,7,1+i)).toLocaleDateString('de-CH',{day:'numeric',month:'numeric',timeZone:'UTC'})+'.';
+const dshort=i=>new Date(Date.UTC(2003,7,1+i)).toLocaleDateString('de-CH',{day:'numeric',month:'short',timeZone:'UTC'});
+const TICKS=[['1. Sept.',31],['1. Okt.',61],['1. Nov.',92],['1. Dez.',122],['1. Jan.',153],['1. Feb.',184]];
+const LO=22,HI=192,BIN=5;
+const q=(s,p)=>s[Math.round(p*(s.length-1))];
+const prep=k=>{const D=DATA[k];const S=D.rows.map(([y,f,cm,miss,open])=>({y,f,cm,miss,open,ok:f>=0&&miss===0,gap:miss>30}));
+ const ok=S.filter(s=>s.ok),so=ok.map(s=>s.f).sort((a,b)=>a-b);
+ return {...D,S,ok,e:ok.reduce((a,b)=>a.f<=b.f?a:b),l:ok.reduce((a,b)=>a.f>=b.f?a:b),p10:q(so,.1),p50:q(so,.5),p90:q(so,.9)}};
+const el=(p,n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+const tip=document.getElementById('tip');
+const show=(h,e)=>{tip.innerHTML=h;tip.style.display='block';let x=e.clientX+12;if(x>innerWidth-240)x=Math.max(0,e.clientX-240);tip.style.left=x+'px';tip.style.top=Math.max(0,e.clientY-10-tip.offsetHeight*0)+'px'};
+const hide=()=>tip.style.display='none';
+const sn=y=>`${y}/${String(y+1).slice(2)}`;
+function svgOf(w,h){const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox',`0 0 ${w} ${h}`);s.setAttribute('preserveAspectRatio','xMidYMid meet');return s}
+function dist(){
+ const ST=[prep('gla'),prep('elm')],W=600,L=14,R=14,Tm=44,plotH=172,blk=Tm+plotH+30,H=blk*2,r=3.6;
+ const X=i=>L+(i-LO)/(HI-LO)*(W-L-R),svg=svgOf(W,H);svg.setAttribute('role','img');svg.setAttribute('aria-label','Verteilung des ersten Schnees in Glarus und Elm');
+ ST.forEach((s,si)=>{const oy=si*blk,base=oy+Tm+plotH,g=el(svg,'g',{});
+  el(g,'rect',{x:X(s.p10),y:oy+Tm-12,width:X(s.p90)-X(s.p10),height:plotH+12,fill:BAND,rx:4});
+  el(g,'text',{x:L,y:oy+16,class:'st'}).textContent=`${s.name} (${s.h} m)`;
+  el(g,'text',{x:(X(s.p10)+X(s.p90))/2,y:oy+Tm-18,'text-anchor':'middle'}).textContent='8 von 10 Wintern';
+  TICKS.forEach(([t,i])=>{el(g,'line',{x1:X(i),x2:X(i),y1:base,y2:base+5,stroke:MUT});el(g,'text',{x:X(i),y:base+19,'text-anchor':'middle'}).textContent=t});
+  el(g,'line',{x1:L,x2:W-R,y1:base,y2:base,stroke:MUT});
+  el(g,'line',{x1:X(s.p50),x2:X(s.p50),y1:oy+Tm-12,y2:base,stroke:FG,'stroke-dasharray':'4 3','stroke-width':1.3});
+  el(g,'text',{x:X(s.p50)+4,y:oy+Tm-1,class:'t'}).textContent='typisch: '+dshort(s.p50);
+  const bins=new Map();s.ok.forEach(o=>{const b=Math.floor((o.f-LO)/BIN);if(!bins.has(b))bins.set(b,[]);bins.get(b).push(o)});
+  const pos=new Map();
+  bins.forEach((arr,b)=>{const cx=X(LO+b*BIN+BIN/2);arr.sort((p,q)=>p.f-q.f||p.y-q.y).forEach((o,k)=>{const cy=base-r-1-k*(2*r+1);pos.set(o,[cx,cy]);el(g,'circle',{cx,cy,r,fill:(o===s.e||o===s.l)?ACC:A})});
+   const bw=X(LO+BIN)-X(LO),hit=el(g,'rect',{x:cx-bw/2,y:oy+Tm-12,width:bw,height:plotH+12,fill:'transparent'});
+   const h=e=>show(`<b>${arr.length} Winter</b>, erster Schnee ${dm(LO+b*BIN)}–${dm(LO+b*BIN+BIN-1)}:<br>`+arr.map(o=>`${sn(o.y)}: ${f2(dateOf(o.y,o.f))} (${o.cm} cm)`).join('<br>'),e);
+   hit.addEventListener('pointermove',h);hit.addEventListener('pointerdown',h);hit.addEventListener('pointerleave',hide)});
+  [[s.e,'frühester',1],[s.l,'spätester',0]].forEach(([o,w,early])=>{const [cx,cy]=pos.get(o),ly=oy+Tm+20,start=early?(cx-150<L):(cx+150<W-R);
+   el(g,'line',{x1:cx,x2:cx,y1:cy-r-2,y2:ly+4,stroke:ACC});
+   const t=el(g,'text',{x:cx+(start?5:-5),y:ly,'text-anchor':start?'start':'end'});t.textContent=`${w}: ${f2(dateOf(o.y,o.f))}`;t.style.fill=ACC})});
+ document.getElementById('c').appendChild(svg)}
+function year(k){
+ const s=prep(k),W=600,H=400,L=58,R=78,T=30,Bm=28,S=s.S.filter(o=>!o.open),y0=S[0].y,y1=S[S.length-1].y,n=y1-y0+1,
+ X=y=>L+(y-y0+.5)/n*(W-L-R),Y=i=>T+(i-LO)/(HI-LO)*(H-T-Bm),bw=(W-L-R)/n,svg=svgOf(W,H);
+ svg.setAttribute('role','img');svg.setAttribute('aria-label','Erster Schnee pro Winter in '+s.name);
+ el(svg,'text',{x:2,y:16,class:'st'}).textContent=`${s.name} (${s.h} m)`;
+ TICKS.slice(1).forEach(([t,i])=>{el(svg,'line',{x1:L,x2:W-R,y1:Y(i),y2:Y(i),stroke:GRID});el(svg,'text',{x:L-6,y:Y(i)+4,'text-anchor':'end'}).textContent=t});
+ for(let y=Math.ceil(y0/20)*20;y<=y1;y+=20)el(svg,'text',{x:X(y),y:H-8,'text-anchor':'middle'}).textContent=y;
+ let run=null;const runs=[];S.forEach(o=>{if(o.gap){if(!run)run=[o.y,o.y];else run[1]=o.y}else if(run){runs.push(run);run=null}});if(run)runs.push(run);
+ runs.forEach(rn=>{const a=X(rn[0])-bw/2,b=X(rn[1])+bw/2;el(svg,'rect',{x:a,y:T,width:b-a,height:H-T-Bm,fill:GAP});if(b-a>40)el(svg,'text',{x:(a+b)/2,y:T+(H-T-Bm)/2,'text-anchor':'middle'}).textContent='keine Daten'});
+ el(svg,'line',{x1:L,x2:W-R,y1:Y(s.p50),y2:Y(s.p50),stroke:FG,'stroke-dasharray':'4 3','stroke-width':1.3,opacity:.75});
+ el(svg,'text',{x:W-R+6,y:Y(s.p50)-2,class:'t'}).textContent='typisch:';el(svg,'text',{x:W-R+6,y:Y(s.p50)+13,class:'t'}).textContent=dshort(s.p50);
+ S.forEach(o=>{if(o.f<0||o.gap)return;el(svg,'circle',{cx:X(o.y),cy:Y(o.f),r:2.6,fill:(o===s.e||o===s.l)?ACC:A})});
+ const hl=el(svg,'line',{y1:T,y2:H-Bm,stroke:MUT,opacity:0}),hit=el(svg,'rect',{x:L,y:T,width:W-L-R,height:H-T-Bm,fill:'transparent'});
+ const mv=e=>{const r=svg.getBoundingClientRect(),px=(e.clientX-r.left)/r.width*W,y=Math.max(y0,Math.min(y1,Math.round((px-L)/(W-L-R)*n+y0-.5))),o=S[y-y0];
+  hl.setAttribute('x1',X(y));hl.setAttribute('x2',X(y));hl.setAttribute('opacity',.6);
+  show(`<b>Winter ${sn(o.y)}</b><br>`+(o.gap?'keine verlässlichen Daten':o.f>=0?`Erster Schnee: ${f1(dateOf(o.y,o.f))} (${o.cm>=35?'≥ 35':o.cm} cm)`:'kein Schnee gemessen'),e)};
+ hit.addEventListener('pointermove',mv);hit.addEventListener('pointerdown',mv);hit.addEventListener('pointerleave',()=>{hide();hl.setAttribute('opacity',0)});
+ document.getElementById('c').appendChild(svg)}
+MODE==='dist'?dist():year(MODE);
+</script></body></html>
