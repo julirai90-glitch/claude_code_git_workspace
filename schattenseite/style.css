@@ -335,6 +335,8 @@ html.fit .embed-credit { flex: none; }
 .embed .embed-credit { display: none; }
 /* ---- compact map embed ---- */
 .embed .mstrip { cursor: default; } .embed .mstrip .go, .embed .hlegend .genau { display: none; }
+/* karte embed: the targets of these two links (#genau box, detail section) are hidden here, so the links go too */
+.embed-karte .card .genau, .embed-karte #to-detail { display: none; }
 .embed .hlegend { top: 58px; left: 12px; right: auto; max-width: calc(100% - 24px); padding: 5px 9px; font-size: .68rem; border-radius: 10px; }
 .embed .hlegend .ht { display: inline; margin: 0 8px 0 0; } .embed .hlegend .hsw { display: inline-flex; gap: 7px; }
 .embed .hlegend i { width: 8px; height: 8px; margin-right: 3px; }
