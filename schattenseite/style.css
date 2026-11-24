@@ -440,7 +440,6 @@ html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::after { content
   .bil { --nm: 0px; --lab: 0px; }
   .bil .row { grid-template-columns: 1fr auto; grid-template-areas: "nm lab" "bar bar"; row-gap: 4px; padding: 5px 0; min-height: 40px; }
   .bil .nm { grid-area: nm; } .bil .lab { grid-area: lab; padding-right: 6px; } .bil .bar { grid-area: bar; }
-  .bil .nm span { display: none; }
 }
 /* embed=jahr: only the chart; also part of embed=alles */
 .embed .bilanz { display: none; }
@@ -451,4 +450,3 @@ html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::after { content
 .embed-jahr .bil { --nm: 0px; --lab: 0px; margin-top: 26px; }
 .embed-jahr .bil .row { grid-template-columns: 1fr auto; grid-template-areas: "nm lab" "bar bar"; row-gap: 4px; padding: 5px 0; }
 .embed-jahr .bil .nm { grid-area: nm; } .embed-jahr .bil .lab { grid-area: lab; padding-right: 6px; } .embed-jahr .bil .bar { grid-area: bar; }
-.embed-jahr .bil .nm span { display: none; }
