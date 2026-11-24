@@ -20,7 +20,7 @@
 <link rel="preload" href="fonts/fraunces-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=20261123a">
+<link rel="stylesheet" href="style.css?v=20261124b">
 <script>/* embed classes before the big data files load, so embeds never flash the full page */(function(){var e=new URLSearchParams(location.search).get("embed");if(!e)return;var c=document.documentElement.classList;c.add("embed","embed-"+e);if(["karte","horizont","sonnenjahr"].indexOf(e)>=0)c.add("fit");})();</script>
 </head>
 <body>
@@ -120,6 +120,12 @@
   <p id="strip-note" class="muted small"></p>
 </section>
 
+<section id="jahr" class="bilanz">
+  <h2>Die Jahresbilanz</h2>
+  <p class="intro">Wie viel der Sonne, die ohne Berge möglich wäre, kommt in einem Dorf übers Jahr an? Oben die zehn Dörfer mit dem meisten, unten die zehn mit dem wenigsten – laut Rechnung, bei wolkenlosem Himmel. Gelb ist die Sonne, die ankommt, blau das, was die Berge verdecken.</p>
+  <div id="bilanz" class="bil"></div>
+</section>
+
 <section id="methode" class="method">
   <h2>So haben wir gerechnet</h2>
   <p class="kinote">Die Berechnungen, die Karte und alle Grafiken entstehen aus Programmcode, den wir mithilfe künstlicher Intelligenz (Claude von Anthropic) geschrieben haben. Idee und Fragestellung stammen von der Redaktion, die auch die journalistische Verantwortung trägt.</p>
@@ -173,6 +179,6 @@
 <script src="data/dem.js"></script>
 <script src="data/places.js"></script>
 <script src="data/outline.js"></script>
-<script src="js/bundle.js?v=20261120i"></script>
+<script src="js/bundle.js?v=20261124b"></script>
 </body>
 </html>
