@@ -117,7 +117,7 @@ input[type=range]:focus-visible { outline: 2px solid var(--sun); outline-offset:
 .fig .sw.sun { background: #ffc861; } .fig .sw.shade { background: #2a3c63; }
 
 /* detail */
-.detail, .lists, .method { max-width: var(--w); margin: 0 auto; padding: 56px 24px 8px; }
+.detail, .lists, .method, .bilanz { max-width: var(--w); margin: 0 auto; padding: 56px 24px 8px; }
 .dhead { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
 .dhead h2 { font-size: clamp(2rem, 4.5vw, 3.1rem); font-weight: 400; }
 .dhead p { margin: 6px 0 0; font-size: .9rem; }
@@ -203,7 +203,7 @@ footer { max-width: var(--w); margin: 0 auto; padding: 18px 24px 48px; font-size
   .controls { position: relative; left: 0; right: 0; bottom: 0; order: 2; border-radius: 0; border-left: 0; border-right: 0; padding: 12px 14px; }
   .card { position: relative; order: 3; right: 0; top: 0; width: auto; margin: 12px 14px 0; }
   .play { width: 48px; height: 48px; }
-  .detail, .lists, .method { padding: 40px 18px 8px; }
+  .detail, .lists, .method, .bilanz { padding: 40px 18px 8px; }
   .tiles { grid-template-columns: 1fr 1fr; }
   .tile { padding: 12px 14px 14px; } .tile .v { font-size: 1.55rem; }
   .fig figcaption { grid-template-columns: 1fr; } .fig .seg { grid-column: 1; grid-row: auto; margin-top: 8px; }
@@ -406,3 +406,49 @@ html.embed:not(.embed-karte):not(.embed-alles) body:not(.ready)::after { content
 @media (max-width: 760px) and (pointer: coarse) {
   .embed-karte .mapbox::before { content: 'Zwei Finger: Karte verschieben · Tippen: Ort wählen'; position: absolute; left: 12px; bottom: 8px; z-index: 3; font-size: .68rem; color: rgba(240,236,226,.75); text-shadow: 0 1px 3px #000; pointer-events: none; }
 }
+
+/* ---- Jahresbilanz: share of the possible sun that arrives (yellow) vs. hidden by mountains (blue), best and worst ten ---- */
+.bilanz h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 400; }
+.bil { --nm: 230px; --lab: 150px; margin-top: 30px; font-size: .86rem; }
+.bil-main { position: relative; }
+.bil .axis { position: relative; height: 22px; margin-left: var(--nm); margin-right: var(--lab); border-bottom: 1px solid var(--line); }
+.bil .axis i { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--line); }
+.bil .axis i span { position: absolute; left: 5px; top: 2px; font-style: normal; font-size: .72rem; color: var(--muted); white-space: nowrap; }
+.bil .axis i:last-child { border-left: 0; } .bil .axis i:last-child span { left: auto; right: 0; }
+.bil .guides { position: absolute; left: var(--nm); right: var(--lab); top: 0; bottom: 0; pointer-events: none; z-index: 1; }
+.bil .guides em { position: absolute; top: 0; height: 0; }
+.bil .guides em span { position: absolute; top: -16px; left: 0; transform: translateX(-50%); font-size: .66rem; color: #fff; font-style: normal; white-space: nowrap; }
+.bil .guides em span::after { content: '▾'; display: block; line-height: .5; text-align: center; font-size: .8rem; }
+.bil .bar i.med { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: rgba(255, 255, 255, .9); }
+.bil-h { font-family: var(--sans); font-size: .95rem; font-weight: 600; margin: 22px 0 6px; padding-left: 6px; }
+.bil .row { display: grid; grid-template-columns: var(--nm) 1fr var(--lab); align-items: center; min-height: 30px; border-radius: 6px; cursor: pointer; }
+.bil .row:hover, .bil .row:focus-visible { background: rgba(255, 255, 255, .05); outline: none; }
+.bil .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 6px; }
+.bil .nm span { color: var(--muted); font-size: .78rem; margin-left: 7px; }
+.bil .bar { position: relative; height: 14px; border-radius: 4px; overflow: hidden; background: #2a3c63; }
+.bil .bar b { position: absolute; top: 0; bottom: 0; }
+.bil .bar b.sun { left: 0; background: linear-gradient(90deg, #f0a23a, #ffc861 55%, #ffe3a0); }
+.bil .bar b.shade { right: 0; background: linear-gradient(90deg, #3a5792, #2c4377); }
+.bil .lab { padding-left: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 600; }
+.bil .lab span { color: var(--muted); font-size: .78rem; font-weight: 400; margin-left: 6px; }
+.bil-gap { margin: 14px 0 0; padding-left: 6px; color: var(--muted); font-size: .8rem; }
+.bil-gap span { letter-spacing: .2em; margin-right: 8px; }
+.bil-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; margin-top: 18px; padding-left: 6px; font-size: .78rem; }
+.bil-leg .k { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.bil-leg .k.sun { background: #ffc861; } .bil-leg .k.shade { background: #34508a; }
+@media (max-width: 760px) {
+  .bil { --nm: 0px; --lab: 0px; }
+  .bil .row { grid-template-columns: 1fr auto; grid-template-areas: "nm lab" "bar bar"; row-gap: 4px; padding: 5px 0; min-height: 40px; }
+  .bil .nm { grid-area: nm; } .bil .lab { grid-area: lab; padding-right: 6px; } .bil .bar { grid-area: bar; }
+  .bil .nm span { display: none; }
+}
+/* embed=jahr: only the chart; also part of embed=alles */
+.embed .bilanz { display: none; }
+.embed-jahr .bilanz, .embed-alles .bilanz { display: block; }
+.embed-jahr .mapwrap, .embed-jahr .detail { display: none; }
+.embed-jahr .bilanz { padding-top: 0; }
+.embed-jahr .bilanz > h2, .embed-jahr .bilanz > .intro { display: none; }
+.embed-jahr .bil { --nm: 0px; --lab: 0px; margin-top: 26px; }
+.embed-jahr .bil .row { grid-template-columns: 1fr auto; grid-template-areas: "nm lab" "bar bar"; row-gap: 4px; padding: 5px 0; }
+.embed-jahr .bil .nm { grid-area: nm; } .embed-jahr .bil .lab { grid-area: lab; padding-right: 6px; } .embed-jahr .bil .bar { grid-area: bar; }
+.embed-jahr .bil .nm span { display: none; }

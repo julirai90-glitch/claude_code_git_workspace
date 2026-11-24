@@ -864,7 +864,7 @@ async function init() {
   if (EMBED) $('#hlegend .ht').textContent = 'Tage ohne direkte Sonne';
   if (EMBED === 'tag21') $('#liste').insertBefore($('.search'), $('#strip'));   // the map (and its search) is hidden here
   bindControls(); bindHect();
-  buildLists();
+  buildLists(); buildBilanz();
   // initial selection: hash, else Chur (strongest story: midday shadow on the shortest day)
   const fromHash = parseHash(byId);
   const darkest = byId.get('1577255384') || places.filter(p => p.t !== 'hamlet').sort((a, b) => b.s.dark - a.s.dark)[0];
@@ -1244,6 +1244,24 @@ function gantt(list, edge) {
     return `<div class="row${p.t === 'hamlet' ? ' ham' : ''}" data-id="${p.id}" tabindex="0"><div class="nm">${p.n}<span>${p.g}</span></div><div class="bar">${outer}${inner}</div><div class="lab">${lab}</div></div>`;
   }).join('');
   return `<div class="gantt${edge ? ' edge' : ''}"><div class="guides">${sol}${today}</div><div class="axis">${ticks.join('')}</div>${rows}<div class="axis bottom">${ticks.join('')}</div></div>`;
+}
+// Jahresbilanz: share of the sun that would arrive without mountains (year hours / astronomical year hours),
+// the ten best and the ten worst villages, one continuous ranking with the median marked.
+function buildBilanz() {
+  const box = $('#bilanz'); if (!box) return;
+  const v = places.filter(p => p.t !== 'hamlet').map(p => ({ p, f: p.s.yearH / p.s.yearFlatH })).sort((a, b) => b.f - a.f || a.p.n.localeCompare(b.p.n));
+  const asc = v.map(x => x.f).sort((a, b) => a - b), n = asc.length;
+  const med = n % 2 ? asc[(n - 1) / 2] : (asc[n / 2 - 1] + asc[n / 2]) / 2;
+  const pc = f => (f * 100).toFixed(2) + '%', de1 = x => x.toFixed(1).replace('.', ',');
+  const row = ({ p, f }) => `<div class="row" data-id="${p.id}" tabindex="0" title="${p.n}: ${int(p.s.yearH)} Stunden direkte Sonne im Jahr, ${de1(f * 100)} Prozent der möglichen"><div class="nm">${p.n}<span>${p.g}</span></div><div class="bar"><b class="sun" style="width:${pc(f)}"></b><b class="shade" style="left:${pc(f)}"></b><i class="med" style="left:${pc(med)}"></i></div><div class="lab">${Math.round(f * 100)} % <span>${int(p.s.yearH)} h</span></div></div>`;
+  const ticks = [0, 25, 50, 75, 100].map(t => `<i style="left:${t}%"><span>${t} %</span></i>`).join('');
+  box.innerHTML = `<div class="bil-main"><div class="guides"><em style="left:${pc(med)}"><span>Median aller ${n} Dörfer: ${Math.round(med * 100)} %</span></em></div><div class="axis">${ticks}</div>`
+    + `<h4 class="bil-h">Am meisten direkte Sonne</h4>${v.slice(0, 10).map(row).join('')}`
+    + `<div class="bil-gap"><span>· · ·</span> ${n - 20} weitere Dörfer dazwischen</div>`
+    + `<h4 class="bil-h">Am wenigsten direkte Sonne</h4>${v.slice(-10).map(row).join('')}`
+    + `</div><div class="bil-leg"><span><i class="k sun"></i>direkte Sonne</span><span><i class="k shade"></i>von Bergen verdeckt</span><span class="muted">100 % = Sonne ohne Berge, 1. Juli 2026 bis 30. Juni 2027, bei wolkenlosem Himmel</span></div>`;
+  box.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { const r = e.target.closest('[data-id]'); if (r) { e.preventDefault(); r.click(); } } });
+  box.addEventListener('click', e => { const r = e.target.closest('[data-id]'); if (r) { const p = places.find(x => String(x.id) === r.dataset.id); stop(); select(p); $('#karte').scrollIntoView({ behavior: 'smooth' }); } });
 }
 function markStrip() {
   const p = state.place, c = p && p.id && document.querySelector(`#strip circle[data-id="${p.id}"]`), m = $('#strip-sel'), t = $('#strip-lab');
