@@ -484,7 +484,7 @@ class MapView {
     if (v.s > this.fitS * 1.8) { path(this.gemPaths); ctx.strokeStyle = 'rgba(200,215,255,.16)'; ctx.lineWidth = 0.7; ctx.stroke(); }
     path(this.cantonPaths); ctx.strokeStyle = 'rgba(235,228,210,.75)'; ctx.lineWidth = 1.3; ctx.stroke();
     // places
-    const z = v.s / this.fitS, rad = Math.min(6.5, 3.1 + Math.max(0, Math.log2(z)) * 1.1);
+    const z = v.s / this.fitS, rad = Math.min(4.8, 3.1 + Math.max(0, Math.log2(z)) * 1.1);
     const shade = [];
     for (const p of this.places) {
       if (!this.visible(p)) continue;
@@ -504,8 +504,8 @@ class MapView {
     this.drawLabels(ctx, rad);
     if (this.sel) {
       const [x, y] = this.toScreen(this.sel.X, this.sel.Y);
-      ctx.beginPath(); ctx.arc(x, y, rad + 6, 0, 7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
-      ctx.beginPath(); ctx.arc(x, y, rad + 9, 0, 7); ctx.strokeStyle = 'rgba(0,0,0,.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y, rad + 4.5, 0, 7); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(x, y, rad + 6.5, 0, 7); ctx.strokeStyle = 'rgba(0,0,0,.5)'; ctx.lineWidth = 1.5; ctx.stroke();
     }
     if (this.showHect && this.hect && this.hoverHect >= 0) this.paintHectTip(ctx);
     this.drawScale(ctx);
